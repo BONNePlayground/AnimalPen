@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "animal_pens",
+  "version": "${version}",
+  "name": "AnimalPens",
+  "description": "",
+  "authors": [""],
+  "contact": {
+    "homepage": ""  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/animal_pens/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "lv.id.bonne.animalpens.fabric.AnimalPensFabric"
+    ],
+    "client": [
+      "lv.id.bonne.animalpens.fabric.client.AnimalPensFabricClient"
+    ]
+  },
+  "mixins": [
+    "animal_pens.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.21.4",
+    "java": ">=21"
+    ,"architectury": ">=15.0.1"
+    ,"fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
