@@ -1,9 +1,9 @@
-package lv.id.bonne.animalpens.fabric;
+package lv.id.bonne.animalpen.fabric;
 
-import lv.id.bonne.animalpens.AnimalPens;
+import lv.id.bonne.animalpen.AnimalPen;
 import net.fabricmc.api.ModInitializer;
 
-public final class AnimalPensFabric implements ModInitializer {
+public final class AnimalPenFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         // This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -11,6 +11,6 @@ public final class AnimalPensFabric implements ModInitializer {
         // Proceed with mild caution.
 
         // Run our common setup.
-        AnimalPens.init();
+        AnimalPen.init();
     }
 }

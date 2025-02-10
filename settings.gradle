@@ -7,8 +7,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'animal_pens'
+rootProject.name = 'animal_pen'
 
 include 'common'
 include 'fabric'
-include 'neoforge'
+include 'forge'

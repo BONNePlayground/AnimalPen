@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "animal_pens",
+  "id": "animal_pen",
   "version": "${version}",
-  "name": "AnimalPens",
+  "name": "Animal Pen",
   "description": "",
   "authors": [""],
   "contact": {
     "homepage": ""  },
-  "license": "All-Rights-Reserved",
-  "icon": "assets/animal_pens/icon.png",
+  "license": "GPL-3.0",
+  "icon": "assets/animal_pen/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "lv.id.bonne.animalpens.fabric.AnimalPensFabric"
+      "lv.id.bonne.animalpen.fabric.AnimalPenFabric"
     ],
     "client": [
-      "lv.id.bonne.animalpens.fabric.client.AnimalPensFabricClient"
+      "lv.id.bonne.animalpen.fabric.client.AnimalPenFabricClient"
     ]
   },
   "mixins": [
-    "animal_pens.mixins.json"
+    "animal_pen.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.10",
-    "minecraft": "~1.21.4",
-    "java": ">=21"
-    ,"architectury": ">=15.0.1"
+    "minecraft": "~1.18.2",
+    "java": ">=17"
+    ,"architectury": ">=4.12.94"
     ,"fabric-api": "*"
   },
   "suggests": {
