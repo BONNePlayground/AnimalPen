@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -111,6 +112,14 @@ public class AnimalContainerItem extends Item
         if (!livingEntity.isAlive() || livingEntity.isBaby())
         {
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.baby").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // only living entities that are not babies
+            return InteractionResult.FAIL;
+        }
+
+        if (!(livingEntity instanceof Animal))
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.not_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
