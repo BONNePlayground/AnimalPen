@@ -290,13 +290,14 @@ public class AnimalContainerItem extends Item
      * @param itemStack ItemStack where animal data need to be stored.
      * @param animal Animal that need to be stored.
      * @param amount Amount of animals that need to be stored.
+     * @return {@code true} if change happened, {@code false} otherwise.
      */
-    public static void setStoredAnimal(ItemStack itemStack, Animal animal, long amount)
+    public static boolean setStoredAnimal(ItemStack itemStack, Animal animal, long amount)
     {
         if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
         {
-            // Cannot do this actionn.
-            return;
+            // Cannot do this action.
+            return false;
         }
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
@@ -316,6 +317,34 @@ public class AnimalContainerItem extends Item
         itemTag.putLong(TAG_AMOUNT, amount);
 
         itemStack.setTag(itemTag);
+
+        return true;
+    }
+
+
+    /**
+     * Increase animal count.
+     *
+     * @param itemStack the item stack
+     * @param animal the animal
+     * @param amount the amount
+     * @return the boolean if increment happened.
+     */
+    public static boolean increaseAnimalCount(ItemStack itemStack, Animal animal, long amount)
+    {
+        CompoundTag tag = itemStack.getTag();
+        long count;
+
+        if (tag != null && tag.contains(TAG_AMOUNT))
+        {
+            count = tag.getLong(TAG_AMOUNT);
+        }
+        else
+        {
+            count = 0;
+        }
+
+        return AnimalContainerItem.setStoredAnimal(itemStack, animal, amount + count);
     }
 
 

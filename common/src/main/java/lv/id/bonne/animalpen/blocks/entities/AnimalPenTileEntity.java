@@ -214,7 +214,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
                 long newCount = currentCount / 2;
 
-                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.getStoredAnimal(), currentCount - newCount);
+                AnimalContainerItem.increaseAnimalCount(this.inventory.getItem(0), this.getStoredAnimal(), -newCount);
                 AnimalContainerItem.setStoredAnimal(itemInHand, this.getStoredAnimal(), newCount);
                 player.setItemInHand(interactionHand, itemInHand);
 
@@ -231,10 +231,8 @@ public class AnimalPenTileEntity extends BlockEntity
                     return false;
                 }
 
-                long count = AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0));
                 long newCount = AnimalContainerItem.getStoredAnimalAmount(itemInHand);
-
-                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.getStoredAnimal(), count + newCount);
+                AnimalContainerItem.increaseAnimalCount(this.inventory.getItem(0), this.getStoredAnimal(), newCount);
                 // clear tag.
                 itemInHand.setTag(new CompoundTag());
                 player.setItemInHand(interactionHand, itemInHand);
@@ -261,6 +259,34 @@ public class AnimalPenTileEntity extends BlockEntity
             player.setItemInHand(interactionHand, this.inventory.getItem(0));
             this.inventory.setItem(0, ItemStack.EMPTY);
             this.triggerUpdate();
+
+            return true;
+        }
+
+        int count = itemInHand.getCount();
+
+        if (this.getStoredAnimal().isFood(itemInHand) && count > 1)
+        {
+            long animalCount = AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0));
+
+            count = (int) Math.min(animalCount, count);
+
+            if (!AnimalContainerItem.increaseAnimalCount(this.inventory.getItem(0), this.getStoredAnimal(), count / 2))
+            {
+                // Could not change the count.
+                return false;
+            }
+
+            if (count % 2 == 1)
+            {
+                itemInHand.shrink(count - 1);
+                player.setItemInHand(interactionHand, itemInHand);
+            }
+            else
+            {
+                itemInHand.shrink(count);
+                player.setItemInHand(interactionHand, itemInHand);
+            }
 
             return true;
         }
