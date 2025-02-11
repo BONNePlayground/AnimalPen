@@ -6,6 +6,9 @@
   "client": [
   ],
   "mixins": [
+    "MobInvoker",
+    "MushroomCowAccessor",
+    "SheepAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

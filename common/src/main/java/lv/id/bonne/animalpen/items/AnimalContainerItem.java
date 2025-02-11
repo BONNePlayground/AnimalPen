@@ -322,6 +322,30 @@ public class AnimalContainerItem extends Item
     }
 
 
+    public static boolean setStoredAnimal(ItemStack itemStack, Animal animal)
+    {
+        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
+        {
+            // Cannot do this action.
+            return false;
+        }
+
+        CompoundTag itemTag = itemStack.getOrCreateTag();
+
+        if (itemTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(itemTag.getString(TAG_ENTITY_ID)).
+            equals(animal.getType().arch$registryName()))
+        {
+            // Clear stored animal data from tag.
+            itemTag = new CompoundTag();
+        }
+
+        animal.save(itemTag);
+        itemStack.setTag(itemTag);
+
+        return true;
+    }
+
+
     /**
      * Increase animal count.
      *
