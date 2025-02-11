@@ -1,8 +1,6 @@
 package lv.id.bonne.animalpen;
 
 
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
@@ -18,25 +16,6 @@ public final class AnimalPen
         AnimalPenBlockRegistry.register();
         AnimalPenTileEntityRegistry.register();
         AnimalPensCreativeTabRegistry.register();
-
-
-        EnvExecutor.runInEnv(Env.CLIENT, () -> AnimalPen::initializeClient);
-        EnvExecutor.runInEnv(Env.SERVER, () -> AnimalPen::initializeServer);
-    }
-
-
-    private static void initializeCommon()
-    {
-    }
-
-
-    private static void initializeClient()
-    {
-    }
-
-
-    private static void initializeServer()
-    {
     }
 
 

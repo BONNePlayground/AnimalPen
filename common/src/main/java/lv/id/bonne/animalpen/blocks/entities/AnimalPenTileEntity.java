@@ -7,6 +7,8 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,11 +20,13 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -58,6 +62,9 @@ public class AnimalPenTileEntity extends BlockEntity
     {
         super.load(tag);
 
+        this.cooldowns.clear();
+        this.inventory.clearContent();
+
         if (tag.contains(TAG_COOLDOWNS, Tag.TAG_COMPOUND))
         {
             CompoundTag cooldownTag = tag.getCompound(TAG_COOLDOWNS);
@@ -71,6 +78,52 @@ public class AnimalPenTileEntity extends BlockEntity
         {
             this.inventory.fromTag(tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND));
         }
+    }
+
+
+    /**
+     * This method updates NBT tag.
+     *
+     * @return Method that updates NBT tag.
+     */
+    @NotNull
+    @Override
+    public CompoundTag getUpdateTag()
+    {
+        return this.saveWithoutMetadata();
+    }
+
+
+    /**
+     * This method updates table content to client.
+     *
+     * @return Packet that is sent to client
+     */
+    @Nullable
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket()
+    {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+
+    /**
+     * This method returns stored animal for block entity.
+     * @return Animal instance stored in block entity.
+     */
+    public Animal getStoredAnimal()
+    {
+        if (this.storedAnimal == null && !this.inventory.getItem(0).isEmpty())
+        {
+            AnimalContainerItem.getStoredAnimal(this.level, this.inventory.getItem(0)).
+                ifPresent(animal -> this.storedAnimal = animal);
+        }
+        else if (this.storedAnimal != null && this.inventory.getItem(0).isEmpty())
+        {
+            this.storedAnimal = null;
+        }
+
+        return this.storedAnimal;
     }
 
 
@@ -105,7 +158,7 @@ public class AnimalPenTileEntity extends BlockEntity
         if (updated)
         {
             // Save the changes
-            this.setChanged();
+            this.triggerUpdate();
         }
     }
 
@@ -134,18 +187,13 @@ public class AnimalPenTileEntity extends BlockEntity
                 this.storedAnimal = storedAnimal.get();
                 player.setItemInHand(interactionHand, ItemStack.EMPTY);
 
+                this.inventory.setChanged();
+
                 return true;
             }
         }
         else
         {
-            if (this.storedAnimal == null)
-            {
-                // Read stored animal from the inventory.
-                AnimalContainerItem.getStoredAnimal(this.level, this.inventory.getItem(0)).
-                    ifPresent(animal -> this.storedAnimal = animal);
-            }
-
             Optional<Animal> storedAnimal = AnimalContainerItem.getStoredAnimal(this.level, itemInHand);
 
             if (storedAnimal.isEmpty())
@@ -166,17 +214,18 @@ public class AnimalPenTileEntity extends BlockEntity
 
                 long newCount = currentCount / 2;
 
-                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.storedAnimal, currentCount - newCount);
-                this.inventory.setChanged();
-                AnimalContainerItem.setStoredAnimal(itemInHand, this.storedAnimal, newCount);
+                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.getStoredAnimal(), currentCount - newCount);
+                AnimalContainerItem.setStoredAnimal(itemInHand, this.getStoredAnimal(), newCount);
                 player.setItemInHand(interactionHand, itemInHand);
+
+                this.inventory.setChanged();
 
                 // Remove half of animals.
                 return true;
             }
             else
             {
-                if (this.storedAnimal.getType() != storedAnimal.get().getType())
+                if (this.getStoredAnimal().getType() != storedAnimal.get().getType())
                 {
                     // Cannot do with different animal types.
                     return false;
@@ -185,11 +234,12 @@ public class AnimalPenTileEntity extends BlockEntity
                 long count = AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0));
                 long newCount = AnimalContainerItem.getStoredAnimalAmount(itemInHand);
 
-                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.storedAnimal, count + newCount);
-                this.inventory.setChanged();
+                AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), this.getStoredAnimal(), count + newCount);
                 // clear tag.
                 itemInHand.setTag(new CompoundTag());
                 player.setItemInHand(interactionHand, itemInHand);
+
+                this.inventory.setChanged();
 
                 return true;
             }
@@ -210,10 +260,26 @@ public class AnimalPenTileEntity extends BlockEntity
         {
             player.setItemInHand(interactionHand, this.inventory.getItem(0));
             this.inventory.setItem(0, ItemStack.EMPTY);
+            this.triggerUpdate();
+
             return true;
         }
 
         return false;
+    }
+
+
+    private void triggerUpdate()
+    {
+        this.setChanged();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            this.level.sendBlockUpdated(this.getBlockPos(),
+                this.getBlockState(),
+                this.getBlockState(),
+                Block.UPDATE_CLIENTS);
+        }
     }
 
 
@@ -233,7 +299,7 @@ public class AnimalPenTileEntity extends BlockEntity
         public void setChanged()
         {
             super.setChanged();
-            AnimalPenTileEntity.this.setChanged();
+            AnimalPenTileEntity.this.triggerUpdate();
         }
     };
 
