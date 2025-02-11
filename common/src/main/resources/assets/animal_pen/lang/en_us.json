@@ -1,5 +1,6 @@
 {
   "category.animal_pen.tab": "Animal Pens Items",
+
   "item.animal_pen.animal_container": "Animal Container",
   "item.animal_pen.animal_container.entity": "Entity: %s",
   "item.animal_pen.animal_container.amount": "Count: %d",
@@ -9,5 +10,7 @@
   "item.animal_pen.animal_container.error.tame": "Cannot catch tamed animals",
   "item.animal_pen.animal_container.error.wrong": "Animal container contains different animal",
   "item.animal_pen.animal_container.error.unknown": "Failed to catch animal",
-  "item.animal_pen.animal_container.error.not_animal": "Can catch only animals"
+  "item.animal_pen.animal_container.error.not_animal": "Can catch only animals",
+
+  "block.animal_pen.animal_pen_block": "Animal Pen Block"
 }

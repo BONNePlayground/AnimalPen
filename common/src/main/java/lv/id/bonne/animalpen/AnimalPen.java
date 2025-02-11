@@ -3,6 +3,8 @@ package lv.id.bonne.animalpen;
 
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
+import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 
@@ -13,6 +15,8 @@ public final class AnimalPen
     {
         // Write common init code here.
         AnimalPensItemRegistry.register();
+        AnimalPenBlockRegistry.register();
+        AnimalPenTileEntityRegistry.register();
         AnimalPensCreativeTabRegistry.register();
 
 
