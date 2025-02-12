@@ -3,10 +3,8 @@ package lv.id.bonne.animalpen.items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -56,11 +54,10 @@ public class AnimalContainerItem extends Item
         }
 
         if (itemStack.hasTag() &&
-            itemStack.getTag().contains(TAG_ANIMAL) &&
-            itemStack.getTag().getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
+            itemStack.getTag().contains(TAG_ENTITY_ID))
         {
             list.add(new TranslatableComponent("item.animal_pen.animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTagElement(TAG_ANIMAL).getString(TAG_ENTITY_ID))).
+                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -72,8 +69,7 @@ public class AnimalContainerItem extends Item
         }
 
         if (!itemStack.hasTag() ||
-            !itemStack.getTag().contains(TAG_ANIMAL) ||
-            !itemStack.getTagElement(TAG_ANIMAL).contains(TAG_ENTITY_ID))
+            !itemStack.getTag().contains(TAG_ENTITY_ID))
         {
             list.add(new TranslatableComponent("item.animal_pen.animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
@@ -157,9 +153,9 @@ public class AnimalContainerItem extends Item
             itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
         }
 
-        if (!itemTag.contains(TAG_ANIMAL) || !itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
+        if (!itemTag.contains(TAG_ENTITY_ID))
         {
-            AnimalContainerItem.setStoredAnimal(itemStack, animal, 1);
+            animal.save(itemTag);
         }
 
         itemStack.setTag(itemTag);
@@ -171,6 +167,7 @@ public class AnimalContainerItem extends Item
 
 
     @Override
+    @NotNull
     public InteractionResult useOn(UseOnContext useOnContext)
     {
         if (useOnContext.getLevel().isClientSide())
@@ -180,13 +177,13 @@ public class AnimalContainerItem extends Item
 
         BlockEntity blockEntity = useOnContext.getLevel().getBlockEntity(useOnContext.getClickedPos());
 
-        if (blockEntity == null || !(blockEntity instanceof AnimalPenTileEntity tileEntity))
+        if (!(blockEntity instanceof AnimalPenTileEntity tileEntity))
         {
             return super.useOn(useOnContext);
         }
 
         if (useOnContext.getPlayer() != null &&
-            tileEntity.processContainer(useOnContext.getPlayer(), useOnContext.getHand(), useOnContext.getItemInHand()))
+            tileEntity.processContainer(useOnContext.getPlayer(), useOnContext.getHand()))
         {
             return InteractionResult.SUCCESS;
         }
@@ -205,13 +202,13 @@ public class AnimalContainerItem extends Item
     {
         CompoundTag itemTag = itemStack.getTag();
 
-        if (itemTag == null || !itemTag.contains(TAG_ANIMAL) || !itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
+        if (itemTag == null || !itemTag.contains(TAG_ENTITY_ID))
         {
             // Empty cage.
             return true;
         }
 
-        String entityType = itemTag.getCompound(TAG_ANIMAL).getString(TAG_ENTITY_ID);
+        String entityType = itemTag.getString(TAG_ENTITY_ID);
 
         return new ResourceLocation(entityType).equals(entity.getType().arch$registryName());
     }
@@ -239,151 +236,7 @@ public class AnimalContainerItem extends Item
     }
 
 
-    /**
-     * Gets stored animal from the container item stack or empty optional.
-     *
-     * @param level the level
-     * @param itemStack the item stack
-     * @return the stored animal
-     */
-    public static Optional<Animal> getStoredAnimal(Level level, ItemStack itemStack)
-    {
-        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
-        {
-            // Not an animal container.
-            return Optional.empty();
-        }
-
-        CompoundTag tag = itemStack.getTag();
-
-        if (tag == null || !tag.contains(TAG_ANIMAL) || !tag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
-        {
-            return Optional.empty();
-        }
-
-        return EntityType.create(tag.getCompound(TAG_ANIMAL), level).map(entity -> (Animal) entity);
-    }
-
-
-    /**
-     * This method returns of stored amount of animals in the given item stack.
-     * @param itemStack ItemStack that contains data.
-     * @return Amount of animals that are stored inside item stack.
-     */
-    public static long getStoredAnimalAmount(ItemStack itemStack)
-    {
-        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
-        {
-            // Not an animal container.
-            return 0;
-        }
-
-        CompoundTag tag = itemStack.getTag();
-
-        if (tag == null || !tag.contains(TAG_AMOUNT))
-        {
-            return 0;
-        }
-
-        return tag.getLong(TAG_AMOUNT);
-    }
-
-
-    /**
-     * This method sets stored animal and data and amount into given item stack nbt data.
-     * @param itemStack ItemStack where animal data need to be stored.
-     * @param animal Animal that need to be stored.
-     * @param amount Amount of animals that need to be stored.
-     * @return {@code true} if change happened, {@code false} otherwise.
-     */
-    public static boolean setStoredAnimal(ItemStack itemStack, Animal animal, long amount)
-    {
-        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
-        {
-            // Cannot do this action.
-            return false;
-        }
-
-        if (amount <= 0)
-        {
-            // Clear tag as all entities are removed.
-            itemStack.setTag(new CompoundTag());
-            return true;
-        }
-
-        CompoundTag itemTag = itemStack.getOrCreateTag();
-        CompoundTag animalTag = itemStack.getOrCreateTagElement(TAG_ANIMAL);
-
-        if (animalTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(animalTag.getString(TAG_ENTITY_ID)).
-            equals(animal.getType().arch$registryName()))
-        {
-            // Clear stored animal data from tag.
-            animalTag = new CompoundTag();
-        }
-
-        if (!animalTag.contains(TAG_ENTITY_ID))
-        {
-            animal.save(animalTag);
-        }
-
-        itemTag.putLong(TAG_AMOUNT, amount);
-        itemTag.put(TAG_ANIMAL, animalTag);
-
-        itemStack.setTag(itemTag);
-
-        return true;
-    }
-
-
-    public static boolean setStoredAnimal(ItemStack itemStack, Animal animal)
-    {
-        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
-        {
-            // Cannot do this action.
-            return false;
-        }
-
-        CompoundTag itemTag = itemStack.getOrCreateTag();
-        CompoundTag animalTag = new CompoundTag();
-
-        animal.save(animalTag);
-        itemTag.put(TAG_ANIMAL, animalTag);
-
-        itemStack.setTag(itemTag);
-
-        return true;
-    }
-
-
-    /**
-     * Increase animal count.
-     *
-     * @param itemStack the item stack
-     * @param animal the animal
-     * @param amount the amount
-     * @return the boolean if increment happened.
-     */
-    public static boolean increaseAnimalCount(ItemStack itemStack, Animal animal, long amount)
-    {
-        CompoundTag tag = itemStack.getTag();
-        long count;
-
-        if (tag != null && tag.contains(TAG_AMOUNT))
-        {
-            count = tag.getLong(TAG_AMOUNT);
-        }
-        else
-        {
-            count = 0;
-        }
-
-        return AnimalContainerItem.setStoredAnimal(itemStack, animal, amount + count);
-    }
-
-
-    public static final String TAG_AMOUNT = "amount";
-
-    public static final String TAG_ANIMAL = "animal";
-
     public static final String TAG_ENTITY_ID = "id";
+
+    public static final String TAG_AMOUNT = "animal_count";
 }

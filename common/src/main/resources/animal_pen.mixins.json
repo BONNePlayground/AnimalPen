@@ -6,10 +6,15 @@
   "client": [
   ],
   "mixins": [
-    "AnimalInvoker",
-    "MobInvoker",
-    "MushroomCowAccessor",
-    "SheepAccessor"
+    "implementations.AnimalPenAnimal",
+    "implementations.AnimalPenBee",
+    "implementations.AnimalPenChicken",
+    "implementations.AnimalPenCow",
+    "implementations.AnimalPenMushroomCow",
+    "implementations.AnimalPenSheep",
+    "implementations.AnimalPenTurtle",
+    "accessors.AnimalInvoker",
+    "accessors.MobInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

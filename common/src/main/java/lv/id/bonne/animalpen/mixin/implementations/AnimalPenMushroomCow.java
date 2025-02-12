@@ -1,0 +1,265 @@
+//
+// Created by BONNe
+// Copyright - 2025
+//
+
+
+package lv.id.bonne.animalpen.mixin.implementations;
+
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import java.util.*;
+
+import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SuspiciousStewItem;
+
+
+@Mixin(MushroomCow.class)
+public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
+{
+    @Shadow
+    @Nullable
+    private MobEffect effect;
+
+
+    @Shadow
+    private int effectDuration;
+
+
+    @Shadow
+    public abstract MushroomCow.MushroomType getMushroomType();
+
+
+    @Shadow
+    protected abstract Optional<Pair<MobEffect, Integer>> getEffectFromItemStack(ItemStack itemStack);
+
+
+    @Intrinsic
+    @Override
+    public boolean animalPen$animalPenTick()
+    {
+        boolean value = super.animalPen$animalPenTick();
+
+        if (this.supCooldown > 0)
+        {
+            this.supCooldown--;
+            return true;
+        }
+
+        return value;
+    }
+
+
+    @Intrinsic
+    @Override
+    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    {
+        super.animalPen$animalPenSaveTag(tag);
+        tag.putInt("sup_cooldown", this.supCooldown);
+    }
+
+
+    @Intrinsic
+    @Override
+    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    {
+        super.animalPen$animalPenLoadTag(tag);
+
+        if (tag.contains("sup_cooldown", Tag.TAG_INT))
+        {
+            this.supCooldown = tag.getInt("sup_cooldown");
+        }
+    }
+
+
+    @Intrinsic
+    @Override
+    public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
+    {
+        if (super.animalPen$animalPenInteract(player, hand, position))
+        {
+            return true;
+        }
+
+        ItemStack itemStack = player.getItemInHand(hand);
+
+        if (itemStack.is(Items.BOWL))
+        {
+            if (this.supCooldown > 0)
+            {
+                return false;
+            }
+
+            ItemStack bowlStack;
+            boolean suspicious = this.effect != null;
+
+            if (suspicious)
+            {
+                bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
+                SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
+
+                this.effect = null;
+                this.effectDuration = 0;
+            }
+            else
+            {
+                bowlStack = new ItemStack(Items.MUSHROOM_STEW);
+            }
+
+            ItemStack remainingStack = ItemUtils.createFilledResult(itemStack, player, bowlStack, false);
+            player.setItemInHand(hand, remainingStack);
+            SoundEvent soundEvent;
+
+            if (suspicious)
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY;
+            }
+            else
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK;
+            }
+
+            player.getLevel().playSound(null,
+                position,
+                soundEvent,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.supCooldown = AnimalPenConfiguration.getEntityCooldown(
+                ((Animal) (Object) this).getType().arch$registryName(),
+                Items.BOWL,
+                this.animalCount);
+
+            return true;
+        }
+        else if (itemStack.is(ItemTags.SMALL_FLOWERS) &&
+            this.getMushroomType() == MushroomCow.MushroomType.BROWN)
+        {
+            if (this.effect != null)
+            {
+                if (player.getLevel() instanceof ServerLevel level)
+                {
+                    level.sendParticles(
+                        ParticleTypes.SMOKE,
+                        position.getX() + 0.5f,
+                        position.getY() + 1.5,
+                        position.getZ() + 0.5f,
+                        2,
+                        0.2, 0.2, 0.2,
+                        0.05);
+                }
+            }
+            else
+            {
+                Optional<Pair<MobEffect, Integer>> optional = this.getEffectFromItemStack(itemStack);
+
+                if (optional.isEmpty())
+                {
+                    return false;
+                }
+
+                Pair<MobEffect, Integer> pair = optional.get();
+
+                if (player.getLevel() instanceof ServerLevel level)
+                {
+                    level.sendParticles(
+                        ParticleTypes.EFFECT,
+                        position.getX() + 0.5f,
+                        position.getY() + 1.5,
+                        position.getZ() + 0.5f,
+                        4,
+                        0.2, 0.2, 0.2,
+                        0.05);
+                }
+
+                this.effect = pair.getLeft();
+                this.effectDuration = pair.getRight();
+
+                if (!player.getAbilities().instabuild)
+                {
+                    itemStack.shrink(1);
+                    player.setItemInHand(hand, itemStack);
+                }
+
+                if (player.getLevel() instanceof ServerLevel level)
+                {
+                    level.playSound(null,
+                        position,
+                        SoundEvents.MOOSHROOM_EAT,
+                        SoundSource.NEUTRAL,
+                        2.0F,
+                        1.0F);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack, String>> animalPen$animalPenGetLines()
+    {
+        List<Pair<ItemStack, String>> lines = super.animalPen$animalPenGetLines();
+
+        if (AnimalPenConfiguration.getEntityCooldown(
+            ((Animal) (Object) this).getType().arch$registryName(),
+            Items.BOWL,
+            this.animalCount) == 0)
+        {
+            // Nothing to return.
+            return lines;
+        }
+
+        String text;
+
+        if (this.supCooldown == 0)
+        {
+            text = new TranslatableComponent("display.animal_pen.sup_ready").getString();
+        }
+        else
+        {
+            text = new TranslatableComponent("display.animal_pen.sup_cooldown", this.supCooldown).getString();
+        }
+
+        if (lines.isEmpty())
+        {
+            lines = new LinkedList<>();
+        }
+
+        lines.add(Pair.of(new ItemStack(Items.MILK_BUCKET), text));
+
+        return lines;
+    }
+
+
+    @Unique
+    private int supCooldown;
+}

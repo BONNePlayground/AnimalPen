@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin;
+package lv.id.bonne.animalpen.mixin.accessors;
 
 
 import org.spongepowered.asm.mixin.Mixin;

@@ -71,7 +71,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         if (itemInHand.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
         {
             if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
-                entity.processContainer(player, interactionHand, itemInHand))
+                entity.processContainer(player, interactionHand))
             {
                 return InteractionResult.SUCCESS;
             }
@@ -83,7 +83,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         else
         {
             if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
-                entity.interactWithPen(player, interactionHand, itemInHand))
+                entity.interactWithPen(player, interactionHand))
             {
                 return InteractionResult.SUCCESS;
             }
