@@ -17,6 +17,9 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
 
 
@@ -64,6 +67,26 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         Minecraft.getInstance().getEntityRenderDispatcher().
             getRenderer(animal).
             render(animal, 0.0f, Minecraft.getInstance().getFrameTime(), poseStack, buffer, combinedLight);
+
+        CompoundTag cloneTag = new CompoundTag();
+        animal.save(cloneTag);
+
+        tileEntity.getDeathTicker().forEach(tick ->
+        {
+            EntityType.create(cloneTag, tileEntity.getLevel()).
+                map(entity -> (Animal) entity).
+                ifPresent(deadAnimal ->
+            {
+                deadAnimal.setPose(Pose.DYING);
+                deadAnimal.deathTime = tick;
+
+                Minecraft.getInstance().getEntityRenderDispatcher().
+                    getRenderer(deadAnimal).
+                    render(deadAnimal, 0.0f, Minecraft.getInstance().getFrameTime(), poseStack, buffer, combinedLight);
+
+                deadAnimal.discard();
+            });
+        });
 
         poseStack.popPose();
     }

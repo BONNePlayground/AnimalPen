@@ -22,6 +22,7 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -74,6 +75,8 @@ public class AnimalPenTileEntity extends BlockEntity
 
         tag.put(TAG_COOLDOWNS, cooldownTag);
         tag.put(TAG_INVENTORY, this.inventory.createTag());
+
+        tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
     }
 
 
@@ -84,6 +87,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         this.cooldowns.clear();
         this.inventory.clearContent();
+        this.deathTicker.clear();
         this.storedAnimal = null;
 
         if (tag.contains(TAG_COOLDOWNS, Tag.TAG_COMPOUND))
@@ -98,6 +102,16 @@ public class AnimalPenTileEntity extends BlockEntity
         if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
         {
             this.inventory.fromTag(tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND));
+        }
+
+        if (tag.contains(TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
+        {
+            int[] intArray = tag.getIntArray(TAG_DEATH_TICKER);
+
+            for (int i : intArray)
+            {
+                this.deathTicker.add(i);
+            }
         }
     }
 
@@ -148,6 +162,12 @@ public class AnimalPenTileEntity extends BlockEntity
     }
 
 
+    public List<Integer> getDeathTicker()
+    {
+        return this.deathTicker;
+    }
+
+
     public void tick()
     {
         if (this.getLevel() == null || this.getLevel().isClientSide())
@@ -175,6 +195,14 @@ public class AnimalPenTileEntity extends BlockEntity
                 updated = true;
             }
         }
+
+        for (int i = 0; i < this.deathTicker.size(); i++)
+        {
+            this.deathTicker.set(i, this.deathTicker.get(i) + 1);
+            updated = true;
+        }
+
+        this.deathTicker.removeIf(integer -> integer > 20);
 
         if (updated)
         {
@@ -701,6 +729,8 @@ public class AnimalPenTileEntity extends BlockEntity
             return;
         }
 
+        this.deathTicker.add(0);
+
         if (AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0)) <= 0)
         {
             Block.popResource(level, this.getBlockPos().above(), this.inventory.getItem(0));
@@ -801,7 +831,11 @@ public class AnimalPenTileEntity extends BlockEntity
 
     private final Map<String, Integer> cooldowns = new HashMap<>();
 
+    private final List<Integer> deathTicker = new ArrayList<>();
+
     public static final String TAG_COOLDOWNS = "Cooldowns";
 
     public static final String TAG_INVENTORY = "Inventory";
+
+    public static final String TAG_DEATH_TICKER = "Death_Ticker";
 }
