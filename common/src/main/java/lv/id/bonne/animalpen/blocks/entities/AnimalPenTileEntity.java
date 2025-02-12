@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.mixin.AnimalInvoker;
 import lv.id.bonne.animalpen.mixin.MobInvoker;
 import lv.id.bonne.animalpen.mixin.MushroomCowAccessor;
 import lv.id.bonne.animalpen.mixin.SheepAccessor;
@@ -31,16 +32,23 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.goat.Goat;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 
 
 public class AnimalPenTileEntity extends BlockEntity
@@ -289,6 +297,12 @@ public class AnimalPenTileEntity extends BlockEntity
         long animalCount = AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0));
 
         Animal animal = this.getStoredAnimal();
+
+        if (animal == null)
+        {
+            return false;
+        }
+
         Random random = this.level.getRandom();
 
         if (animal.isFood(itemInHand))
@@ -393,18 +407,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     woolCount = 0;
                 }
 
-                ItemEntity itemEntity = new ItemEntity(this.level,
-                    this.getBlockPos().getX(),
-                    this.getBlockPos().getY() + 1,
-                    this.getBlockPos().getZ(),
-                    woolStack);
-                itemEntity.setDefaultPickUpDelay();
-                this.level.addFreshEntity(itemEntity);
-
-                itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
-                    (random.nextFloat() - random.nextFloat()) * 0.1F,
-                    random.nextFloat() * 0.05F,
-                    (random.nextFloat() - random.nextFloat()) * 0.1F));
+                Block.popResource(this.level, this.getBlockPos().above(), woolStack);
             }
 
             this.level.playSound(null,
@@ -428,19 +431,7 @@ public class AnimalPenTileEntity extends BlockEntity
             pollenCount = 0;
 
             itemInHand.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(interactionHand));
-
-            ItemEntity itemEntity = new ItemEntity(this.level,
-                this.getBlockPos().getX(),
-                this.getBlockPos().getY() + 1,
-                this.getBlockPos().getZ(),
-                new ItemStack(Items.HONEYCOMB, 3));
-            itemEntity.setDefaultPickUpDelay();
-            this.level.addFreshEntity(itemEntity);
-
-            itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
-                (random.nextFloat() - random.nextFloat()) * 0.1F,
-                random.nextFloat() * 0.05F,
-                (random.nextFloat() - random.nextFloat()) * 0.1F));
+            Block.popResource(this.level, this.getBlockPos().above(), new ItemStack(Items.HONEYCOMB, 3));
 
             this.level.playSound(null,
                 this.getBlockPos(),
@@ -506,18 +497,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     eggCount = 0;
                 }
 
-                ItemEntity itemEntity = new ItemEntity(this.level,
-                    this.getBlockPos().getX(),
-                    this.getBlockPos().getY() + 1,
-                    this.getBlockPos().getZ(),
-                    eggStack);
-                itemEntity.setDefaultPickUpDelay();
-                this.level.addFreshEntity(itemEntity);
-
-                itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
-                    (random.nextFloat() - random.nextFloat()) * 0.1F,
-                    random.nextFloat() * 0.05F,
-                    (random.nextFloat() - random.nextFloat()) * 0.1F));
+                Block.popResource(this.level, this.getBlockPos().above(), eggStack);
             }
 
             this.level.playSound(null,
@@ -548,18 +528,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     eggCount = 0;
                 }
 
-                ItemEntity itemEntity = new ItemEntity(this.level,
-                    this.getBlockPos().getX(),
-                    this.getBlockPos().getY() + 1,
-                    this.getBlockPos().getZ(),
-                    eggStack);
-                itemEntity.setDefaultPickUpDelay();
-                this.level.addFreshEntity(itemEntity);
-
-                itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
-                    (random.nextFloat() - random.nextFloat()) * 0.1F,
-                    random.nextFloat() * 0.05F,
-                    (random.nextFloat() - random.nextFloat()) * 0.1F));
+                Block.popResource(this.level, this.getBlockPos().above(), eggStack);
             }
 
             this.level.playSound(null,
@@ -701,6 +670,65 @@ public class AnimalPenTileEntity extends BlockEntity
         }
 
         return false;
+    }
+
+
+    /**
+     * Allows to attach entity in the animal pen. Generates loot that would be for killing it.
+     *
+     * @param player the player
+     * @param level the level
+     */
+    public void attackThePen(Player player, Level level)
+    {
+        ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        if (!(weapon.getItem() instanceof SwordItem) && !(weapon.getItem() instanceof AxeItem))
+        {
+            // not a weapon in hand.
+            return;
+        }
+
+        Animal animal = this.getStoredAnimal();
+
+        if (animal == null)
+        {
+            return;
+        }
+
+        if (!this.updateStoredAnimal(animal, -1))
+        {
+            return;
+        }
+
+        if (AnimalContainerItem.getStoredAnimalAmount(this.inventory.getItem(0)) <= 0)
+        {
+            Block.popResource(level, this.getBlockPos().above(), this.inventory.getItem(0));
+            this.inventory.setItem(0, ItemStack.EMPTY);
+            this.triggerUpdate();
+        }
+
+        Vec3 position = new Vec3(this.worldPosition.getX(),
+            this.worldPosition.getY(),
+            this.worldPosition.getZ());
+
+        LootTable lootTable = level.getServer().getLootTables().get(animal.getLootTable());
+
+        LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel) level).
+            withParameter(LootContextParams.ORIGIN, position).
+            withParameter(LootContextParams.THIS_ENTITY, animal).
+            withParameter(LootContextParams.KILLER_ENTITY, player).
+            withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
+            withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
+            withParameter(LootContextParams.DAMAGE_SOURCE, DamageSource.playerAttack(player)).
+            withLuck(player.getLuck()).
+            withRandom(level.random);
+
+        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
+            Block.popResource(level, this.getBlockPos().above(), itemStack));
+
+        int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
+        ExperienceOrb.award((ServerLevel)this.level, position, reward);
     }
 
 

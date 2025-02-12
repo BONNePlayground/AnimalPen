@@ -95,6 +95,19 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     }
 
 
+    @Override
+    public void attack(BlockState blockState, Level level, BlockPos blockPos, Player player)
+    {
+        if (!level.isClientSide() && level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity)
+        {
+            entity.attackThePen(player, level);
+            return;
+        }
+
+        super.attack(blockState, level, blockPos, player);
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------

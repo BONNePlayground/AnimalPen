@@ -300,6 +300,13 @@ public class AnimalContainerItem extends Item
             return false;
         }
 
+        if (amount <= 0)
+        {
+            // Clear tag as all entities are removed.
+            itemStack.setTag(new CompoundTag());
+            return true;
+        }
+
         CompoundTag itemTag = itemStack.getOrCreateTag();
 
         if (itemTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(itemTag.getString(TAG_ENTITY_ID)).

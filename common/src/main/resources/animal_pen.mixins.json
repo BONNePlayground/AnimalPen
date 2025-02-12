@@ -6,6 +6,7 @@
   "client": [
   ],
   "mixins": [
+    "AnimalInvoker",
     "MobInvoker",
     "MushroomCowAccessor",
     "SheepAccessor"

@@ -54,7 +54,7 @@ public class AnimalPenBlockRegistry
     public static final RegistrySupplier<Block> ANIMAL_PEN = registerBlock("animal_pen_block",
         () -> new AnimalPenBlock(
             BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
-                strength(0.3f).
+                strength(1.0f).
                 sound(SoundType.WOOD).
                 noOcclusion(),
             WoodType.OAK)
