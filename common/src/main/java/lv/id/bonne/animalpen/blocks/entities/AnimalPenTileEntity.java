@@ -767,6 +767,7 @@ public class AnimalPenTileEntity extends BlockEntity
         if (AnimalContainerItem.setStoredAnimal(this.inventory.getItem(0), animal))
         {
             this.storedAnimal = null;
+            this.inventory.setChanged();
             this.triggerUpdate();
 
             return true;
@@ -781,6 +782,7 @@ public class AnimalPenTileEntity extends BlockEntity
         if (AnimalContainerItem.increaseAnimalCount(this.inventory.getItem(0), animal, animalCount))
         {
             this.storedAnimal = null;
+            this.inventory.setChanged();
             this.triggerUpdate();
 
             return true;
@@ -833,9 +835,9 @@ public class AnimalPenTileEntity extends BlockEntity
 
     private final List<Integer> deathTicker = new ArrayList<>();
 
-    public static final String TAG_COOLDOWNS = "Cooldowns";
+    public static final String TAG_COOLDOWNS = "cooldowns";
 
-    public static final String TAG_INVENTORY = "Inventory";
+    public static final String TAG_INVENTORY = "inventory";
 
-    public static final String TAG_DEATH_TICKER = "Death_Ticker";
+    public static final String TAG_DEATH_TICKER = "death_ticker";
 }

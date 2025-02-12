@@ -55,10 +55,12 @@ public class AnimalContainerItem extends Item
             list.add(TextComponent.EMPTY);
         }
 
-        if (itemStack.hasTag() && itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (itemStack.hasTag() &&
+            itemStack.getTag().contains(TAG_ANIMAL) &&
+            itemStack.getTag().getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             list.add(new TranslatableComponent("item.animal_pen.animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                AnimalContainerItem.getEntityTranslationName(itemStack.getTagElement(TAG_ANIMAL).getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -69,7 +71,9 @@ public class AnimalContainerItem extends Item
                 withStyle(ChatFormatting.GRAY));
         }
 
-        if (!itemStack.hasTag() || !itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (!itemStack.hasTag() ||
+            !itemStack.getTag().contains(TAG_ANIMAL) ||
+            !itemStack.getTagElement(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             list.add(new TranslatableComponent("item.animal_pen.animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
@@ -153,7 +157,7 @@ public class AnimalContainerItem extends Item
             itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
         }
 
-        if (!itemTag.contains(TAG_ENTITY_ID))
+        if (!itemTag.contains(TAG_ANIMAL) || !itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             AnimalContainerItem.setStoredAnimal(itemStack, animal, 1);
         }
@@ -201,13 +205,13 @@ public class AnimalContainerItem extends Item
     {
         CompoundTag itemTag = itemStack.getTag();
 
-        if (itemTag == null || !itemTag.contains(TAG_ENTITY_ID))
+        if (itemTag == null || !itemTag.contains(TAG_ANIMAL) || !itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             // Empty cage.
             return true;
         }
 
-        String entityType = itemTag.getString(TAG_ENTITY_ID);
+        String entityType = itemTag.getCompound(TAG_ANIMAL).getString(TAG_ENTITY_ID);
 
         return new ResourceLocation(entityType).equals(entity.getType().arch$registryName());
     }
@@ -252,12 +256,12 @@ public class AnimalContainerItem extends Item
 
         CompoundTag tag = itemStack.getTag();
 
-        if (tag == null || !tag.contains(TAG_ENTITY_ID))
+        if (tag == null || !tag.contains(TAG_ANIMAL) || !tag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             return Optional.empty();
         }
 
-        return EntityType.create(tag, level).map(entity -> (Animal) entity);
+        return EntityType.create(tag.getCompound(TAG_ANIMAL), level).map(entity -> (Animal) entity);
     }
 
 
@@ -308,20 +312,22 @@ public class AnimalContainerItem extends Item
         }
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
+        CompoundTag animalTag = itemStack.getOrCreateTagElement(TAG_ANIMAL);
 
-        if (itemTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(itemTag.getString(TAG_ENTITY_ID)).
+        if (animalTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(animalTag.getString(TAG_ENTITY_ID)).
             equals(animal.getType().arch$registryName()))
         {
             // Clear stored animal data from tag.
-            itemTag = new CompoundTag();
+            animalTag = new CompoundTag();
         }
 
-        if (!itemTag.contains(TAG_ENTITY_ID))
+        if (!animalTag.contains(TAG_ENTITY_ID))
         {
-            animal.save(itemTag);
+            animal.save(animalTag);
         }
 
         itemTag.putLong(TAG_AMOUNT, amount);
+        itemTag.put(TAG_ANIMAL, animalTag);
 
         itemStack.setTag(itemTag);
 
@@ -338,15 +344,11 @@ public class AnimalContainerItem extends Item
         }
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
+        CompoundTag animalTag = new CompoundTag();
 
-        if (itemTag.contains(TAG_ENTITY_ID) && !new ResourceLocation(itemTag.getString(TAG_ENTITY_ID)).
-            equals(animal.getType().arch$registryName()))
-        {
-            // Clear stored animal data from tag.
-            itemTag = new CompoundTag();
-        }
+        animal.save(animalTag);
+        itemTag.put(TAG_ANIMAL, animalTag);
 
-        animal.save(itemTag);
         itemStack.setTag(itemTag);
 
         return true;
@@ -380,6 +382,8 @@ public class AnimalContainerItem extends Item
 
 
     public static final String TAG_AMOUNT = "amount";
+
+    public static final String TAG_ANIMAL = "animal";
 
     public static final String TAG_ENTITY_ID = "id";
 }
