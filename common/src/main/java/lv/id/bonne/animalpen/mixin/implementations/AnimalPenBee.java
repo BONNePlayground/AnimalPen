@@ -194,18 +194,6 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
             return lines;
         }
 
-        if (this.pollenCount >= 0)
-        {
-            MutableComponent component = new TranslatableComponent("display.animal_pen.pollen_level", this.pollenCount);
-
-            if (this.pollenCount == 5)
-            {
-                component.withStyle(ChatFormatting.GREEN);
-            }
-
-            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
-        }
-
         if (this.pollenCooldown != 0)
         {
             MutableComponent component = new TranslatableComponent(
@@ -225,6 +213,24 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
             }
 
             lines.add(Pair.of(itemStack, component));
+        }
+
+        if (this.pollenCount >= 0)
+        {
+            MutableComponent component;
+
+            if (this.pollenCount == 5)
+            {
+                component = new TranslatableComponent("display.animal_pen.pollen_level_max",
+                    this.pollenCount);
+            }
+            else
+            {
+                component = new TranslatableComponent("display.animal_pen.pollen_level",
+                    this.pollenCount);
+            }
+
+            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
         }
 
         return lines;

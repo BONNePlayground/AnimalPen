@@ -15,7 +15,17 @@
   "block.animal_pen.animal_pen_block": "Animal Pen Block",
 
   "display.animal_pen.food_cooldown": "%d cooldown",
-  "display.animal_pen.food_ready": "You can feed this cow",
+  "display.animal_pen.food_ready": "§2Ready",
+  "display.animal_pen.stored_food": "§3Stored: %d",
   "display.animal_pen.milk_cooldown": "%d cooldown",
-  "display.animal_pen.milk_ready": "You can milk this cow"
+  "display.animal_pen.milk_ready": "§2Ready",
+  "display.animal_pen.pollen_cooldown": "%d cooldown",
+  "display.animal_pen.pollen_level": "§e%d §epollen level",
+  "display.animal_pen.pollen_level_max": "§2%d §2pollen level",
+  "display.animal_pen.sup_cooldown": "%d cooldown",
+  "display.animal_pen.sup_ready": "§2Ready",
+  "display.animal_pen.wool_cooldown": "%d cooldown",
+  "display.animal_pen.wool_ready": "§2Ready",
+  "display.animal_pen.egg_cooldown": "%d cooldown",
+  "display.animal_pen.egg_ready": "§2Ready"
 }
