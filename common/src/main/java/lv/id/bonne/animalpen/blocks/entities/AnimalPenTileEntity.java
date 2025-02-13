@@ -252,7 +252,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
                 long newCount = currentCount / 2;
 
-                if (((AnimalPenInterface) animal).animalPenUpdateCount(-newCount))
+                if (!((AnimalPenInterface) animal).animalPenUpdateCount(-newCount))
                 {
                     return false;
                 }
