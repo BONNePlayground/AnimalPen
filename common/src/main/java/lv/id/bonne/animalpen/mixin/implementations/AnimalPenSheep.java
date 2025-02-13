@@ -10,14 +10,16 @@ package lv.id.bonne.animalpen.mixin.implementations;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -101,6 +103,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return false;
             }
 
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
 
             ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
@@ -151,6 +159,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         }
         else if (itemStack.getItem() instanceof DyeItem dye)
         {
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
             this.setColor(dye.getDyeColor());
 
             if (!player.getAbilities().instabuild)
@@ -175,9 +189,9 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, String>> animalPen$animalPenGetLines()
+    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
-        List<Pair<ItemStack, String>> lines = super.animalPen$animalPenGetLines();
+        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPenConfiguration.getEntityCooldown(
             ((Animal) (Object) this).getType().arch$registryName(),
@@ -188,20 +202,29 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             return lines;
         }
 
-        String text;
+        MutableComponent component = new TextComponent("");
 
         if (this.woolCooldown == 0)
         {
-            text = new TranslatableComponent("display.animal_pen.wool_ready").getString();
+            component.append(new TranslatableComponent("display.animal_pen.wool_ready").
+                withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            text = new TranslatableComponent("display.animal_pen.wool_cooldown", this.woolCooldown).getString();
+            component.append(new TranslatableComponent("display.animal_pen.wool_cooldown",
+                this.woolCooldown));
         }
 
-        lines.add(Pair.of(new ItemStack(Items.SHEARS), text));
+        lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));
 
         return lines;
+    }
+
+
+    @Intrinsic(displace = false)
+    public List<ItemStack> animalPen$getFood()
+    {
+        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
     }
 
 

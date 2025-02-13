@@ -8,126 +8,88 @@ package lv.id.bonne.animalpen.mixin.implementations;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
-
+import dev.architectury.registry.registries.Registries;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.MobInvoker;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 
-@Mixin(Animal.class)
-@Implements(@Interface(iface = AnimalPenInterface.class, prefix = "animalPen$", unique = true))
-public abstract class AnimalPenAnimal
+@Mixin(Axolotl.class)
+public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 {
-    @Shadow
-    public abstract boolean isFood(ItemStack itemStack);
-
-
-    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    public void injectAddAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
-    {
-        this.animalPen$animalPenSaveTag(compoundTag);
-    }
-
-
-    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    public void injectReadAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
-    {
-        this.animalPen$animalPenLoadTag(compoundTag);
-    }
-
-
     @Intrinsic(displace = false)
-    public boolean animalPen$animalPenUpdateCount(long change)
-    {
-        if (change < 0 && this.animalCount + change < 0)
-        {
-            return false;
-        }
-
-        this.animalCount += change;
-        return true;
-    }
-
-
-    @Intrinsic(displace = false)
-    public long animalPen$animalPenGetCount()
-    {
-        return this.animalCount;
-    }
-
-
-    @Intrinsic(displace = false)
-    public boolean animalPen$animalPenTick()
-    {
-        if (this.foodCooldown > 0)
-        {
-            this.foodCooldown--;
-            return true;
-        }
-
-        return false;
-    }
-
-
-    @Intrinsic(displace = false)
+    @Override
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
-        tag.putInt("food_cooldown", this.foodCooldown);
-        tag.putLong("animal_count", this.animalCount);
+        super.animalPen$animalPenSaveTag(tag);
+        tag.putInt("stored_food", this.storedFood);
     }
 
 
     @Intrinsic(displace = false)
+    @Override
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
-        if (tag.contains("food_cooldown", Tag.TAG_INT))
-        {
-            this.foodCooldown = tag.getInt("food_cooldown");
-        }
+        super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("animal_count", Tag.TAG_LONG))
+        if (tag.contains("stored_food", Tag.TAG_INT))
         {
-            this.animalCount = tag.getLong("animal_count");
+            this.storedFood = tag.getInt("stored_food");
         }
     }
 
 
     @Intrinsic(displace = false)
+    @Override
     public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (this.isFood(itemStack))
         {
-            if (this.foodCooldown > 0)
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
+            this.storedFood++;
+
+            if (!player.getAbilities().instabuild)
+            {
+                player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
+            }
+
+            if (this.foodCooldown > 0 || this.storedFood < 2)
             {
                 return false;
             }
 
-            int stackSize = itemStack.getCount();
-            stackSize = (int) Math.min(this.animalCount, stackSize);
+            int stackSize = (int) Math.min(this.animalCount, this.storedFood);
 
             if (stackSize < 2)
             {
@@ -135,27 +97,8 @@ public abstract class AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
-            {
-                // Next is processed only for server side.
-                return true;
-            }
-
-            if (!player.getAbilities().instabuild)
-            {
-                if (stackSize % 2 == 1)
-                {
-                    itemStack.shrink(stackSize - 1);
-                    player.setItemInHand(hand, itemStack);
-                }
-                else
-                {
-                    itemStack.shrink(stackSize);
-                    player.setItemInHand(hand, itemStack);
-                }
-            }
-
             this.animalCount += stackSize / 2;
+            this.storedFood -= stackSize;
 
             if (player.getLevel() instanceof ServerLevel level)
             {
@@ -201,9 +144,10 @@ public abstract class AnimalPenAnimal
 
 
     @Intrinsic(displace = false)
+    @Override
     public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
-        List<Pair<ItemStack, Component>> lines = new LinkedList<>();
+        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPenConfiguration.getEntityCooldown(
             ((Animal) (Object) this).getType().arch$registryName(),
@@ -214,17 +158,8 @@ public abstract class AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
-
-        if (this.foodCooldown == 0)
-        {
-            component.append(new TranslatableComponent("display.animal_pen.food_ready").
-                withStyle(ChatFormatting.GREEN));
-        }
-        else
-        {
-            component.append(new TranslatableComponent("display.animal_pen.food_cooldown", this.foodCooldown));
-        }
+        MutableComponent component =
+            new TranslatableComponent("display.animal_pen.stored_food", this.storedFood);
 
         List<ItemStack> food = this.animalPen$getFood();
         ItemStack foodItem;
@@ -253,15 +188,26 @@ public abstract class AnimalPenAnimal
 
 
     @Intrinsic(displace = false)
+    @Override
     public List<ItemStack> animalPen$getFood()
     {
-        return Collections.emptyList();
+        if (ANIMAL_PEN$FOOD_LIST == null)
+        {
+            ANIMAL_PEN$FOOD_LIST = Registries.get(AnimalPen.MOD_ID).
+                get(Registry.ITEM_REGISTRY).entrySet().stream().
+                map(Map.Entry::getValue).
+                map(Item::getDefaultInstance).
+                filter(stack -> stack.is(ItemTags.AXOLOTL_TEMPT_ITEMS)).
+                toList();
+        }
+
+        return ANIMAL_PEN$FOOD_LIST;
     }
 
 
     @Unique
-    protected int foodCooldown = 0;
+    private int storedFood = 0;
 
     @Unique
-    protected long animalCount = 1;
+    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;
 }

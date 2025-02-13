@@ -8,16 +8,18 @@ package lv.id.bonne.animalpen.mixin.implementations;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -26,12 +28,18 @@ import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 
 
 @Mixin(Chicken.class)
 public abstract class AnimalPenChicken extends AnimalPenAnimal
 {
+    @Shadow
+    @Final
+    private static Ingredient FOOD_ITEMS;
+
+
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
@@ -88,6 +96,12 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 return false;
             }
 
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
             int dropLimits = AnimalPenConfiguration.getDropLimits(
                 ((Animal) (Object) this).getType().arch$registryName(),
                 Items.EGG,
@@ -134,9 +148,9 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, String>> animalPen$animalPenGetLines()
+    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
-        List<Pair<ItemStack, String>> lines = super.animalPen$animalPenGetLines();
+        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPenConfiguration.getEntityCooldown(
             ((Animal) (Object) this).getType().arch$registryName(),
@@ -147,20 +161,29 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
             return lines;
         }
 
-        String text;
+        MutableComponent component = new TextComponent("");
 
         if (this.eggCooldown == 0)
         {
-            text = new TranslatableComponent("display.animal_pen.egg_ready").getString();
+            component.append(new TranslatableComponent("display.animal_pen.egg_ready").
+                withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            text = new TranslatableComponent("display.animal_pen.egg_cooldown", this.eggCooldown).getString();
+            component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
+                this.eggCooldown));
         }
 
-        lines.add(Pair.of(new ItemStack(Items.BUCKET), text));
+        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
 
         return lines;
+    }
+
+
+    @Intrinsic(displace = false)
+    public List<ItemStack> animalPen$getFood()
+    {
+        return Arrays.stream(FOOD_ITEMS.getItems()).collect(Collectors.toList());
     }
 
 

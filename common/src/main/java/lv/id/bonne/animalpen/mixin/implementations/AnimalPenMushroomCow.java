@@ -16,11 +16,12 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.*;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -113,6 +114,12 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 return false;
             }
 
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
             ItemStack bowlStack;
             boolean suspicious = this.effect != null;
 
@@ -182,6 +189,12 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                     return false;
                 }
 
+                if (player.getLevel().isClientSide())
+                {
+                    // Next is processed only for server side.
+                    return true;
+                }
+
                 Pair<MobEffect, Integer> pair = optional.get();
 
                 if (player.getLevel() instanceof ServerLevel level)
@@ -225,9 +238,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, String>> animalPen$animalPenGetLines()
+    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
-        List<Pair<ItemStack, String>> lines = super.animalPen$animalPenGetLines();
+        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPenConfiguration.getEntityCooldown(
             ((Animal) (Object) this).getType().arch$registryName(),
@@ -238,23 +251,31 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             return lines;
         }
 
-        String text;
+        MutableComponent component = new TextComponent("");
 
         if (this.supCooldown == 0)
         {
-            text = new TranslatableComponent("display.animal_pen.sup_ready").getString();
+            component.append(new TranslatableComponent("display.animal_pen.sup_ready").
+                withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            text = new TranslatableComponent("display.animal_pen.sup_cooldown", this.supCooldown).getString();
+            component.append(new TranslatableComponent("display.animal_pen.sup_cooldown",
+                this.supCooldown));
         }
 
-        if (lines.isEmpty())
+        ItemStack itemStack;
+
+        if (this.effect == null)
         {
-            lines = new LinkedList<>();
+            itemStack = Items.MUSHROOM_STEW.getDefaultInstance();
+        }
+        else
+        {
+            itemStack = Items.SUSPICIOUS_STEW.getDefaultInstance();
         }
 
-        lines.add(Pair.of(new ItemStack(Items.MILK_BUCKET), text));
+        lines.add(Pair.of(itemStack, component));
 
         return lines;
     }

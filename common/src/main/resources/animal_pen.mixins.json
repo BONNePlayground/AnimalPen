@@ -6,15 +6,27 @@
   "client": [
   ],
   "mixins": [
+    "accessors.AnimalInvoker",
+    "accessors.MobInvoker",
+    "implementations.AnimalPenAbstractHorse",
     "implementations.AnimalPenAnimal",
+    "implementations.AnimalPenAxolotl",
     "implementations.AnimalPenBee",
+    "implementations.AnimalPenCat",
     "implementations.AnimalPenChicken",
     "implementations.AnimalPenCow",
+    "implementations.AnimalPenFox",
+    "implementations.AnimalPenGoat",
+    "implementations.AnimalPenHoglin",
+    "implementations.AnimalPenLlama",
     "implementations.AnimalPenMushroomCow",
+    "implementations.AnimalPenOcelot",
+    "implementations.AnimalPenPig",
+    "implementations.AnimalPenRabbit",
     "implementations.AnimalPenSheep",
+    "implementations.AnimalPenStrider",
     "implementations.AnimalPenTurtle",
-    "accessors.AnimalInvoker",
-    "accessors.MobInvoker"
+    "implementations.AnimalPenWolf"
   ],
   "injectors": {
     "defaultRequire": 1

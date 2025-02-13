@@ -11,29 +11,31 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 
 
-@Mixin(Cow.class)
-public abstract class AnimalPenCow extends AnimalPenAnimal
+@Mixin(Goat.class)
+public abstract class AnimalPenGoat extends AnimalPenAnimal
 {
     @Intrinsic
     @Override
@@ -105,7 +107,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
             player.getLevel().playSound(null,
                 position,
-                SoundEvents.COW_MILK,
+                SoundEvents.GOAT_MILK,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);

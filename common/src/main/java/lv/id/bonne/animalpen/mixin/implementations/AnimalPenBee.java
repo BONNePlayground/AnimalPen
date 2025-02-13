@@ -11,19 +11,29 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import dev.architectury.registry.registries.Registries;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
@@ -106,6 +116,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 return false;
             }
 
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
             Block.popResource(player.getLevel(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
 
@@ -129,6 +145,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
             if (this.pollenCount < 5)
             {
                 return false;
+            }
+
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
             }
 
             ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
@@ -158,9 +180,9 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, String>> animalPen$animalPenGetLines()
+    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
-        List<Pair<ItemStack, String>> lines = super.animalPen$animalPenGetLines();
+        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPenConfiguration.getEntityCooldown(
             ((Animal) (Object) this).getType().arch$registryName(),
@@ -173,17 +195,54 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         if (this.pollenCount >= 0)
         {
-            lines.add(Pair.of(new ItemStack(Items.HONEY_BOTTLE),
-                new TranslatableComponent("display.animal_pen.pollen_level", this.pollenCount).getString()));
+            MutableComponent component = new TranslatableComponent("display.animal_pen.pollen_level", this.pollenCount);
+
+            if (this.pollenCount == 5)
+            {
+                component.withStyle(ChatFormatting.GREEN);
+            }
+
+            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
         }
 
         if (this.pollenCooldown != 0)
         {
-            lines.add(Pair.of(new ItemStack(Items.SHEARS),
-                new TranslatableComponent("display.animal_pen.pollen_cooldown", this.pollenCooldown).getString()));
+            MutableComponent component = new TranslatableComponent(
+                "display.animal_pen.pollen_cooldown",
+                this.pollenCooldown);
+
+            ItemStack itemStack;
+
+            if ((tick / 100) % 2 == 0)
+            {
+                itemStack = Items.SHEARS.getDefaultInstance();
+            }
+            else
+            {
+                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
+            }
+
+            lines.add(Pair.of(itemStack, component));
         }
 
         return lines;
+    }
+
+
+    @Intrinsic(displace = false)
+    public List<ItemStack> animalPen$getFood()
+    {
+        if (ANIMAL_PEN$FOOD_LIST == null)
+        {
+            ANIMAL_PEN$FOOD_LIST = Registries.get(AnimalPen.MOD_ID).
+                get(Registry.ITEM_REGISTRY).entrySet().stream().
+                map(Map.Entry::getValue).
+                map(Item::getDefaultInstance).
+                filter(stack -> stack.is(ItemTags.SMALL_FLOWERS)).
+                toList();
+        }
+
+        return ANIMAL_PEN$FOOD_LIST;
     }
 
 
@@ -192,4 +251,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
     @Unique
     private int pollenCount = -1;
+
+    @Unique
+    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST;
 }

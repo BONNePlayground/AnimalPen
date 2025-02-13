@@ -115,6 +115,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
     /**
      * This method returns stored animal for block entity.
+     *
      * @return Animal instance stored in block entity.
      */
     public Animal getStoredAnimal()
@@ -146,14 +147,20 @@ public class AnimalPenTileEntity extends BlockEntity
     }
 
 
+    public int getTickCounter()
+    {
+        return this.tickCounter;
+    }
+
+
     public void tick()
     {
+        this.tickCounter++;
+
         if (this.getLevel() == null || this.getLevel().isClientSide())
         {
             return;
         }
-
-        this.tickCounter++;
 
         boolean updated = false;
 
@@ -200,8 +207,11 @@ public class AnimalPenTileEntity extends BlockEntity
             }
             else
             {
-                this.inventory.addItem(itemInHand);
-                player.setItemInHand(interactionHand, ItemStack.EMPTY);
+                if (!player.getLevel().isClientSide())
+                {
+                    this.inventory.addItem(itemInHand);
+                    player.setItemInHand(interactionHand, ItemStack.EMPTY);
+                }
 
                 return true;
             }
@@ -217,6 +227,12 @@ public class AnimalPenTileEntity extends BlockEntity
                 {
                     // Empty... nothing to do.
                     return false;
+                }
+
+                if (player.getLevel().isClientSide())
+                {
+                    // Next only on server.
+                    return true;
                 }
 
                 Animal animal = this.getStoredAnimal();
@@ -264,6 +280,12 @@ public class AnimalPenTileEntity extends BlockEntity
                     return false;
                 }
 
+                if (player.getLevel().isClientSide())
+                {
+                    // Next only on server.
+                    return true;
+                }
+
                 long newCount = itemInHandTag.getLong(AnimalContainerItem.TAG_AMOUNT);
 
                 if (newCount <= 0 || !((AnimalPenInterface) animal).animalPenUpdateCount(newCount))
@@ -296,7 +318,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (itemInHand.isEmpty() && !this.inventory.isEmpty())
         {
-            if (player.isCrouching())
+            if (player.isCrouching() && !player.getLevel().isClientSide())
             {
                 ItemStack item = this.inventory.getItem(0);
                 player.setItemInHand(interactionHand, item);

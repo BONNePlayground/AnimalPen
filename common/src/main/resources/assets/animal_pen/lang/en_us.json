@@ -12,5 +12,10 @@
 
   "itemGroup.animal_pen.animal_pen": "Animal Pen Items",
 
-  "block.animal_pen.animal_pen_block": "Animal Pen Block"
+  "block.animal_pen.animal_pen_block": "Animal Pen Block",
+
+  "display.animal_pen.food_cooldown": "%d cooldown",
+  "display.animal_pen.food_ready": "You can feed this cow",
+  "display.animal_pen.milk_cooldown": "%d cooldown",
+  "display.animal_pen.milk_ready": "You can milk this cow"
 }

@@ -61,9 +61,9 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     {
         InteractionResult result = super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
 
-        if (result == InteractionResult.FAIL || level.isClientSide() || interactionHand != InteractionHand.MAIN_HAND)
+        if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
-            return result;
+            return InteractionResult.SUCCESS;
         }
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -77,7 +77,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             }
             else
             {
-                return InteractionResult.CONSUME;
+                return InteractionResult.FAIL;
             }
         }
         else
@@ -89,7 +89,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             }
             else
             {
-                return InteractionResult.CONSUME;
+                return InteractionResult.FAIL;
             }
         }
     }
