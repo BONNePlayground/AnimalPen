@@ -14,6 +14,7 @@
 
   "block.animal_pen.animal_pen_block": "Animal Pen Block",
 
+  "display.animal_pen.count": "%d",
   "display.animal_pen.food_cooldown": "%d cooldown",
   "display.animal_pen.food_ready": "§2Ready",
   "display.animal_pen.stored_food": "§3Stored: %d",

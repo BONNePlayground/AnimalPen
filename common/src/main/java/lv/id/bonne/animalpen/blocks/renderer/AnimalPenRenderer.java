@@ -23,8 +23,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
@@ -54,9 +56,59 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             return;
         }
 
+        if (this.dyingAnimal == null || this.dyingAnimal.getType() != animal.getType())
+        {
+            // Set as null.
+            this.dyingAnimal = null;
+
+            CompoundTag cloneTag = new CompoundTag();
+            animal.save(cloneTag);
+
+            EntityType.create(cloneTag, tileEntity.getLevel()).
+                map(entity -> (Animal) entity).
+                ifPresent(clone ->
+                {
+                    this.dyingAnimal = clone;
+                    this.dyingAnimal.setPose(Pose.DYING);
+
+                    // Freeze entity rotation
+                    this.dyingAnimal.yBodyRot = 0.0f;
+                    this.dyingAnimal.setYRot(0.0f);
+                    this.dyingAnimal.yHeadRot = 0.0f;
+                    this.dyingAnimal.yHeadRotO = 0.0f;
+
+                    // Stop animations
+                    this.dyingAnimal.tickCount = 0;
+                    this.dyingAnimal.deathTime = 0;
+                });
+        }
+
+        Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.5, 0, 0.5);
+
+        // Apply rotation based on facing direction
+        switch (facing)
+        {
+            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(270));
+        }
+
+        // Optional: offset from the face of the block
+        poseStack.translate(0, 0, 0);
+
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
-        this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
+
+        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
+        {
+            this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
+        }
+
+        poseStack.popPose();
     }
 
 
@@ -77,37 +129,28 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         // Stop animations
         animal.tickCount = 0;
 
-        // Position the player model inside the block
         poseStack.pushPose();
-        poseStack.translate(0.5, (2/16f), 0.5);
+        poseStack.translate(0, (2/16f), 0);
         poseStack.scale(0.6f, 0.6f, 0.6f);
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(
-            tileEntity.getBlockState().getValue(AnimalPenBlock.FACING).toYRot()));
-
-        // Use the player renderer to render the player
-        Minecraft.getInstance().getEntityRenderDispatcher().
+        this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
-            render(animal, 0.0f, Minecraft.getInstance().getFrameTime(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
 
         tileEntity.getDeathTicker().forEach(tick ->
         {
-            EntityType.create(cloneTag, tileEntity.getLevel()).
-                map(entity -> (Animal) entity).
-                ifPresent(deadAnimal ->
-                {
-                    deadAnimal.setPose(Pose.DYING);
-                    deadAnimal.deathTime = tick;
+            if (this.dyingAnimal != null)
+            {
+                this.dyingAnimal.deathTime = tick;
 
-                    Minecraft.getInstance().getEntityRenderDispatcher().
-                        getRenderer(deadAnimal).
-                        render(deadAnimal, 0.0f, Minecraft.getInstance().getFrameTime(), poseStack, buffer, combinedLight);
-
-                    deadAnimal.discard();
-                });
+                this.minecraft.getEntityRenderDispatcher().
+                    getRenderer(this.dyingAnimal).
+                    render(this.dyingAnimal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
+            }
         });
 
         poseStack.popPose();
@@ -126,30 +169,16 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
         poseStack.pushPose();
 
-        // Move to block face
-        poseStack.translate(0.5D, 2 / 16D, 0.5D);
-        // Rotate to face north
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(
-            tileEntity.getBlockState().getValue(AnimalPenBlock.FACING).toYRot()));
-
-        poseStack.translate(0, 0, -0.5D - 1 / 16D);
+        // Move to block face 7 at the end because 1/16 is a "sign" in front
+        poseStack.translate(0, 6/16f, -0.57f);
 
         // Scale for pixel-perfect rendering
-        poseStack.scale(0.01F, 0.01F, 0.01F);
+        poseStack.scale(-0.015f, -0.015f, 0F);
 
-        String text = String.valueOf(count);
-        int textWidth = Minecraft.getInstance().font.width(text);
-
-        // Center text on panel
-        float x = -textWidth / 2.0F;
-        float y = -4.0F; // Vertical center adjustment
-
-        Minecraft.getInstance().font.drawInBatch(text, x, y, 0xFFFFFF,
-            false, poseStack.last().pose(), buffer, true,
-            0, combinedLight);
+        // Render text
+        TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
+        poseStack.translate(-this.font.width(text) / 2D, 0, 0);
+        this.font.draw(poseStack, text, 0, 0, 0xFFFFFF);
 
         poseStack.popPose();
     }
@@ -167,7 +196,10 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         List<Pair<ItemStack, Component>> textList =
             ((AnimalPenInterface) animal).animalPenGetLines(tileEntity.getTickCounter());
 
-        if (textList.isEmpty()) return;
+        if (textList.isEmpty())
+        {
+            return;
+        }
 
         double totalHeight = 1.5 + 0.25 * (textList.size() - 1);
         double maxWidth = 0;
@@ -179,25 +211,29 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
         maxWidth += 4;
 
+        poseStack.pushPose();
+        poseStack.translate(0, totalHeight, 0);
+
         for (int i = 0; i < textList.size(); i++)
         {
             poseStack.pushPose();
 
             // Move to the center of the block and above it
-            poseStack.translate(0.5, totalHeight - 0.25 * i, 0.5);
+            poseStack.translate(0.0, -0.25 * i, 0.00);
 
             // Render text
             poseStack.pushPose();
             poseStack.scale(-0.025f, -0.03f, 0.025f);
             poseStack.translate(-maxWidth / 2, -6, 0);
-            Minecraft.getInstance().font.draw(poseStack, textList.get(i).getRight(), 8, 0, 0xFFFFFF);
+            this.font.draw(poseStack, textList.get(i).getRight(), 8, 0, 0xFFFFFF);
             poseStack.popPose();
 
             // Render Item Stack
             poseStack.pushPose();
             poseStack.scale(0.5f, 0.5f, 0.5f);
             poseStack.translate(maxWidth / 2 * 0.05, 0, 0);
-            Minecraft.getInstance().getItemRenderer().renderStatic(
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+            this.minecraft.getItemRenderer().renderStatic(
                 textList.get(i).getLeft(),
                 ItemTransforms.TransformType.GROUND,
                 combinedLight,
@@ -207,13 +243,25 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
                 0
             );
             poseStack.popPose();
-
             poseStack.popPose();
         }
+
+        poseStack.popPose();
     }
 
 
-    final Minecraft minecraft = Minecraft.getInstance();
+    /**
+     * The minecraft instance.
+     */
+    private final Minecraft minecraft = Minecraft.getInstance();
 
-    final Font font = this.minecraft.font;
+    /**
+     * The font instance.
+     */
+    private final Font font = this.minecraft.font;
+
+    /**
+     * Dying animal instance.
+     */
+    private Animal dyingAnimal;
 }
