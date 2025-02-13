@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
-import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.AnimalInvoker;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
@@ -124,7 +124,7 @@ public class AnimalPenTileEntity extends BlockEntity
         {
             CompoundTag tag = this.inventory.getItem(0).getOrCreateTag();
 
-            if (!tag.contains(AnimalContainerItem.TAG_ENTITY_ID) || this.level == null)
+            if (!tag.contains(AnimalCageItem.TAG_ENTITY_ID) || this.level == null)
             {
                 return this.storedAnimal;
             }
@@ -200,7 +200,7 @@ public class AnimalPenTileEntity extends BlockEntity
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
 
-            if (!itemInHand.getOrCreateTag().contains(AnimalContainerItem.TAG_ENTITY_ID))
+            if (!itemInHand.getOrCreateTag().contains(AnimalCageItem.TAG_ENTITY_ID))
             {
                 return false;
             }
@@ -220,7 +220,7 @@ public class AnimalPenTileEntity extends BlockEntity
             ItemStack itemInHand = player.getItemInHand(interactionHand);
             CompoundTag itemInHandTag = itemInHand.getOrCreateTag();
 
-            if (!itemInHandTag.contains(AnimalContainerItem.TAG_ENTITY_ID))
+            if (!itemInHandTag.contains(AnimalCageItem.TAG_ENTITY_ID))
             {
                 if (!player.isCrouching())
                 {
@@ -258,7 +258,7 @@ public class AnimalPenTileEntity extends BlockEntity
                 }
 
                 animal.save(itemInHandTag);
-                itemInHandTag.putLong(AnimalContainerItem.TAG_AMOUNT, newCount);
+                itemInHandTag.putLong(AnimalCageItem.TAG_AMOUNT, newCount);
 
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
@@ -271,7 +271,7 @@ public class AnimalPenTileEntity extends BlockEntity
                 Animal animal = this.getStoredAnimal();
 
                 if (animal == null ||
-                    !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
+                    !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).
                         equals(animal.getType().arch$registryName().toString()))
                 {
                     // Cannot do with different animal types.
@@ -284,7 +284,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     return true;
                 }
 
-                long newCount = itemInHandTag.getLong(AnimalContainerItem.TAG_AMOUNT);
+                long newCount = itemInHandTag.getLong(AnimalCageItem.TAG_AMOUNT);
 
                 if (newCount <= 0 || !((AnimalPenInterface) animal).animalPenUpdateCount(newCount))
                 {
@@ -456,7 +456,7 @@ public class AnimalPenTileEntity extends BlockEntity
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack)
         {
-            return stack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get());
+            return stack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get());
         }
 
 

@@ -69,7 +69,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
-        if (itemInHand.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
+        if (itemInHand.is(AnimalPensItemRegistry.ANIMAL_CAGE.get()))
         {
             if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
                 entity.processContainer(player, interactionHand))

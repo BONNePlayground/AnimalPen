@@ -10,7 +10,7 @@ package lv.id.bonne.animalpen.registries;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.items.AnimalCageItem;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 
@@ -32,7 +32,7 @@ public class AnimalPensItemRegistry
     /**
      * The animal container item
      */
-    public static final RegistrySupplier<AnimalContainerItem> ANIMAL_CONTAINER =
-        REGISTRY.register("animal_container", () -> new AnimalContainerItem(new Item.Properties().
+    public static final RegistrySupplier<AnimalCageItem> ANIMAL_CAGE =
+        REGISTRY.register("animal_cage", () -> new AnimalCageItem(new Item.Properties().
             tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
 }

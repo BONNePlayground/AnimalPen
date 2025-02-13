@@ -32,9 +32,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * This is a main item that allows to pick up animals.
  */
-public class AnimalContainerItem extends Item
+public class AnimalCageItem extends Item
 {
-    public AnimalContainerItem(Properties properties)
+    public AnimalCageItem(Properties properties)
     {
         super(properties);
     }
@@ -57,14 +57,14 @@ public class AnimalContainerItem extends Item
         if (itemStack.hasTag() &&
             itemStack.getTag().contains(TAG_ENTITY_ID))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+            list.add(new TranslatableComponent("item.animal_pen.animal_cage.entity",
+                AnimalCageItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_container.amount",
+            list.add(new TranslatableComponent("item.animal_pen.animal_cage.amount",
                 itemStack.getTag().getLong(TAG_AMOUNT)).
                 withStyle(ChatFormatting.GRAY));
         }
@@ -72,11 +72,11 @@ public class AnimalContainerItem extends Item
         if (!itemStack.hasTag() ||
             !itemStack.getTag().contains(TAG_ENTITY_ID))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_container.tip").
+            list.add(new TranslatableComponent("item.animal_pen.animal_cage.tip").
                 withStyle(ChatFormatting.GRAY));
         }
 
-        list.add(new TranslatableComponent("item.animal_pen.animal_container.warning").
+        list.add(new TranslatableComponent("item.animal_pen.animal_cage.warning").
             withStyle(ChatFormatting.GRAY));
     }
 
@@ -103,7 +103,7 @@ public class AnimalContainerItem extends Item
 
         if (interactionResult == InteractionResult.FAIL)
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.unknown").
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.unknown").
                 withStyle(ChatFormatting.DARK_RED), true);
             return interactionResult;
         }
@@ -116,7 +116,7 @@ public class AnimalContainerItem extends Item
 
         if (!livingEntity.isAlive() || livingEntity.isBaby())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.baby").
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.baby").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
@@ -124,7 +124,7 @@ public class AnimalContainerItem extends Item
 
         if (!(livingEntity instanceof Animal animal))
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.not_animal").
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.not_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
@@ -133,7 +133,7 @@ public class AnimalContainerItem extends Item
         if (livingEntity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame() ||
             livingEntity instanceof AbstractHorse horse && horse.isTamed())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.tame").
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -141,7 +141,7 @@ public class AnimalContainerItem extends Item
 
         if (!this.matchEntity(itemStack, livingEntity))
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_container.error.wrong").
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.wrong").
                 withStyle(ChatFormatting.DARK_RED), true);
             // Different entities cannot be merged.
             return InteractionResult.FAIL;

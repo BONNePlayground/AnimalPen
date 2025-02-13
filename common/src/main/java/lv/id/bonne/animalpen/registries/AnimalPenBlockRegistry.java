@@ -13,7 +13,6 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
-import lv.id.bonne.animalpen.items.AnimalContainerItem;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
