@@ -271,7 +271,7 @@ public abstract class AnimalPenAnimal
     protected int foodCooldown = 0;
 
     @Unique
-    protected long animalCount = 1;
+    protected long animalCount = 0;
 
     @Unique
     protected DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder().

@@ -169,7 +169,6 @@ public class AnimalPenTileEntity extends BlockEntity
         if (animal != null && ((AnimalPenInterface) animal).animalPenTick())
         {
             updated = true;
-            animal.save(this.inventory.getItem(0).getOrCreateTag());
         }
 
         for (int i = 0; i < this.deathTicker.size(); i++)
@@ -262,7 +261,6 @@ public class AnimalPenTileEntity extends BlockEntity
                 itemInHandTag.putLong(AnimalContainerItem.TAG_AMOUNT, newCount);
 
                 player.setItemInHand(interactionHand, itemInHand);
-                animal.save(this.inventory.getItem(0).getOrCreateTag());
                 this.inventory.setChanged();
 
                 // Remove half of animals.
@@ -273,7 +271,7 @@ public class AnimalPenTileEntity extends BlockEntity
                 Animal animal = this.getStoredAnimal();
 
                 if (animal == null ||
-                    itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
+                    !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
                         equals(animal.getType().arch$registryName().toString()))
                 {
                     // Cannot do with different animal types.
@@ -297,7 +295,6 @@ public class AnimalPenTileEntity extends BlockEntity
                 itemInHand.setTag(new CompoundTag());
                 player.setItemInHand(interactionHand, itemInHand);
 
-                animal.save(this.inventory.getItem(0).getOrCreateTag());
                 this.inventory.setChanged();
 
                 return true;
@@ -338,7 +335,13 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenInteract(player, interactionHand, this.getBlockPos()))
         {
-            animal.save(this.inventory.getItem(0).getOrCreateTag());
+            ItemStack item = this.inventory.getItem(0);
+
+            // Reset tag, as some animals may need it.
+            CompoundTag tag = new CompoundTag();
+            animal.save(tag);
+            item.setTag(tag);
+
             this.inventory.setChanged();
 
             // Trigger update.
@@ -381,10 +384,14 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
         {
-            Block.popResource(level, this.getBlockPos().above(), this.inventory.getItem(0));
+            ItemStack item = this.inventory.getItem(0);
+            item.setTag(new CompoundTag());
+
+            Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
-            this.triggerUpdate();
         }
+
+        this.triggerUpdate();
 
         Vec3 position = new Vec3(this.worldPosition.getX(),
             this.worldPosition.getY(),
@@ -416,6 +423,13 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (this.level != null && !this.level.isClientSide())
         {
+            Animal animal = this.getStoredAnimal();
+
+            if (animal != null)
+            {
+                animal.save(this.inventory.getItem(0).getOrCreateTag());
+            }
+
             this.level.sendBlockUpdated(this.getBlockPos(),
                 this.getBlockState(),
                 this.getBlockState(),

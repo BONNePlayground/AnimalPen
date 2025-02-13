@@ -148,14 +148,14 @@ public class AnimalContainerItem extends Item
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
 
-        if (itemTag.contains(TAG_AMOUNT))
-        {
-            itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
-        }
-
         if (!itemTag.contains(TAG_ENTITY_ID))
         {
             animal.save(itemTag);
+        }
+
+        if (itemTag.contains(TAG_AMOUNT))
+        {
+            itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
         }
 
         itemStack.setTag(itemTag);
