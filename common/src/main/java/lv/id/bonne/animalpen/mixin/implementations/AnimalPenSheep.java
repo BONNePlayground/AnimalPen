@@ -15,7 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.config.Configuration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -132,10 +133,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             int woolCount = 1;
 
-            int dropLimits = AnimalPenConfiguration.getDropLimits(
-                ((Animal) (Object) this).getType().arch$registryName(),
-                Items.WHITE_WOOL,
-                this.animalCount);
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
 
             for (int i = 0; i < this.animalCount && woolCount < dropLimits; i++)
             {
@@ -167,8 +170,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.woolCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.SHEARS,
                 this.animalCount);
 
@@ -210,8 +213,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.SHEARS,
             this.animalCount) == 0)
         {

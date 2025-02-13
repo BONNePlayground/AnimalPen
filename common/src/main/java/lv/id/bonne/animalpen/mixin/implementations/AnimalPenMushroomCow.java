@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
 import java.util.*;
 
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -157,8 +157,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.supCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.BOWL,
                 this.animalCount);
 
@@ -243,8 +243,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.BOWL,
             this.animalCount) == 0)
         {

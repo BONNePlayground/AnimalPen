@@ -15,7 +15,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -113,8 +113,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.milkCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.BUCKET,
                 this.animalCount);
 
@@ -131,8 +131,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.BUCKET,
             this.animalCount) == 0)
         {

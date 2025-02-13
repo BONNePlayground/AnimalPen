@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.MobInvoker;
 import net.minecraft.ChatFormatting;
@@ -194,8 +194,8 @@ public abstract class AnimalPenAnimal
                     1.0F);
             }
 
-            this.foodCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.APPLE,
                 this.animalCount);
 
@@ -211,10 +211,10 @@ public abstract class AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = new LinkedList<>();
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.APPLE,
-            1) == 0)
+            this.animalCount) == 0)
         {
             // Nothing to return.
             return lines;

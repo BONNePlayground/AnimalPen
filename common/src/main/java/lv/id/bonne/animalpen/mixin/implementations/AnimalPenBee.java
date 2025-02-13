@@ -12,16 +12,11 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import dev.architectury.registry.registries.Registries;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -59,8 +54,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         if (this.pollenCount < 5)
         {
             this.pollenCount++;
-            this.pollenCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.HONEY_BLOCK,
                 this.animalCount);
 
@@ -134,8 +129,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.pollenCount = 0;
-            this.pollenCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.HONEY_BLOCK,
                 this.animalCount);
 
@@ -167,8 +162,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.pollenCount = 0;
-            this.pollenCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.HONEY_BLOCK,
                 this.animalCount);
 
@@ -185,8 +180,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.HONEY_BLOCK,
             this.animalCount) == 0)
         {

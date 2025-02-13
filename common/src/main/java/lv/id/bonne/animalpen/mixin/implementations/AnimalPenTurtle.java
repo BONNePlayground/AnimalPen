@@ -12,13 +12,10 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
+import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -101,10 +98,12 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 return true;
             }
 
-            int dropLimits = AnimalPenConfiguration.getDropLimits(
-                ((Animal) (Object) this).getType().arch$registryName(),
-                Items.TURTLE_EGG,
-                this.animalCount);
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TURTLE_EGG);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
 
             int eggCount = (int) Math.min(this.animalCount, dropLimits);
 
@@ -133,8 +132,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.eggCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.BUCKET,
                 this.animalCount);
 
@@ -151,8 +150,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.BUCKET,
             this.animalCount) == 0)
         {

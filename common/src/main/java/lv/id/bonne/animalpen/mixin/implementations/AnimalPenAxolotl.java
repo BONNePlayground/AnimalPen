@@ -14,7 +14,6 @@ import java.util.Map;
 
 import dev.architectury.registry.registries.Registries;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
 import lv.id.bonne.animalpen.mixin.accessors.MobInvoker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -131,8 +130,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                     1.0F);
             }
 
-            this.foodCooldown = AnimalPenConfiguration.getEntityCooldown(
-                ((Animal) (Object) this).getType().arch$registryName(),
+            this.foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                ((Animal) (Object) this).getType(),
                 Items.APPLE,
                 this.animalCount);
 
@@ -149,10 +148,10 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
-        if (AnimalPenConfiguration.getEntityCooldown(
-            ((Animal) (Object) this).getType().arch$registryName(),
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            ((Animal) (Object) this).getType(),
             Items.APPLE,
-            1) == 0)
+            this.animalCount) == 0)
         {
             // Nothing to return.
             return lines;
