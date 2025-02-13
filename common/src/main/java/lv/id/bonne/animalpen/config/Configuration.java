@@ -143,6 +143,16 @@ public class Configuration
     }
 
 
+    /**
+     * The maximal amount of animals a pen can store.
+     * @return The maximal amount of animals.
+     */
+    public long getMaximalAnimalCount()
+    {
+        return this.maximalAnimalCount;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -224,6 +234,12 @@ public class Configuration
     @Expose
     @SerializedName("drop_limits")
     private Map<ResourceLocation, Integer> dropLimitList = new HashMap<>();
+
+    @JsonComment("Allows to set maximal amount of animals in the pen.")
+    @JsonComment("Setting 0 will remove any limit.")
+    @Expose
+    @SerializedName("animal_limit_in_pen")
+    private long maximalAnimalCount = Integer.MAX_VALUE;
 
     @JsonComment("")
     @Expose(serialize = false, deserialize = false)

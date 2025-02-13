@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -155,6 +156,13 @@ public class AnimalContainerItem extends Item
 
         if (itemTag.contains(TAG_AMOUNT))
         {
+            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+
+            if (maxCount > 0 && itemTag.getLong(TAG_AMOUNT) + 1 > maxCount)
+            {
+                return InteractionResult.FAIL;
+            }
+
             itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
         }
 

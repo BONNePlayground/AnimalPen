@@ -88,6 +88,13 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 return false;
             }
 
+            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+
+            if (maxCount > 0 && this.animalCount >= maxCount)
+            {
+                return false;
+            }
+
             int stackSize = (int) Math.min(this.animalCount, this.storedFood);
 
             if (stackSize < 2)
@@ -95,6 +102,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 // Cannot feed 1 animal only for breeding.
                 return false;
             }
+
+            stackSize = (int) Math.min((maxCount - this.animalCount) * 2, stackSize);
 
             this.animalCount += stackSize / 2;
             this.storedFood -= stackSize;

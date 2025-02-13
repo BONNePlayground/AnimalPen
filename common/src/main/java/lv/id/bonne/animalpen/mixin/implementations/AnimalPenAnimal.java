@@ -72,6 +72,13 @@ public abstract class AnimalPenAnimal
             return false;
         }
 
+        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+
+        if (maxCount > 0 && this.animalCount + change > maxCount)
+        {
+            return false;
+        }
+
         this.animalCount += change;
         return true;
     }
@@ -132,6 +139,13 @@ public abstract class AnimalPenAnimal
                 return false;
             }
 
+            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+
+            if (maxCount > 0 && this.animalCount >= maxCount)
+            {
+                return false;
+            }
+
             int stackSize = itemStack.getCount();
             stackSize = (int) Math.min(this.animalCount, stackSize);
 
@@ -146,6 +160,8 @@ public abstract class AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            stackSize = (int) Math.min((maxCount - this.animalCount) * 2, stackSize);
 
             if (!player.getAbilities().instabuild)
             {
