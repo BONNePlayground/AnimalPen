@@ -439,6 +439,16 @@ public class AnimalPenTileEntity extends BlockEntity
 
 
     /**
+     * Returns inventory of this tile entity
+     * @return inventory
+     */
+    public SimpleContainer getInventory()
+    {
+        return this.inventory;
+    }
+
+
+    /**
      * The inventory of container.
      */
     private final SimpleContainer inventory = new SimpleContainer(1)

@@ -11,6 +11,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -111,6 +112,46 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 // ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------
+
+
+    /**
+     * This method drops all items from container when block is broken.
+     *
+     * @param state The BlockState.
+     * @param level Level where block is broken.
+     * @param pos Position of broken block.
+     * @param newState New block state.
+     * @param isMoving Boolean if block is moving.
+     */
+    @Override
+    public void onRemove(BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        BlockState newState,
+        boolean isMoving)
+    {
+        if (!state.is(newState.getBlock()))
+        {
+            BlockEntity tile = level.getBlockEntity(pos);
+
+            if (tile instanceof AnimalPenTileEntity entity)
+            {
+                for (int i = 0; i < entity.getInventory().getContainerSize(); i++)
+                {
+                    Containers.dropItemStack(level,
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ(),
+                        entity.getInventory().getItem(i));
+                }
+
+                entity.getInventory().clearContent();
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+        }
+
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
 
 
     /**
