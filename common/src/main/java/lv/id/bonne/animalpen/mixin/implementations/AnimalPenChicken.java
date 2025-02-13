@@ -9,6 +9,7 @@ package lv.id.bonne.animalpen.mixin.implementations;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -171,7 +172,8 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         else
         {
             component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
-                this.eggCooldown));
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.eggCooldown / 20).format(FORMATTER)));
         }
 
         lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));

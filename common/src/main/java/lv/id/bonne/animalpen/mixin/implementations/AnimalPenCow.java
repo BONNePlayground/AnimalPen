@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -147,7 +148,8 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         else
         {
             component.append(new TranslatableComponent("display.animal_pen.milk_cooldown",
-                this.milkCooldown));
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.milkCooldown / 20).format(FORMATTER)));
         }
 
         lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));

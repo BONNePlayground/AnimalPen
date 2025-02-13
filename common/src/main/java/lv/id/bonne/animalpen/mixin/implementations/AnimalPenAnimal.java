@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
@@ -34,6 +37,9 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 
 @Mixin(Animal.class)
@@ -223,7 +229,9 @@ public abstract class AnimalPenAnimal
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.food_cooldown", this.foodCooldown));
+            component.append(new TranslatableComponent("display.animal_pen.food_cooldown",
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.foodCooldown / 20).format(FORMATTER)));
         }
 
         List<ItemStack> food = this.animalPen$getFood();
@@ -264,4 +272,12 @@ public abstract class AnimalPenAnimal
 
     @Unique
     protected long animalCount = 1;
+
+    @Unique
+    protected DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder().
+        appendValue(MINUTE_OF_HOUR, 2).
+        optionalStart().
+        appendLiteral(':').
+        appendValue(SECOND_OF_MINUTE, 2).
+        toFormatter();
 }

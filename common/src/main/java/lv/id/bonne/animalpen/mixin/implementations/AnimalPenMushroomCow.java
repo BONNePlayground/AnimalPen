@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import java.time.LocalTime;
 import java.util.*;
 
 import lv.id.bonne.animalpen.config.AnimalPenConfiguration;
@@ -261,7 +262,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         else
         {
             component.append(new TranslatableComponent("display.animal_pen.sup_cooldown",
-                this.supCooldown));
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.supCooldown / 20).format(FORMATTER)));
         }
 
         ItemStack itemStack;

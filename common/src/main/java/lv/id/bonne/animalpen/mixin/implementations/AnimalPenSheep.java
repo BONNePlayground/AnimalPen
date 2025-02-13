@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.mixin.implementations;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -212,7 +213,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         else
         {
             component.append(new TranslatableComponent("display.animal_pen.wool_cooldown",
-                this.woolCooldown));
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.woolCooldown / 20).format(FORMATTER)));
         }
 
         lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));

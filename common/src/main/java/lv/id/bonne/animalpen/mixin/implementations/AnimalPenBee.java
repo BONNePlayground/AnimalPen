@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -209,7 +210,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         {
             MutableComponent component = new TranslatableComponent(
                 "display.animal_pen.pollen_cooldown",
-                this.pollenCooldown);
+                LocalTime.of(0, 0, 0).
+                    plusSeconds(this.pollenCooldown / 20).format(FORMATTER));
 
             ItemStack itemStack;
 
