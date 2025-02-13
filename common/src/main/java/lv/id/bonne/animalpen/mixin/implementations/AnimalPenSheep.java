@@ -48,6 +48,14 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     public abstract void setColor(DyeColor dyeColor);
 
 
+    @Shadow
+    public abstract void setSheared(boolean bl);
+
+
+    @Shadow
+    public abstract boolean isSheared();
+
+
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
@@ -57,6 +65,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         if (this.woolCooldown > 0)
         {
             this.woolCooldown--;
+            return true;
+        }
+
+        if (this.isSheared())
+        {
+            this.setSheared(false);
             return true;
         }
 
@@ -109,6 +123,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            this.setSheared(true);
 
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
 
