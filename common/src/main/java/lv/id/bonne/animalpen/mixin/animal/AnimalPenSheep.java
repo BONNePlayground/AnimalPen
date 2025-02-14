@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.implementations;
+package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.config.Configuration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

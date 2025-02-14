@@ -4,51 +4,49 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.implementations;
+package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
 
 
-@Mixin(Chicken.class)
-public abstract class AnimalPenChicken extends AnimalPenAnimal
+@Mixin(Goat.class)
+public abstract class AnimalPenGoat extends AnimalPenAnimal
 {
-    @Shadow
-    @Final
-    private static Ingredient FOOD_ITEMS;
-
-
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.eggCooldown > 0)
+        if (this.milkCooldown > 0)
         {
-            this.eggCooldown--;
+            this.milkCooldown--;
             return true;
         }
 
@@ -61,7 +59,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("egg_cooldown", this.eggCooldown);
+        tag.putInt("milk_cooldown", this.milkCooldown);
     }
 
 
@@ -71,9 +69,9 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("egg_cooldown", Tag.TAG_INT))
+        if (tag.contains("milk_cooldown", Tag.TAG_INT))
         {
-            this.eggCooldown = tag.getInt("egg_cooldown");
+            this.milkCooldown = tag.getInt("milk_cooldown");
         }
     }
 
@@ -91,7 +89,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
         if (itemStack.is(Items.BUCKET))
         {
-            if (this.eggCooldown > 0)
+            if (this.milkCooldown > 0)
             {
                 return false;
             }
@@ -102,41 +100,20 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 return true;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+            ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
+                player,
+                Items.MILK_BUCKET.getDefaultInstance());
 
-            if (dropLimits <= 0)
-            {
-                dropLimits = Integer.MAX_VALUE;
-            }
-
-            int eggCount = (int) Math.min(this.animalCount, dropLimits);
-
-            while (eggCount > 0)
-            {
-                ItemStack eggStack = new ItemStack(Items.EGG);
-
-                if (eggCount > 16)
-                {
-                    eggStack.setCount(16);
-                    eggCount -= 16;
-                }
-                else
-                {
-                    eggStack.setCount(eggCount);
-                    eggCount = 0;
-                }
-
-                Block.popResource(player.getLevel(), position.above(), eggStack);
-            }
+            player.setItemInHand(hand, remainingStack);
 
             player.getLevel().playSound(null,
                 position,
-                SoundEvents.CHICKEN_EGG,
+                SoundEvents.GOAT_MILK,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
 
-            this.eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 ((Animal) (Object) this).getType(),
                 Items.BUCKET,
                 this.animalCount);
@@ -165,19 +142,19 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.eggCooldown == 0)
+        if (this.milkCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.egg_ready").
+            component.append(new TranslatableComponent("display.animal_pen.milk_ready").
                 withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
+            component.append(new TranslatableComponent("display.animal_pen.milk_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.eggCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.milkCooldown / 20).format(FORMATTER)));
         }
 
-        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
+        lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
 
         return lines;
     }
@@ -186,10 +163,10 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     @Intrinsic(displace = false)
     public List<ItemStack> animalPen$getFood()
     {
-        return Arrays.stream(FOOD_ITEMS.getItems()).collect(Collectors.toList());
+        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
     }
 
 
     @Unique
-    private int eggCooldown;
+    private int milkCooldown;
 }

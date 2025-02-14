@@ -4,14 +4,13 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.water;
+package lv.id.bonne.animalpen.mixin.wateranimal;
 
 
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.world.entity.EntityType;

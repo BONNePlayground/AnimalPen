@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.implementations;
+package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;

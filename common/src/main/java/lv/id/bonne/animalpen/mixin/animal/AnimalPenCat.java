@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.implementations;
+package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.spongepowered.asm.mixin.Final;
@@ -15,22 +15,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 
-@Mixin(Llama.class)
-public abstract class AnimalPenLlama extends AnimalPenAnimal
+@Mixin(Cat.class)
+public abstract class AnimalPenCat extends AnimalPenAnimal
 {
     @Shadow
     @Final
-    private static Ingredient FOOD_ITEMS;
+    private static Ingredient TEMPT_INGREDIENT;
 
 
     @Intrinsic(displace = false)
     public List<ItemStack> animalPen$getFood()
     {
-        return Arrays.stream(FOOD_ITEMS.getItems()).toList();
+        return Arrays.stream(TEMPT_INGREDIENT.getItems()).toList();
     }
 }

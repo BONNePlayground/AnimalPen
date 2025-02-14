@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.water;
+package lv.id.bonne.animalpen.mixin.wateranimal;
 
 
 import org.apache.commons.lang3.tuple.Pair;

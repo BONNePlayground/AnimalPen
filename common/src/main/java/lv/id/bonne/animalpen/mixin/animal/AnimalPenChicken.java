@@ -4,16 +4,15 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.implementations;
+package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-
+import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
@@ -25,25 +24,31 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 
 
-@Mixin(Cow.class)
-public abstract class AnimalPenCow extends AnimalPenAnimal
+@Mixin(Chicken.class)
+public abstract class AnimalPenChicken extends AnimalPenAnimal
 {
+    @Shadow
+    @Final
+    private static Ingredient FOOD_ITEMS;
+
+
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.milkCooldown > 0)
+        if (this.eggCooldown > 0)
         {
-            this.milkCooldown--;
+            this.eggCooldown--;
             return true;
         }
 
@@ -56,7 +61,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("milk_cooldown", this.milkCooldown);
+        tag.putInt("egg_cooldown", this.eggCooldown);
     }
 
 
@@ -66,9 +71,9 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("milk_cooldown", Tag.TAG_INT))
+        if (tag.contains("egg_cooldown", Tag.TAG_INT))
         {
-            this.milkCooldown = tag.getInt("milk_cooldown");
+            this.eggCooldown = tag.getInt("egg_cooldown");
         }
     }
 
@@ -86,7 +91,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         if (itemStack.is(Items.BUCKET))
         {
-            if (this.milkCooldown > 0)
+            if (this.eggCooldown > 0)
             {
                 return false;
             }
@@ -97,20 +102,41 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 return true;
             }
 
-            ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
-                player,
-                Items.MILK_BUCKET.getDefaultInstance());
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
 
-            player.setItemInHand(hand, remainingStack);
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            int eggCount = (int) Math.min(this.animalCount, dropLimits);
+
+            while (eggCount > 0)
+            {
+                ItemStack eggStack = new ItemStack(Items.EGG);
+
+                if (eggCount > 16)
+                {
+                    eggStack.setCount(16);
+                    eggCount -= 16;
+                }
+                else
+                {
+                    eggStack.setCount(eggCount);
+                    eggCount = 0;
+                }
+
+                Block.popResource(player.getLevel(), position.above(), eggStack);
+            }
 
             player.getLevel().playSound(null,
                 position,
-                SoundEvents.COW_MILK,
+                SoundEvents.CHICKEN_EGG,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
 
-            this.milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 ((Animal) (Object) this).getType(),
                 Items.BUCKET,
                 this.animalCount);
@@ -139,19 +165,19 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.milkCooldown == 0)
+        if (this.eggCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.milk_ready").
+            component.append(new TranslatableComponent("display.animal_pen.egg_ready").
                 withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.milk_cooldown",
+            component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.milkCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.eggCooldown / 20).format(FORMATTER)));
         }
 
-        lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
+        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
 
         return lines;
     }
@@ -160,10 +186,10 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     @Intrinsic(displace = false)
     public List<ItemStack> animalPen$getFood()
     {
-        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
+        return Arrays.stream(FOOD_ITEMS.getItems()).collect(Collectors.toList());
     }
 
 
     @Unique
-    private int milkCooldown;
+    private int eggCooldown;
 }
