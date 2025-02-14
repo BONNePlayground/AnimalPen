@@ -7,7 +7,9 @@
   ],
   "mixins": [
     "accessors.AnimalInvoker",
+    "accessors.EntityAccessor",
     "accessors.MobInvoker",
+    "accessors.WaterAnimalInvoker",
     "implementations.AnimalPenAbstractHorse",
     "implementations.AnimalPenAnimal",
     "implementations.AnimalPenAxolotl",
@@ -26,7 +28,11 @@
     "implementations.AnimalPenSheep",
     "implementations.AnimalPenStrider",
     "implementations.AnimalPenTurtle",
-    "implementations.AnimalPenWolf"
+    "implementations.AnimalPenWolf",
+    "water.AnimalPenAbstractFish",
+    "water.AnimalPenDolphin",
+    "water.AnimalPenSquid",
+    "water.AnimalPenWaterAnimal"
   ],
   "injectors": {
     "defaultRequire": 1

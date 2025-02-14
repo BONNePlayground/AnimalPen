@@ -11,9 +11,21 @@
   "item.animal_pen.animal_cage.error.unknown": "Failed to catch animal",
   "item.animal_pen.animal_cage.error.not_animal": "Can catch only animals",
 
+  "item.animal_pen.water_animal_container": "Water Animal Container",
+  "item.animal_pen.water_animal_container.entity": "Entity: %s",
+  "item.animal_pen.water_animal_container.amount": "Count: %d",
+  "item.animal_pen.water_animal_container.tip": "Crouch and right-click on water animal to catch it",
+  "item.animal_pen.water_animal_container.warning": "Animals cannot be released for animal container",
+  "item.animal_pen.water_animal_container.error.baby": "Cannot catch baby water animals",
+  "item.animal_pen.water_animal_container.error.blocked": "Animal is blocked from picking up",
+  "item.animal_pen.water_animal_container.error.wrong": "Animal cage contains different water animal",
+  "item.animal_pen.water_animal_container.error.unknown": "Failed to catch water animal",
+  "item.animal_pen.water_animal_container.error.not_water_animal": "Can catch only water animals",
+
   "itemGroup.animal_pen.animal_pen": "Animal Pen Items",
 
   "block.animal_pen.animal_pen_block": "Animal Pen Block",
+  "block.animal_pen.aquarium_block": "Aquarium Block",
 
   "display.animal_pen.count": "%d",
   "display.animal_pen.food_cooldown": "%d cooldown",

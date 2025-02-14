@@ -13,6 +13,7 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
+import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -55,6 +56,15 @@ public class AnimalPenBlockRegistry
             BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
                 strength(1.0f).
                 sound(SoundType.WOOD).
+                noOcclusion(),
+            WoodType.OAK)
+    );
+
+    public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
+        () -> new AquariumBlock(
+            BlockBehaviour.Properties.copy(Blocks.GLASS).
+                strength(1.0f).
+                sound(SoundType.GLASS).
                 noOcclusion(),
             WoodType.OAK)
     );

@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "animal_pen:block/aquarium_block",
+      "y": 90,
+      "render_type": "translucent"
+    },
+    "facing=north": {
+      "model": "animal_pen:block/aquarium_block",
+      "render_type": "translucent"
+    },
+    "facing=south": {
+      "model": "animal_pen:block/aquarium_block",
+      "render_type": "translucent",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "animal_pen:block/aquarium_block",
+      "render_type": "translucent",
+      "y": 270
+    }
+  }
+}
