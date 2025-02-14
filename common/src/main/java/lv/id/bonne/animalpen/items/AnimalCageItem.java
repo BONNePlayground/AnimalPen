@@ -114,6 +114,14 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isBlocked(livingEntity.getType()))
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.blocked").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // only living entities that are not babies
+            return InteractionResult.FAIL;
+        }
+
         if (!livingEntity.isAlive() || livingEntity.isBaby())
         {
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.baby").

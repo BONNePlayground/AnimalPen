@@ -1,12 +1,13 @@
 {
-  "item.animal_pen.animal_cage": "Animal Container",
+  "item.animal_pen.animal_cage": "Animal Cage",
   "item.animal_pen.animal_cage.entity": "Entity: %s",
   "item.animal_pen.animal_cage.amount": "Count: %d",
   "item.animal_pen.animal_cage.tip": "Crouch and right-click on animal to catch it",
-  "item.animal_pen.animal_cage.warning": "Animals cannot be released for animal container",
+  "item.animal_pen.animal_cage.warning": "Animals cannot be released for animal cage",
   "item.animal_pen.animal_cage.error.baby": "Cannot catch baby animals",
+  "item.animal_pen.animal_cage.error.blocked": "Animal is blocked from picking up",
   "item.animal_pen.animal_cage.error.tame": "Cannot catch tamed animals",
-  "item.animal_pen.animal_cage.error.wrong": "Animal container contains different animal",
+  "item.animal_pen.animal_cage.error.wrong": "Animal cage contains different animal",
   "item.animal_pen.animal_cage.error.unknown": "Failed to catch animal",
   "item.animal_pen.animal_cage.error.not_animal": "Can catch only animals",
 

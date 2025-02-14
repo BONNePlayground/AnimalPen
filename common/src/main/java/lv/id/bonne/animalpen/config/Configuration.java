@@ -95,7 +95,7 @@ public class Configuration
 
     public boolean isInvalid()
     {
-        return this.dropLimitList == null || this.cooldownList == null;
+        return this.dropLimitList == null || this.cooldownList == null || this.blockedAnimals == null;
     }
 
 
@@ -150,6 +150,17 @@ public class Configuration
     public long getMaximalAnimalCount()
     {
         return this.maximalAnimalCount;
+    }
+
+
+    /**
+     * This indicates is given entity is blocked from being picked up.
+     * @param entityType Entity that need to be checked.
+     * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
+     */
+    public boolean isBlocked(EntityType<?> entityType)
+    {
+        return this.blockedAnimals.contains(entityType.arch$registryName());
     }
 
 
@@ -240,6 +251,11 @@ public class Configuration
     @Expose
     @SerializedName("animal_limit_in_pen")
     private long maximalAnimalCount = Integer.MAX_VALUE;
+
+    @JsonComment("Set of animals that are blocked from picking up.")
+    @Expose
+    @SerializedName("blocked_animals")
+    private Set<ResourceLocation> blockedAnimals = new HashSet<>();
 
     @JsonComment("")
     @Expose(serialize = false, deserialize = false)
