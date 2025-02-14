@@ -24,26 +24,35 @@ import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 
 @Mixin(Turtle.class)
 public abstract class AnimalPenTurtle extends AnimalPenAnimal
 {
+    protected AnimalPenTurtle(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.eggCooldown > 0)
+        if (this.animalPen$eggCooldown > 0)
         {
-            this.eggCooldown--;
+            this.animalPen$eggCooldown--;
             return true;
         }
 
@@ -57,7 +66,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        tag.putInt("egg_cooldown", this.eggCooldown);
+        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
     }
 
 
@@ -69,7 +78,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
         if (tag.contains("egg_cooldown", Tag.TAG_INT))
         {
-            this.eggCooldown = tag.getInt("egg_cooldown");
+            this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
         }
     }
 
@@ -87,7 +96,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
         if (itemStack.is(Items.BUCKET))
         {
-            if (this.eggCooldown > 0)
+            if (this.animalPen$eggCooldown > 0)
             {
                 return false;
             }
@@ -105,7 +114,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            int eggCount = (int) Math.min(this.animalCount, dropLimits);
+            int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
             while (eggCount > 0)
             {
@@ -132,10 +141,10 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                ((Animal) (Object) this).getType(),
+            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.BUCKET,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -151,9 +160,9 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            ((Animal) (Object) this).getType(),
+            this.getType(),
             Items.BUCKET,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -161,7 +170,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.eggCooldown == 0)
+        if (this.animalPen$eggCooldown == 0)
         {
             component.append(new TranslatableComponent("display.animal_pen.egg_ready").
                 withStyle(ChatFormatting.GREEN));
@@ -170,7 +179,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         {
             component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.eggCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
         lines.add(Pair.of(Items.TURTLE_EGG.getDefaultInstance(), component));
@@ -179,7 +188,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
         return Collections.singletonList(Items.SEAGRASS.getDefaultInstance());
@@ -187,5 +196,5 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
 
     @Unique
-    private int eggCooldown;
+    private int animalPen$eggCooldown;
 }

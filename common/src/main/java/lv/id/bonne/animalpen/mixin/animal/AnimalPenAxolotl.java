@@ -14,7 +14,6 @@ import java.util.Map;
 
 import dev.architectury.registry.registries.Registries;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.mixin.accessors.MobInvoker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,27 +28,36 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 
 
 @Mixin(Axolotl.class)
 public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 {
-    @Intrinsic(displace = false)
+    protected AnimalPenAxolotl(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
+    @Intrinsic
     @Override
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("stored_food", this.storedFood);
+        tag.putInt("stored_food", this.animalPen$storedFood);
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     @Override
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
@@ -57,12 +65,12 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
         if (tag.contains("stored_food", Tag.TAG_INT))
         {
-            this.storedFood = tag.getInt("stored_food");
+            this.animalPen$storedFood = tag.getInt("stored_food");
         }
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     @Override
     public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
     {
@@ -76,26 +84,26 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 return true;
             }
 
-            this.storedFood++;
+            this.animalPen$storedFood++;
 
             if (!player.getAbilities().instabuild)
             {
                 player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
             }
 
-            if (this.foodCooldown > 0 || this.storedFood < 2)
+            if (this.animalPen$foodCooldown > 0 || this.animalPen$storedFood < 2)
             {
                 return false;
             }
 
             long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
 
-            if (maxCount > 0 && this.animalCount >= maxCount)
+            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
                 return false;
             }
 
-            int stackSize = (int) Math.min(this.animalCount, this.storedFood);
+            int stackSize = (int) Math.min(this.animalPen$animalCount, this.animalPen$storedFood);
 
             if (stackSize < 2)
             {
@@ -103,14 +111,14 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 return false;
             }
 
-            stackSize = (int) Math.min((maxCount - this.animalCount) * 2, stackSize);
+            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
 
-            this.animalCount += stackSize / 2;
-            this.storedFood -= stackSize;
+            this.animalPen$animalCount += stackSize / 2;
+            this.animalPen$storedFood -= stackSize;
 
-            if (player.getLevel() instanceof ServerLevel level)
+            if (player.getLevel() instanceof ServerLevel serverLevel)
             {
-                level.sendParticles(
+                serverLevel.sendParticles(
                     ParticleTypes.HEART,
                     position.getX() + 0.5f,
                     position.getY() + 1.5,
@@ -122,12 +130,12 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
             player.getLevel().playSound(null,
                 position,
-                ((Animal) (Object) this).getEatingSound(itemStack),
+                this.getEatingSound(itemStack),
                 SoundSource.NEUTRAL,
                 1.0F,
                 Mth.randomBetween(player.getLevel().random, 0.8F, 1.2F));
 
-            SoundEvent soundEvent = ((MobInvoker) this).invokeGetAmbientSound();
+            SoundEvent soundEvent = this.getAmbientSound();
 
             if (soundEvent != null)
             {
@@ -139,10 +147,10 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                     1.0F);
             }
 
-            this.foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                ((Animal) (Object) this).getType(),
+            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.APPLE,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -151,23 +159,23 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     @Override
     public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
     {
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            ((Animal) (Object) this).getType(),
+            this.getType(),
             Items.APPLE,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
         }
 
         MutableComponent component =
-            new TranslatableComponent("display.animal_pen.stored_food", this.storedFood);
+            new TranslatableComponent("display.animal_pen.stored_food", this.animalPen$storedFood);
 
         List<ItemStack> food = this.animalPen$getFood();
         ItemStack foodItem;
@@ -195,7 +203,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     @Override
     public List<ItemStack> animalPen$getFood()
     {
@@ -214,7 +222,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
 
     @Unique
-    private int storedFood = 0;
+    private int animalPen$storedFood = 0;
 
     @Unique
     private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;

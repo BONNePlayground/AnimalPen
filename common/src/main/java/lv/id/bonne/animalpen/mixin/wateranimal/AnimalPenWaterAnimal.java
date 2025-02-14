@@ -10,8 +10,6 @@ package lv.id.bonne.animalpen.mixin.wateranimal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,9 +37,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 
 @Mixin(WaterAnimal.class)
@@ -72,19 +67,19 @@ public abstract class AnimalPenWaterAnimal extends Mob
     @Intrinsic
     public boolean animalPen$animalPenUpdateCount(long change)
     {
-        if (change < 0 && this.animalCount + change < 0)
+        if (change < 0 && this.animalPen$animalCount + change < 0)
         {
             return false;
         }
 
         long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
 
-        if (maxCount > 0 && this.animalCount + change > maxCount)
+        if (maxCount > 0 && this.animalPen$animalCount + change > maxCount)
         {
             return false;
         }
 
-        this.animalCount += change;
+        this.animalPen$animalCount += change;
         return true;
     }
 
@@ -92,16 +87,16 @@ public abstract class AnimalPenWaterAnimal extends Mob
     @Intrinsic
     public long animalPen$animalPenGetCount()
     {
-        return this.animalCount;
+        return this.animalPen$animalCount;
     }
 
 
     @Intrinsic
     public boolean animalPen$animalPenTick()
     {
-        if (this.foodCooldown > 0)
+        if (this.animalPen$foodCooldown > 0)
         {
-            this.foodCooldown--;
+            this.animalPen$foodCooldown--;
             return true;
         }
 
@@ -112,8 +107,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
     @Intrinsic
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
-        tag.putInt("food_cooldown", this.foodCooldown);
-        tag.putLong("animal_count", this.animalCount);
+        tag.putInt("food_cooldown", this.animalPen$foodCooldown);
+        tag.putLong("animal_count", this.animalPen$animalCount);
     }
 
 
@@ -122,12 +117,12 @@ public abstract class AnimalPenWaterAnimal extends Mob
     {
         if (tag.contains("food_cooldown", Tag.TAG_INT))
         {
-            this.foodCooldown = tag.getInt("food_cooldown");
+            this.animalPen$foodCooldown = tag.getInt("food_cooldown");
         }
 
         if (tag.contains("animal_count", Tag.TAG_LONG))
         {
-            this.animalCount = tag.getLong("animal_count");
+            this.animalPen$animalCount = tag.getLong("animal_count");
         }
     }
 
@@ -139,20 +134,20 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
         if (this.animal$isFood(itemStack))
         {
-            if (this.foodCooldown > 0)
+            if (this.animalPen$foodCooldown > 0)
             {
                 return false;
             }
 
             long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
 
-            if (maxCount > 0 && this.animalCount >= maxCount)
+            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
                 return false;
             }
 
             int stackSize = itemStack.getCount();
-            stackSize = (int) Math.min(this.animalCount, stackSize);
+            stackSize = (int) Math.min(this.animalPen$animalCount, stackSize);
 
             if (stackSize < 2)
             {
@@ -166,7 +161,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
                 return true;
             }
 
-            stackSize = (int) Math.min((maxCount - this.animalCount) * 2, stackSize);
+            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
 
             if (!player.getAbilities().instabuild)
             {
@@ -182,7 +177,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
                 }
             }
 
-            this.animalCount += stackSize / 2;
+            this.animalPen$animalCount += stackSize / 2;
 
             if (player.getLevel() instanceof ServerLevel serverLevel)
             {
@@ -215,10 +210,10 @@ public abstract class AnimalPenWaterAnimal extends Mob
                     1.0F);
             }
 
-            this.foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -235,7 +230,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
             this.getType(),
             Items.APPLE,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -243,7 +238,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
         MutableComponent component = new TextComponent("");
 
-        if (this.foodCooldown == 0)
+        if (this.animalPen$foodCooldown == 0)
         {
             component.append(new TranslatableComponent("display.animal_pen.food_ready").
                 withStyle(ChatFormatting.GREEN));
@@ -252,7 +247,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
         {
             component.append(new TranslatableComponent("display.animal_pen.food_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.foodCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
         List<ItemStack> food = this.animalPen$getFood();
@@ -289,7 +284,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
         return Collections.emptyList();
@@ -297,16 +292,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
 
     @Unique
-    protected int foodCooldown = 0;
+    protected int animalPen$foodCooldown = 0;
 
     @Unique
-    protected long animalCount = 0;
-
-    @Unique
-    protected DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder().
-        appendValue(MINUTE_OF_HOUR, 2).
-        optionalStart().
-        appendLiteral(':').
-        appendValue(SECOND_OF_MINUTE, 2).
-        toFormatter();
+    protected long animalPen$animalCount = 0;
 }

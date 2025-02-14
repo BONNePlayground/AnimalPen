@@ -16,15 +16,25 @@ import java.util.Map;
 import dev.architectury.registry.registries.Registries;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.Registry;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 
 @Mixin(Wolf.class)
 public abstract class AnimalPenWolf extends AnimalPenAnimal
 {
-    @Intrinsic(displace = false)
+    protected AnimalPenWolf(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
+    @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
         if (ANIMAL_PEN$FOOD_LIST == null)

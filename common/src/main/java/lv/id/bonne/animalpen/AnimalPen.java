@@ -4,11 +4,17 @@ package lv.id.bonne.animalpen;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 
 public final class AnimalPen
@@ -30,4 +36,11 @@ public final class AnimalPen
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
+
+    public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
+        appendValue(MINUTE_OF_HOUR, 2).
+        optionalStart().
+        appendLiteral(':').
+        appendValue(SECOND_OF_MINUTE, 2).
+        toFormatter();
 }

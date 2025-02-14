@@ -30,18 +30,27 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SuspiciousStewItem;
+import net.minecraft.world.level.Level;
 
 
 @Mixin(MushroomCow.class)
 public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 {
+    protected AnimalPenMushroomCow(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
     @Shadow
     @Nullable
     private MobEffect effect;
@@ -65,9 +74,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.supCooldown > 0)
+        if (this.animalPen$supCooldown > 0)
         {
-            this.supCooldown--;
+            this.animalPen$supCooldown--;
             return true;
         }
 
@@ -80,7 +89,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("sup_cooldown", this.supCooldown);
+        tag.putInt("sup_cooldown", this.animalPen$supCooldown);
     }
 
 
@@ -92,7 +101,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         if (tag.contains("sup_cooldown", Tag.TAG_INT))
         {
-            this.supCooldown = tag.getInt("sup_cooldown");
+            this.animalPen$supCooldown = tag.getInt("sup_cooldown");
         }
     }
 
@@ -110,7 +119,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         if (itemStack.is(Items.BOWL))
         {
-            if (this.supCooldown > 0)
+            if (this.animalPen$supCooldown > 0)
             {
                 return false;
             }
@@ -157,10 +166,10 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                ((Animal) (Object) this).getType(),
+            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.BOWL,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -169,9 +178,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.effect != null)
             {
-                if (player.getLevel() instanceof ServerLevel level)
+                if (player.getLevel() instanceof ServerLevel serverLevel)
                 {
-                    level.sendParticles(
+                    serverLevel.sendParticles(
                         ParticleTypes.SMOKE,
                         position.getX() + 0.5f,
                         position.getY() + 1.5,
@@ -198,9 +207,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 Pair<MobEffect, Integer> pair = optional.get();
 
-                if (player.getLevel() instanceof ServerLevel level)
+                if (player.getLevel() instanceof ServerLevel serverLevel)
                 {
-                    level.sendParticles(
+                    serverLevel.sendParticles(
                         ParticleTypes.EFFECT,
                         position.getX() + 0.5f,
                         position.getY() + 1.5,
@@ -219,9 +228,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                     player.setItemInHand(hand, itemStack);
                 }
 
-                if (player.getLevel() instanceof ServerLevel level)
+                if (player.getLevel() instanceof ServerLevel serverLevel)
                 {
-                    level.playSound(null,
+                    serverLevel.playSound(null,
                         position,
                         SoundEvents.MOOSHROOM_EAT,
                         SoundSource.NEUTRAL,
@@ -244,9 +253,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            ((Animal) (Object) this).getType(),
+            this.getType(),
             Items.BOWL,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -254,7 +263,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.supCooldown == 0)
+        if (this.animalPen$supCooldown == 0)
         {
             component.append(new TranslatableComponent("display.animal_pen.sup_ready").
                 withStyle(ChatFormatting.GREEN));
@@ -263,7 +272,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             component.append(new TranslatableComponent("display.animal_pen.sup_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.supCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.animalPen$supCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
         ItemStack itemStack;
@@ -284,5 +293,5 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
 
     @Unique
-    private int supCooldown;
+    private int animalPen$supCooldown;
 }

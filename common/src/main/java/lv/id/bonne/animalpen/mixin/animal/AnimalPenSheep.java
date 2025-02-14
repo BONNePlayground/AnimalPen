@@ -24,17 +24,26 @@ import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 
 @Mixin(Sheep.class)
 public abstract class AnimalPenSheep extends AnimalPenAnimal
 {
+    protected AnimalPenSheep(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
     @Shadow
     @Final
     private static Map<DyeColor, ItemLike> ITEM_BY_DYE;
@@ -62,9 +71,9 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.woolCooldown > 0)
+        if (this.animalPen$woolCooldown > 0)
         {
-            this.woolCooldown--;
+            this.animalPen$woolCooldown--;
             return true;
         }
 
@@ -83,7 +92,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("wool_cooldown", this.woolCooldown);
+        tag.putInt("wool_cooldown", this.animalPen$woolCooldown);
     }
 
 
@@ -95,7 +104,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
         if (tag.contains("wool_cooldown", Tag.TAG_INT))
         {
-            this.woolCooldown = tag.getInt("wool_cooldown");
+            this.animalPen$woolCooldown = tag.getInt("wool_cooldown");
         }
     }
 
@@ -113,7 +122,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
         if (itemStack.is(Items.SHEARS))
         {
-            if (this.woolCooldown > 0)
+            if (this.animalPen$woolCooldown > 0)
             {
                 return false;
             }
@@ -139,7 +148,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            for (int i = 0; i < this.animalCount && woolCount < dropLimits; i++)
+            for (int i = 0; i < this.animalPen$animalCount && woolCount < dropLimits; i++)
             {
                 woolCount += player.getLevel().getRandom().nextInt(3);
             }
@@ -169,10 +178,10 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                ((Animal) (Object) this).getType(),
+            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.SHEARS,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -213,9 +222,9 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            ((Animal) (Object) this).getType(),
+            this.getType(),
             Items.SHEARS,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -223,7 +232,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.woolCooldown == 0)
+        if (this.animalPen$woolCooldown == 0)
         {
             component.append(new TranslatableComponent("display.animal_pen.wool_ready").
                 withStyle(ChatFormatting.GREEN));
@@ -232,7 +241,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         {
             component.append(new TranslatableComponent("display.animal_pen.wool_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.woolCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
         lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));
@@ -241,7 +250,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
         return Collections.singletonList(Items.WHEAT.getDefaultInstance());
@@ -249,5 +258,5 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
 
     @Unique
-    private int woolCooldown;
+    private int animalPen$woolCooldown;
 }

@@ -24,26 +24,35 @@ import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 
 
 @Mixin(Cow.class)
 public abstract class AnimalPenCow extends AnimalPenAnimal
 {
+    protected AnimalPenCow(EntityType<? extends Mob> entityType,
+        Level level)
+    {
+        super(entityType, level);
+    }
+
+
     @Intrinsic
     @Override
     public boolean animalPen$animalPenTick()
     {
         boolean value = super.animalPen$animalPenTick();
 
-        if (this.milkCooldown > 0)
+        if (this.animalPen$milkCooldown > 0)
         {
-            this.milkCooldown--;
+            this.animalPen$milkCooldown--;
             return true;
         }
 
@@ -56,7 +65,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("milk_cooldown", this.milkCooldown);
+        tag.putInt("milk_cooldown", this.animalPen$milkCooldown);
     }
 
 
@@ -68,7 +77,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         if (tag.contains("milk_cooldown", Tag.TAG_INT))
         {
-            this.milkCooldown = tag.getInt("milk_cooldown");
+            this.animalPen$milkCooldown = tag.getInt("milk_cooldown");
         }
     }
 
@@ -86,7 +95,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         if (itemStack.is(Items.BUCKET))
         {
-            if (this.milkCooldown > 0)
+            if (this.animalPen$milkCooldown > 0)
             {
                 return false;
             }
@@ -110,10 +119,10 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                ((Animal) (Object) this).getType(),
+            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.BUCKET,
-                this.animalCount);
+                this.animalPen$animalCount);
 
             return true;
         }
@@ -129,9 +138,9 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            ((Animal) (Object) this).getType(),
+            this.getType(),
             Items.BUCKET,
-            this.animalCount) == 0)
+            this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -139,7 +148,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         MutableComponent component = new TextComponent("");
 
-        if (this.milkCooldown == 0)
+        if (this.animalPen$milkCooldown == 0)
         {
             component.append(new TranslatableComponent("display.animal_pen.milk_ready").
                 withStyle(ChatFormatting.GREEN));
@@ -148,7 +157,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         {
             component.append(new TranslatableComponent("display.animal_pen.milk_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.milkCooldown / 20).format(FORMATTER)));
+                    plusSeconds(this.animalPen$milkCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
         lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
@@ -157,7 +166,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     }
 
 
-    @Intrinsic(displace = false)
+    @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
         return Collections.singletonList(Items.WHEAT.getDefaultInstance());
@@ -165,5 +174,5 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
 
     @Unique
-    private int milkCooldown;
+    private int animalPen$milkCooldown;
 }

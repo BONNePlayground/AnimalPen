@@ -8,7 +8,6 @@
   "mixins": [
     "accessors.AnimalInvoker",
     "accessors.EntityAccessor",
-    "accessors.MobInvoker",
     "accessors.WaterAnimalInvoker",
     "animal.AnimalPenAbstractHorse",
     "animal.AnimalPenAnimal",
@@ -23,6 +22,7 @@
     "animal.AnimalPenLlama",
     "animal.AnimalPenMushroomCow",
     "animal.AnimalPenOcelot",
+    "animal.AnimalPenPanda",
     "animal.AnimalPenPig",
     "animal.AnimalPenRabbit",
     "animal.AnimalPenSheep",
