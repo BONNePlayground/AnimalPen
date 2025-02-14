@@ -103,7 +103,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
 
-        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
+//        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
         {
             this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         }
@@ -201,7 +201,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             return;
         }
 
-        double totalHeight = 1.5 + 0.25 * (textList.size() - 1);
+        double totalHeight = 1.5 + 0.125 * (textList.size() - 1);
         double maxWidth = 0;
 
         for (Pair<ItemStack, Component> pair : textList)
@@ -219,18 +219,18 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             poseStack.pushPose();
 
             // Move to the center of the block and above it
-            poseStack.translate(0.0, -0.25 * i, 0.00);
+            poseStack.translate(0.0, -0.125 * i, 0.00);
 
             // Render text
             poseStack.pushPose();
-            poseStack.scale(-0.025f, -0.03f, 0.025f);
+            poseStack.scale(-0.0125f, -0.0125f, -0.0125f);
             poseStack.translate(-maxWidth / 2, -6, 0);
             this.font.draw(poseStack, textList.get(i).getRight(), 8, 0, 0xFFFFFF);
             poseStack.popPose();
 
             // Render Item Stack
             poseStack.pushPose();
-            poseStack.scale(0.5f, 0.5f, 0.5f);
+            poseStack.scale(0.25f, 0.25f, 0.25f);
             poseStack.translate(maxWidth / 2 * 0.05, 0, 0);
             poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
             this.minecraft.getItemRenderer().renderStatic(
