@@ -96,8 +96,6 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         // Optional: offset from the face of the block
         poseStack.translate(0, 0, 0);
 
-        this.renderWater(tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
-
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
 
@@ -105,19 +103,6 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         {
             this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         }
-
-        poseStack.popPose();
-    }
-
-    private void renderWater(AquariumTileEntity tileEntity,
-        float partialTicks,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay)
-    {
-        poseStack.pushPose();
-
 
         poseStack.popPose();
     }
