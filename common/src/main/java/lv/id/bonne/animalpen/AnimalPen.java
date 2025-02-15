@@ -22,10 +22,10 @@ public final class AnimalPen
     public static void init()
     {
         // Write common init code here.
-        AnimalPensItemRegistry.register();
-        AnimalPenBlockRegistry.register();
-        AnimalPenTileEntityRegistry.register();
         AnimalPensCreativeTabRegistry.register();
+        AnimalPenBlockRegistry.register();
+        AnimalPensItemRegistry.register();
+        AnimalPenTileEntityRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
     }

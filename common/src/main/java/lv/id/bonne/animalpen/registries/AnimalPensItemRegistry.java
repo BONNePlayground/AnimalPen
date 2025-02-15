@@ -35,12 +35,12 @@ public class AnimalPensItemRegistry
      */
     public static final RegistrySupplier<AnimalCageItem> ANIMAL_CAGE =
         REGISTRY.register("animal_cage", () -> new AnimalCageItem(new Item.Properties().
-            tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
+            tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1)));
 
     /**
      * The animal container item
      */
     public static final RegistrySupplier<AnimalContainerItem> ANIMAL_CONTAINER =
         REGISTRY.register("water_animal_container", () -> new AnimalContainerItem(new Item.Properties().
-            tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
+            tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1)));
 }
