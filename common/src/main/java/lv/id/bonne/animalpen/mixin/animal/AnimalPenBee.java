@@ -200,7 +200,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         if (this.animalPen$pollenCooldown != 0)
         {
-            MutableComponent component = new TranslatableComponent(
+            MutableComponent component = Component.translatable(
                 "display.animal_pen.pollen_cooldown",
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$pollenCooldown / 20).format(AnimalPen.DATE_FORMATTER));
@@ -225,12 +225,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
             if (this.animalPen$pollenCount == 5)
             {
-                component = new TranslatableComponent("display.animal_pen.pollen_level_max",
+                component = Component.translatable("display.animal_pen.pollen_level_max",
                     this.animalPen$pollenCount);
             }
             else
             {
-                component = new TranslatableComponent("display.animal_pen.pollen_level",
+                component = Component.translatable("display.animal_pen.pollen_level",
                     this.animalPen$pollenCount);
             }
 

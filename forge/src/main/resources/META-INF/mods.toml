@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[41,)"
 #issueTrackerURL = ""
 license = "GNU GPL 3.0"
 
@@ -16,20 +16,20 @@ description = '''
 [[dependencies.animal_pen]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[41,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.animal_pen]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2,)"
+versionRange = "[1.19,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.animal_pen]]
 modId = "architectury"
 mandatory = true
-versionRange = "[4.12.94,)"
+versionRange = "[5.14.84,)"
 ordering = "AFTER"
 side = "BOTH"

@@ -22,14 +22,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -150,18 +147,18 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
+        MutableComponent component;
 
         if (this.animalPen$milkCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.milk_ready").
-                withStyle(ChatFormatting.GREEN));
+            component = Component.translatable("display.animal_pen.milk_ready").
+                withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.milk_cooldown",
+            component = Component.translatable("display.animal_pen.milk_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$milkCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
+                    plusSeconds(this.animalPen$milkCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
         lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));

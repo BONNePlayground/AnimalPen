@@ -21,7 +21,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -175,7 +174,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         }
 
         MutableComponent component =
-            new TranslatableComponent("display.animal_pen.stored_food", this.animalPen$storedFood);
+            Component.translatable("display.animal_pen.stored_food", this.animalPen$storedFood);
 
         List<ItemStack> food = this.animalPen$getFood();
         ItemStack foodItem;

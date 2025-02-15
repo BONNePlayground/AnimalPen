@@ -230,18 +230,18 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
+        MutableComponent component;
 
         if (this.animalPen$woolCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.wool_ready").
-                withStyle(ChatFormatting.GREEN));
+            component = Component.translatable("display.animal_pen.wool_ready").
+                withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.wool_cooldown",
+            component = Component.translatable("display.animal_pen.wool_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
+                    plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
         lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));

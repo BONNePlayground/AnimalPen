@@ -261,18 +261,18 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
+        MutableComponent component ;
 
         if (this.animalPen$supCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.sup_ready").
-                withStyle(ChatFormatting.GREEN));
+            component = Component.translatable("display.animal_pen.sup_ready").
+                withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.sup_cooldown",
+            component = Component.translatable("display.animal_pen.sup_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$supCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
+                    plusSeconds(this.animalPen$supCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
         ItemStack itemStack;

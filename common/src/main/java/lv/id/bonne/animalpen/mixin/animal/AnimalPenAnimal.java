@@ -240,18 +240,18 @@ public abstract class AnimalPenAnimal extends Mob
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
+        MutableComponent component;
 
         if (this.animalPen$foodCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.food_ready").
-                withStyle(ChatFormatting.GREEN));
+            component = Component.translatable("display.animal_pen.food_ready").
+                withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.food_cooldown",
+            component = Component.translatable("display.animal_pen.food_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
+                    plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
         List<ItemStack> food = this.animalPen$getFood();

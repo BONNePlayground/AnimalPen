@@ -11,6 +11,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -240,7 +241,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
     @Override
     @Nullable
-    public <T extends BlockEntity> GameEventListener getListener(Level level, T blockEntity)
+    public <T extends BlockEntity> GameEventListener getListener(ServerLevel level, T blockEntity)
     {
         return EntityBlock.super.getListener(level, blockEntity);
     }

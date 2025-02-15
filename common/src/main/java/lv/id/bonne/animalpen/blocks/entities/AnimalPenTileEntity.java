@@ -13,7 +13,6 @@ import java.util.*;
 
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
-import lv.id.bonne.animalpen.mixin.accessors.AnimalInvoker;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -412,7 +411,7 @@ public class AnimalPenTileEntity extends BlockEntity
         lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
             Block.popResource(level, this.getBlockPos().above(), itemStack));
 
-        int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
+        int reward = animal.getExperienceReward();
         ExperienceOrb.award((ServerLevel)this.level, position, reward);
     }
 

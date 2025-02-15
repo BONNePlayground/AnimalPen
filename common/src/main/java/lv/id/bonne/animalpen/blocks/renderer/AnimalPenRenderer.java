@@ -26,7 +26,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
@@ -176,7 +176,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.scale(-0.015f, -0.015f, 0F);
 
         // Render text
-        TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
+        MutableComponent text = Component.translatable("display.animal_pen.count", count);
         poseStack.translate(-this.font.width(text) / 2D, 0, 0);
         this.font.draw(poseStack, text, 0, 0, 0xFFFFFF);
 

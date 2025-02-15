@@ -9,8 +9,6 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -51,20 +49,20 @@ public class AnimalCageItem extends Item
         if (!list.isEmpty())
         {
             // Add emtpy line
-            list.add(TextComponent.EMPTY);
+            list.add(Component.empty());
         }
 
         if (itemStack.hasTag() &&
             itemStack.getTag().contains(TAG_ENTITY_ID))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_cage.entity",
+            list.add(Component.translatable("item.animal_pen.animal_cage.entity",
                 AnimalCageItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_cage.amount",
+            list.add(Component.translatable("item.animal_pen.animal_cage.amount",
                 itemStack.getTag().getLong(TAG_AMOUNT)).
                 withStyle(ChatFormatting.GRAY));
         }
@@ -72,11 +70,11 @@ public class AnimalCageItem extends Item
         if (!itemStack.hasTag() ||
             !itemStack.getTag().contains(TAG_ENTITY_ID))
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_cage.tip").
+            list.add(Component.translatable("item.animal_pen.animal_cage.tip").
                 withStyle(ChatFormatting.GRAY));
         }
 
-        list.add(new TranslatableComponent("item.animal_pen.animal_cage.warning").
+        list.add(Component.translatable("item.animal_pen.animal_cage.warning").
             withStyle(ChatFormatting.GRAY));
     }
 
@@ -103,7 +101,7 @@ public class AnimalCageItem extends Item
 
         if (interactionResult == InteractionResult.FAIL)
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.unknown").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.unknown").
                 withStyle(ChatFormatting.DARK_RED), true);
             return interactionResult;
         }
@@ -116,7 +114,7 @@ public class AnimalCageItem extends Item
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isBlocked(livingEntity.getType()))
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.blocked").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.blocked").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
@@ -124,7 +122,7 @@ public class AnimalCageItem extends Item
 
         if (!livingEntity.isAlive() || livingEntity.isBaby())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.baby").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.baby").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
@@ -132,7 +130,7 @@ public class AnimalCageItem extends Item
 
         if (!(livingEntity instanceof Animal animal))
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.not_animal").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.not_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
             return InteractionResult.FAIL;
@@ -141,7 +139,7 @@ public class AnimalCageItem extends Item
         if (livingEntity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame() ||
             livingEntity instanceof AbstractHorse horse && horse.isTamed())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -149,7 +147,7 @@ public class AnimalCageItem extends Item
 
         if (!this.matchEntity(itemStack, livingEntity))
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.wrong").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.wrong").
                 withStyle(ChatFormatting.DARK_RED), true);
             // Different entities cannot be merged.
             return InteractionResult.FAIL;
@@ -247,7 +245,7 @@ public class AnimalCageItem extends Item
         else
         {
             // Fallback to raw ID if not found
-            return new TextComponent(entityId);
+            return Component.translatable(entityId);
         }
     }
 

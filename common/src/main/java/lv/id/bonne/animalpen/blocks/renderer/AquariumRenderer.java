@@ -21,13 +21,11 @@ import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
@@ -176,7 +174,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.scale(-0.015f, -0.015f, 0F);
 
         // Render text
-        TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
+        Component text = Component.translatable("display.animal_pen.count", count);
         poseStack.translate(-this.font.width(text) / 2D, 0, 0);
         this.font.draw(poseStack, text, 0, 0, 0xFFFFFF);
 

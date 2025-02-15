@@ -6,9 +6,7 @@
   "client": [
   ],
   "mixins": [
-    "accessors.AnimalInvoker",
     "accessors.EntityAccessor",
-    "accessors.WaterAnimalInvoker",
     "animal.AnimalPenAbstractHorse",
     "animal.AnimalPenAnimal",
     "animal.AnimalPenAxolotl",
