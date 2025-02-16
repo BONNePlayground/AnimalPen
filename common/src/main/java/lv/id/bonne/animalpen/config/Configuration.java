@@ -85,11 +85,18 @@ public class Configuration
                 0,
                 0));
 
+        this.cooldownList.computeIfAbsent(Items.MAGMA_BLOCK.arch$registryName(), i -> new ArrayList<>()).
+            add(new CooldownEntry(EntityType.FROG.arch$registryName(),
+                60 * 5 * 20 + 20,
+                -1 * 20,
+                10 * 20));
+
         // Init block drop limits at once.
         this.dropLimitList.clear();
         this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
         this.dropLimitList.put(Items.TURTLE_EGG.arch$registryName(), 64 * 5);
         this.dropLimitList.put(Items.WHITE_WOOL.arch$registryName(), 64 * 5);
+        this.dropLimitList.put(Items.PEARLESCENT_FROGLIGHT.arch$registryName(), 64 * 5);
     }
 
 
