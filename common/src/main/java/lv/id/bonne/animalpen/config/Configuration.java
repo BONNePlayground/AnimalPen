@@ -154,6 +154,17 @@ public class Configuration
 
 
     /**
+     * Is drop scute at start boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isDropScuteAtStart()
+    {
+        return this.dropScuteAtStart;
+    }
+
+
+    /**
      * This indicates is given entity is blocked from being picked up.
      * @param entityType Entity that need to be checked.
      * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
@@ -251,6 +262,12 @@ public class Configuration
     @Expose
     @SerializedName("animal_limit_in_pen")
     private long maximalAnimalCount = Integer.MAX_VALUE;
+
+    @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
+    @JsonComment("or when food cooldown timer is finished (false).")
+    @Expose
+    @SerializedName("turtle_scute_drop_time")
+    private boolean dropScuteAtStart = true;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose

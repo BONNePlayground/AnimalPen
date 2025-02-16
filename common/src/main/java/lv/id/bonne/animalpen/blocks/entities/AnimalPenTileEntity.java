@@ -166,7 +166,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         Animal animal = this.getStoredAnimal();
 
-        if (animal != null && ((AnimalPenInterface) animal).animalPenTick())
+        if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
         {
             updated = true;
         }

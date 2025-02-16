@@ -169,7 +169,7 @@ public class AquariumTileEntity extends BlockEntity
 
         WaterAnimal animal = this.getStoredAnimal();
 
-        if (animal != null && ((AnimalPenInterface) animal).animalPenTick())
+        if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
         {
             updated = true;
         }

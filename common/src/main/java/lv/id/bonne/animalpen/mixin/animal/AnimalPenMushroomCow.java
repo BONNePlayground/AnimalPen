@@ -39,6 +39,7 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SuspiciousStewItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(MushroomCow.class)
@@ -70,9 +71,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
-        boolean value = super.animalPen$animalPenTick();
+        boolean value = super.animalPen$animalPenTick(blockEntity);
 
         if (this.animalPen$supCooldown > 0)
         {
