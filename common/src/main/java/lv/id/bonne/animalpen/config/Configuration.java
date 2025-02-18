@@ -165,6 +165,28 @@ public class Configuration
 
 
     /**
+     * Is grow animals boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGrowAnimals()
+    {
+        return this.growAnimals;
+    }
+
+
+    /**
+     * Is grow water animals boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGrowWaterAnimals()
+    {
+        return this.growWaterAnimals;
+    }
+
+
+    /**
      * This indicates is given entity is blocked from being picked up.
      * @param entityType Entity that need to be checked.
      * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
@@ -262,6 +284,18 @@ public class Configuration
     @Expose
     @SerializedName("animal_limit_in_pen")
     private long maximalAnimalCount = Integer.MAX_VALUE;
+
+    @JsonComment("Allows to enable animal growing in animal pen.")
+    @JsonComment("The more animals are inside it, the larger it will be.")
+    @Expose
+    @SerializedName("animals_can_grow")
+    private boolean growAnimals = false;
+
+    @JsonComment("Allows to enable water animal growing in aquarium.")
+    @JsonComment("The more animals are inside it, the larger it will be.")
+    @Expose
+    @SerializedName("water_animals_can_grow")
+    private boolean growWaterAnimals = false;
 
     @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
     @JsonComment("or when food cooldown timer is finished (false).")

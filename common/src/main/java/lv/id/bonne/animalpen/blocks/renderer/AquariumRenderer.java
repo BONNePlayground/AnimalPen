@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -136,6 +137,13 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
         poseStack.scale(0.33f, 0.33f, 0.33f);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
+        {
+            float scale = 1 + 0.33f * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            poseStack.scale(scale, scale, scale);
+        }
+
         poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().

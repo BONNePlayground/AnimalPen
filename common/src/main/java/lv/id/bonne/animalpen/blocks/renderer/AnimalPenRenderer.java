@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -132,6 +133,13 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.pushPose();
         poseStack.translate(0, (4/16f), 0);
         poseStack.scale(0.33f, 0.33f, 0.33f);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals())
+        {
+            float scale = 1 + 0.33f * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            poseStack.scale(scale, scale, scale);
+        }
+
         poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
