@@ -7,6 +7,8 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.WoodType;
 
 
 public class AnimalPenBlockRegistry
@@ -49,14 +52,7 @@ public class AnimalPenBlockRegistry
     public static final DeferredRegister<Block> REGISTRY =
         DeferredRegister.create(AnimalPen.MOD_ID, Registry.BLOCK_REGISTRY);
 
-
-    public static final RegistrySupplier<Block> ANIMAL_PEN = registerBlock("animal_pen_block",
-        () -> new AnimalPenBlock(
-            BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
-                strength(1.0f).
-                sound(SoundType.WOOD).
-                noOcclusion())
-    );
+    public static final Map<WoodType, RegistrySupplier<Block>> ANIMAL_PENS = new HashMap<>();
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
@@ -65,4 +61,20 @@ public class AnimalPenBlockRegistry
                 sound(SoundType.GLASS).
                 noOcclusion())
     );
+
+    static {
+        // Register a variant for each wood type
+        WoodType.values().forEach(woodType ->
+        {
+            // Register the block
+            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodType.name().toLowerCase(),
+                () -> new AnimalPenBlock(
+                    BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
+                        strength(1.0f).
+                        sound(SoundType.WOOD).
+                        noOcclusion()));
+
+            ANIMAL_PENS.put(woodType, block);
+        });
+    }
 }

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "animal_pen:block/animal_pen_jungle",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "animal_pen:block/animal_pen_jungle"
+    },
+    "facing=south": {
+      "model": "animal_pen:block/animal_pen_jungle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "animal_pen:block/animal_pen_jungle",
+      "y": 270
+    }
+  }
+}

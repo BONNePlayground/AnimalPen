@@ -7,12 +7,15 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import java.util.function.Supplier;
+
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import net.minecraft.core.Registry;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 
@@ -33,7 +36,7 @@ public class AnimalPenTileEntityRegistry
     public static final RegistrySupplier<BlockEntityType<AnimalPenTileEntity>> ANIMAL_PEN_TILE_ENTITY =
         REGISTRY.register("animal_pen_tile_entity",
             () -> BlockEntityType.Builder.of(AnimalPenTileEntity::new,
-                    AnimalPenBlockRegistry.ANIMAL_PEN.get()).
+                    AnimalPenBlockRegistry.ANIMAL_PENS.values().stream().map(Supplier::get).toArray(Block[]::new)).
                 build(null));
 
     public static final RegistrySupplier<BlockEntityType<AquariumTileEntity>> AQUARIUM_TILE_ENTITY =

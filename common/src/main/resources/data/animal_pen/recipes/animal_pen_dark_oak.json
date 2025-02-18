@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "F F",
+    "SSS"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:spruce_fence"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    }
+  },
+  "result": {
+    "item": "animal_pen:animal_pen_dark_oak",
+    "count": 1
+  }
+}
