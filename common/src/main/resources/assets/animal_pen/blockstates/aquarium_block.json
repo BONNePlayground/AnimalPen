@@ -1,22 +1,33 @@
 {
   "variants": {
-    "facing=east": {
-      "model": "animal_pen:block/aquarium_block",
-      "y": 90,
-      "render_type": "translucent"
+    "facing=east,filled=false": {
+      "model": "animal_pen:block/aquarium_block_empty",
+      "y": 90
     },
-    "facing=north": {
-      "model": "animal_pen:block/aquarium_block",
-      "render_type": "translucent"
+    "facing=north,filled=false": {
+      "model": "animal_pen:block/aquarium_block_empty"
     },
-    "facing=south": {
-      "model": "animal_pen:block/aquarium_block",
-      "render_type": "translucent",
+    "facing=south,filled=false": {
+      "model": "animal_pen:block/aquarium_block_empty",
       "y": 180
     },
-    "facing=west": {
-      "model": "animal_pen:block/aquarium_block",
-      "render_type": "translucent",
+    "facing=west,filled=false": {
+      "model": "animal_pen:block/aquarium_block_empty",
+      "y": 270
+    },
+    "facing=east,filled=true": {
+      "model": "animal_pen:block/aquarium_block_full",
+      "y": 90
+    },
+    "facing=north,filled=true": {
+      "model": "animal_pen:block/aquarium_block_full"
+    },
+    "facing=south,filled=true": {
+      "model": "animal_pen:block/aquarium_block_full",
+      "y": 180
+    },
+    "facing=west,filled=true": {
+      "model": "animal_pen:block/aquarium_block_full",
       "y": 270
     }
   }

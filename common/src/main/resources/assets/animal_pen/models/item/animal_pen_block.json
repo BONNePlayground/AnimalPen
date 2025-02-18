@@ -1,3 +1,3 @@
 {
-  "parent": "animal_pen:block/animal_pen_block"
+  "parent": "animal_pen:block/animal_pen_base"
 }

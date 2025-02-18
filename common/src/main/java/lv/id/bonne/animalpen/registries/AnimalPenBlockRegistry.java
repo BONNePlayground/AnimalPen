@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.WoodType;
 
 
 public class AnimalPenBlockRegistry
@@ -56,8 +55,7 @@ public class AnimalPenBlockRegistry
             BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
                 strength(1.0f).
                 sound(SoundType.WOOD).
-                noOcclusion(),
-            WoodType.OAK)
+                noOcclusion())
     );
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
@@ -65,7 +63,6 @@ public class AnimalPenBlockRegistry
             BlockBehaviour.Properties.copy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.GLASS).
-                noOcclusion(),
-            WoodType.OAK)
+                noOcclusion())
     );
 }

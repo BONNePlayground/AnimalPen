@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
 import lv.id.bonne.animalpen.mixin.accessors.WaterAnimalInvoker;
@@ -424,20 +425,32 @@ public class AquariumTileEntity extends BlockEntity
     {
         this.setChanged();
 
-        if (this.level != null && !this.level.isClientSide())
+        if (this.level == null || this.level.isClientSide())
         {
-            WaterAnimal animal = this.getStoredAnimal();
-
-            if (animal != null)
-            {
-                animal.save(this.inventory.getItem(0).getOrCreateTag());
-            }
-
-            this.level.sendBlockUpdated(this.getBlockPos(),
-                this.getBlockState(),
-                this.getBlockState(),
-                Block.UPDATE_CLIENTS);
+            return;
         }
+
+        WaterAnimal animal = this.getStoredAnimal();
+
+        if (animal != null)
+        {
+            animal.save(this.inventory.getItem(0).getOrCreateTag());
+        }
+
+        BlockState oldState = this.getBlockState();
+        BlockState newState = this.getBlockState();
+
+        if (oldState.getValue(AquariumBlock.FILLED) == this.inventory.isEmpty())
+        {
+            newState = oldState.setValue(AquariumBlock.FILLED, !this.inventory.isEmpty());
+            this.level.setBlock(this.getBlockPos(), newState, Block.UPDATE_CLIENTS);
+            this.setChanged();
+        }
+
+        this.level.sendBlockUpdated(this.getBlockPos(),
+            oldState,
+            newState,
+            Block.UPDATE_CLIENTS);
     }
 
 

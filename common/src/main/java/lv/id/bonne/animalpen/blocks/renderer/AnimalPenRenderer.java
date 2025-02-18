@@ -103,7 +103,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
 
-//        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
+        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
         {
             this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         }
@@ -130,8 +130,8 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         animal.tickCount = 0;
 
         poseStack.pushPose();
-        poseStack.translate(0, (2/16f), 0);
-        poseStack.scale(0.6f, 0.6f, 0.6f);
+        poseStack.translate(0, (4/16f), 0);
+        poseStack.scale(0.33f, 0.33f, 0.33f);
         poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
@@ -170,7 +170,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 6/16f, -0.57f);
+        poseStack.translate(0, 3/16f, -0.51f);
 
         // Scale for pixel-perfect rendering
         poseStack.scale(-0.015f, -0.015f, 0F);
