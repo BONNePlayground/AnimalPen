@@ -25,6 +25,7 @@
     "animal.AnimalPenPig",
     "animal.AnimalPenRabbit",
     "animal.AnimalPenSheep",
+    "animal.AnimalPenSniffer",
     "animal.AnimalPenStrider",
     "animal.AnimalPenTurtle",
     "animal.AnimalPenWolf",

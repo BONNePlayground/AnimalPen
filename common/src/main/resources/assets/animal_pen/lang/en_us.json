@@ -51,5 +51,7 @@
   "display.animal_pen.wool_cooldown": "%d cooldown",
   "display.animal_pen.wool_ready": "§2Ready",
   "display.animal_pen.egg_cooldown": "%d cooldown",
-  "display.animal_pen.egg_ready": "§2Ready"
+  "display.animal_pen.egg_ready": "§2Ready",
+  "display.animal_pen.sniff_cooldown": "%d cooldown",
+  "display.animal_pen.sniff_ready": "§2Ready"
 }
