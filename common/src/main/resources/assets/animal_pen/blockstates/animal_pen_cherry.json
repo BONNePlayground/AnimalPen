@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "animal_pen:block/animal_pen_cherry",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "animal_pen:block/animal_pen_cherry"
+    },
+    "facing=south": {
+      "model": "animal_pen:block/animal_pen_cherry",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "animal_pen:block/animal_pen_cherry",
+      "y": 270
+    }
+  }
+}

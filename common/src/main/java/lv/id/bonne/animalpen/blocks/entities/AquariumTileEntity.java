@@ -25,7 +25,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.WaterAnimal;
@@ -408,7 +407,7 @@ public class AquariumTileEntity extends BlockEntity
             withParameter(LootContextParams.KILLER_ENTITY, player).
             withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
-            withParameter(LootContextParams.DAMAGE_SOURCE, DamageSource.playerAttack(player)).
+            withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
             withLuck(player.getLuck()).
             withRandom(level.random);
 

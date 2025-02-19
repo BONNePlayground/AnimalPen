@@ -21,7 +21,6 @@ import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 
@@ -240,11 +240,12 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             this.minecraft.getItemRenderer().renderStatic(
                 textList.get(i).getLeft(),
-                ItemTransforms.TransformType.GROUND,
+                ItemDisplayContext.GROUND,
                 combinedLight,
                 combinedOverlay,
                 poseStack,
                 buffer,
+                tileEntity.getLevel(),
                 0
             );
             poseStack.popPose();
