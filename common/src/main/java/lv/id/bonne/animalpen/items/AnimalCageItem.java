@@ -229,7 +229,7 @@ public class AnimalCageItem extends Item
 
         String entityType = itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID);
 
-        return new ResourceLocation(entityType).equals(entity.getType().arch$registryName());
+        return ResourceLocation.bySeparator(entityType, ':').equals(entity.getType().arch$registryName());
     }
 
 

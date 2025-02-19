@@ -330,5 +330,5 @@ public class Configuration
 
     @JsonComment("")
     @Expose(serialize = false, deserialize = false)
-    private final static ResourceLocation ANY = new ResourceLocation("animal_pen:any");
+    private final static ResourceLocation ANY = ResourceLocation.fromNamespaceAndPath("animal_pen", "any");
 }

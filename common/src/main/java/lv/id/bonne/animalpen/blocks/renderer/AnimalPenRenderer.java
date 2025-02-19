@@ -144,7 +144,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
-            render(animal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -157,7 +157,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
                 this.minecraft.getEntityRenderDispatcher().
                     getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
             }
         });
 

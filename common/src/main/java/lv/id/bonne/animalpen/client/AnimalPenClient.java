@@ -31,7 +31,7 @@ public class AnimalPenClient
             context -> new AquariumRenderer());
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
 
-        ItemPropertiesRegistry.registerGeneric(new ResourceLocation(AnimalPen.MOD_ID, "filled_cage"),
+        ItemPropertiesRegistry.registerGeneric(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->
                 itemStack.has(DataComponents.ENTITY_DATA) ? 1.0f : 0.0f));
 

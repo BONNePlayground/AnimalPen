@@ -406,8 +406,8 @@ public class AnimalPenTileEntity extends BlockEntity
         LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
             withParameter(LootContextParams.THIS_ENTITY, animal).
-            withParameter(LootContextParams.KILLER_ENTITY, player).
-            withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
+            withParameter(LootContextParams.ATTACKING_ENTITY, player).
+            withParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
             withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
             withLuck(player.getLuck());
@@ -415,7 +415,7 @@ public class AnimalPenTileEntity extends BlockEntity
         lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
             forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
-        int reward = animal.getExperienceReward();
+        int reward = animal.getExperienceReward((ServerLevel) level, player);
         ExperienceOrb.award((ServerLevel)this.level, position, reward);
     }
 

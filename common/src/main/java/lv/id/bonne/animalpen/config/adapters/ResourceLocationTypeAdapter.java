@@ -2,8 +2,9 @@ package lv.id.bonne.animalpen.config.adapters;
 
 
 import com.google.gson.*;
-import net.minecraft.resources.ResourceLocation;
 import java.lang.reflect.Type;
+
+import net.minecraft.resources.ResourceLocation;
 
 public class ResourceLocationTypeAdapter implements JsonSerializer<ResourceLocation>, JsonDeserializer<ResourceLocation>
 {
@@ -17,6 +18,6 @@ public class ResourceLocationTypeAdapter implements JsonSerializer<ResourceLocat
     public ResourceLocation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException
     {
-        return new ResourceLocation(json.getAsString());
+        return ResourceLocation.bySeparator(json.getAsString(), ':');
     }
 }
