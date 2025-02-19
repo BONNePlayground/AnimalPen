@@ -32,6 +32,7 @@
   "block.animal_pen.animal_pen_oak": "Animal Pen",
   "block.animal_pen.animal_pen_spruce": "Animal Pen",
   "block.animal_pen.animal_pen_warped": "Animal Pen",
+  "block.animal_pen.animal_pen_mangrove": "Animal Pen",
   "block.animal_pen.aquarium_block": "Aquarium",
 
   "display.animal_pen.count": "%d",
