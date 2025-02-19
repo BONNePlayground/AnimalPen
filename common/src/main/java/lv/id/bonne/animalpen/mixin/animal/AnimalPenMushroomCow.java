@@ -90,7 +90,11 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("sup_cooldown", this.animalPen$supCooldown);
+
+        if (this.animalPen$supCooldown > 0)
+        {
+            tag.putInt("sup_cooldown", this.animalPen$supCooldown);
+        }
     }
 
 
