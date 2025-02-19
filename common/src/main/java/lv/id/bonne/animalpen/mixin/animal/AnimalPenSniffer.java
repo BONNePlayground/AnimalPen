@@ -8,13 +8,17 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.util.Utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +26,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
@@ -36,6 +41,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 
 @Mixin(Sniffer.class)
@@ -107,11 +117,17 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.level().isClientSide())
+            if (!(player.level() instanceof ServerLevel serverLevel))
             {
                 // Next is processed only for server side.
                 return true;
             }
+
+            LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
+            LootParams lootParams = new LootParams.Builder(serverLevel).
+                withParameter(LootContextParams.ORIGIN, position.getCenter()).
+                withParameter(LootContextParams.THIS_ENTITY, this).
+                create(LootContextParamSets.GIFT);
 
             int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TORCHFLOWER_SEEDS);
 
@@ -120,30 +136,31 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
+            List<ItemStack> droppedSeeds = new LinkedList<>();
+
             int seedCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
             while (seedCount > 0)
             {
-                ItemStack seedStack = new ItemStack(Items.TORCHFLOWER_SEEDS);
-                int stackSize = seedStack.getMaxStackSize();
+                List<ItemStack> randomItems = lootTable.getRandomItems(lootParams);
 
-                if (seedCount > stackSize)
+                if (randomItems.isEmpty())
                 {
-                    seedStack.setCount(stackSize);
-                    seedCount -= stackSize;
-                }
-                else
-                {
-                    seedStack.setCount(seedCount);
-                    seedCount = 0;
+                    // Just a stop on infinite loop
+                    break;
                 }
 
-                Block.popResource(player.level(), position.above(), seedStack);
+                seedCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
+
+                droppedSeeds.addAll(randomItems);
             }
 
-            player.level().playSound(null,
+            Utils.mergeItemStacks(droppedSeeds).forEach(seedStack ->
+                Block.popResource(player.level(), position.above(), seedStack));
+
+            serverLevel.playSound(null,
                 position,
-                SoundEvents.SNIFFER_DIGGING,
+                SoundEvents.SNIFFER_DROP_SEED,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
@@ -189,20 +206,16 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                     plusSeconds(this.animalPen$sniffingCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        List<ItemStack> food = List.of(Items.TORCHFLOWER_SEEDS.getDefaultInstance());
+
+        List<ItemStack> food = List.of(Items.TORCHFLOWER_SEEDS.getDefaultInstance(),
+            Items.PITCHER_POD.getDefaultInstance());
+
         ItemStack foodItem;
 
-        if (food.size() == 1)
-        {
-            foodItem = food.get(0);
-        }
-        else
-        {
-            int size = food.size();
-            int index = (tick / 100) % size;
+        int size = food.size();
+        int index = (tick / 100) % size;
 
-            foodItem = food.get(index);
-        }
+        foodItem = food.get(index);
 
         lines.add(Pair.of(foodItem, component));
 
