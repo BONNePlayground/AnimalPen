@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.blocks;
 
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -44,6 +45,14 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         this.registerDefaultState(this.getStateDefinition().any().
             setValue(FACING, Direction.NORTH).
             setValue(FILLED, false));
+    }
+
+
+    @Override
+    @NotNull
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec()
+    {
+        return AquariumBlock.CODEC;
     }
 
 
@@ -273,6 +282,8 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     {
         return false;
     }
+
+    public static final MapCodec<AquariumBlock> CODEC = simpleCodec(AquariumBlock::new);
 
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 

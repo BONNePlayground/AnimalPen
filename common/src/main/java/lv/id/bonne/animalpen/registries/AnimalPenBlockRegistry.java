@@ -56,7 +56,7 @@ public class AnimalPenBlockRegistry
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
-            BlockBehaviour.Properties.copy(Blocks.GLASS).
+            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.GLASS).
                 noOcclusion())
@@ -69,7 +69,7 @@ public class AnimalPenBlockRegistry
             // Register the block
             RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodType.name().toLowerCase(),
                 () -> new AnimalPenBlock(
-                    BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).
                         strength(1.0f).
                         sound(SoundType.WOOD).
                         noOcclusion()));
