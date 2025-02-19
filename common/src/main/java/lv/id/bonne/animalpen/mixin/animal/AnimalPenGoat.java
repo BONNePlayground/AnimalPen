@@ -70,7 +70,11 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("milk_cooldown", this.animalPen$milkCooldown);
+
+        if (this.animalPen$milkCooldown > 0)
+        {
+            tag.putInt("milk_cooldown", this.animalPen$milkCooldown);
+        }
     }
 
 

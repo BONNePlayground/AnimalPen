@@ -71,7 +71,11 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+
+        if (this.animalPen$eggCooldown > 0)
+        {
+            tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+        }
     }
 
 

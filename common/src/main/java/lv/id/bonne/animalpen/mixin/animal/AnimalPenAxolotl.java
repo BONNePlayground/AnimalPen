@@ -53,7 +53,11 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("stored_food", this.animalPen$storedFood);
+
+        if (this.animalPen$storedFood > 0)
+        {
+            tag.putInt("stored_food", this.animalPen$storedFood);
+        }
     }
 
 

@@ -81,8 +81,16 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-        tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
-        tag.putInt("pollen_count", this.animalPen$pollenCount);
+
+        if (this.animalPen$pollenCooldown > 0)
+        {
+            tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
+        }
+
+        if (this.animalPen$pollenCount > 0)
+        {
+            tag.putInt("pollen_count", this.animalPen$pollenCount);
+        }
     }
 
 
