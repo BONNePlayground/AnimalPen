@@ -117,10 +117,8 @@ public abstract class AnimalPenAnimal extends Mob
             tag.putInt("food_cooldown", this.animalPen$foodCooldown);
         }
 
-        if (this.animalPen$animalCount > 0)
-        {
-            tag.putLong("animal_count", this.animalPen$animalCount);
-        }
+        // this tag is necessary for animal pickups
+        tag.putLong("animal_count", this.animalPen$animalCount);
     }
 
 
