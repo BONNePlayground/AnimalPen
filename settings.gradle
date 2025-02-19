@@ -11,4 +11,4 @@ rootProject.name = 'animal_pen'
 
 include 'common'
 include 'fabric'
-include 'forge'
+include 'neoforge'
