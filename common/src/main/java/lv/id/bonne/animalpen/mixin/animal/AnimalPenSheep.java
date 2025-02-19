@@ -132,7 +132,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -155,7 +155,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             for (int i = 0; i < this.animalPen$animalCount && woolCount < dropLimits; i++)
             {
-                woolCount += player.getLevel().getRandom().nextInt(3);
+                woolCount += player.level().getRandom().nextInt(3);
             }
 
             while (woolCount > 0)
@@ -173,10 +173,10 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                     woolCount = 0;
                 }
 
-                Block.popResource(player.getLevel(), position.above(), woolStack);
+                Block.popResource(player.level(), position.above(), woolStack);
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.SHEEP_SHEAR,
                 SoundSource.NEUTRAL,
@@ -192,7 +192,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         }
         else if (itemStack.getItem() instanceof DyeItem dye)
         {
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -206,7 +206,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 player.setItemInHand(hand, itemStack);
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.DYE_USE,
                 SoundSource.NEUTRAL,

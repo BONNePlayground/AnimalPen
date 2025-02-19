@@ -111,7 +111,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -173,10 +173,10 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                     froglightCount = 0;
                 }
 
-                Block.popResource(player.getLevel(), position.above(), frogLight);
+                Block.popResource(player.level(), position.above(), frogLight);
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.FROG_EAT,
                 SoundSource.NEUTRAL,

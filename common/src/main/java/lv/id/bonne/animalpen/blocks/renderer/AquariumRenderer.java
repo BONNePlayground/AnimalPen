@@ -183,7 +183,18 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         // Render text
         Component text = Component.translatable("display.animal_pen.count", count);
         poseStack.translate(-this.font.width(text) / 2D, 0, 0);
-        this.font.draw(poseStack, text, 0, 0, 0xFFFFFF);
+
+        this.font.drawInBatch(
+            text,                    // The text component
+            0, 0,                 // X, Y position in the matrix
+            0xFFFFFF,                // Color (white)
+            false,                   // Drop shadow
+            poseStack.last().pose(), // Transformation matrix
+            buffer,                  // Buffer source from method parameters
+            Font.DisplayMode.NORMAL, // Display mode (NORMAL or SEE_THROUGH)
+            0,                       // Packed overlay
+            combinedLight            // Lighting conditions
+        );
 
         poseStack.popPose();
     }
@@ -230,7 +241,19 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             poseStack.pushPose();
             poseStack.scale(-0.0125f, -0.0125f, -0.0125f);
             poseStack.translate(-maxWidth / 2, -6, 0);
-            this.font.draw(poseStack, textList.get(i).getRight(), 8, 0, 0xFFFFFF);
+
+            this.font.drawInBatch(
+                textList.get(i).getRight(),  // The text component
+                8, 0,                     // X, Y position in the matrix
+                0xFFFFFF,                    // Color (white)
+                false,                       // Drop shadow
+                poseStack.last().pose(),     // Transformation matrix
+                buffer,                      // Buffer source from method parameters
+                Font.DisplayMode.NORMAL,     // Display mode (NORMAL or SEE_THROUGH)
+                0,                           // Packed overlay
+                combinedLight                // Lighting conditions
+            );
+
             poseStack.popPose();
 
             // Render Item Stack

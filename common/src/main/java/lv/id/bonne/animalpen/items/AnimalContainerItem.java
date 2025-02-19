@@ -104,7 +104,7 @@ public class AnimalContainerItem extends Item
             return interactionResult;
         }
 
-        if (player.getLevel().isClientSide() || livingEntity instanceof Player || !livingEntity.isAlive())
+        if (player.level().isClientSide() || livingEntity instanceof Player || !livingEntity.isAlive())
         {
             // Only  server side
             return InteractionResult.FAIL;

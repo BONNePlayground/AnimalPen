@@ -1,7 +1,6 @@
 {
     "pack": {
-        "description": "untitled resources",
-        "pack_format": 12
-        ,"forge:server_data_pack_format": 12
+        "description": "animal pen resources",
+        "pack_format": 15
     }
 }

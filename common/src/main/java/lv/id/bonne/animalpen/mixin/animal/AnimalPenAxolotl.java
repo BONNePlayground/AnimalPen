@@ -82,7 +82,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
         if (this.isFood(itemStack))
         {
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -120,7 +120,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             this.animalPen$animalCount += stackSize / 2;
             this.animalPen$storedFood -= stackSize;
 
-            if (player.getLevel() instanceof ServerLevel serverLevel)
+            if (player.level() instanceof ServerLevel serverLevel)
             {
                 serverLevel.sendParticles(
                     ParticleTypes.HEART,
@@ -132,18 +132,18 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                     0.05);
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 this.getEatingSound(itemStack),
                 SoundSource.NEUTRAL,
                 1.0F,
-                Mth.randomBetween(player.getLevel().random, 0.8F, 1.2F));
+                Mth.randomBetween(player.level().random, 0.8F, 1.2F));
 
             SoundEvent soundEvent = this.getAmbientSound();
 
             if (soundEvent != null)
             {
-                player.getLevel().playSound(null,
+                player.level().playSound(null,
                     position,
                     soundEvent,
                     SoundSource.NEUTRAL,

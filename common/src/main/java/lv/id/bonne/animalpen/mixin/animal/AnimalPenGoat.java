@@ -106,7 +106,7 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -118,7 +118,7 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
             player.setItemInHand(hand, remainingStack);
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.GOAT_MILK,
                 SoundSource.NEUTRAL,

@@ -131,16 +131,16 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
             }
 
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
-            Block.popResource(player.getLevel(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
+            Block.popResource(player.level(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.BEEHIVE_SHEAR,
                 SoundSource.NEUTRAL,
@@ -162,7 +162,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -173,7 +173,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 Items.HONEY_BOTTLE.getDefaultInstance());
             player.setItemInHand(hand, remainingStack);
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.BOTTLE_FILL,
                 SoundSource.NEUTRAL,

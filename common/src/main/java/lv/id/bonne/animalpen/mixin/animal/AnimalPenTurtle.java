@@ -122,7 +122,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -152,10 +152,10 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                     eggCount = 0;
                 }
 
-                Block.popResource(player.getLevel(), position.above(), eggStack);
+                Block.popResource(player.level(), position.above(), eggStack);
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.TURTLE_LAY_EGG,
                 SoundSource.NEUTRAL,
@@ -261,7 +261,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 return;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return;

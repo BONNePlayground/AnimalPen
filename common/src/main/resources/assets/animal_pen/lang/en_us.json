@@ -22,7 +22,7 @@
   "item.animal_pen.water_animal_container.error.unknown": "Failed to catch water animal",
   "item.animal_pen.water_animal_container.error.not_water_animal": "Can catch only water animals",
 
-  "itemGroup.animal_pen.animal_pen": "Animal Pen Items",
+  "category.animal_pen.animal_pen": "Animal Pen Items",
 
   "block.animal_pen.animal_pen_acacia": "Animal Pen",
   "block.animal_pen.animal_pen_bamboo": "Animal Pen",

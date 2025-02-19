@@ -32,7 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -204,7 +204,7 @@ public class AnimalPenTileEntity extends BlockEntity
             }
             else
             {
-                if (!player.getLevel().isClientSide())
+                if (!player.level().isClientSide())
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
@@ -226,7 +226,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     return false;
                 }
 
-                if (player.getLevel().isClientSide())
+                if (player.level().isClientSide())
                 {
                     // Next only on server.
                     return true;
@@ -276,7 +276,7 @@ public class AnimalPenTileEntity extends BlockEntity
                     return false;
                 }
 
-                if (player.getLevel().isClientSide())
+                if (player.level().isClientSide())
                 {
                     // Next only on server.
                     return true;
@@ -313,7 +313,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (itemInHand.isEmpty() && !this.inventory.isEmpty())
         {
-            if (player.isCrouching() && !player.getLevel().isClientSide())
+            if (player.isCrouching() && !player.level().isClientSide())
             {
                 ItemStack item = this.inventory.getItem(0);
                 player.setItemInHand(interactionHand, item);
@@ -395,20 +395,19 @@ public class AnimalPenTileEntity extends BlockEntity
             this.worldPosition.getY(),
             this.worldPosition.getZ());
 
-        LootTable lootTable = level.getServer().getLootTables().get(animal.getLootTable());
+        LootTable lootTable = level.getServer().getLootData().getLootTable(animal.getLootTable());
 
-        LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel) level).
+        LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
             withParameter(LootContextParams.THIS_ENTITY, animal).
             withParameter(LootContextParams.KILLER_ENTITY, player).
             withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
             withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
-            withLuck(player.getLuck()).
-            withRandom(level.random);
+            withLuck(player.getLuck());
 
-        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
-            Block.popResource(level, this.getBlockPos().above(), itemStack));
+        lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
+            forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
         int reward = animal.getExperienceReward();
         ExperienceOrb.award((ServerLevel)this.level, position, reward);

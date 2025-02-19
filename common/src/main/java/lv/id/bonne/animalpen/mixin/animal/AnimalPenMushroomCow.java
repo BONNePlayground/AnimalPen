@@ -129,7 +129,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -164,7 +164,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 soundEvent = SoundEvents.MOOSHROOM_MILK;
             }
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 soundEvent,
                 SoundSource.NEUTRAL,
@@ -183,7 +183,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.effect != null)
             {
-                if (player.getLevel() instanceof ServerLevel serverLevel)
+                if (player.level() instanceof ServerLevel serverLevel)
                 {
                     serverLevel.sendParticles(
                         ParticleTypes.SMOKE,
@@ -204,7 +204,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                     return false;
                 }
 
-                if (player.getLevel().isClientSide())
+                if (player.level().isClientSide())
                 {
                     // Next is processed only for server side.
                     return true;
@@ -212,7 +212,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 Pair<MobEffect, Integer> pair = optional.get();
 
-                if (player.getLevel() instanceof ServerLevel serverLevel)
+                if (player.level() instanceof ServerLevel serverLevel)
                 {
                     serverLevel.sendParticles(
                         ParticleTypes.EFFECT,
@@ -233,7 +233,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                     player.setItemInHand(hand, itemStack);
                 }
 
-                if (player.getLevel() instanceof ServerLevel serverLevel)
+                if (player.level() instanceof ServerLevel serverLevel)
                 {
                     serverLevel.playSound(null,
                         position,
