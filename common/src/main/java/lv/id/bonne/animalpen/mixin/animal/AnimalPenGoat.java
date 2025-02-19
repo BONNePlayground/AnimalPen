@@ -33,6 +33,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(Goat.class)
@@ -47,9 +48,9 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
-        boolean value = super.animalPen$animalPenTick();
+        boolean value = super.animalPen$animalPenTick(blockEntity);
 
         if (this.animalPen$milkCooldown > 0)
         {

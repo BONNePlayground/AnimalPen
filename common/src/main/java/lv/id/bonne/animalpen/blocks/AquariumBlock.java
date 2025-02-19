@@ -5,11 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -40,12 +38,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class AquariumBlock extends HorizontalDirectionalBlock implements EntityBlock
 {
-    public AquariumBlock(Properties properties, WoodType woodType)
+    public AquariumBlock(Properties properties)
     {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
-        this.type = woodType;
+        this.registerDefaultState(this.getStateDefinition().any().
+            setValue(FACING, Direction.NORTH).
+            setValue(FILLED, false));
     }
+
+
 // ---------------------------------------------------------------------
 // Section: PP
 // ---------------------------------------------------------------------
@@ -183,7 +184,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        builder.add(FACING);
+        builder.add(FACING).add(FILLED);
     }
 
 
@@ -197,7 +198,8 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context)
     {
         return Objects.requireNonNull(super.getStateForPlacement(context)).
-            setValue(FACING, context.getHorizontalDirection().getOpposite());
+            setValue(FACING, context.getHorizontalDirection().getOpposite()).
+            setValue(FILLED, false);
     }
 
 
@@ -218,16 +220,6 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         @NotNull CollisionContext context)
     {
         return SHAPE;
-    }
-
-
-    /**
-     * Returns the wood type.
-     * @return WoodType.
-     */
-    public WoodType getType()
-    {
-        return this.type;
     }
 
 
@@ -282,12 +274,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         return false;
     }
 
-    /**
-     * The type of wood that is used for animal pen block.
-     */
-    private final WoodType type;
+    private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 
-    private final VoxelShape SHAPE = Shapes.or(
-        Block.box(1.0, 10.0, 1.0, 15.0, 12.0, 15.0),
-        Block.box(2.0, 0.0, 2.0, 14.0, 10.0, 14.0));
+    public static final BooleanProperty FILLED = BooleanProperty.create("filled");
 }

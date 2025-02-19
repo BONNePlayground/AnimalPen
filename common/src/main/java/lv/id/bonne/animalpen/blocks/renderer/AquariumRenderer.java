@@ -7,13 +7,16 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -23,6 +26,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -30,6 +34,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 
 public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
@@ -128,8 +133,15 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         animal.tickCount = tileEntity.getTickCounter();
 
         poseStack.pushPose();
-        poseStack.translate(0, 12/16f, 0);
-        poseStack.scale(0.35f, 0.35f, 0.35f);
+        poseStack.translate(0.00, 12/16f, 0);
+        poseStack.scale(0.33f, 0.33f, 0.33f);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
+        {
+            float scale = 1 + 0.33f * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            poseStack.scale(scale, scale, scale);
+        }
+
         poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
@@ -168,7 +180,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 6/16f, -0.57f);
+        poseStack.translate(0, 3/16f, -0.51f);
 
         // Scale for pixel-perfect rendering
         poseStack.scale(-0.015f, -0.015f, 0F);
@@ -199,7 +211,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             return;
         }
 
-        double totalHeight = 1.5 + 0.25 * (textList.size() - 1);
+        double totalHeight = 1.75 + 0.25 * (textList.size() - 1);
         double maxWidth = 0;
 
         for (Pair<ItemStack, Component> pair : textList)
@@ -245,6 +257,13 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         }
 
         poseStack.popPose();
+    }
+
+
+    @Override
+    public boolean shouldRenderOffScreen(AquariumTileEntity blockEntity)
+    {
+        return !blockEntity.getInventory().isEmpty();
     }
 
 

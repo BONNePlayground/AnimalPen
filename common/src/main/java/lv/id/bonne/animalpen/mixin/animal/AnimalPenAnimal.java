@@ -37,6 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(Animal.class)
@@ -96,7 +97,7 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Intrinsic
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
         if (this.animalPen$foodCooldown > 0)
         {

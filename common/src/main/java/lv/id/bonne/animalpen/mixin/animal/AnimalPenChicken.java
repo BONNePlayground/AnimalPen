@@ -32,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(Chicken.class)
@@ -51,9 +52,9 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
-        boolean value = super.animalPen$animalPenTick();
+        boolean value = super.animalPen$animalPenTick(blockEntity);
 
         if (this.animalPen$eggCooldown > 0)
         {

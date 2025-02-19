@@ -32,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(Turtle.class)
@@ -46,9 +47,11 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
-        boolean value = super.animalPen$animalPenTick();
+        this.animalPen$processScute(blockEntity.getLevel(), blockEntity.getBlockPos());
+
+        boolean value = super.animalPen$animalPenTick(blockEntity);
 
         if (this.animalPen$eggCooldown > 0)
         {
@@ -66,7 +69,15 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+        if (this.animalPen$eggCooldown > 0)
+        {
+            tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+        }
+
+        if (this.animalPen$scuteCount > 0)
+        {
+            tag.putInt("scute_count", this.animalPen$scuteCount);
+        }
     }
 
 
@@ -80,6 +91,11 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         {
             this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
         }
+
+        if (tag.contains("scute_count", Tag.TAG_INT))
+        {
+            this.animalPen$scuteCount = tag.getInt("scute_count");
+        }
     }
 
 
@@ -87,6 +103,11 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     @Override
     public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
     {
+        // Scute preprocessing
+        this.animal$preProcesScute(player, hand, position);
+
+        // food processing
+
         if (super.animalPen$animalPenInteract(player, hand, position))
         {
             return true;
@@ -153,6 +174,105 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     }
 
 
+    @Unique
+    private void animalPen$processScute(Level level, BlockPos position)
+    {
+        if (this.animalPen$scuteCount <= 0)
+        {
+            return;
+        }
+
+        if (level.isClientSide())
+        {
+            // Next is processed only for server side.
+            return;
+        }
+
+        boolean dropScuteAtStart = AnimalPen.CONFIG_MANAGER.getConfiguration().isDropScuteAtStart();
+
+        if (!dropScuteAtStart && this.animalPen$foodCooldown != 0)
+        {
+            return;
+        }
+
+        int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SCUTE);
+
+        if (dropLimits <= 0)
+        {
+            dropLimits = Integer.MAX_VALUE;
+        }
+
+        int scuteCount = Math.min(this.animalPen$scuteCount, dropLimits);
+
+        while (scuteCount > 0)
+        {
+            ItemStack scuteStack = new ItemStack(Items.SCUTE);
+
+            if (scuteCount > 64)
+            {
+                scuteStack.setCount(64);
+                scuteCount -= 64;
+            }
+            else
+            {
+                scuteStack.setCount(scuteCount);
+                scuteCount = 0;
+            }
+
+            Block.popResource(level, position.above(), scuteStack);
+        }
+
+        level.playSound(null,
+            position,
+            SoundEvents.TURTLE_SHAMBLE_BABY,
+            SoundSource.NEUTRAL,
+            1.0F,
+            1.0F);
+
+        this.animalPen$scuteCount = 0;
+    }
+
+
+    @Unique
+    private void animal$preProcesScute(Player player, InteractionHand hand, BlockPos position)
+    {
+        ItemStack itemStack = player.getItemInHand(hand);
+
+        if (this.isFood(itemStack))
+        {
+            if (this.animalPen$foodCooldown > 0)
+            {
+                return;
+            }
+
+            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+
+            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
+            {
+                return;
+            }
+
+            int stackSize = itemStack.getCount();
+            stackSize = (int) Math.min(this.animalPen$animalCount, stackSize);
+
+            if (stackSize < 2)
+            {
+                // Cannot feed 1 animal only for breeding.
+                return;
+            }
+
+            if (player.getLevel().isClientSide())
+            {
+                // Next is processed only for server side.
+                return;
+            }
+
+            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
+            this.animalPen$scuteCount += stackSize / 2;
+        }
+    }
+
+
     @Intrinsic
     @Override
     public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
@@ -197,4 +317,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
     @Unique
     private int animalPen$eggCooldown;
+
+    @Unique
+    private int animalPen$scuteCount;
 }

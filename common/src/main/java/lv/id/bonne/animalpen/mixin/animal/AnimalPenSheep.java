@@ -32,6 +32,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 @Mixin(Sheep.class)
@@ -67,9 +68,9 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public boolean animalPen$animalPenTick()
+    public boolean animalPen$animalPenTick(BlockEntity blockEntity)
     {
-        boolean value = super.animalPen$animalPenTick();
+        boolean value = super.animalPen$animalPenTick(blockEntity);
 
         if (this.animalPen$woolCooldown > 0)
         {

@@ -7,6 +7,8 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -50,22 +52,29 @@ public class AnimalPenBlockRegistry
     public static final DeferredRegister<Block> REGISTRY =
         DeferredRegister.create(AnimalPen.MOD_ID, Registry.BLOCK_REGISTRY);
 
-
-    public static final RegistrySupplier<Block> ANIMAL_PEN = registerBlock("animal_pen_block",
-        () -> new AnimalPenBlock(
-            BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
-                strength(1.0f).
-                sound(SoundType.WOOD).
-                noOcclusion(),
-            WoodType.OAK)
-    );
+    public static final Map<WoodType, RegistrySupplier<Block>> ANIMAL_PENS = new HashMap<>();
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
             BlockBehaviour.Properties.copy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.GLASS).
-                noOcclusion(),
-            WoodType.OAK)
+                noOcclusion())
     );
+
+    static {
+        // Register a variant for each wood type
+        WoodType.values().forEach(woodType ->
+        {
+            // Register the block
+            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodType.name().toLowerCase(),
+                () -> new AnimalPenBlock(
+                    BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
+                        strength(1.0f).
+                        sound(SoundType.WOOD).
+                        noOcclusion()));
+
+            ANIMAL_PENS.put(woodType, block);
+        });
+    }
 }
