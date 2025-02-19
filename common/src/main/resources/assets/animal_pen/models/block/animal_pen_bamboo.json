@@ -1,0 +1,9 @@
+{
+  "parent": "animal_pen:block/animal_pen_base",
+  "textures": {
+    "0": "animal_pen:block/base_top",
+    "2": "minecraft:block/bamboo_planks",
+    "3": "animal_pen:block/base_side",
+    "particle": "animal_pen:block/base_top"
+  }
+}

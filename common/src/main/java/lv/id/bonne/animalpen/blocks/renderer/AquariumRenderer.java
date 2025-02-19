@@ -7,15 +7,12 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
@@ -26,7 +23,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -34,7 +30,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 
 
 public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
@@ -91,9 +86,9 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         // Apply rotation based on facing direction
         switch (facing)
         {
-            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
         }
 
         // Optional: offset from the face of the block
@@ -142,7 +137,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             poseStack.scale(scale, scale, scale);
         }
 
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
@@ -242,7 +237,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             poseStack.pushPose();
             poseStack.scale(0.25f, 0.25f, 0.25f);
             poseStack.translate(maxWidth / 2 * 0.05, 0, 0);
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             this.minecraft.getItemRenderer().renderStatic(
                 textList.get(i).getLeft(),
                 ItemTransforms.TransformType.GROUND,

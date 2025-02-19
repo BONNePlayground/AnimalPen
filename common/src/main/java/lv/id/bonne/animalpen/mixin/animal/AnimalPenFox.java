@@ -11,9 +11,10 @@ import org.spongepowered.asm.mixin.*;
 import java.util.List;
 import java.util.Map;
 
-import dev.architectury.registry.registries.Registries;
+import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -38,8 +39,8 @@ public abstract class AnimalPenFox extends AnimalPenAnimal
     {
         if (ANIMAL_PEN$FOOD_LIST == null)
         {
-            ANIMAL_PEN$FOOD_LIST = Registries.get(AnimalPen.MOD_ID).
-                get(Registry.ITEM_REGISTRY).entrySet().stream().
+            ANIMAL_PEN$FOOD_LIST = RegistrarManager.get(AnimalPen.MOD_ID).
+                get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
                 map(Item::getDefaultInstance).
                 filter(stack -> stack.is(ItemTags.FOX_FOOD)).

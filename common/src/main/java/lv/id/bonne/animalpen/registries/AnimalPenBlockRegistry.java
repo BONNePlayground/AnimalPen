@@ -16,7 +16,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -43,14 +43,14 @@ public class AnimalPenBlockRegistry
     private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
     {
         return AnimalPensItemRegistry.REGISTRY.register(name, () ->
-            new BlockItem(block.get(), new Item.Properties().tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
+            new BlockItem(block.get(), new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
     }
 
     /**
      * The main block registry.
      */
     public static final DeferredRegister<Block> REGISTRY =
-        DeferredRegister.create(AnimalPen.MOD_ID, Registry.BLOCK_REGISTRY);
+        DeferredRegister.create(AnimalPen.MOD_ID, Registries.BLOCK);
 
     public static final Map<WoodType, RegistrySupplier<Block>> ANIMAL_PENS = new HashMap<>();
 

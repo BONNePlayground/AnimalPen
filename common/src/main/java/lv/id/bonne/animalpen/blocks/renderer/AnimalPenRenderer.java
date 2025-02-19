@@ -8,7 +8,7 @@ package lv.id.bonne.animalpen.blocks.renderer;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -93,9 +93,9 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         // Apply rotation based on facing direction
         switch (facing)
         {
-            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
         }
 
         // Optional: offset from the face of the block
@@ -140,7 +140,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             poseStack.scale(scale, scale, scale);
         }
 
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
@@ -240,7 +240,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             poseStack.pushPose();
             poseStack.scale(0.25f, 0.25f, 0.25f);
             poseStack.translate(maxWidth / 2 * 0.05, 0, 0);
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             this.minecraft.getItemRenderer().renderStatic(
                 textList.get(i).getLeft(),
                 ItemTransforms.TransformType.GROUND,

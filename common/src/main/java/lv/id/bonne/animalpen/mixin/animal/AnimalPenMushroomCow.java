@@ -62,7 +62,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
 
     @Shadow
-    public abstract MushroomCow.MushroomType getMushroomType();
+    public abstract MushroomCow.MushroomType getVariant();
 
 
     @Shadow
@@ -179,7 +179,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             return true;
         }
         else if (itemStack.is(ItemTags.SMALL_FLOWERS) &&
-            this.getMushroomType() == MushroomCow.MushroomType.BROWN)
+            this.getVariant() == MushroomCow.MushroomType.BROWN)
         {
             if (this.effect != null)
             {
