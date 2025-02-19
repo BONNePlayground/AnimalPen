@@ -1,12 +1,13 @@
 package lv.id.bonne.animalpen.items;
 
+
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -20,8 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -38,11 +39,11 @@ public class AnimalContainerItem extends Item
 
     @Override
     public void appendHoverText(ItemStack itemStack,
-        @Nullable Level level,
+        TooltipContext tooltipContext,
         List<Component> list,
         TooltipFlag tooltipFlag)
     {
-        super.appendHoverText(itemStack, level, list, tooltipFlag);
+        super.appendHoverText(itemStack, tooltipContext, list, tooltipFlag);
 
         if (!list.isEmpty())
         {
@@ -50,23 +51,21 @@ public class AnimalContainerItem extends Item
             list.add(Component.empty());
         }
 
-        if (itemStack.hasTag() &&
-            itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (itemStack.has(DataComponents.ENTITY_DATA))
         {
             list.add(Component.translatable("item.animal_pen.water_animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                AnimalContainerItem.getEntityTranslationName(itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
         }
 
-        if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
+        if (itemStack.has(DataComponents.ENTITY_DATA))
         {
             list.add(Component.translatable("item.animal_pen.water_animal_container.amount",
-                itemStack.getTag().getLong(TAG_AMOUNT)).
+                    itemStack.get(DataComponents.ENTITY_DATA).copyTag().getLong(TAG_AMOUNT)).
                 withStyle(ChatFormatting.GRAY));
         }
 
-        if (!itemStack.hasTag() ||
-            !itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
             list.add(Component.translatable("item.animal_pen.water_animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
@@ -142,11 +141,16 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        CompoundTag itemTag = itemStack.getOrCreateTag();
+        CompoundTag itemTag;
 
-        if (!itemTag.contains(TAG_ENTITY_ID))
+        if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
+            itemTag = new CompoundTag();
             animal.save(itemTag);
+        }
+        else
+        {
+            itemTag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
         }
 
         if (itemTag.contains(TAG_AMOUNT))
@@ -161,7 +165,7 @@ public class AnimalContainerItem extends Item
             itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
         }
 
-        itemStack.setTag(itemTag);
+        itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
 
@@ -203,15 +207,13 @@ public class AnimalContainerItem extends Item
      */
     private boolean matchEntity(ItemStack itemStack, LivingEntity entity)
     {
-        CompoundTag itemTag = itemStack.getTag();
-
-        if (itemTag == null || !itemTag.contains(TAG_ENTITY_ID))
+        if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
             // Empty cage.
             return true;
         }
 
-        String entityType = itemTag.getString(TAG_ENTITY_ID);
+        String entityType = itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID);
 
         return new ResourceLocation(entityType).equals(entity.getType().arch$registryName());
     }

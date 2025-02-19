@@ -12,22 +12,27 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -195,7 +200,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
             return;
         }
 
-        int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SCUTE);
+        int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TURTLE_SCUTE);
 
         if (dropLimits <= 0)
         {
@@ -206,7 +211,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
         while (scuteCount > 0)
         {
-            ItemStack scuteStack = new ItemStack(Items.SCUTE);
+            ItemStack scuteStack = new ItemStack(Items.TURTLE_SCUTE);
 
             if (scuteCount > 64)
             {
@@ -311,8 +316,22 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
-        return Collections.singletonList(Items.SEAGRASS.getDefaultInstance());
+        if (ANIMAL_PEN$FOOD_LIST == null)
+        {
+            ANIMAL_PEN$FOOD_LIST = RegistrarManager.get(AnimalPen.MOD_ID).
+                get(Registries.ITEM).entrySet().stream().
+                map(Map.Entry::getValue).
+                map(Item::getDefaultInstance).
+                filter(stack -> stack.is(ItemTags.TURTLE_FOOD)).
+                toList();
+        }
+
+        return ANIMAL_PEN$FOOD_LIST;
     }
+
+
+    @Unique
+    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST;
 
 
     @Unique

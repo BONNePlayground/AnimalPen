@@ -12,13 +12,10 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.util.Utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -123,7 +120,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 return true;
             }
 
-            LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
+            LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
             LootParams lootParams = new LootParams.Builder(serverLevel).
                 withParameter(LootContextParams.ORIGIN, position.getCenter()).
                 withParameter(LootContextParams.THIS_ENTITY, this).
@@ -136,7 +133,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            List<ItemStack> droppedSeeds = new LinkedList<>();
+            List<ItemStack> itemStackList = new ArrayList<>();
 
             int seedCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
@@ -152,10 +149,28 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
                 seedCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
 
-                droppedSeeds.addAll(randomItems);
+                randomItems.forEach(item -> {
+                    boolean added = false;
+
+                    for (ItemStack stack : itemStackList)
+                    {
+                        if (ItemStack.isSameItemSameComponents(item, stack) &&
+                            stack.getCount() < stack.getMaxStackSize())
+                        {
+                            stack.grow(item.getCount());
+                            added = true;
+                            break;
+                        }
+                    }
+
+                    if (!added)
+                    {
+                        itemStackList.add(item);
+                    }
+                });
             }
 
-            Utils.mergeItemStacks(droppedSeeds).forEach(seedStack ->
+            itemStackList.forEach(seedStack ->
                 Block.popResource(player.level(), position.above(), seedStack));
 
             serverLevel.playSound(null,

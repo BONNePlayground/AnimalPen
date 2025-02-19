@@ -30,20 +30,20 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.goat.Goat;
+import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
-@Mixin(Goat.class)
-public abstract class AnimalPenGoat extends AnimalPenAnimal
+@Mixin(Armadillo.class)
+public abstract class AnimalPenArmadillo extends AnimalPenAnimal
 {
-    protected AnimalPenGoat(EntityType<? extends Mob> entityType,
+    protected AnimalPenArmadillo(EntityType<? extends Mob> entityType,
         Level level)
     {
         super(entityType, level);
@@ -56,9 +56,9 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     {
         boolean value = super.animalPen$animalPenTick(blockEntity);
 
-        if (this.animalPen$milkCooldown > 0)
+        if (this.animalPen$scuteCooldown > 0)
         {
-            this.animalPen$milkCooldown--;
+            this.animalPen$scuteCooldown--;
             return true;
         }
 
@@ -72,9 +72,9 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$milkCooldown > 0)
+        if (this.animalPen$scuteCooldown > 0)
         {
-            tag.putInt("milk_cooldown", this.animalPen$milkCooldown);
+            tag.putInt("scute_cooldown", this.animalPen$scuteCooldown);
         }
     }
 
@@ -85,9 +85,9 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("milk_cooldown", Tag.TAG_INT))
+        if (tag.contains("scute_cooldown", Tag.TAG_INT))
         {
-            this.animalPen$milkCooldown = tag.getInt("milk_cooldown");
+            this.animalPen$scuteCooldown = tag.getInt("scute_cooldown");
         }
     }
 
@@ -103,9 +103,9 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(Items.BUCKET))
+        if (itemStack.is(Items.BRUSH))
         {
-            if (this.animalPen$milkCooldown > 0)
+            if (this.animalPen$scuteCooldown > 0)
             {
                 return false;
             }
@@ -116,22 +116,19 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 return true;
             }
 
-            ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
-                player,
-                Items.MILK_BUCKET.getDefaultInstance());
-
-            player.setItemInHand(hand, remainingStack);
+            itemStack.hurtAndBreak(16, player, getSlotForHand(hand));
+            Block.popResource(player.level(), position.above(), new ItemStack(Items.ARMADILLO_SCUTE));
 
             player.level().playSound(null,
                 position,
-                SoundEvents.GOAT_MILK,
+                SoundEvents.ARMADILLO_SCUTE_DROP,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
 
-            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$scuteCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
-                Items.BUCKET,
+                Items.BRUSH,
                 this.animalPen$animalCount);
 
             return true;
@@ -149,7 +146,7 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
             this.getType(),
-            Items.BUCKET,
+            Items.BRUSH,
             this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
@@ -158,19 +155,19 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
         MutableComponent component;
 
-        if (this.animalPen$milkCooldown == 0)
+        if (this.animalPen$scuteCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.milk_ready").
+            component = Component.translatable("display.animal_pen.brush_ready").
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.milk_cooldown",
+            component = Component.translatable("display.animal_pen.brush_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$milkCooldown / 20).format(AnimalPen.DATE_FORMATTER));
+                    plusSeconds(this.animalPen$scuteCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
+        lines.add(Pair.of(Items.ARMADILLO_SCUTE.getDefaultInstance(), component));
 
         return lines;
     }
@@ -185,7 +182,7 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
                 map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.GOAT_FOOD)).
+                filter(stack -> stack.is(ItemTags.ARMADILLO_FOOD)).
                 toList();
         }
 
@@ -198,5 +195,5 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
 
 
     @Unique
-    private int animalPen$milkCooldown;
+    private int animalPen$scuteCooldown;
 }

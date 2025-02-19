@@ -20,6 +20,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -38,9 +39,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SuspiciousStewItem;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -60,11 +60,11 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Shadow
     @Nullable
-    private List<SuspiciousEffectHolder.EffectEntry> stewEffects;
+    private SuspiciousStewEffects stewEffects;
 
 
     @Shadow
-    protected abstract Optional<List<SuspiciousEffectHolder.EffectEntry>> getEffectsFromItemStack(ItemStack itemStack);
+    protected abstract Optional<SuspiciousStewEffects> getEffectsFromItemStack(ItemStack itemStack);
 
 
     @Intrinsic
@@ -139,7 +139,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             if (suspicious)
             {
                 bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
-                SuspiciousStewItem.saveMobEffects(bowlStack, this.stewEffects);
+                bowlStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, this.stewEffects);
                 this.stewEffects = null;
             }
             else
@@ -193,7 +193,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             }
             else
             {
-                Optional<List<SuspiciousEffectHolder.EffectEntry>> optional = this.getEffectsFromItemStack(itemStack);
+                Optional<SuspiciousStewEffects> optional = this.getEffectsFromItemStack(itemStack);
 
                 if (optional.isEmpty())
                 {

@@ -18,6 +18,8 @@ import lv.id.bonne.animalpen.items.AnimalContainerItem;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.Tag;
@@ -32,6 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -54,19 +57,19 @@ public class AquariumTileEntity extends BlockEntity
 
 
     @Override
-    public void saveAdditional(CompoundTag tag)
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider)
     {
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, provider);
 
-        tag.put(TAG_INVENTORY, this.inventory.createTag());
+        tag.put(TAG_INVENTORY, this.inventory.createTag(provider));
         tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
     }
 
 
     @Override
-    public void load(CompoundTag tag)
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider)
     {
-        super.load(tag);
+        super.loadAdditional(tag, provider);
 
         this.inventory.clearContent();
         this.deathTicker.clear();
@@ -74,7 +77,7 @@ public class AquariumTileEntity extends BlockEntity
 
         if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
         {
-            this.inventory.fromTag(tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND));
+            this.inventory.fromTag(tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND), provider);
         }
 
         if (tag.contains(TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
@@ -96,9 +99,9 @@ public class AquariumTileEntity extends BlockEntity
      */
     @NotNull
     @Override
-    public CompoundTag getUpdateTag()
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider)
     {
-        return this.saveWithoutMetadata();
+        return this.saveWithoutMetadata(provider);
     }
 
 
@@ -124,7 +127,7 @@ public class AquariumTileEntity extends BlockEntity
     {
         if (this.storedAnimal == null && !this.inventory.getItem(0).isEmpty())
         {
-            CompoundTag tag = this.inventory.getItem(0).getOrCreateTag();
+            CompoundTag tag = this.inventory.getItem(0).get(DataComponents.ENTITY_DATA).copyTag();
 
             if (!tag.contains(AnimalContainerItem.TAG_ENTITY_ID) || this.level == null)
             {
@@ -202,7 +205,7 @@ public class AquariumTileEntity extends BlockEntity
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
 
-            if (!itemInHand.getOrCreateTag().contains(AnimalContainerItem.TAG_ENTITY_ID))
+            if (!itemInHand.has(DataComponents.ENTITY_DATA))
             {
                 return false;
             }
@@ -220,9 +223,8 @@ public class AquariumTileEntity extends BlockEntity
         else
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
-            CompoundTag itemInHandTag = itemInHand.getOrCreateTag();
 
-            if (!itemInHandTag.contains(AnimalContainerItem.TAG_ENTITY_ID))
+            if (!itemInHand.has(DataComponents.ENTITY_DATA))
             {
                 if (!player.isCrouching())
                 {
@@ -259,8 +261,10 @@ public class AquariumTileEntity extends BlockEntity
                     return false;
                 }
 
-                animal.save(itemInHandTag);
-                itemInHandTag.putLong(AnimalContainerItem.TAG_AMOUNT, newCount);
+                CompoundTag tag = new CompoundTag();
+                animal.save(tag);
+                tag.putLong(AnimalContainerItem.TAG_AMOUNT, newCount);
+                itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
@@ -271,6 +275,7 @@ public class AquariumTileEntity extends BlockEntity
             else
             {
                 WaterAnimal animal = this.getStoredAnimal();
+                CompoundTag itemInHandTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
                 if (animal == null ||
                     !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
@@ -294,7 +299,7 @@ public class AquariumTileEntity extends BlockEntity
                 }
 
                 // clear tag.
-                itemInHand.setTag(new CompoundTag());
+                itemInHand.remove(DataComponents.ENTITY_DATA);
                 player.setItemInHand(interactionHand, itemInHand);
 
                 this.inventory.setChanged();
@@ -342,7 +347,7 @@ public class AquariumTileEntity extends BlockEntity
             // Reset tag, as some animals may need it.
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
-            item.setTag(tag);
+            item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
 
@@ -387,7 +392,7 @@ public class AquariumTileEntity extends BlockEntity
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
         {
             ItemStack item = this.inventory.getItem(0);
-            item.setTag(new CompoundTag());
+            item.remove(DataComponents.ENTITY_DATA);
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
@@ -399,7 +404,7 @@ public class AquariumTileEntity extends BlockEntity
             this.worldPosition.getY(),
             this.worldPosition.getZ());
 
-        LootTable lootTable = level.getServer().getLootData().getLootTable(animal.getLootTable());
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
 
         LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
@@ -431,7 +436,9 @@ public class AquariumTileEntity extends BlockEntity
 
         if (animal != null)
         {
-            animal.save(this.inventory.getItem(0).getOrCreateTag());
+            CompoundTag tag = new CompoundTag();
+            animal.save(tag);
+            this.inventory.getItem(0).set(DataComponents.ENTITY_DATA, CustomData.of(tag));
         }
 
         BlockState oldState = this.getBlockState();

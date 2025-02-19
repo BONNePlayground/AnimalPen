@@ -19,16 +19,16 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 
-@Mixin(Panda.class)
-public abstract class AnimalPenPanda extends AnimalPenAnimal
+@Mixin(Parrot.class)
+public abstract class AnimalPenParrot extends AnimalPenAnimal
 {
-    protected AnimalPenPanda(EntityType<? extends Mob> entityType,
+    protected AnimalPenParrot(EntityType<? extends Mob> entityType,
         Level level)
     {
         super(entityType, level);
@@ -44,7 +44,7 @@ public abstract class AnimalPenPanda extends AnimalPenAnimal
                 get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
                 map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.PANDA_FOOD)).
+                filter(stack -> stack.is(ItemTags.PARROT_FOOD)).
                 toList();
         }
 

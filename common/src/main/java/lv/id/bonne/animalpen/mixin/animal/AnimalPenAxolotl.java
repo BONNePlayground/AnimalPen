@@ -8,14 +8,15 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 import java.util.Map;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -217,7 +218,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
                 map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.AXOLOTL_TEMPT_ITEMS)).
+                filter(stack -> stack.is(ItemTags.AXOLOTL_FOOD)).
                 toList();
         }
 

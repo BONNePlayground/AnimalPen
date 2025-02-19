@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "lv.id.bonne.animalpen.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
   ],
@@ -9,8 +9,10 @@
     "accessors.EntityAccessor",
     "animal.AnimalPenAbstractHorse",
     "animal.AnimalPenAnimal",
+    "animal.AnimalPenArmadillo",
     "animal.AnimalPenAxolotl",
     "animal.AnimalPenBee",
+    "animal.AnimalPenCamel",
     "animal.AnimalPenCat",
     "animal.AnimalPenChicken",
     "animal.AnimalPenCow",
@@ -22,6 +24,7 @@
     "animal.AnimalPenMushroomCow",
     "animal.AnimalPenOcelot",
     "animal.AnimalPenPanda",
+    "animal.AnimalPenParrot",
     "animal.AnimalPenPig",
     "animal.AnimalPenRabbit",
     "animal.AnimalPenSheep",

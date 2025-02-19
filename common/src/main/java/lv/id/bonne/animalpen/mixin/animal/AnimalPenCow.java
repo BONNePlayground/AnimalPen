@@ -15,19 +15,23 @@ import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
 import java.util.*;
 
+import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
@@ -174,8 +178,22 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
     @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
-        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
+        if (ANIMAL_PEN$FOOD_LIST == null)
+        {
+            ANIMAL_PEN$FOOD_LIST = RegistrarManager.get(AnimalPen.MOD_ID).
+                get(Registries.ITEM).entrySet().stream().
+                map(Map.Entry::getValue).
+                map(Item::getDefaultInstance).
+                filter(stack -> stack.is(ItemTags.COW_FOOD)).
+                toList();
+        }
+
+        return ANIMAL_PEN$FOOD_LIST;
     }
+
+
+    @Unique
+    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST;
 
 
     @Unique

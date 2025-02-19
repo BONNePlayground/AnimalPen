@@ -15,8 +15,8 @@ import java.util.Map;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Wolf;
@@ -43,15 +43,14 @@ public abstract class AnimalPenWolf extends AnimalPenAnimal
             ANIMAL_PEN$FOOD_LIST = RegistrarManager.get(AnimalPen.MOD_ID).
                 get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
-                filter(Item::isEdible).
-                filter(item -> item.getFoodProperties() != null).
-                filter(item -> item.getFoodProperties().isMeat()).
                 map(Item::getDefaultInstance).
+                filter(stack -> stack.is(ItemTags.WOLF_FOOD)).
                 toList();
         }
 
         return ANIMAL_PEN$FOOD_LIST;
     }
+
 
     @Unique
     private static List<ItemStack> ANIMAL_PEN$FOOD_LIST;

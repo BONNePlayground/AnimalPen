@@ -18,11 +18,11 @@ import java.util.Map;
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
@@ -137,7 +137,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 return true;
             }
 
-            itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
+            itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
             Block.popResource(player.level(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
 
             player.level().playSound(null,
@@ -260,7 +260,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 get(Registries.ITEM).entrySet().stream().
                 map(Map.Entry::getValue).
                 map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.SMALL_FLOWERS)).
+                filter(stack -> stack.is(ItemTags.BEE_FOOD)).
                 toList();
         }
 

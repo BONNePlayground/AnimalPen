@@ -97,6 +97,12 @@ public class Configuration
                 -1 * 20,
                 10 * 20));
 
+        this.cooldownList.computeIfAbsent(Items.BRUSH.arch$registryName(), i -> new ArrayList<>()).
+            add(new CooldownEntry(EntityType.ARMADILLO.arch$registryName(),
+                0,
+                0,
+                0));
+
         // Init block drop limits at once.
         this.dropLimitList.clear();
         this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
