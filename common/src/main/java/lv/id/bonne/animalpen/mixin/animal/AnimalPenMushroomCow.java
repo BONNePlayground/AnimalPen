@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
@@ -22,14 +23,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.MushroomCow;
@@ -39,6 +40,7 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SuspiciousStewItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -53,20 +55,16 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
 
     @Shadow
-    @Nullable
-    private MobEffect effect;
-
-
-    @Shadow
-    private int effectDuration;
-
-
-    @Shadow
     public abstract MushroomCow.MushroomType getVariant();
 
 
     @Shadow
-    protected abstract Optional<Pair<MobEffect, Integer>> getEffectFromItemStack(ItemStack itemStack);
+    @Nullable
+    private List<SuspiciousEffectHolder.EffectEntry> stewEffects;
+
+
+    @Shadow
+    protected abstract Optional<List<SuspiciousEffectHolder.EffectEntry>> getEffectsFromItemStack(ItemStack itemStack);
 
 
     @Intrinsic
@@ -136,15 +134,13 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             }
 
             ItemStack bowlStack;
-            boolean suspicious = this.effect != null;
+            boolean suspicious = this.stewEffects != null;
 
             if (suspicious)
             {
                 bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
-                SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
-
-                this.effect = null;
-                this.effectDuration = 0;
+                SuspiciousStewItem.saveMobEffects(bowlStack, this.stewEffects);
+                this.stewEffects = null;
             }
             else
             {
@@ -181,7 +177,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         else if (itemStack.is(ItemTags.SMALL_FLOWERS) &&
             this.getVariant() == MushroomCow.MushroomType.BROWN)
         {
-            if (this.effect != null)
+            if (this.stewEffects != null)
             {
                 if (player.level() instanceof ServerLevel serverLevel)
                 {
@@ -197,7 +193,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             }
             else
             {
-                Optional<Pair<MobEffect, Integer>> optional = this.getEffectFromItemStack(itemStack);
+                Optional<List<SuspiciousEffectHolder.EffectEntry>> optional = this.getEffectsFromItemStack(itemStack);
 
                 if (optional.isEmpty())
                 {
@@ -209,8 +205,6 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                     // Next is processed only for server side.
                     return true;
                 }
-
-                Pair<MobEffect, Integer> pair = optional.get();
 
                 if (player.level() instanceof ServerLevel serverLevel)
                 {
@@ -224,14 +218,13 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                         0.05);
                 }
 
-                this.effect = pair.getLeft();
-                this.effectDuration = pair.getRight();
-
                 if (!player.getAbilities().instabuild)
                 {
                     itemStack.shrink(1);
                     player.setItemInHand(hand, itemStack);
                 }
+
+                this.stewEffects = optional.get();
 
                 if (player.level() instanceof ServerLevel serverLevel)
                 {
@@ -282,7 +275,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         ItemStack itemStack;
 
-        if (this.effect == null)
+        if (this.stewEffects == null)
         {
             itemStack = Items.MUSHROOM_STEW.getDefaultInstance();
         }
