@@ -4,14 +4,11 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.animal;
+package lv.id.bonne.animalpen.mixin.watercreature;
 
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -34,7 +31,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.AgeableWaterCreature;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -42,31 +39,27 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
-@Mixin(Animal.class)
+@Mixin(AgeableWaterCreature.class)
 @Implements(@Interface(iface = AnimalPenInterface.class, prefix = "animalPen$", unique = true))
-public abstract class AnimalPenAnimal extends Mob
+public abstract class AnimalPenWaterCreature extends Mob
 {
-    protected AnimalPenAnimal(EntityType<? extends Mob> entityType,
+    protected AnimalPenWaterCreature(EntityType<? extends Mob> entityType,
         Level level)
     {
         super(entityType, level);
     }
 
-
-    @Shadow
-    public abstract boolean isFood(ItemStack itemStack);
-
-
-    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    public void injectAddAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
+    @Override
+    public void addAdditionalSaveData(CompoundTag compoundTag)
     {
+        super.addAdditionalSaveData(compoundTag);
         this.animalPen$animalPenSaveTag(compoundTag);
     }
 
-
-    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    public void injectReadAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
+    @Override
+    public void readAdditionalSaveData(CompoundTag compoundTag)
     {
+        super.readAdditionalSaveData(compoundTag);
         this.animalPen$animalPenLoadTag(compoundTag);
     }
 
@@ -144,7 +137,7 @@ public abstract class AnimalPenAnimal extends Mob
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.isFood(itemStack))
+        if (this.animal$isFood(itemStack))
         {
             if (this.animalPen$foodCooldown > 0)
             {
@@ -285,6 +278,14 @@ public abstract class AnimalPenAnimal extends Mob
         lines.add(Pair.of(foodItem, component));
 
         return lines;
+    }
+
+
+
+    @Unique
+    public boolean animal$isFood(ItemStack itemStack)
+    {
+        return false;
     }
 
 

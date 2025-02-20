@@ -17,6 +17,8 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -43,7 +45,10 @@ public class AnimalPenBlockRegistry
     private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
     {
         return AnimalPensItemRegistry.REGISTRY.register(name, () ->
-            new BlockItem(block.get(), new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
+            new BlockItem(block.get(),
+                new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).
+                    setId(ResourceKey.create(Registries.ITEM,
+                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
     }
 
     /**
@@ -56,23 +61,31 @@ public class AnimalPenBlockRegistry
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
+            BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                 strength(1.0f).
                 sound(SoundType.GLASS).
-                noOcclusion())
+                noOcclusion().
+                setId(ResourceKey.create(Registries.BLOCK,
+                    ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "aquarium_block")))
+        )
     );
 
     static {
         // Register a variant for each wood type
         WoodType.values().forEach(woodType ->
         {
+            String name = woodType.name().toLowerCase();
+
             // Register the block
-            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodType.name().toLowerCase(),
+            RegistrySupplier<Block> block = registerBlock("animal_pen_" + name,
                 () -> new AnimalPenBlock(
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                         strength(1.0f).
                         sound(SoundType.WOOD).
-                        noOcclusion()));
+                        noOcclusion().
+                    setId(ResourceKey.create(Registries.BLOCK,
+                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + name)))
+                ));
 
             ANIMAL_PENS.put(woodType, block);
         });

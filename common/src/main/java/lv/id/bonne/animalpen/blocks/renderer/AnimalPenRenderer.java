@@ -27,6 +27,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
@@ -65,7 +66,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             CompoundTag cloneTag = new CompoundTag();
             animal.save(cloneTag);
 
-            EntityType.create(cloneTag, tileEntity.getLevel()).
+            EntityType.create(cloneTag, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
                 map(entity -> (Animal) entity).
                 ifPresent(clone ->
                 {
@@ -143,8 +144,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            getRenderer(animal).
-            render(animal, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -156,8 +156,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
                 this.dyingAnimal.deathTime = tick;
 
                 this.minecraft.getEntityRenderDispatcher().
-                    getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
             }
         });
 

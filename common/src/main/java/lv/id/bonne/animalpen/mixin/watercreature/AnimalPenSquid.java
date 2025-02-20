@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.wateranimal;
+package lv.id.bonne.animalpen.mixin.watercreature;
 
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ import net.minecraft.world.level.Level;
 
 
 @Mixin(Squid.class)
-public class AnimalPenSquid extends AnimalPenWaterAnimal
+public class AnimalPenSquid extends AnimalPenWaterCreature
 {
     protected AnimalPenSquid(EntityType<? extends Mob> entityType,
         Level level)

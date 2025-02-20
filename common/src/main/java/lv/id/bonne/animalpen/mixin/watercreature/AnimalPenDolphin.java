@@ -4,18 +4,16 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.wateranimal;
+package lv.id.bonne.animalpen.mixin.watercreature;
 
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 import java.util.List;
 import java.util.Map;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
@@ -27,7 +25,7 @@ import net.minecraft.world.level.Level;
 
 
 @Mixin(Dolphin.class)
-public class AnimalPenDolphin extends AnimalPenWaterAnimal
+public class AnimalPenDolphin extends AnimalPenWaterCreature
 {
     protected AnimalPenDolphin(EntityType<? extends Mob> entityType,
         Level level)

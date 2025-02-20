@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -59,8 +59,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
 
     @Override
-    @NotNull
-    protected ItemInteractionResult useItemOn(ItemStack itemStack,
+    protected InteractionResult useItemOn(ItemStack itemStack,
         BlockState blockState,
         Level level,
         BlockPos blockPos,
@@ -68,11 +67,11 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         InteractionHand interactionHand,
         BlockHitResult blockHitResult)
     {
-        ItemInteractionResult result = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
+        InteractionResult result = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
 
-        if (result == ItemInteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
+        if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -82,11 +81,11 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
                 entity.processContainer(player, interactionHand))
             {
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
         else
@@ -94,11 +93,11 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
                 entity.interactWithPen(player, interactionHand))
             {
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
     }

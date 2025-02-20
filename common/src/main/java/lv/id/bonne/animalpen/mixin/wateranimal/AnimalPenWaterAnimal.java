@@ -25,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -197,7 +198,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
             player.level().playSound(null,
                 position,
-                this.getEatingSound(itemStack),
+                SoundEvents.GENERIC_EAT.value(),
                 SoundSource.NEUTRAL,
                 1.0F,
                 Mth.randomBetween(player.level().random, 0.8F, 1.2F));

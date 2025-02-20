@@ -33,9 +33,10 @@
     "animal.AnimalPenTurtle",
     "animal.AnimalPenWolf",
     "wateranimal.AnimalPenAbstractFish",
-    "wateranimal.AnimalPenDolphin",
-    "wateranimal.AnimalPenSquid",
-    "wateranimal.AnimalPenWaterAnimal"
+    "wateranimal.AnimalPenWaterAnimal",
+    "watercreature.AnimalPenWaterCreature",
+    "watercreature.AnimalPenDolphin",
+    "watercreature.AnimalPenSquid"
   ],
   "injectors": {
     "defaultRequire": 1

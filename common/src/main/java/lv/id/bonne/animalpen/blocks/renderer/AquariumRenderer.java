@@ -25,9 +25,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
@@ -42,7 +43,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedLight,
         int combinedOverlay)
     {
-        WaterAnimal animal = tileEntity.getStoredAnimal();
+        Mob animal = tileEntity.getStoredAnimal();
 
         if (animal == null)
         {
@@ -58,8 +59,8 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             CompoundTag cloneTag = new CompoundTag();
             animal.save(cloneTag);
 
-            EntityType.create(cloneTag, tileEntity.getLevel()).
-                map(entity -> (WaterAnimal) entity).
+            EntityType.create(cloneTag, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
+                map(entity -> (Mob) entity).
                 ifPresent(clone ->
                 {
                     this.dyingAnimal = clone;
@@ -106,7 +107,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     }
 
 
-    private void renderAnimal(WaterAnimal animal,
+    private void renderAnimal(Mob animal,
         AquariumTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -140,8 +141,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            getRenderer(animal).
-            render(animal, 0, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -153,8 +153,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
                 this.dyingAnimal.deathTime = tick;
 
                 this.minecraft.getEntityRenderDispatcher().
-                    getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
             }
         });
 
@@ -162,7 +161,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     }
 
 
-    private void renderCounter(WaterAnimal animal,
+    private void renderCounter(Mob animal,
         AquariumTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -200,7 +199,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     }
 
 
-    private void renderTextLines(WaterAnimal animal,
+    private void renderTextLines(Mob animal,
         AquariumTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -299,5 +298,5 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     /**
      * Dying animal instance.
      */
-    private WaterAnimal dyingAnimal;
+    private Mob dyingAnimal;
 }

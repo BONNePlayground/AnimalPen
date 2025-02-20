@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.AgeableWaterCreature;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -125,7 +126,7 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (!(livingEntity instanceof WaterAnimal animal))
+        if (!(livingEntity instanceof WaterAnimal animal) && !(livingEntity instanceof AgeableWaterCreature creature))
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.not_water_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -146,7 +147,7 @@ public class AnimalContainerItem extends Item
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
             itemTag = new CompoundTag();
-            animal.save(itemTag);
+            livingEntity.save(itemTag);
         }
         else
         {

@@ -49,7 +49,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Shadow
     @Final
-    private static Map<DyeColor, ItemLike> ITEM_BY_DYE;
+    private static Map<DyeColor, ItemLike> COLOR_BY_DYE;
 
 
     @Shadow
@@ -144,7 +144,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
 
-            ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
+            ItemLike itemLike = COLOR_BY_DYE.get(this.getColor());
 
             int woolCount = 1;
 

@@ -14,6 +14,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.platform.ClientPlatformHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -35,13 +36,10 @@ public class AnimalPenTileEntityRegistry
 
     public static final RegistrySupplier<BlockEntityType<AnimalPenTileEntity>> ANIMAL_PEN_TILE_ENTITY =
         REGISTRY.register("animal_pen_tile_entity",
-            () -> BlockEntityType.Builder.of(AnimalPenTileEntity::new,
-                    AnimalPenBlockRegistry.ANIMAL_PENS.values().stream().map(Supplier::get).toArray(Block[]::new)).
-                build(null));
+            () -> ClientPlatformHelper.create(AnimalPenTileEntity::new,
+                    AnimalPenBlockRegistry.ANIMAL_PENS.values().stream().map(Supplier::get).toArray(Block[]::new)));
 
     public static final RegistrySupplier<BlockEntityType<AquariumTileEntity>> AQUARIUM_TILE_ENTITY =
         REGISTRY.register("aquarium_tile_entity",
-            () -> BlockEntityType.Builder.of(AquariumTileEntity::new,
-                    AnimalPenBlockRegistry.AQUARIUM.get()).
-                build(null));
+            () -> ClientPlatformHelper.create(AquariumTileEntity::new, AnimalPenBlockRegistry.AQUARIUM.get()));
 }

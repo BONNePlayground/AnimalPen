@@ -27,9 +27,10 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
@@ -123,7 +124,7 @@ public class AquariumTileEntity extends BlockEntity
      *
      * @return Animal instance stored in block entity.
      */
-    public WaterAnimal getStoredAnimal()
+    public Mob getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.inventory.getItem(0).isEmpty())
         {
@@ -134,7 +135,7 @@ public class AquariumTileEntity extends BlockEntity
                 return this.storedAnimal;
             }
 
-            EntityType.create(tag, this.level).map(entity -> (WaterAnimal) entity).
+            EntityType.create(tag, this.getLevel(), EntitySpawnReason.TRIGGERED).map(entity -> (Mob) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
         else if (this.storedAnimal != null && this.inventory.getItem(0).isEmpty())
@@ -169,7 +170,7 @@ public class AquariumTileEntity extends BlockEntity
 
         boolean updated = false;
 
-        WaterAnimal animal = this.getStoredAnimal();
+        Mob animal = this.getStoredAnimal();
 
         if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
         {
@@ -238,7 +239,7 @@ public class AquariumTileEntity extends BlockEntity
                     return true;
                 }
 
-                WaterAnimal animal = this.getStoredAnimal();
+                Mob animal = this.getStoredAnimal();
                 
                 if (animal == null)
                 {
@@ -274,7 +275,7 @@ public class AquariumTileEntity extends BlockEntity
             }
             else
             {
-                WaterAnimal animal = this.getStoredAnimal();
+                Mob animal = this.getStoredAnimal();
                 CompoundTag itemInHandTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
                 if (animal == null ||
@@ -333,7 +334,7 @@ public class AquariumTileEntity extends BlockEntity
             return true;
         }
 
-        WaterAnimal animal = this.getStoredAnimal();
+        Mob animal = this.getStoredAnimal();
 
         if (animal == null)
         {
@@ -375,7 +376,7 @@ public class AquariumTileEntity extends BlockEntity
             return;
         }
 
-        WaterAnimal animal = this.getStoredAnimal();
+        Mob animal = this.getStoredAnimal();
 
         if (animal == null)
         {
@@ -404,7 +405,7 @@ public class AquariumTileEntity extends BlockEntity
             this.worldPosition.getY(),
             this.worldPosition.getZ());
 
-        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable().get());
 
         LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
@@ -432,7 +433,7 @@ public class AquariumTileEntity extends BlockEntity
             return;
         }
 
-        WaterAnimal animal = this.getStoredAnimal();
+        Mob animal = this.getStoredAnimal();
 
         if (animal != null)
         {
@@ -489,7 +490,7 @@ public class AquariumTileEntity extends BlockEntity
     };
 
 
-    private WaterAnimal storedAnimal;
+    private Mob storedAnimal;
 
     private int tickCounter;
 
