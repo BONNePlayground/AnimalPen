@@ -44,6 +44,8 @@
   "display.animal_pen.stored_food": "§3Stored: %d",
   "display.animal_pen.milk_cooldown": "%d cooldown",
   "display.animal_pen.milk_ready": "§2Ready",
+  "display.animal_pen.frog_light_cooldown": "%d cooldown",
+  "display.animal_pen.frog_light_ready": "§2Ready",
   "display.animal_pen.pollen_cooldown": "%d cooldown",
   "display.animal_pen.pollen_level": "§e%d §epollen level",
   "display.animal_pen.pollen_level_max": "§2%d §2pollen level",
