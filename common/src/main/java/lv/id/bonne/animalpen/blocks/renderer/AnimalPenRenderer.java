@@ -130,7 +130,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         animal.yHeadRotO = 0.0f;
 
         // Stop animations
-        animal.tickCount = 0;
+        animal.tickCount = tileEntity.getTickCounter();
 
         poseStack.pushPose();
         poseStack.translate(0, (4/16f), 0);
