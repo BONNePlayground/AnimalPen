@@ -63,11 +63,13 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         if (this.animalPen$pollenCount < 5)
         {
-            this.animalPen$pollenCount++;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                this.getType(),
-                Items.HONEY_BLOCK,
-                this.animalPen$animalCount);
+            if (++this.animalPen$pollenCount != 5)
+            {
+                this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                    this.getType(),
+                    Items.HONEY_BLOCK,
+                    this.animalPen$animalCount);
+            }
 
             return true;
         }
