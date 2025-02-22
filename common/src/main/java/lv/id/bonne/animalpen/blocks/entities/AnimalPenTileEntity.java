@@ -380,6 +380,8 @@ public class AnimalPenTileEntity extends BlockEntity
             return;
         }
 
+        weapon.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+
         this.deathTicker.add(0);
 
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
@@ -413,7 +415,7 @@ public class AnimalPenTileEntity extends BlockEntity
             Block.popResource(level, this.getBlockPos().above(), itemStack));
 
         int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
-        ExperienceOrb.award((ServerLevel)this.level, position, reward);
+        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1, 0.5), reward);
     }
 
 
