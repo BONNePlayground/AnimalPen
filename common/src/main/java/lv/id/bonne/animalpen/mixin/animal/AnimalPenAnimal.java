@@ -223,7 +223,7 @@ public abstract class AnimalPenAnimal extends Mob
             this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
-                this.animalPen$animalCount);
+                stackSize);
 
             return true;
         }

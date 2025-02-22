@@ -151,7 +151,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
-                this.animalPen$animalCount);
+                stackSize);
 
             return true;
         }
