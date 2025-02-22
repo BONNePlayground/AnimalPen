@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -211,6 +212,24 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         if (textList.isEmpty())
         {
             return;
+        }
+
+        BlockPos blockPos = tileEntity.getBlockPos();
+        Vec3 playerPos = this.minecraft.player.position();
+
+        // Determine the player's relative position to the block
+        double dx = playerPos.x - (blockPos.getX() + 0.5);
+        double dz = playerPos.z - (blockPos.getZ() + 0.5);
+
+        Direction face = Math.abs(dx) > Math.abs(dz) ?
+            dx > 0 ? Direction.EAST : Direction.WEST :
+            dz > 0 ? Direction.SOUTH : Direction.NORTH;
+
+        switch (face)
+        {
+            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(-90));
         }
 
         double totalHeight = 1.75 + 0.25 * (textList.size() - 1);
