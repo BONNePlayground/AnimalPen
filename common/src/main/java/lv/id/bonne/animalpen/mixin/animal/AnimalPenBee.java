@@ -63,7 +63,9 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         if (this.animalPen$pollenCount < 5)
         {
-            if (++this.animalPen$pollenCount != 5)
+            this.animalPen$pollenCount++;
+
+            if (this.animalPen$pollenCount != 5)
             {
                 this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                     this.getType(),
@@ -202,18 +204,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$pollenCooldown / 20).format(AnimalPen.DATE_FORMATTER));
 
-            ItemStack itemStack;
-
-            if ((tick / 100) % 2 == 0)
-            {
-                itemStack = Items.SHEARS.getDefaultInstance();
-            }
-            else
-            {
-                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
-            }
-
-            lines.add(Pair.of(itemStack, component));
+            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
         }
 
         if (this.animalPen$pollenCount >= 0)
@@ -231,7 +222,18 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                     this.animalPen$pollenCount);
             }
 
-            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
+            ItemStack itemStack;
+
+            if ((tick / 100) % 2 == 0)
+            {
+                itemStack = Items.SHEARS.getDefaultInstance();
+            }
+            else
+            {
+                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
+            }
+
+            lines.add(Pair.of(itemStack, component));
         }
 
         return lines;
