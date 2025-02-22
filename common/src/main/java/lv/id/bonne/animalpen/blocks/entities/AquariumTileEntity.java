@@ -416,10 +416,10 @@ public class AquariumTileEntity extends BlockEntity
             withRandom(level.random);
 
         lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
-            Block.popResource(level, this.getBlockPos().above(), itemStack));
+            Block.popResource(level, this.getBlockPos().offset(0.5, 1.5, 0.5), itemStack));
 
         int reward = ((WaterAnimalInvoker) animal).invokeGetExperienceReward(player);
-        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1, 0.5), reward);
+        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1.5, 0.5), reward);
     }
 
 
