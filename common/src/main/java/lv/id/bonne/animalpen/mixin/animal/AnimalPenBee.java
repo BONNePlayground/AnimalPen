@@ -82,11 +82,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$pollenCooldown > 0)
-        {
-            tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
-        }
-
+        tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
         tag.putInt("pollen_count", this.animalPen$pollenCount);
     }
 
@@ -97,15 +93,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("pollen_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$pollenCooldown = tag.getInt("pollen_cooldown");
-        }
-
-        if (tag.contains("pollen_count", Tag.TAG_INT))
-        {
-            this.animalPen$pollenCount = tag.getInt("pollen_count");
-        }
+        this.animalPen$pollenCooldown = tag.getInt("pollen_cooldown");
+        this.animalPen$pollenCount = tag.getInt("pollen_count");
     }
 
 

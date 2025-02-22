@@ -72,10 +72,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$eggCooldown > 0)
-        {
-            tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
-        }
+        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
     }
 
 
@@ -85,10 +82,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("egg_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
-        }
+        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
     }
 
 
