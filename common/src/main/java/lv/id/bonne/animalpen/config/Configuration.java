@@ -56,7 +56,7 @@ public class Configuration
         // Bee and pollen
         this.cooldownList.computeIfAbsent(Items.HONEY_BLOCK.arch$registryName(), i -> new ArrayList<>()).
             add(new CooldownEntry(EntityType.BEE.arch$registryName(),
-                60 * 5 * 20 + 20,
+                60 * 20 + 20,
                 -1 * 20,
                 10 * 20));
 
