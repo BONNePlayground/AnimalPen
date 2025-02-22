@@ -87,10 +87,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
             tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
         }
 
-        if (this.animalPen$pollenCount > 0)
-        {
-            tag.putInt("pollen_count", this.animalPen$pollenCount);
-        }
+        tag.putInt("pollen_count", this.animalPen$pollenCount);
     }
 
 

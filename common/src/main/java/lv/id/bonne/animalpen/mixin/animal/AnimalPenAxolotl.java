@@ -67,10 +67,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("stored_food", Tag.TAG_INT))
-        {
-            this.animalPen$storedFood = tag.getInt("stored_food");
-        }
+        this.animalPen$storedFood = tag.getInt("stored_food");
     }
 
 
