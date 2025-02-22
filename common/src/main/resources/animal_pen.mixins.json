@@ -6,6 +6,7 @@
   "client": [
   ],
   "mixins": [
+    "AquariumBlockCollisionPrevention",
     "accessors.AnimalInvoker",
     "accessors.EntityAccessor",
     "accessors.WaterAnimalInvoker",
