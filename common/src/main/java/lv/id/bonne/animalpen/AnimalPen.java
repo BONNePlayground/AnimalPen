@@ -32,7 +32,7 @@ public final class AnimalPen
         AnimalPen.CONFIG_MANAGER.readConfig();
 
         CommandRegistrationEvent.EVENT.register(
-            (dispatcher, selection) -> AnimalPenCommands.register(dispatcher));
+            (dispatcher, var2, var3) -> AnimalPenCommands.register(dispatcher));
     }
 
 
