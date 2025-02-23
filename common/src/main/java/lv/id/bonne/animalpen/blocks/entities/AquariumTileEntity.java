@@ -46,6 +46,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
+import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
+
 
 public class AquariumTileEntity extends BlockEntity
 {
@@ -388,6 +390,8 @@ public class AquariumTileEntity extends BlockEntity
             return;
         }
 
+        weapon.hurtAndBreak(1, player, getSlotForHand(InteractionHand.MAIN_HAND));
+
         this.deathTicker.add(0);
 
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
@@ -420,7 +424,7 @@ public class AquariumTileEntity extends BlockEntity
             forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
         int reward = animal.getExperienceReward((ServerLevel) level, player);
-        ExperienceOrb.award((ServerLevel)this.level, position, reward);
+        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1.5, 0.5), reward);
     }
 
 

@@ -96,10 +96,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$woolCooldown > 0)
-        {
-            tag.putInt("wool_cooldown", this.animalPen$woolCooldown);
-        }
+        tag.putInt("wool_cooldown", this.animalPen$woolCooldown);
     }
 
 
@@ -109,10 +106,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("wool_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$woolCooldown = tag.getInt("wool_cooldown");
-        }
+        this.animalPen$woolCooldown = tag.getInt("wool_cooldown");
     }
 
 

@@ -74,15 +74,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$eggCooldown > 0)
-        {
-            tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
-        }
-
-        if (this.animalPen$scuteCount > 0)
-        {
-            tag.putInt("scute_count", this.animalPen$scuteCount);
-        }
+        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+        tag.putInt("scute_count", this.animalPen$scuteCount);
     }
 
 
@@ -92,15 +85,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("egg_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
-        }
-
-        if (tag.contains("scute_count", Tag.TAG_INT))
-        {
-            this.animalPen$scuteCount = tag.getInt("scute_count");
-        }
+        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
+        this.animalPen$scuteCount = tag.getInt("scute_count");
     }
 
 

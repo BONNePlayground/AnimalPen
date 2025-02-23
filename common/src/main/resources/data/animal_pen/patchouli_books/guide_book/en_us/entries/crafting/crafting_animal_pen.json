@@ -1,0 +1,42 @@
+{
+  "name": "Crafting",
+  "icon": "minecraft:crafting_table",
+  "category": "animal_pen:category_animal_pen",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can craft an Animal Pen from simple materials like fences and smooth stone slabs."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_acacia",
+      "recipe2": "animal_pen:animal_pen_birch"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_crimson",
+      "recipe2": "animal_pen:animal_pen_dark_oak"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_jungle",
+      "recipe2": "animal_pen:animal_pen_oak"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_spruce",
+      "recipe2": "animal_pen:animal_pen_warped"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_mangrove",
+      "recipe2": "animal_pen:animal_pen_bamboo"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_cherry",
+      "recipe2": "animal_pen:animal_pen_pale_oak"
+    }
+  ]
+}
