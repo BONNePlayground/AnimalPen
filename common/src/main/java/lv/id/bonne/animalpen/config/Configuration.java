@@ -155,9 +155,9 @@ public class Configuration
                 10 * 20));
         this.cooldownList.computeIfAbsent(Items.BRUSH.arch$registryName(), i -> new ArrayList<>()).
             add(new CooldownEntry(EntityType.ARMADILLO.arch$registryName(),
-                0,
-                0,
-                0));
+                60 * 20 + 20,
+                -1 * 20,
+                10 * 20));
     }
 
 

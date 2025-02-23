@@ -45,6 +45,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
+import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
+
 
 public class AquariumTileEntity extends BlockEntity
 {
@@ -387,7 +389,7 @@ public class AquariumTileEntity extends BlockEntity
             return;
         }
 
-        weapon.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+        weapon.hurtAndBreak(1, player, getSlotForHand(InteractionHand.MAIN_HAND));
 
         this.deathTicker.add(0);
 
