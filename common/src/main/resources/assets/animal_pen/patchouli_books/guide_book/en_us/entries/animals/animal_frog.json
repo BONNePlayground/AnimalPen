@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:slime_ball",
+      "item": "tag:minecraft:frog_food",
       "text": "Feed frogs slime balls to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the frog and drop its loot."
     },
     {

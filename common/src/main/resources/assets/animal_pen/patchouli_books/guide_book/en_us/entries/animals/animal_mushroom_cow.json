@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:wheat",
+      "item": "tag:minecraft:cow_food",
       "text": "Feed mooshrooms wheat to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the mooshroom cow and drop its loot."
     },
     {
@@ -30,7 +30,7 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:poppy",
+      "item": "tag:minecraft:small_flowers",
       "text": "Using any small flower on the Animal Pen with a brown mooshroom inside will make the next stew a Suspicious Stew."
     }
   ]

@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the polar bear and drop its loot."
     }
   ]

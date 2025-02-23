@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:seagrass",
+      "item": "tag:minecraft:turtle_food",
       "text": "Feed turtles seagrass to breed them and increase their number in the pen. This will also drop turtle scutes."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the turtles and drop their loot."
     },
     {

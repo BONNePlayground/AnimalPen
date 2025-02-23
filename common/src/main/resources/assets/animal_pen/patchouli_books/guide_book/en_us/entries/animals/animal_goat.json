@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:wheat",
+      "item": "tag:minecraft:goat_food",
       "text": "Feed goats wheat to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the goat and drop its loot."
     },
     {

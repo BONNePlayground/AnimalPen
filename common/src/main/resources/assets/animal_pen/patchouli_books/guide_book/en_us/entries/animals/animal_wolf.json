@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:bone",
+      "item": "tag:minecraft:wolf_food",
       "text": "Feed wolves bones to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the wolf and drop its loot."
     }
   ]

@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:wheat",
+      "item": "tag:minecraft:cow_food",
       "text": "Feed cows wheat to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the cow and drop its loot."
     },
     {

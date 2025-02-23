@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:tropical_fish_bucket",
+      "item": "tag:minecraft:axolotl_food",
       "text": "Axolotls eat only tropical fish buckets that you provide to the Animal Pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the axolotl."
     }
   ]

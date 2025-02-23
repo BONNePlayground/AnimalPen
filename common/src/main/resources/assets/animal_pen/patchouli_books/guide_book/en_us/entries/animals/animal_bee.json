@@ -11,12 +11,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:poppy",
+      "item": "tag:minecraft:bee_food",
       "text": "Feed bees a small flower to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Animal Pen will kill the bees."
     },
     {

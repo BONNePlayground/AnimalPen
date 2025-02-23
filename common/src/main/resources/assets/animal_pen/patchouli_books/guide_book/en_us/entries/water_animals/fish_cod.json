@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:seagrass",
+      "item": "minecraft:seagrass,minecraft:kelp",
       "text": "Feed cod seagrass or kelp to breed them and increase their number in the Aquarium."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Aquarium will kill the cod and drop its loot."
     }
   ]

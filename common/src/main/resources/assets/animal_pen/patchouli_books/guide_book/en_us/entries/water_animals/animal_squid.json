@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:cod",
+      "item": "tag:minecraft:fishes",
       "text": "Feed squids any fish to breed them and increase their number in the Aquarium."
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:diamond_sword",
+      "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Aquarium will kill the squid and drop its loot."
     }
   ]
