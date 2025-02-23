@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 
 public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
@@ -129,11 +131,14 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
-        poseStack.scale(0.33f, 0.33f, 0.33f);
+
+        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
+
+        poseStack.scale(animalSize, animalSize, animalSize);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
-            float scale = 1 + 0.33f * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            float scale = 1 + animalSize * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
             poseStack.scale(scale, scale, scale);
         }
 
@@ -204,6 +209,24 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         if (textList.isEmpty())
         {
             return;
+        }
+
+        BlockPos blockPos = tileEntity.getBlockPos();
+        Vec3 playerPos = this.minecraft.player.position();
+
+        // Determine the player's relative position to the block
+        double dx = playerPos.x - (blockPos.getX() + 0.5);
+        double dz = playerPos.z - (blockPos.getZ() + 0.5);
+
+        Direction face = Math.abs(dx) > Math.abs(dz) ?
+            dx > 0 ? Direction.EAST : Direction.WEST :
+            dz > 0 ? Direction.SOUTH : Direction.NORTH;
+
+        switch (face)
+        {
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(-90));
         }
 
         double totalHeight = 1.75 + 0.25 * (textList.size() - 1);

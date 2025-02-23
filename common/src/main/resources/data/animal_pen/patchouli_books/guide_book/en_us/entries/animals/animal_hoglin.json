@@ -1,0 +1,22 @@
+{
+  "name": "Hoglin",
+  "icon": "minecraft:hoglin_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:hoglin",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:crimson_fungus",
+      "text": "Feed hoglins crimson fungus to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the hoglin and drop its loot."
+    }
+  ]
+}
