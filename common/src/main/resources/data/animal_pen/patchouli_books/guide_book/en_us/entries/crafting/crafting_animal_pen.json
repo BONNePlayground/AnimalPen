@@ -35,7 +35,8 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "animal_pen:animal_pen_cherry"
+      "recipe": "animal_pen:animal_pen_cherry",
+      "recipe2": "animal_pen:animal_pen_pale_oak"
     }
   ]
 }
