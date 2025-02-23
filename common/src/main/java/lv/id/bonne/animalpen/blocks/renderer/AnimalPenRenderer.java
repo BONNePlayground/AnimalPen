@@ -232,7 +232,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
 
         // Get the facing direction as a vector
-        Vec3 facingVec = Vec3.atLowerCornerOf(facing.getNormal());
+        Vec3 facingVec = Vec3.atLowerCornerOf(facing.getUnitVec3i());
 
         if (toPlayer.dot(facingVec) < 0)
         {
