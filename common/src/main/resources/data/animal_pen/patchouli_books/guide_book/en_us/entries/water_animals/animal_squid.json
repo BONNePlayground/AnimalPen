@@ -1,0 +1,22 @@
+{
+  "name": "Squid",
+  "icon": "minecraft:squid_spawn_egg",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:squid",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:cod",
+      "text": "Feed squids any fish to breed them and increase their number in the Aquarium."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Aquarium will kill the squid and drop its loot."
+    }
+  ]
+}

@@ -114,12 +114,8 @@ public abstract class AnimalPenAnimal extends Mob
     @Intrinsic
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
-        if (this.animalPen$foodCooldown > 0)
-        {
-            tag.putInt("food_cooldown", this.animalPen$foodCooldown);
-        }
-
         // this tag is necessary for animal pickups
+        tag.putInt("food_cooldown", this.animalPen$foodCooldown);
         tag.putLong("animal_count", this.animalPen$animalCount);
     }
 
@@ -127,15 +123,8 @@ public abstract class AnimalPenAnimal extends Mob
     @Intrinsic
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
-        if (tag.contains("food_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$foodCooldown = tag.getInt("food_cooldown");
-        }
-
-        if (tag.contains("animal_count", Tag.TAG_LONG))
-        {
-            this.animalPen$animalCount = tag.getLong("animal_count");
-        }
+        this.animalPen$foodCooldown = tag.getInt("food_cooldown");
+        this.animalPen$animalCount = tag.getLong("animal_count");
     }
 
 
@@ -225,7 +214,7 @@ public abstract class AnimalPenAnimal extends Mob
             this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
-                this.animalPen$animalCount);
+                stackSize);
 
             return true;
         }

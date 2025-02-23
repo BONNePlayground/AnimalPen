@@ -65,10 +65,14 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         if (this.animalPen$pollenCount < 5)
         {
             this.animalPen$pollenCount++;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                this.getType(),
-                Items.HONEY_BLOCK,
-                this.animalPen$animalCount);
+
+            if (this.animalPen$pollenCount != 5)
+            {
+                this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                    this.getType(),
+                    Items.HONEY_BLOCK,
+                    this.animalPen$animalCount);
+            }
 
             return true;
         }
@@ -83,15 +87,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$pollenCooldown > 0)
-        {
-            tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
-        }
-
-        if (this.animalPen$pollenCount > 0)
-        {
-            tag.putInt("pollen_count", this.animalPen$pollenCount);
-        }
+        tag.putInt("pollen_cooldown", this.animalPen$pollenCooldown);
+        tag.putInt("pollen_count", this.animalPen$pollenCount);
     }
 
 
@@ -101,15 +98,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("pollen_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$pollenCooldown = tag.getInt("pollen_cooldown");
-        }
-
-        if (tag.contains("pollen_count", Tag.TAG_INT))
-        {
-            this.animalPen$pollenCount = tag.getInt("pollen_count");
-        }
+        this.animalPen$pollenCooldown = tag.getInt("pollen_cooldown");
+        this.animalPen$pollenCount = tag.getInt("pollen_count");
     }
 
 
@@ -215,18 +205,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$pollenCooldown / 20).format(AnimalPen.DATE_FORMATTER));
 
-            ItemStack itemStack;
-
-            if ((tick / 100) % 2 == 0)
-            {
-                itemStack = Items.SHEARS.getDefaultInstance();
-            }
-            else
-            {
-                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
-            }
-
-            lines.add(Pair.of(itemStack, component));
+            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
         }
 
         if (this.animalPen$pollenCount >= 0)
@@ -244,7 +223,18 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                     this.animalPen$pollenCount);
             }
 
-            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
+            ItemStack itemStack;
+
+            if ((tick / 100) % 2 == 0)
+            {
+                itemStack = Items.SHEARS.getDefaultInstance();
+            }
+            else
+            {
+                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
+            }
+
+            lines.add(Pair.of(itemStack, component));
         }
 
         return lines;
