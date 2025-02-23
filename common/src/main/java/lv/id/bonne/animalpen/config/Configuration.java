@@ -341,7 +341,7 @@ public class Configuration
 
     @JsonComment("Allows to change default animal size in pen.")
     @Expose
-    @SerializedName("animals_can_grow")
+    @SerializedName("animal_size")
     private float animalSize = 0.33f;
 
     @JsonComment("Allows to enable water animal growing in aquarium.")
@@ -352,7 +352,7 @@ public class Configuration
 
     @JsonComment("Allows to change default water animal size in aquarium.")
     @Expose
-    @SerializedName("animals_can_grow")
+    @SerializedName("water_animal_size")
     private float waterAnimalSize = 0.33f;
 
     @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
