@@ -10,8 +10,8 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:slimeball",
-      "text": "Feed frogs slimeballs to breed them and increase their number in the pen."
+      "item": "minecraft:slime_ball",
+      "text": "Feed frogs slime balls to breed them and increase their number in the pen."
     },
     {
       "type": "patchouli:spotlight",
