@@ -1,0 +1,22 @@
+{
+  "name": "Tropical Fish",
+  "icon": "minecraft:tropical_fish_spawn_egg",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:tropical_fish",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:seagrass",
+      "text": "Feed tropical fish seagrass or kelp to breed them and increase their number in the Aquarium."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Aquarium will kill the tropical fish and drop its loot."
+    }
+  ]
+}
