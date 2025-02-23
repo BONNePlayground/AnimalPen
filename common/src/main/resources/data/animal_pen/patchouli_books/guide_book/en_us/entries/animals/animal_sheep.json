@@ -1,0 +1,32 @@
+{
+  "name": "Sheep",
+  "icon": "minecraft:sheep_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:sheep",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "text": "Feed sheep wheat to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the sheep and drop its loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:shears",
+      "text": "Using shears on the Animal Pen will shear the sheep and drop their wool."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:orange_dye",
+      "text": "Using any dye on the Animal Pen will change the sheep's wool color."
+    }
+  ]
+}

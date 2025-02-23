@@ -1,0 +1,22 @@
+{
+  "name": "Cod",
+  "icon": "minecraft:cod_spawn_egg",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:cod",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:seagrass",
+      "text": "Feed cod seagrass or kelp to breed them and increase their number in the Aquarium."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Aquarium will kill the cod and drop its loot."
+    }
+  ]
+}

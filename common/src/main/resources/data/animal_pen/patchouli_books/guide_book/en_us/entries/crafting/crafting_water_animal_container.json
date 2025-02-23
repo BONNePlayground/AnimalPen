@@ -1,0 +1,15 @@
+{
+  "name": "Water Animal Container",
+  "icon": "animal_pen:water_animal_container",
+  "category": "animal_pen:category_items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With a Water Animal Container, you can pick up any Minecraft water animal and deposit them into Aquariums. Clicking an empty container on an Aquarium while crouching will give you half of the animals from the Aquarium."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:water_animal_container"
+    }
+  ]
+}
