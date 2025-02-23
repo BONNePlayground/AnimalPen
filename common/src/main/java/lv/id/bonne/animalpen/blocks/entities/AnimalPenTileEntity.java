@@ -410,7 +410,7 @@ public class AnimalPenTileEntity extends BlockEntity
             withRandom(level.random);
 
         lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
-            Block.popResource(level, this.getBlockPos().offset(0.5, 1, 0.5), itemStack));
+            Block.popResource(level, this.getBlockPos().offset(0, 1, 0), itemStack));
 
         int reward = animal.getExperienceReward();
         ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1, 0.5), reward);
