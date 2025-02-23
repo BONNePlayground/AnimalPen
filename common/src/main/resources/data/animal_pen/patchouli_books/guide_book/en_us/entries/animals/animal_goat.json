@@ -1,0 +1,27 @@
+{
+  "name": "Goat",
+  "icon": "minecraft:goat_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:goat",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "text": "Feed goats wheat to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the goat and drop its loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bucket",
+      "text": "Using a bucket on the Animal Pen with a goat inside will give the player a bucket of milk."
+    }
+  ]
+}

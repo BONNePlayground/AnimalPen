@@ -1,0 +1,27 @@
+{
+  "name": "Chicken",
+  "icon": "minecraft:chicken_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:chicken",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat_seeds",
+      "text": "Feed chickens wheat seeds to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the chickens and drop their loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bucket",
+      "text": "Use a bucket on the Chicken Pen to collect eggs. More chickens mean more eggs."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Crafting",
+  "icon": "minecraft:crafting_table",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can craft an Animal Pen from simple materials: glass, a water bucket, and stone."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:aquarium_block"
+    }
+  ]
+}

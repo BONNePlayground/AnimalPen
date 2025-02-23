@@ -1,0 +1,6 @@
+{
+  "name": "Animal Pen",
+  "description": "The Animal Pen is a simple block that allows players to interact with animals within a single block of space.",
+  "icon": "animal_pen:animal_pen_oak",
+  "sortnum": 1
+}

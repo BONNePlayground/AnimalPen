@@ -1,0 +1,16 @@
+{
+  "name": "Animal Cage",
+  "icon": "animal_pen:animal_cage",
+  "category": "animal_pen:category_items",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With an Animal Cage, you can pick up any Minecraft animal and deposit them into Animal Pens. You cannot pick up tamed or baby animals. Clicking an empty cage on an Animal Pen while crouching will give you half of the animals from the pen."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_cage"
+    }
+  ]
+}
