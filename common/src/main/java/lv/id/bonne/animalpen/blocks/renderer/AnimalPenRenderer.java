@@ -218,18 +218,15 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         Vec3 playerPos = this.minecraft.player.position();
 
         // Determine the player's relative position to the block
-        double dx = playerPos.x - (blockPos.getX() + 0.5);
-        double dz = playerPos.z - (blockPos.getZ() + 0.5);
+        Vec3 toPlayer = new Vec3(playerPos.x() - blockPos.getX(), 0, playerPos.z() - blockPos.getZ());
+        Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
 
-        Direction face = Math.abs(dx) > Math.abs(dz) ?
-            dx > 0 ? Direction.EAST : Direction.WEST :
-            dz > 0 ? Direction.SOUTH : Direction.NORTH;
+        // Get the facing direction as a vector
+        Vec3 facingVec = Vec3.atLowerCornerOf(facing.getNormal());
 
-        switch (face)
+        if (toPlayer.dot(facingVec) < 0)
         {
-            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
         }
 
         double totalHeight = 1.5 + 0.125 * (textList.size() - 1);

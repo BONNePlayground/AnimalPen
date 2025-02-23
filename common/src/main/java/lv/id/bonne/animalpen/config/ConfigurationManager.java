@@ -76,6 +76,7 @@ public class ConfigurationManager
 
             if (this.isInvalid())
             {
+                this.configuration.setDefaults();
                 this.writeConfig(false);
             }
         }
