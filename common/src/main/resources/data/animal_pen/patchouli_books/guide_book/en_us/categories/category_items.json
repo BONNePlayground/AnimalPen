@@ -1,0 +1,6 @@
+{
+  "name": "Items",
+  "description": "The Animal Cage and Water Animal Container allow players to pick up animals and deposit them into an Animal Pen or Aquarium.",
+  "icon": "animal_pen:animal_cage",
+  "sortnum": 0
+}

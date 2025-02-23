@@ -54,11 +54,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
         super.animalPen$animalPenSaveTag(tag);
-
-        if (this.animalPen$storedFood > 0)
-        {
-            tag.putInt("stored_food", this.animalPen$storedFood);
-        }
+        tag.putInt("stored_food", this.animalPen$storedFood);
     }
 
 
@@ -67,11 +63,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
         super.animalPen$animalPenLoadTag(tag);
-
-        if (tag.contains("stored_food", Tag.TAG_INT))
-        {
-            this.animalPen$storedFood = tag.getInt("stored_food");
-        }
+        this.animalPen$storedFood = tag.getInt("stored_food");
     }
 
 
@@ -155,7 +147,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
-                this.animalPen$animalCount);
+                stackSize);
 
             return true;
         }
