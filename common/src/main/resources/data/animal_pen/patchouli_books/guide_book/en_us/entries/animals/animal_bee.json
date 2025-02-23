@@ -1,0 +1,33 @@
+{
+  "name": "Bee",
+  "icon": "minecraft:bee_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:bee",
+      "scale": 1,
+      "text": "Bees collect pollen in the pen over time."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:poppy",
+      "text": "Feed bees a small flower to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the bees."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:shears",
+      "text": "Using shears will remove collected pollen and drop honeycombs."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:glass_bottle",
+      "text": "Using a glass bottle will remove collected pollen and fill the bottle with honey."
+    }
+  ]
+}
