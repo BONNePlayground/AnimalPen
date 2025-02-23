@@ -1,0 +1,22 @@
+{
+  "name": "Trader Llama",
+  "icon": "minecraft:trader_llama_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:trader_llama",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:wheat",
+      "text": "Feed trader llamas wheat to breed them and increase their number in the pen."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the trader llama and drop its loot."
+    }
+  ]
+}

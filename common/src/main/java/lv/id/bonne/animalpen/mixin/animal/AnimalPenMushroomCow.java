@@ -91,10 +91,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$supCooldown > 0)
-        {
-            tag.putInt("sup_cooldown", this.animalPen$supCooldown);
-        }
+        tag.putInt("sup_cooldown", this.animalPen$supCooldown);
     }
 
 
@@ -104,10 +101,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("sup_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$supCooldown = tag.getInt("sup_cooldown");
-        }
+        this.animalPen$supCooldown = tag.getInt("sup_cooldown");
     }
 
 

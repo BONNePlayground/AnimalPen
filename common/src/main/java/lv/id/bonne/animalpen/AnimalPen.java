@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
+import dev.architectury.event.events.common.CommandRegistrationEvent;
+import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
@@ -28,6 +30,9 @@ public final class AnimalPen
         AnimalPenTileEntityRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
+
+        CommandRegistrationEvent.EVENT.register(
+            (dispatcher, selection) -> AnimalPenCommands.register(dispatcher));
     }
 
 
