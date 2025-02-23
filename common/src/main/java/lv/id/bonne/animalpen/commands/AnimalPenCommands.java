@@ -22,7 +22,7 @@ public class AnimalPenCommands
             {
                 AnimalPen.CONFIG_MANAGER.reloadConfig();
 
-                ctx.getSource().sendSuccess(Component.literal("Config file reloaded."), true);
+                ctx.getSource().sendSuccess(() -> Component.literal("Config file reloaded."), true);
 
                 return 1;
             });
@@ -31,7 +31,7 @@ public class AnimalPenCommands
             executes(ctx ->
             {
                 AnimalPen.CONFIG_MANAGER.generateConfig();
-                ctx.getSource().sendSuccess(Component.literal("Config file reset."), true);
+                ctx.getSource().sendSuccess(() -> Component.literal("Config file reset."), true);
                 return 1;
             });
 
