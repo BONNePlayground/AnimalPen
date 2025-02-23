@@ -27,6 +27,10 @@
       "type": "patchouli:crafting",
       "recipe": "animal_pen:animal_pen_spruce",
       "recipe2": "animal_pen:animal_pen_warped"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_mangrove"
     }
   ]
 }
