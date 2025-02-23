@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "group": "animal_pens",
   "pattern": [
     "   ",
     "F F",
@@ -7,7 +8,7 @@
   ],
   "key": {
     "F": {
-      "item": "minecraft:spruce_fence"
+      "item": "minecraft:oak_fence"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"
