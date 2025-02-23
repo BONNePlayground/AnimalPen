@@ -32,6 +32,10 @@
       "type": "patchouli:crafting",
       "recipe": "animal_pen:animal_pen_mangrove",
       "recipe2": "animal_pen:animal_pen_bamboo"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:animal_pen_cherry"
     }
   ]
 }
