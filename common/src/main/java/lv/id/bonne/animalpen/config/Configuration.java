@@ -24,7 +24,65 @@ public class Configuration
     public void init()
     {
         this.cooldownList.clear();
+        this.populateDefaultCooldowns();
 
+        // Init block drop limits at once.
+        this.dropLimitList.clear();
+        this.populateDefaultDropLimits();
+
+        this.animalSize = 0.33f;
+        this.waterAnimalSize = 0.33f;
+
+        this.growAnimals = false;
+        this.growWaterAnimals = false;
+
+        this.dropScuteAtStart = false;
+    }
+
+
+    public boolean isInvalid()
+    {
+        return this.dropLimitList == null ||
+            this.cooldownList == null ||
+            this.blockedAnimals == null ||
+            this.waterAnimalSize == null ||
+            this.animalSize == null;
+    }
+
+
+    public void setDefaults()
+    {
+        if (this.dropLimitList == null)
+        {
+            this.dropLimitList = new HashMap<>();
+            this.populateDefaultDropLimits();
+        }
+
+        if (this.cooldownList == null)
+        {
+            this.cooldownList = new HashMap<>();
+            this.populateDefaultCooldowns();
+        }
+
+        if (this.blockedAnimals == null)
+        {
+            this.blockedAnimals = new HashSet<>();
+        }
+
+        if (this.animalSize == null || this.animalSize <= 0)
+        {
+            this.animalSize = 0.33f;
+        }
+
+        if (this.waterAnimalSize == null || this.waterAnimalSize <= 0)
+        {
+            this.waterAnimalSize = 0.33f;
+        }
+    }
+
+
+    private void populateDefaultCooldowns()
+    {
         // Food item
         this.cooldownList.computeIfAbsent(Items.APPLE.arch$registryName(), i -> new ArrayList<>()).
             add(new CooldownEntry(ANY,
@@ -84,30 +142,15 @@ public class Configuration
                 0,
                 0,
                 0));
-
-        // Init block drop limits at once.
-        this.dropLimitList.clear();
-        this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
-        this.dropLimitList.put(Items.TURTLE_EGG.arch$registryName(), 64 * 5);
-        this.dropLimitList.put(Items.WHITE_WOOL.arch$registryName(), 64 * 5);
-
-        this.animalSize = 0.33f;
-        this.waterAnimalSize = 0.33f;
-
-        this.growAnimals = false;
-        this.growWaterAnimals = false;
-
-        this.dropScuteAtStart = false;
     }
 
 
-    public boolean isInvalid()
+    private void populateDefaultDropLimits()
     {
-        return this.dropLimitList == null ||
-            this.cooldownList == null ||
-            this.blockedAnimals == null ||
-            this.waterAnimalSize <= 0 ||
-            this.animalSize <= 0;
+        this.dropLimitList = new HashMap<>();
+        this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
+        this.dropLimitList.put(Items.TURTLE_EGG.arch$registryName(), 64 * 5);
+        this.dropLimitList.put(Items.WHITE_WOOL.arch$registryName(), 64 * 5);
     }
 
 
@@ -328,7 +371,7 @@ public class Configuration
     @JsonComment("Allows to change default animal size in pen.")
     @Expose
     @SerializedName("animal_size")
-    private float animalSize = 0.33f;
+    private Float animalSize;
 
     @JsonComment("Allows to enable water animal growing in aquarium.")
     @JsonComment("The more animals are inside it, the larger it will be.")
@@ -339,7 +382,7 @@ public class Configuration
     @JsonComment("Allows to change default water animal size in aquarium.")
     @Expose
     @SerializedName("water_animal_size")
-    private float waterAnimalSize = 0.33f;
+    private Float waterAnimalSize;
 
     @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
     @JsonComment("or when food cooldown timer is finished (false).")
