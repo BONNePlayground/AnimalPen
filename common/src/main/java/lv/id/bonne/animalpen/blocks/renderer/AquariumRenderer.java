@@ -137,11 +137,14 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
-        poseStack.scale(0.33f, 0.33f, 0.33f);
+
+        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
+
+        poseStack.scale(animalSize, animalSize, animalSize);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
-            float scale = 1 + 0.33f * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            float scale = 1 + animalSize * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
             poseStack.scale(scale, scale, scale);
         }
 

@@ -90,12 +90,24 @@ public class Configuration
         this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
         this.dropLimitList.put(Items.TURTLE_EGG.arch$registryName(), 64 * 5);
         this.dropLimitList.put(Items.WHITE_WOOL.arch$registryName(), 64 * 5);
+
+        this.animalSize = 0.33f;
+        this.waterAnimalSize = 0.33f;
+
+        this.growAnimals = false;
+        this.growWaterAnimals = false;
+
+        this.dropScuteAtStart = false;
     }
 
 
     public boolean isInvalid()
     {
-        return this.dropLimitList == null || this.cooldownList == null || this.blockedAnimals == null;
+        return this.dropLimitList == null ||
+            this.cooldownList == null ||
+            this.blockedAnimals == null ||
+            this.waterAnimalSize <= 0 ||
+            this.animalSize <= 0;
     }
 
 
@@ -176,6 +188,17 @@ public class Configuration
 
 
     /**
+     * Gets animal size.
+     *
+     * @return the animal size
+     */
+    public float getAnimalSize()
+    {
+        return this.animalSize;
+    }
+
+
+    /**
      * Is grow water animals boolean.
      *
      * @return the boolean
@@ -183,6 +206,17 @@ public class Configuration
     public boolean isGrowWaterAnimals()
     {
         return this.growWaterAnimals;
+    }
+
+
+    /**
+     * Gets water animal size.
+     *
+     * @return the water animal size
+     */
+    public float getWaterAnimalSize()
+    {
+        return this.waterAnimalSize;
     }
 
 
@@ -291,17 +325,27 @@ public class Configuration
     @SerializedName("animals_can_grow")
     private boolean growAnimals = false;
 
+    @JsonComment("Allows to change default animal size in pen.")
+    @Expose
+    @SerializedName("animals_can_grow")
+    private float animalSize = 0.33f;
+
     @JsonComment("Allows to enable water animal growing in aquarium.")
     @JsonComment("The more animals are inside it, the larger it will be.")
     @Expose
     @SerializedName("water_animals_can_grow")
     private boolean growWaterAnimals = false;
 
+    @JsonComment("Allows to change default water animal size in aquarium.")
+    @Expose
+    @SerializedName("animals_can_grow")
+    private float waterAnimalSize = 0.33f;
+
     @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
     @JsonComment("or when food cooldown timer is finished (false).")
     @Expose
     @SerializedName("turtle_scute_drop_time")
-    private boolean dropScuteAtStart = true;
+    private boolean dropScuteAtStart = false;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose
