@@ -36,7 +36,7 @@ public final class AnimalPen
         AnimalPen.CONFIG_MANAGER.readConfig();
 
         CommandRegistrationEvent.EVENT.register(
-            (CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext var2, Commands.CommandSelection var3) -> AnimalPenCommands.register(dispatcher));
+            (dispatcher, var2, var3) -> AnimalPenCommands.register(dispatcher));
     }
 
 
