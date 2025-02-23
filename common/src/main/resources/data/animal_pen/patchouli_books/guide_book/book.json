@@ -7,5 +7,5 @@
   "creative_tab": "animal_pen:animal_pen",
   "use_inventory_button": false,
   "show_progress": false,
-  "use_resource_pack": false
+  "use_resource_pack": true
 }
