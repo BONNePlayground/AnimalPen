@@ -227,9 +227,9 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
         switch (face)
         {
-            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(-90));
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(-90));
         }
 
         double totalHeight = 1.5 + 0.125 * (textList.size() - 1);
