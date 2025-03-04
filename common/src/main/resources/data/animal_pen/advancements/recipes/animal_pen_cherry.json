@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "animal_pen:animal_pen_cherry"
+    ]
+  },
+  "criteria": {
+    "has_animal_cage": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "animal_pen:animal_cage"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "animal_pen:animal_pen_cherry"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_animal_cage",
+      "has_the_recipe"
+    ]
+  ]
+}

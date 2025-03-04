@@ -66,8 +66,16 @@ public class AnimalPenBlockRegistry
         // Register a variant for each wood type
         WoodType.values().forEach(woodType ->
         {
+            String woodName = woodType.name().toLowerCase();
+
+            if (woodType.name().contains(":"))
+            {
+                // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
+                woodName = woodName.replaceAll(":", "_");
+            }
+
             // Register the block
-            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodType.name().toLowerCase(),
+            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
                 () -> new AnimalPenBlock(
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).
                         strength(1.0f).

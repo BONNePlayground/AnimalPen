@@ -30,13 +30,18 @@ public class Configuration
         this.dropLimitList.clear();
         this.populateDefaultDropLimits();
 
+        this.maximalAnimalCount = Integer.MAX_VALUE;
+
         this.animalSize = 0.33f;
         this.waterAnimalSize = 0.33f;
+        this.growthMultiplier = 0.001f;
 
         this.growAnimals = false;
         this.growWaterAnimals = false;
 
         this.dropScuteAtStart = false;
+
+        this.blockedAnimals.clear();
     }
 
 
@@ -46,7 +51,8 @@ public class Configuration
             this.cooldownList == null ||
             this.blockedAnimals == null ||
             this.waterAnimalSize == null ||
-            this.animalSize == null;
+            this.animalSize == null ||
+            this.growthMultiplier == null;
     }
 
 
@@ -77,6 +83,11 @@ public class Configuration
         if (this.waterAnimalSize == null || this.waterAnimalSize <= 0)
         {
             this.waterAnimalSize = 0.33f;
+        }
+
+        if (this.growthMultiplier == null || this.growthMultiplier < 0)
+        {
+            this.growthMultiplier = 0.001f;
         }
     }
 
@@ -282,6 +293,17 @@ public class Configuration
 
 
     /**
+     * Gets growth multiplier.
+     *
+     * @return the growth multiplier
+     */
+    public Float getGrowthMultiplier()
+    {
+        return this.growthMultiplier;
+    }
+
+
+    /**
      * This indicates is given entity is blocked from being picked up.
      * @param entityType Entity that need to be checked.
      * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
@@ -401,6 +423,14 @@ public class Configuration
     @Expose
     @SerializedName("water_animal_size")
     private Float waterAnimalSize;
+
+    @JsonComment("Allows to set how fast animals grows in pen and aquarium.")
+    @JsonComment("Each animal is multiplied by given value to get end size.")
+    @JsonComment("This option works only if animals_can_grow or water_animals_can_grow is enabled.")
+    @JsonComment("Default value = 0.001")
+    @Expose
+    @SerializedName("growth_multiplier")
+    private Float growthMultiplier;
 
     @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
     @JsonComment("or when food cooldown timer is finished (false).")
