@@ -74,12 +74,16 @@ public class AnimalPenBlockRegistry
         // Register a variant for each wood type
         WoodType.values().forEach(woodType ->
         {
-            String woodName = woodType.name().toLowerCase();
+            String woodName;
 
             if (woodType.name().contains(":"))
             {
                 // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
-                woodName = woodName.replaceAll(":", "_");
+                woodName = woodType.name().toLowerCase().replaceAll(":", "_");
+            }
+            else
+            {
+                woodName = woodType.name().toLowerCase();
             }
 
             // Register the block
@@ -90,7 +94,7 @@ public class AnimalPenBlockRegistry
                         sound(SoundType.WOOD).
                         noOcclusion().
                     setId(ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + name)))
+                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
                 ));
 
             ANIMAL_PENS.put(woodType, block);
