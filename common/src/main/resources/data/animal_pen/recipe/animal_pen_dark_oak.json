@@ -8,12 +8,8 @@
     "SSS"
   ],
   "key": {
-    "F": {
-      "item": "minecraft:dark_oak_fence"
-    },
-    "S": {
-      "item": "minecraft:smooth_stone_slab"
-    }
+    "F": "minecraft:dark_oak_fence",
+    "S": "minecraft:smooth_stone_slab"
   },
   "result": {
     "id": "animal_pen:animal_pen_dark_oak",

@@ -8,12 +8,8 @@
     "SSS"
   ],
   "key": {
-    "F": {
-      "item": "minecraft:warped_fence"
-    },
-    "S": {
-      "item": "minecraft:smooth_stone_slab"
-    }
+    "F": "minecraft:warped_fence",
+    "S": "minecraft:smooth_stone_slab"
   },
   "result": {
     "id": "animal_pen:animal_pen_warped",

@@ -7,12 +7,8 @@
     "BBB"
   ],
   "key": {
-    "B": {
-      "item": "minecraft:glass_pane"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    }
+    "B": "minecraft:glass_pane",
+    "I": "minecraft:iron_ingot"
   },
   "result": {
     "id": "animal_pen:water_animal_container",
