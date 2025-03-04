@@ -15,7 +15,7 @@
     }
   },
   "result": {
-    "item": "animal_pen:water_animal_container",
+    "id": "animal_pen:water_animal_container",
     "count": 1
   }
 }
