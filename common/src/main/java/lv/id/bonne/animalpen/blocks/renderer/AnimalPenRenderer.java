@@ -280,6 +280,23 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     }
 
 
+    @Override
+    public boolean shouldRenderOffScreen(AnimalPenTileEntity blockEntity)
+    {
+        // If animals are growing, it is easy to get it outside screen.
+        return !blockEntity.getInventory().isEmpty() &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+    }
+
+
+    @Override
+    public boolean shouldRender(AnimalPenTileEntity blockEntity, Vec3 vec3)
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals() ||
+            BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
+    }
+
+
     /**
      * The minecraft instance.
      */

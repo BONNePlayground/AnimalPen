@@ -285,6 +285,14 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     }
 
 
+    @Override
+    public boolean shouldRender(AquariumTileEntity blockEntity, Vec3 vec3)
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals() ||
+            BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
+    }
+
+
     /**
      * The minecraft instance.
      */
