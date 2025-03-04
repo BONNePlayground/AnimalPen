@@ -30,13 +30,18 @@ public class Configuration
         this.dropLimitList.clear();
         this.populateDefaultDropLimits();
 
+        this.maximalAnimalCount = Integer.MAX_VALUE;
+
         this.animalSize = 0.33f;
         this.waterAnimalSize = 0.33f;
+        this.growthMultiplier = 0.001f;
 
         this.growAnimals = false;
         this.growWaterAnimals = false;
 
         this.dropScuteAtStart = false;
+
+        this.blockedAnimals.clear();
     }
 
 
