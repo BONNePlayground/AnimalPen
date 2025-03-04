@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "animal_pen:aquarium_block"
+    ]
+  },
+  "criteria": {
+    "has_water_animal_container": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "animal_pen:water_animal_container"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "animal_pen:aquarium_block"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_water_animal_container",
+      "has_the_recipe"
+    ]
+  ]
+}

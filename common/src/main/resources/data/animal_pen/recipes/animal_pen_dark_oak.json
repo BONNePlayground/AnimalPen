@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "group": "animal_pens",
   "pattern": [
     "   ",
@@ -15,7 +16,7 @@
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_dark_oak",
+    "id": "animal_pen:animal_pen_dark_oak",
     "count": 1
   }
 }

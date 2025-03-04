@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "pattern": [
     "BIB",
     "B B",
@@ -14,7 +15,7 @@
     }
   },
   "result": {
-    "item": "animal_pen:animal_cage",
+    "id": "animal_pen:water_animal_container",
     "count": 1
   }
 }

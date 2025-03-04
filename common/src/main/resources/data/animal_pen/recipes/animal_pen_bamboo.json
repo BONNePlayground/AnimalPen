@@ -1,5 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
+  "group": "animal_pens",
   "pattern": [
     "   ",
     "F F",
@@ -14,7 +16,7 @@
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_bamboo",
+    "id": "animal_pen:animal_pen_bamboo",
     "count": 1
   }
 }
