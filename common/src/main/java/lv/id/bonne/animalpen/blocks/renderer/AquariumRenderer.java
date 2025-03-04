@@ -7,15 +7,12 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
@@ -24,10 +21,8 @@ import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -138,13 +133,15 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
 
-        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
+        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getWaterAnimalSize();
 
         poseStack.scale(animalSize, animalSize, animalSize);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
-            float scale = 1 + animalSize * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            float scale = 1 + animalSize *
+                ((AnimalPenInterface) animal).animalPenGetCount() *
+                AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
