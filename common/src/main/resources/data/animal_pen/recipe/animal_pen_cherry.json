@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
+  "group": "animal_pens",
+  "pattern": [
+    "   ",
+    "F F",
+    "SSS"
+  ],
+  "key": {
+    "F": "minecraft:cherry_fence",
+    "S": "minecraft:smooth_stone_slab"
+  },
+  "result": {
+    "id": "animal_pen:animal_pen_cherry",
+    "count": 1
+  }
+}

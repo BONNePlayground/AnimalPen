@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
+  "pattern": [
+    "G G",
+    "GFG",
+    " S "
+  ],
+  "key": {
+    "F": "minecraft:water_bucket",
+    "G": "minecraft:glass",
+    "S": "minecraft:stone"
+  },
+  "result": {
+    "id": "animal_pen:aquarium_block",
+    "count": 1
+  }
+}

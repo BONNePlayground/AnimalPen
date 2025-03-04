@@ -1,20 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "pattern": [
     "BBB",
     "BGB",
     "BBB"
   ],
   "key": {
-    "B": {
-      "item": "minecraft:iron_bars"
-    },
-    "G": {
-      "item": "minecraft:glass"
-    }
+    "B": "minecraft:iron_bars",
+    "G": "minecraft:glass"
   },
   "result": {
-    "item": "animal_pen:animal_cage",
+    "id": "animal_pen:animal_cage",
     "count": 1
   }
 }

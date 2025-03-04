@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
+  "pattern": [
+    "BIB",
+    "B B",
+    "BBB"
+  ],
+  "key": {
+    "B": "minecraft:glass_pane",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "animal_pen:water_animal_container",
+    "count": 1
+  }
+}

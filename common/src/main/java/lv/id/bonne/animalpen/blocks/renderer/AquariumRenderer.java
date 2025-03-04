@@ -133,13 +133,15 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
 
-        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
+        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getWaterAnimalSize();
 
         poseStack.scale(animalSize, animalSize, animalSize);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
-            float scale = 1 + animalSize * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            float scale = 1 + animalSize *
+                ((AnimalPenInterface) animal).animalPenGetCount() *
+                AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
@@ -302,6 +304,14 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     public boolean shouldRenderOffScreen(AquariumTileEntity blockEntity)
     {
         return !blockEntity.getInventory().isEmpty();
+    }
+
+
+    @Override
+    public boolean shouldRender(AquariumTileEntity blockEntity, Vec3 vec3)
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals() ||
+            BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
     }
 
 

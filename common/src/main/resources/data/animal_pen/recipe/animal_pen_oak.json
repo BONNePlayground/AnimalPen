@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "group": "animal_pens",
   "pattern": [
     "   ",
@@ -7,15 +8,11 @@
     "SSS"
   ],
   "key": {
-    "F": {
-      "item": "minecraft:crimson_fence"
-    },
-    "S": {
-      "item": "minecraft:smooth_stone_slab"
-    }
+    "F": "minecraft:oak_fence",
+    "S": "minecraft:smooth_stone_slab"
   },
   "result": {
-    "item": "animal_pen:animal_pen_crimson",
+    "id": "animal_pen:animal_pen_oak",
     "count": 1
   }
 }
