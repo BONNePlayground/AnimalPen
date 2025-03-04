@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "pattern": [
     "G G",
     "GFG",
@@ -17,7 +18,7 @@
     }
   },
   "result": {
-    "item": "animal_pen:aquarium_block",
+    "id": "animal_pen:aquarium_block",
     "count": 1
   }
 }

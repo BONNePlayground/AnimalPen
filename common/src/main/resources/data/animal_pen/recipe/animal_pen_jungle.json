@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "group": "animal_pens",
   "pattern": [
     "   ",
@@ -8,14 +9,14 @@
   ],
   "key": {
     "F": {
-      "item": "minecraft:birch_fence"
+      "item": "minecraft:jungle_fence"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_birch",
+    "id": "animal_pen:animal_pen_jungle",
     "count": 1
   }
 }

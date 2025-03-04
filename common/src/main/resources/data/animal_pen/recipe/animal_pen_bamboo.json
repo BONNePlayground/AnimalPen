@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
   "group": "animal_pens",
   "pattern": [
     "   ",
@@ -8,14 +9,14 @@
   ],
   "key": {
     "F": {
-      "item": "minecraft:warped_fence"
+      "item": "minecraft:bamboo_fence"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_warped",
+    "id": "animal_pen:animal_pen_bamboo",
     "count": 1
   }
 }

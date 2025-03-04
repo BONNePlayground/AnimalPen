@@ -1,5 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "animal_pen",
+  "group": "animal_pens",
   "pattern": [
     "   ",
     "F F",
@@ -7,14 +9,14 @@
   ],
   "key": {
     "F": {
-      "item": "minecraft:bamboo_fence"
+      "item": "minecraft:crimson_fence"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_bamboo",
+    "id": "animal_pen:animal_pen_crimson",
     "count": 1
   }
 }

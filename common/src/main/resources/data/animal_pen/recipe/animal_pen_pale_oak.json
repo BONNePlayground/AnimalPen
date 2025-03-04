@@ -7,14 +7,14 @@
   ],
   "key": {
     "F": {
-      "item": "minecraft:mangrove_fence"
+      "item": "minecraft:pale_oak_fence"
     },
     "S": {
       "item": "minecraft:smooth_stone_slab"
     }
   },
   "result": {
-    "item": "animal_pen:animal_pen_mangrove",
+    "id": "animal_pen:animal_pen_pale_oak",
     "count": 1
   }
 }
