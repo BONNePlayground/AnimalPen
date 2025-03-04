@@ -135,13 +135,15 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.pushPose();
         poseStack.translate(0, (4/16f), 0);
 
-        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getWaterAnimalSize();
+        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
 
         poseStack.scale(animalSize, animalSize, animalSize);
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals())
         {
-            float scale = 1 + animalSize * (((AnimalPenInterface) animal).animalPenGetCount() / 1000f);
+            float scale = 1 + animalSize *
+                ((AnimalPenInterface) animal).animalPenGetCount() *
+                AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
@@ -299,6 +301,23 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         }
 
         poseStack.popPose();
+    }
+
+
+    @Override
+    public boolean shouldRenderOffScreen(AnimalPenTileEntity blockEntity)
+    {
+        // If animals are growing, it is easy to get it outside screen.
+        return !blockEntity.getInventory().isEmpty() &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+    }
+
+
+    @Override
+    public boolean shouldRender(AnimalPenTileEntity blockEntity, Vec3 vec3)
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals() ||
+            BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
     }
 
 
