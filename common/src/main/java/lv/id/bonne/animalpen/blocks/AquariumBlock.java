@@ -5,15 +5,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -120,7 +125,11 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     @Override
     public void attack(BlockState blockState, Level level, BlockPos blockPos, Player player)
     {
-        if (!level.isClientSide() && level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity)
+        ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        if (weapon.is(ATTACK_TOOLS) &&
+            !level.isClientSide() &&
+            level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity)
         {
             entity.attackThePen(player, level);
             return;
@@ -276,4 +285,10 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
+
+    /**
+     * Tag that stores which tools can attack entity in aquarium
+     */
+    public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
+        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
 }

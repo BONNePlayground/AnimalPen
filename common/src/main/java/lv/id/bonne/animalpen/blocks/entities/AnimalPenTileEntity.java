@@ -362,12 +362,6 @@ public class AnimalPenTileEntity extends BlockEntity
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (!(weapon.getItem() instanceof SwordItem) && !(weapon.getItem() instanceof AxeItem))
-        {
-            // not a weapon in hand.
-            return;
-        }
-
         Animal animal = this.getStoredAnimal();
 
         if (animal == null)
