@@ -108,7 +108,21 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             !level.isClientSide() &&
             level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity)
         {
+            if (player.getCooldowns().isOnCooldown(weapon.getItem()))
+            {
+                // item is on cooldown. Prevent attack
+                return;
+            }
+
             entity.attackThePen(player, level);
+
+            int cooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getAttackCooldown();
+
+            if (cooldown > 0)
+            {
+                player.getCooldowns().addCooldown(weapon.getItem(), cooldown);
+            }
+
             return;
         }
 

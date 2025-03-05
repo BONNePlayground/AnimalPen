@@ -19,8 +19,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 
+/**
+ * The type Configuration.
+ */
 public class Configuration
 {
+    /**
+     * Init.
+     */
     public void init()
     {
         this.cooldownList.clear();
@@ -36,6 +42,8 @@ public class Configuration
         this.waterAnimalSize = 0.33f;
         this.growthMultiplier = 0.001f;
 
+        this.attackCooldown = 1;
+
         this.growAnimals = false;
         this.growWaterAnimals = false;
 
@@ -45,17 +53,30 @@ public class Configuration
     }
 
 
+    /**
+     * Is invalid boolean.
+     *
+     * @return the boolean
+     */
     public boolean isInvalid()
     {
         return this.dropLimitList == null ||
             this.cooldownList == null ||
             this.blockedAnimals == null ||
             this.waterAnimalSize == null ||
+            this.waterAnimalSize <= 0 ||
             this.animalSize == null ||
-            this.growthMultiplier == null;
+            this.animalSize <= 0 ||
+            this.growthMultiplier == null ||
+            this.growthMultiplier < 0 ||
+            this.attackCooldown == null ||
+            this.attackCooldown < 0;
     }
 
 
+    /**
+     * Sets defaults.
+     */
     public void setDefaults()
     {
         if (this.dropLimitList == null)
@@ -88,6 +109,11 @@ public class Configuration
         if (this.growthMultiplier == null || this.growthMultiplier < 0)
         {
             this.growthMultiplier = 0.001f;
+        }
+
+        if (this.attackCooldown == null || this.attackCooldown < 0)
+        {
+            this.attackCooldown = 1;
         }
     }
 
@@ -172,6 +198,7 @@ public class Configuration
 
     /**
      * This method returns cooldowns for given item using on given entity.
+     *
      * @param entity Entity that is targeted.
      * @param usedItem Item that is used.
      * @param entityAmount Amount of entities.
@@ -200,6 +227,7 @@ public class Configuration
 
     /**
      * This method returns drop limit for given item.
+     *
      * @param item Drop limit for item.
      * @return Limit of items that can be dropped at once.
      */
@@ -211,6 +239,7 @@ public class Configuration
 
     /**
      * The maximal amount of animals a pen can store.
+     *
      * @return The maximal amount of animals.
      */
     public long getMaximalAnimalCount()
@@ -287,6 +316,7 @@ public class Configuration
 
     /**
      * This indicates is given entity is blocked from being picked up.
+     *
      * @param entityType Entity that need to be checked.
      * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
      */
@@ -296,13 +326,35 @@ public class Configuration
     }
 
 
+    /**
+     * Gets attack cooldown.
+     *
+     * @return the attack cooldown
+     */
+    public int getAttackCooldown()
+    {
+        return this.attackCooldown;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
 
 
+    /**
+     * The type Cooldown entry.
+     */
     public static class CooldownEntry
     {
+        /**
+         * Instantiates a new Cooldown entry.
+         *
+         * @param entity the entity
+         * @param base the base
+         * @param increment the increment
+         * @param max the max
+         */
         public CooldownEntry(ResourceLocation entity, int base, int increment, int max)
         {
             this.entity = entity;
@@ -312,6 +364,12 @@ public class Configuration
         }
 
 
+        /**
+         * Gets value.
+         *
+         * @param entityAmount the entity amount
+         * @return the value
+         */
         public int getValue(long entityAmount)
         {
             if (this.incrementPerAnimal > 0)
@@ -371,6 +429,12 @@ public class Configuration
     @Expose
     @SerializedName("cooldowns")
     private Map<ResourceLocation, List<CooldownEntry>> cooldownList = new HashMap<>();
+
+    @JsonComment("A cooldown value in game ticks between attacks that players can perform on animal pens.")
+    @JsonComment("Default value: 1 game tick")
+    @Expose
+    @SerializedName("attack_cooldown")
+    private Integer attackCooldown;
 
     @JsonComment("List of drop limits for items when player harvests items.")
     @JsonComment("<item> : <drop_limit>.")
