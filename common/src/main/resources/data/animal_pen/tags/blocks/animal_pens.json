@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "animal_pen:animal_pen_acacia",
+    "animal_pen:animal_pen_birch",
+    "animal_pen:animal_pen_crimson",
+    "animal_pen:animal_pen_dark_oak",
+    "animal_pen:animal_pen_jungle",
+    "animal_pen:animal_pen_oak",
+    "animal_pen:animal_pen_spruce",
+    "animal_pen:animal_pen_warped"
+  ]
+}
