@@ -116,6 +116,21 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     }
 
 
+    @Override
+    public float getDestroyProgress(BlockState blockState, Player player, BlockGetter blockGetter, BlockPos blockPos)
+    {
+        ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
+
+        if (weapon.is(ATTACK_TOOLS))
+        {
+            // Do not damage break block with tools you kill entity.
+            return 0f;
+        }
+
+        return super.getDestroyProgress(blockState, player, blockGetter, blockPos);
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------
