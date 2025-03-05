@@ -42,7 +42,7 @@ public class Configuration
         this.waterAnimalSize = 0.33f;
         this.growthMultiplier = 0.001f;
 
-        this.attackCooldown = 1;
+        this.attackCooldown = 5;
 
         this.growAnimals = false;
         this.growWaterAnimals = false;
@@ -431,7 +431,7 @@ public class Configuration
     private Map<ResourceLocation, List<CooldownEntry>> cooldownList = new HashMap<>();
 
     @JsonComment("A cooldown value in game ticks between attacks that players can perform on animal pens.")
-    @JsonComment("Default value: 1 game tick")
+    @JsonComment("Default value: 5 game tick")
     @Expose
     @SerializedName("attack_cooldown")
     private Integer attackCooldown;
