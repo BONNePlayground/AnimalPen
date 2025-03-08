@@ -24,6 +24,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -51,7 +52,7 @@ public class AnimalPenClient
                 return EventResult.pass();
             }
 
-            if (!player.getItemInHand(interactionHand).isEmpty() || player.isCrouching())
+            if (!player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || player.isCrouching())
             {
                 return EventResult.pass();
             }
