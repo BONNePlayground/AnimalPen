@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
@@ -21,6 +23,7 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -31,9 +34,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,7 +46,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 
-public class AquariumTileEntity extends BlockEntity
+public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInterface<WaterAnimal>
 {
     public AquariumTileEntity(
         BlockPos blockPos,
@@ -62,6 +63,7 @@ public class AquariumTileEntity extends BlockEntity
 
         tag.put(TAG_INVENTORY, this.inventory.createTag());
         tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
+        tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
     }
 
 
@@ -87,6 +89,15 @@ public class AquariumTileEntity extends BlockEntity
             {
                 this.deathTicker.add(i);
             }
+        }
+
+        if (tag.contains(TAG_DISPLAY_SIZE, Tag.TAG_LONG))
+        {
+            this.displaySize = tag.getLong(TAG_DISPLAY_SIZE);
+        }
+        else
+        {
+            this.displaySize = -1;
         }
     }
 
@@ -122,11 +133,12 @@ public class AquariumTileEntity extends BlockEntity
      *
      * @return Animal instance stored in block entity.
      */
+    @Override
     public WaterAnimal getStoredAnimal()
     {
-        if (this.storedAnimal == null && !this.inventory.getItem(0).isEmpty())
+        if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
-            CompoundTag tag = this.inventory.getItem(0).getOrCreateTag();
+            CompoundTag tag = this.getItemStack().getOrCreateTag();
 
             if (!tag.contains(AnimalContainerItem.TAG_ENTITY_ID) || this.level == null)
             {
@@ -136,7 +148,7 @@ public class AquariumTileEntity extends BlockEntity
             EntityType.create(tag, this.level).map(entity -> (WaterAnimal) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
-        else if (this.storedAnimal != null && this.inventory.getItem(0).isEmpty())
+        else if (this.storedAnimal != null && this.getItemStack().isEmpty())
         {
             this.storedAnimal = null;
         }
@@ -295,10 +307,21 @@ public class AquariumTileEntity extends BlockEntity
                     return false;
                 }
 
-                // clear tag.
-                itemInHand.setTag(new CompoundTag());
-                player.setItemInHand(interactionHand, itemInHand);
+                // Handle animal variants
+                if (newCount > 1 &&
+                    !AnimalContainerItem.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
+                {
+                    ((AnimalPenInterface) animal).animalPenUpdateCount(-1);
+                    itemInHandTag.putLong(AnimalContainerItem.TAG_AMOUNT, 1);
+                    itemInHand.setTag(itemInHandTag);
+                }
+                else
+                {
+                    AnimalContainerItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
+                    itemInHand.setTag(new CompoundTag());
+                }
 
+                player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
                 return true;
@@ -321,7 +344,7 @@ public class AquariumTileEntity extends BlockEntity
         {
             if (player.isCrouching() && !player.getLevel().isClientSide())
             {
-                ItemStack item = this.inventory.getItem(0);
+                ItemStack item = this.getItemStack();
                 player.setItemInHand(interactionHand, item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 this.inventory.setChanged();
@@ -339,11 +362,17 @@ public class AquariumTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenInteract(player, interactionHand, this.getBlockPos()))
         {
-            ItemStack item = this.inventory.getItem(0);
+            ItemStack item = this.getItemStack();
+
+            Optional<ListTag> optionalVariants = AnimalContainerItem.getAnimalVariants(item);
 
             // Reset tag, as some animals may need it.
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
+
+            // Restore animal variants
+            optionalVariants.ifPresent(variants -> tag.put(AnimalContainerItem.TAG_VARIANTS, variants));
+
             item.setTag(tag);
 
             this.inventory.setChanged();
@@ -384,7 +413,7 @@ public class AquariumTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
         {
-            ItemStack item = this.inventory.getItem(0);
+            ItemStack item = this.getItemStack();
             item.setTag(new CompoundTag());
 
             Block.popResource(level, this.getBlockPos().above(), item);
@@ -430,7 +459,7 @@ public class AquariumTileEntity extends BlockEntity
 
         if (animal != null)
         {
-            animal.save(this.inventory.getItem(0).getOrCreateTag());
+            animal.save(this.getItemStack().getOrCreateTag());
         }
 
         BlockState oldState = this.getBlockState();
@@ -461,6 +490,126 @@ public class AquariumTileEntity extends BlockEntity
 
 
     /**
+     * This method returns item stack of currently stored cage.
+     * @return The currently stored cage.
+     */
+    private ItemStack getItemStack()
+    {
+        return this.inventory.getItem(0);
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Animal Pen Block Interface
+// ---------------------------------------------------------------------
+
+
+    /**
+     * Returns the list of entity variants stored in cage.
+     * @return List of entity variants in cage.
+     */
+    @Override
+    public ListTag getEntityVariants()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return new ListTag();
+        }
+
+        return AnimalContainerItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new);
+    }
+
+
+    /**
+     * This method returns animal display size.
+     * @return The display size of animal.
+     */
+    @Override
+    public long getAnimalDisplaySize()
+    {
+        return this.displaySize < 1 ? this.getAnimalCount() :
+            Math.min(this.displaySize, this.getAnimalCount());
+    }
+
+
+    /**
+     * This method changes animal display size.
+     * @param size The animal display size.
+     */
+    @Override
+    public void setAnimalDisplaySize(long size)
+    {
+        this.displaySize = size;
+        this.triggerUpdate();
+    }
+
+
+    /**
+     * This method sets new animal variant from given CompoundTag tag.
+     * @param animalVariant a new animal variant
+     */
+    @Override
+    public void updateAnimalVariant(CompoundTag animalVariant)
+    {
+        if (this.getStoredAnimal() == null || animalVariant == null || animalVariant.isEmpty())
+        {
+            return;
+        }
+
+        // Save extra data
+        CompoundTag extraData = new CompoundTag();
+        ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(extraData);
+
+        // load new variant
+        this.storedAnimal.load(animalVariant);
+
+        // Apply data
+        ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
+        this.triggerUpdate();
+    }
+
+
+    /**
+     * This method removes animal pen variant with given index.
+     * @param index the variant index to be removed
+     */
+    @Override
+    public void removeAnimalVariant(int index)
+    {
+        if (this.getStoredAnimal() == null || this.getEntityVariants().size() <= index)
+        {
+            return;
+        }
+
+        this.getEntityVariants().remove(index);
+        this.inventory.setChanged();
+    }
+
+
+    /**
+     * This method returns the count of animals in pen.
+     * @return The animal count in pen.
+     */
+    @Override
+    public long getAnimalCount()
+    {
+        return ((AnimalPenInterface) this.getStoredAnimal()).animalPenGetCount();
+    }
+
+
+    @Override
+    public boolean canGrowEntity()
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals();
+    }
+
+    
+// ---------------------------------------------------------------------
+// Section: Variables
+// ---------------------------------------------------------------------
+
+    
+    /**
      * The inventory of container.
      */
     private final SimpleContainer inventory = new SimpleContainer(1)
@@ -483,6 +632,8 @@ public class AquariumTileEntity extends BlockEntity
 
     private WaterAnimal storedAnimal;
 
+    private long displaySize = -1;
+
     private int tickCounter;
 
     private final List<Integer> deathTicker = new ArrayList<>();
@@ -490,4 +641,6 @@ public class AquariumTileEntity extends BlockEntity
     public static final String TAG_INVENTORY = "inventory";
 
     public static final String TAG_DEATH_TICKER = "death_ticker";
+
+    public static final String TAG_DISPLAY_SIZE = "display_size";
 }

@@ -43,6 +43,7 @@ public class Configuration
         this.growthMultiplier = 0.001f;
 
         this.attackCooldown = 5;
+        this.maxStoredAnimalVariants = 10;
 
         this.growAnimals = false;
         this.growWaterAnimals = false;
@@ -70,7 +71,9 @@ public class Configuration
             this.growthMultiplier == null ||
             this.growthMultiplier < 0 ||
             this.attackCooldown == null ||
-            this.attackCooldown < 0;
+            this.attackCooldown < 0 ||
+            this.maxStoredAnimalVariants == null ||
+            this.maxStoredAnimalVariants < 0;
     }
 
 
@@ -114,6 +117,11 @@ public class Configuration
         if (this.attackCooldown == null || this.attackCooldown < 0)
         {
             this.attackCooldown = 1;
+        }
+
+        if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0)
+        {
+            this.maxStoredAnimalVariants = 10;
         }
     }
 
@@ -337,6 +345,17 @@ public class Configuration
     }
 
 
+    /**
+     * Gets max stored variants.
+     *
+     * @return the max stored variants
+     */
+    public int getMaxStoredVariants()
+    {
+        return this.maxStoredAnimalVariants;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -483,6 +502,14 @@ public class Configuration
     @Expose
     @SerializedName("turtle_scute_drop_time")
     private boolean dropScuteAtStart = false;
+
+    @JsonComment("Allows to set how many different animal variants can be stored per item.")
+    @JsonComment("Players will not be able to store more different variants than this value.")
+    @JsonComment("Be aware, this increases NBT data size, so not recommended to put infinite amount.")
+    @JsonComment("Default value = 10")
+    @Expose
+    @SerializedName("max_stored_animal_variants")
+    private Integer maxStoredAnimalVariants;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose

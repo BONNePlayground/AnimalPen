@@ -142,7 +142,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals())
         {
             float scale = 1 + animalSize *
-                ((AnimalPenInterface) animal).animalPenGetCount() *
+                tileEntity.getAnimalDisplaySize() *
                 AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
@@ -180,7 +180,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         int combinedLight,
         int combinedOverlay)
     {
-        long count = ((AnimalPenInterface) animal).animalPenGetCount();
+        long count = tileEntity.getAnimalCount();
 
         poseStack.pushPose();
 

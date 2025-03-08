@@ -3,11 +3,14 @@ package lv.id.bonne.animalpen.items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -175,6 +178,10 @@ public class AnimalCageItem extends Item
         }
 
         itemStack.setTag(itemTag);
+
+        // Manage variants
+        AnimalCageItem.storeAnimalVariant(itemStack, animal, player);
+
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
 
@@ -252,7 +259,161 @@ public class AnimalCageItem extends Item
     }
 
 
+    /**
+     * This method returns Optional list-tag or animal variants in given item-stack
+     * @param itemStack The item stack that need to be checked.
+     * @return Optional list of tags for animal variants.
+     */
+    public static Optional<ListTag> getAnimalVariants(ItemStack itemStack)
+    {
+        if (itemStack.getOrCreateTag().contains(TAG_VARIANTS))
+        {
+            return Optional.of(itemStack.getOrCreateTag().getList(TAG_VARIANTS,
+                Tag.TAG_COMPOUND));
+        }
+        else
+        {
+            return Optional.empty();
+        }
+    }
+
+
+    /**
+     * This method stores given animal as a variant in given item stack.
+     * @param itemStack The storage place.
+     * @param animal The animal that need to be stored
+     * @param player Player that should receive message is it fails to add variant.
+     * @return {@code true} if variant was added, {@code false} otherwise
+     */
+    public static boolean storeAnimalVariant(ItemStack itemStack, Animal animal, @Nullable Player player)
+    {
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        {
+            return false;
+        }
+
+        CompoundTag itemTag = itemStack.getOrCreateTag();
+
+        if (!itemTag.contains(TAG_ENTITY_ID))
+        {
+            return false;
+        }
+
+        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+
+        if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        {
+            if (player != null)
+            {
+                player.displayClientMessage(
+                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                        withStyle(ChatFormatting.DARK_RED), true);
+            }
+
+            return false;
+        }
+
+        CompoundTag variant = new CompoundTag();
+        animal.save(variant);
+        variantList.add(variant);
+
+        itemTag.put(TAG_VARIANTS, variantList);
+        itemStack.setTag(itemTag);
+
+        return true;
+    }
+
+
+    /**
+     * This method returns if animal variants can be merged into main item variants.
+     * @param mainItem The item stack that should contain all variants
+     * @param redundantItem The item stack that donates their variants
+     * @param player A player instance
+     * @return {@code true} if all variants can be added, {@code false} otherwise.
+     */
+    public static boolean canMergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
+    {
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        {
+            return true;
+        }
+
+        CompoundTag itemTag = mainItem.getOrCreateTag();
+        CompoundTag redundantTag = redundantItem.getOrCreateTag();
+
+        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
+        {
+            return false;
+        }
+
+        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+        ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+
+        if (variantList.size() + redundantList.size() > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        {
+            if (player != null)
+            {
+                player.displayClientMessage(
+                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                        withStyle(ChatFormatting.DARK_RED), true);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * This method merges redundant item entity variants into main item stack.
+     * @param mainItem The item stack that should contain all variants
+     * @param redundantItem The item stack that donates their variants
+     * @param player A player instance
+     */
+    public static void mergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
+    {
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        {
+            return;
+        }
+
+        CompoundTag itemTag = mainItem.getOrCreateTag();
+        CompoundTag redundantTag = redundantItem.getOrCreateTag();
+
+        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
+        {
+            return;
+        }
+
+        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+        ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+
+        for (Tag tag : redundantList)
+        {
+            if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+            {
+                if (player != null)
+                {
+                    player.displayClientMessage(
+                        new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                            withStyle(ChatFormatting.DARK_RED), true);
+                }
+
+                break;
+            }
+
+            variantList.add(tag);
+        }
+
+        itemTag.put(TAG_VARIANTS, variantList);
+        mainItem.setTag(itemTag);
+    }
+
+
     public static final String TAG_ENTITY_ID = "id";
+
+    public static final String TAG_VARIANTS = "animal_variants";
 
     public static final String TAG_AMOUNT = "animal_count";
 }

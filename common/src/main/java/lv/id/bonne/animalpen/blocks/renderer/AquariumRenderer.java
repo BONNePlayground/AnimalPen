@@ -140,7 +140,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
             float scale = 1 + animalSize *
-                ((AnimalPenInterface) animal).animalPenGetCount() *
+                tileEntity.getAnimalDisplaySize() *
                 AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
@@ -178,7 +178,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedLight,
         int combinedOverlay)
     {
-        long count = ((AnimalPenInterface) animal).animalPenGetCount();
+        long count = tileEntity.getAnimalCount();
 
         poseStack.pushPose();
 
