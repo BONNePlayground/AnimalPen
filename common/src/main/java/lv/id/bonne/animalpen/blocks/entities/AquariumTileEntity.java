@@ -7,9 +7,11 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -601,6 +604,23 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     public boolean canGrowEntity()
     {
         return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals();
+    }
+
+
+    /**
+     * This method returns the description lines that will be displayed above tile entity.
+     *
+     * @return List of pairs that contains display icon and text next to it
+     */
+    @Override
+    public List<Pair<ItemStack, Component>> getCooldownLines()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return Collections.emptyList();
+        }
+
+        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter());
     }
 
     

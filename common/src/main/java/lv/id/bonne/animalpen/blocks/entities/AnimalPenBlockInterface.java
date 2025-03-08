@@ -8,9 +8,14 @@ package lv.id.bonne.animalpen.blocks.entities;
 
 
 
+import org.apache.commons.lang3.tuple.Pair;
+import java.util.List;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 
 /**
@@ -67,4 +72,10 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      * @param index the variant index to be removed
      */
     void removeAnimalVariant(int index);
+
+    /**
+     * This method returns the description lines for cooldowns.
+     * @return List of pairs that contains display icon and text next to it
+     */
+    List<Pair<ItemStack, Component>> getCooldownLines();
 }

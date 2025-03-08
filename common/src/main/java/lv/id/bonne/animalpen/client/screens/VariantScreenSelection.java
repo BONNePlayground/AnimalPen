@@ -4,6 +4,7 @@ package lv.id.bonne.animalpen.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
@@ -21,7 +23,9 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,6 +38,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -49,6 +55,8 @@ public class VariantScreenSelection extends Screen
 
         this.imageWidth = 176;
         this.imageHeight = 136;
+
+        this.cooldownWidth = 149;
     }
 
 
@@ -56,8 +64,17 @@ public class VariantScreenSelection extends Screen
     protected void init()
     {
         super.init();
+        this.clearWidgets();
 
-        this.leftPos = (this.width - this.imageWidth) / 2;
+        if (this.isCooldownOpened)
+        {
+            this.leftPos = (this.width - this.imageWidth + this.cooldownWidth) / 2;
+        }
+        else
+        {
+            this.leftPos = (this.width - this.imageWidth) / 2;
+        }
+
         this.topPos = (this.height - this.imageHeight) / 2;
         this.buttons.clear();
 
@@ -174,6 +191,14 @@ public class VariantScreenSelection extends Screen
                 this.entityScale = 60F / entitySize * 0.8F;
                 this.entityOffset = Math.max(height, entitySize) * 0.5F;
             });
+
+        // Create cooldown menu renderer
+        this.cooldownButton = this.addWidget(new Button(this.leftPos - 12,
+            this.topPos + (this.imageHeight - 17) / 2,
+            11,
+            17,
+            new TextComponent(""),
+            this::handleCooldownButton));
     }
 
 
@@ -242,6 +267,9 @@ public class VariantScreenSelection extends Screen
         this.renderScrollBar(poseStack, mouseX, mouseY);
         this.renderSizeBar(poseStack, mouseX, mouseY, partialTicks);
         this.renderEntity(poseStack);
+        this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
+
+        this.renderTooltips(poseStack, mouseX, mouseY, partialTicks);
     }
 
 
@@ -256,8 +284,8 @@ public class VariantScreenSelection extends Screen
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        int offsetX = (this.width - this.imageWidth) / 2;
-        int offsetY = (this.height - this.imageHeight) / 2;
+        int offsetX = this.leftPos;
+        int offsetY = this.topPos;
         this.blit(poseStack, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
     }
 
@@ -336,17 +364,6 @@ public class VariantScreenSelection extends Screen
             51,
             12,
             12);
-
-        // Render tooltips
-        if (this.applyButton.isMouseOver(mouseX, mouseY))
-        {
-            this.renderTooltip(poseStack, APPLY, mouseX, mouseY);
-        }
-
-        if (this.deleteButton.isMouseOver(mouseX, mouseY))
-        {
-            this.renderTooltip(poseStack, DELETE, mouseX, mouseY);
-        }
     }
 
 
@@ -397,12 +414,6 @@ public class VariantScreenSelection extends Screen
     private void renderSizeBar(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
         this.sliderButton.render(poseStack, mouseX, mouseY, partialTicks);
-
-        if (this.sliderButton.isMouseOver(mouseX, mouseY))
-        {
-            List<Component> list = List.of(SLIDER, new TextComponent(""), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
-            this.renderComponentTooltip(poseStack, list, mouseX, mouseY);
-        }
 
         Component text;
 
@@ -481,6 +492,99 @@ public class VariantScreenSelection extends Screen
 
 
     /**
+     * This method renders the cooldown menu and button.
+     * @param poseStack The pose stack
+     * @param mouseX Cursor X location
+     * @param mouseY Cursor Y location
+     * @param partialTicks Partial Ticks
+     */
+    private void renderCooldown(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    {
+        RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
+
+        this.blit(poseStack,
+            this.leftPos - 12,
+            this.topPos + (this.imageHeight - 17) / 2,
+            149 + (this.isCooldownOpened ? 0 : 11),
+            1 + (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 17 : 0),
+            11,
+            17);
+
+        if (this.isCooldownOpened)
+        {
+            this.blit(poseStack,
+                this.leftPos - 12 - this.cooldownWidth,
+                this.topPos,
+                0,
+                1,
+                this.cooldownWidth,
+                this.imageHeight + 1);
+
+            List<Pair<ItemStack, Component>> textList = this.blockEntityInterface.getCooldownLines();
+
+            if (!textList.isEmpty())
+            {
+                int leftOffset = this.leftPos - this.cooldownWidth;
+                int top = this.topPos + this.font.lineHeight;
+
+                for (int i = 0; i < textList.size(); i++)
+                {
+                    Pair<ItemStack, Component> cooldown = textList.get(i);
+
+                    int y = top + i * 16;
+
+                    ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
+                    itemRenderer.renderGuiItem(cooldown.getLeft(), leftOffset, y);
+
+                    this.font.draw(poseStack,
+                        cooldown.getRight(),
+                        leftOffset + 18,
+                        y + this.font.lineHeight / 2f,
+                        0xFFFFFF);
+
+                    if (mouseX >= leftOffset &&
+                        mouseX <= leftOffset + 16 &&
+                        mouseY >= y &&
+                        mouseY <= y + 16)
+                    {
+                        this.renderTooltip(poseStack,
+                            cooldown.getLeft(),
+                            mouseX,
+                            mouseY);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void renderTooltips(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    {
+        // Render tooltips
+        if (this.applyButton.isMouseOver(mouseX, mouseY))
+        {
+            this.renderTooltip(poseStack, APPLY, mouseX, mouseY);
+        }
+
+        if (this.deleteButton.isMouseOver(mouseX, mouseY))
+        {
+            this.renderTooltip(poseStack, DELETE, mouseX, mouseY);
+        }
+
+        if (this.sliderButton.isMouseOver(mouseX, mouseY))
+        {
+            List<Component> list = List.of(SLIDER, new TextComponent(""), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
+            this.renderComponentTooltip(poseStack, list, mouseX, mouseY);
+        }
+
+        if (this.cooldownButton.isMouseOver(mouseX, mouseY))
+        {
+            this.renderTooltip(poseStack, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
+        }
+    }
+
+
+    /**
      * Enable rendering area limitation.
      * @param x1 The top corner X
      * @param y1 The top corner Y
@@ -540,12 +644,6 @@ public class VariantScreenSelection extends Screen
         this.selectedButton = -1;
         this.deleteButton.active = false;
         this.applyButton.active = false;
-
-        // Removes all widgets
-        this.buttons.forEach(this::removeWidget);
-        this.removeWidget(this.applyButton);
-        this.removeWidget(this.deleteButton);
-        this.removeWidget(this.sliderButton);
 
         // Reinit the gui
         this.init();
@@ -609,6 +707,13 @@ public class VariantScreenSelection extends Screen
         this.currentXOnEntity = 0;
 
         this.displayEntity.load(tag);
+    }
+
+
+    private void handleCooldownButton(Button button)
+    {
+        this.isCooldownOpened = !this.isCooldownOpened;
+        this.init();
     }
 
 
@@ -862,6 +967,11 @@ public class VariantScreenSelection extends Screen
     private final int imageWidth;
 
     /**
+     * The cooldown image width.
+     */
+    private final int cooldownWidth;
+
+    /**
      * The texture image height.
      */
     private final int imageHeight;
@@ -917,6 +1027,11 @@ public class VariantScreenSelection extends Screen
     private boolean isScrollingVariants;
 
     /**
+     * This boolean indicates if player opened cooldown view.
+     */
+    private boolean isCooldownOpened;
+
+    /**
      * The selected button index.
      */
     private int selectedButton = -1;
@@ -935,6 +1050,11 @@ public class VariantScreenSelection extends Screen
      * The slider of animal size element;
      */
     private Button sliderButton;
+
+    /**
+     * Button that indicates that player wants to cooldown menu.
+     */
+    private Button cooldownButton;
 
     /**
      * The entity that is rendered in menu.
@@ -990,6 +1110,18 @@ public class VariantScreenSelection extends Screen
         new TranslatableComponent("gui.animal_pen.variant_selection_screen.delete_tooltip");
 
     /**
+     * The COOLDOWN of button tooltip
+     */
+    private static final Component COOLDOWN_OPEN =
+        new TranslatableComponent("gui.animal_pen.variant_selection_screen.cooldown_open_tooltip");
+
+    /**
+     * The COOLDOWN of button tooltip
+     */
+    private static final Component COOLDOWN_CLOSE =
+        new TranslatableComponent("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
+
+    /**
      * The SLIDER of button tooltip
      */
     private static final Component SLIDER =
@@ -1019,5 +1151,11 @@ public class VariantScreenSelection extends Screen
      */
     private static final ResourceLocation TEXTURE =
         new ResourceLocation(AnimalPen.MOD_ID, "textures/gui/animal_selection.png");
+
+    /**
+     * The texture of cooldown
+     */
+    private static final ResourceLocation COOLDOWN_TEXTURE =
+        new ResourceLocation(AnimalPen.MOD_ID, "textures/gui/cooldown_area.png");
 }
 

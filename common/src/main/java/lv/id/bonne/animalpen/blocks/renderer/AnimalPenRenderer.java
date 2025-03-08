@@ -18,7 +18,6 @@ import java.util.List;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -213,8 +212,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         int combinedOverlay)
     {
         // Get your list of components
-        List<Pair<ItemStack, Component>> textList =
-            ((AnimalPenInterface) animal).animalPenGetLines(tileEntity.getTickCounter());
+        List<Pair<ItemStack, Component>> textList = tileEntity.getCooldownLines();
 
         if (textList.isEmpty())
         {

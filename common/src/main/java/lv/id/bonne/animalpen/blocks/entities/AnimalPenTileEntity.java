@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -248,7 +250,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 }
 
                 Animal animal = this.getStoredAnimal();
-                
+
                 if (animal == null)
                 {
                     // Animal is not loaded.
@@ -329,6 +331,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method processes player interaction with pen tile entity with any item in mian hand.
+     *
      * @param player the player
      * @param interactionHand the interaction hand
      * @return {@code true} if interaction was successful, {@code false} otherwise.
@@ -439,7 +442,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             Block.popResource(level, this.getBlockPos().offset(0.5, 1, 0.5), itemStack));
 
         int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
-        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1, 0.5), reward);
+        ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
     }
 
 
@@ -466,6 +469,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * Returns inventory of this tile entity
+     *
      * @return inventory
      */
     public SimpleContainer getInventory()
@@ -476,6 +480,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method returns item stack of currently stored cage.
+     *
      * @return The currently stored cage.
      */
     private ItemStack getItemStack()
@@ -491,6 +496,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * Returns the list of entity variants stored in cage.
+     *
      * @return List of entity variants in cage.
      */
     @Override
@@ -507,6 +513,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method returns animal display size.
+     *
      * @return The display size of animal.
      */
     @Override
@@ -519,6 +526,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method changes animal display size.
+     *
      * @param size The animal display size.
      */
     @Override
@@ -531,6 +539,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method sets new animal variant from given CompoundTag tag.
+     *
      * @param animalVariant a new animal variant
      */
     @Override
@@ -556,6 +565,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method removes animal pen variant with given index.
+     *
      * @param index the variant index to be removed
      */
     @Override
@@ -573,6 +583,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method returns the count of animals in pen.
+     *
      * @return The animal count in pen.
      */
     @Override
@@ -587,6 +598,23 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     public boolean canGrowEntity()
     {
         return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+    }
+
+
+    /**
+     * This method returns the description lines that will be displayed above tile entity.
+     *
+     * @return List of pairs that contains display icon and text next to it
+     */
+    @Override
+    public List<Pair<ItemStack, Component>> getCooldownLines()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return Collections.emptyList();
+        }
+
+        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter());
     }
 
 

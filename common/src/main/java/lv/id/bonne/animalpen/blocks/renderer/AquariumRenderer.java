@@ -16,7 +16,6 @@ import java.util.List;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -211,8 +210,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedOverlay)
     {
         // Get your list of components
-        List<Pair<ItemStack, Component>> textList =
-            ((AnimalPenInterface) animal).animalPenGetLines(tileEntity.getTickCounter());
+        List<Pair<ItemStack, Component>> textList = tileEntity.getCooldownLines();
 
         if (textList.isEmpty())
         {

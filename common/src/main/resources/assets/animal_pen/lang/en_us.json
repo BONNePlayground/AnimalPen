@@ -61,5 +61,7 @@
   "gui.animal_pen.variant_selection_screen.delete_tooltip": "Click to remove this variant",
   "gui.animal_pen.variant_selection_screen.slider_tooltip": "The amount of entities displayed.",
   "gui.animal_pen.variant_selection_screen.slider_tooltip_drag": "§7 Drag to change displayed size",
-  "gui.animal_pen.variant_selection_screen.slider_tooltip_arrow": "§7 or use left/right arrows."
+  "gui.animal_pen.variant_selection_screen.slider_tooltip_arrow": "§7 or use left/right arrows.",
+  "gui.animal_pen.variant_selection_screen.cooldown_open_tooltip": "Click to view cooldowns",
+  "gui.animal_pen.variant_selection_screen.cooldown_close_tooltip": "Click to hide cooldowns"
 }
