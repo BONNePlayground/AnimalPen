@@ -13,7 +13,6 @@ import java.util.List;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
@@ -39,7 +37,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -82,7 +79,7 @@ public class VariantScreenSelection extends Screen
         int buttonPos = this.leftPos + 24;
 
         int buttonWidth = 46;
-        int buttonHeight = 16;
+        int buttonHeight = 20;
 
         // collect variants
 
@@ -129,8 +126,6 @@ public class VariantScreenSelection extends Screen
             14,
             TextComponent.EMPTY,
             this::handleDeleteButton));
-
-        this.deleteButton.active = false;
 
         // Apply variant button
         this.applyButton = this.addWidget(new Button(this.leftPos + 73,
@@ -568,7 +563,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.deleteButton.isMouseOver(mouseX, mouseY))
         {
-            this.renderTooltip(poseStack, DELETE, mouseX, mouseY);
+            this.renderTooltip(poseStack, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
         }
 
         if (this.sliderButton.isMouseOver(mouseX, mouseY))
@@ -624,7 +619,7 @@ public class VariantScreenSelection extends Screen
     private boolean needsScrollBars()
     {
         // button height and 106 would be better but this works.
-        return this.buttons.size() > 6;
+        return this.buttons.size() > 5;
     }
 
 
@@ -634,6 +629,11 @@ public class VariantScreenSelection extends Screen
      */
     private void handleDeleteButton(Button button)
     {
+        if (this.selectedButton == -1)
+        {
+            return;
+        }
+
         // Remove entity from list.
         this.blockEntityInterface.getEntityVariants().remove(this.selectedButton);
 
@@ -642,7 +642,6 @@ public class VariantScreenSelection extends Screen
 
         // Update data
         this.selectedButton = -1;
-        this.deleteButton.active = false;
         this.applyButton.active = false;
 
         // Reinit the gui
@@ -675,7 +674,8 @@ public class VariantScreenSelection extends Screen
      */
     private void handleVariantButton(Button button, int index)
     {
-        if (button.y + 16 < this.bodyTopPos || button.y > this.bodyTopPos + this.buttonAreaHeight)
+        if (button.y + button.getHeight() < this.bodyTopPos ||
+            button.y > this.bodyTopPos + this.buttonAreaHeight)
         {
             return;
         }
@@ -683,13 +683,11 @@ public class VariantScreenSelection extends Screen
         if (this.selectedButton == index)
         {
             this.selectedButton = -1;
-            this.deleteButton.active = false;
             this.applyButton.active = false;
         }
         else
         {
             this.selectedButton = index;
-            this.deleteButton.active = !this.buttons.isEmpty();
             this.applyButton.active = !this.buttons.isEmpty();
         }
 
@@ -932,7 +930,7 @@ public class VariantScreenSelection extends Screen
      */
     private void updateButtonPositions()
     {
-        int buttonHeight = 16;
+        int buttonHeight = 20;
 
         // Calculate total content height
         int totalButtonsHeight = this.buttons.size() * buttonHeight;
@@ -1108,6 +1106,12 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component DELETE =
         new TranslatableComponent("gui.animal_pen.variant_selection_screen.delete_tooltip");
+
+    /**
+     * The DELETE of button tooltip
+     */
+    private static final Component SELECT_TO_DELETE =
+        new TranslatableComponent("gui.animal_pen.variant_selection_screen.select_to_delete_tooltip");
 
     /**
      * The COOLDOWN of button tooltip

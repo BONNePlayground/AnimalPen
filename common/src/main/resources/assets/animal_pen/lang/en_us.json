@@ -59,6 +59,7 @@
   "gui.animal_pen.variant_selection_screen.fixed_size": "%d",
   "gui.animal_pen.variant_selection_screen.apply_tooltip": "Click to apply this variant",
   "gui.animal_pen.variant_selection_screen.delete_tooltip": "Click to remove this variant",
+  "gui.animal_pen.variant_selection_screen.select_to_delete_tooltip": "Select a variant to remove it",
   "gui.animal_pen.variant_selection_screen.slider_tooltip": "The amount of entities displayed.",
   "gui.animal_pen.variant_selection_screen.slider_tooltip_drag": "§7 Drag to change displayed size",
   "gui.animal_pen.variant_selection_screen.slider_tooltip_arrow": "§7 or use left/right arrows.",
