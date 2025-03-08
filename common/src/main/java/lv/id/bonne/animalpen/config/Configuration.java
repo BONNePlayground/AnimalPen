@@ -161,7 +161,7 @@ public class Configuration
             add(new CooldownEntry(EntityType.BEE.arch$registryName(),
                 60 * 20 + 20,
                 -1 * 20,
-                10 * 20));
+                20));
 
         // Init non-used to show options
         this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
