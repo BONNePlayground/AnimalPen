@@ -45,7 +45,7 @@ public class UpdateAnimalSizeData
 
         packetContext.queue(() ->
         {
-            Level level = packetContext.getPlayer().getLevel();
+            Level level = packetContext.getPlayer().level();
 
             if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
             {

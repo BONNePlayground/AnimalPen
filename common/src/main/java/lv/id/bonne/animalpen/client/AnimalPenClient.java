@@ -47,7 +47,7 @@ public class AnimalPenClient
         // Implementation on block to switch screen client side only.
         InteractionEvent.RIGHT_CLICK_BLOCK.register((player, interactionHand, blockPos, direction) ->
         {
-            if (!(player.getLevel().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
+            if (!(player.level().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
             {
                 return EventResult.pass();
             }

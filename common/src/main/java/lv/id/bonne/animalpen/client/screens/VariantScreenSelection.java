@@ -18,7 +18,7 @@ import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -235,108 +235,104 @@ public class VariantScreenSelection extends Screen
 
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(poseStack);
+        this.renderBackground(graphics);
         this.updateButtonPositions();
 
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Render title of the menu.
-        GuiComponent.drawString(poseStack,
-            this.font,
+        graphics.drawString(this.font,
             this.title,
             this.leftPos + 88 - this.font.width(this.title) / 2,
             this.topPos + 3 + 7 - this.font.lineHeight / 2,
             0xffffff);
 
-        this.renderVariantButtons(poseStack, mouseX, mouseY, partialTicks);
-        this.renderOtherButtons(poseStack, mouseX, mouseY);
-        this.renderScrollBar(poseStack, mouseX, mouseY);
-        this.renderSizeBar(poseStack, mouseX, mouseY, partialTicks);
-        this.renderEntity(poseStack);
-        this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
+        this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
+        this.renderOtherButtons(graphics, mouseX, mouseY);
+        this.renderScrollBar(graphics, mouseX, mouseY);
+        this.renderSizeBar(graphics, mouseX, mouseY, partialTicks);
+        this.renderEntity(graphics);
+        this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
 
-        this.renderTooltips(poseStack, mouseX, mouseY, partialTicks);
+        this.renderTooltips(graphics, mouseX, mouseY, partialTicks);
     }
 
 
     /**
      * Renders the main background image.
-     * @param poseStack The pose stack
+     * @param graphics The pose stack
      */
     @Override
-    public void renderBackground(PoseStack poseStack)
+    public void renderBackground(GuiGraphics graphics)
     {
-        super.renderBackground(poseStack);
+        super.renderBackground(graphics);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
-        blit(poseStack, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(TEXTURE, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
     }
 
 
     /**
      * This method renders all variant selection buttons.
-     * @param poseStack The pose stack
+     * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderVariantButtons(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    private void renderVariantButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
         // Enable scissor test to restrict rendering area
-        enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
+        graphics.enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
 
         // Render only visible buttons
 
         for (int i = 0; i < this.buttons.size(); i++)
         {
             Button button = this.buttons.get(i);
-            button.render(poseStack, mouseX, mouseY, partialTicks);
+            button.render(graphics, mouseX, mouseY, partialTicks);
 
             // If this is the selected button, render a green border around it
             if (i == this.selectedButton)
             {
-                this.renderButtonBorder(poseStack, button, 0x8000FF00);
+                this.renderButtonBorder(graphics, button, 0x8000FF00);
             }
         }
 
-        disableScissor();
+        graphics.disableScissor();
     }
 
 
     /**
      * Renders a colored border around a button
      */
-    private void renderButtonBorder(PoseStack poseStack, Button button, int color)
+    private void renderButtonBorder(GuiGraphics graphics, Button button, int color)
     {
         int width = button.getWidth();
         int height = button.getHeight();
 
         // Draw top line
-        fill(poseStack, button.getX(), button.getY(), button.getX() + width, button.getY() + 1, color);
-        fill(poseStack, button.getX(), button.getY() + height - 1, button.getX() + width, button.getY() + height, color);
-        fill(poseStack, button.getX(), button.getY(), button.getX() + 1, button.getY() + height, color);
-        fill(poseStack, button.getX() + width - 1, button.getY(), button.getX() + width, button.getY() + height, color);
+        graphics.fill(button.getX(), button.getY(), button.getX() + width, button.getY() + 1, color);
+        graphics.fill(button.getX(), button.getY() + height - 1, button.getX() + width, button.getY() + height, color);
+        graphics.fill(button.getX(), button.getY(), button.getX() + 1, button.getY() + height, color);
+        graphics.fill(button.getX() + width - 1, button.getY(), button.getX() + width, button.getY() + height, color);
     }
 
 
     /**
      * This method renders icons in spot where delete and apply button should be.
      *
-     * @param poseStack The pose stack.
+     * @param graphics The pose stack.
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      */
-    private void renderOtherButtons(@NotNull PoseStack poseStack, int mouseX, int mouseY)
+    private void renderOtherButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
     {
-        RenderSystem.setShaderTexture(0, TEXTURE);
-
         // Render icon instead of delete button.
-        blit(poseStack,
+        graphics.blit(TEXTURE,
             this.deleteButton.getX() + 1,
             this.deleteButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 9),
@@ -345,7 +341,7 @@ public class VariantScreenSelection extends Screen
             12);
 
         // Render icon instead of apply button.
-        blit(poseStack,
+        graphics.blit(TEXTURE,
             this.applyButton.getX() + 1,
             this.applyButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 12),
@@ -358,14 +354,12 @@ public class VariantScreenSelection extends Screen
     /**
      * This method renders the scrollbar thumb in proper position.
      *
-     * @param poseStack The pose stack.
+     * @param graphics The pose stack.
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      */
-    private void renderScrollBar(@NotNull PoseStack poseStack, int mouseX, int mouseY)
+    private void renderScrollBar(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
     {
-        RenderSystem.setShaderTexture(0, TEXTURE);
-
         int scrollThumbHeight = 15;
         int scrollPosition;
 
@@ -382,7 +376,7 @@ public class VariantScreenSelection extends Screen
             scrollPosition = this.bodyTopPos;
         }
 
-        blit(poseStack,
+        graphics.blit(TEXTURE,
             this.leftPos + 9,
             scrollPosition,
             176 + (this.needsScrollBars() ? 0 : 12),
@@ -394,14 +388,14 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the entity size bar in proper position.
-     * @param poseStack The pose stack
+     * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderSizeBar(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    private void renderSizeBar(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.sliderButton.render(poseStack, mouseX, mouseY, partialTicks);
+        this.sliderButton.render(graphics, mouseX, mouseY, partialTicks);
 
         Component text;
 
@@ -417,6 +411,7 @@ public class VariantScreenSelection extends Screen
                 this.blockEntityInterface.getAnimalDisplaySize());
         }
 
+        PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
 
         float textWidth = this.font.width(text);
@@ -427,7 +422,11 @@ public class VariantScreenSelection extends Screen
             0);
         poseStack.scale(scale, scale, 1.0f);
 
-        this.font.draw(poseStack, text, scale < 1 ? 0 : (this.sliderAreaWidth - textWidth) / 2, 0, 0xFFFFFF);
+        graphics.drawString(this.font,
+            text,
+            scale < 1 ? 0 : (int) (this.sliderAreaWidth - textWidth) / 2,
+            0,
+            0xffffff);
 
         poseStack.popPose();
     }
@@ -435,9 +434,9 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the entity in proper position.
-     * @param poseStack The pose stack.
+     * @param graphics The pose stack.
      */
-    private void renderEntity(@NotNull PoseStack poseStack)
+    private void renderEntity(@NotNull GuiGraphics graphics)
     {
 //        this.enableScissor(
 //            this.leftPos + 73, this.bodyTopPos,
@@ -461,6 +460,7 @@ public class VariantScreenSelection extends Screen
             ((EntityAccessor) animal).setWasTouchingWater(true);
         }
 
+        PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
         poseStack.translate(x, y, 50);
         poseStack.scale(this.entityScale, this.entityScale, this.entityScale);
@@ -481,16 +481,16 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the cooldown menu and button.
-     * @param poseStack The pose stack
+     * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderCooldown(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    private void renderCooldown(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
         RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
 
-        blit(poseStack,
+        graphics.blit(COOLDOWN_TEXTURE,
             this.leftPos - 12,
             this.topPos + (this.imageHeight - 17) / 2,
             149 + (this.isCooldownOpened ? 0 : 11),
@@ -500,7 +500,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.isCooldownOpened)
         {
-            blit(poseStack,
+            graphics.blit(COOLDOWN_TEXTURE,
                 this.leftPos - 12 - this.cooldownWidth,
                 this.topPos,
                 0,
@@ -521,21 +521,20 @@ public class VariantScreenSelection extends Screen
 
                     int y = top + i * 16;
 
-                    ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
-                    itemRenderer.renderGuiItem(poseStack, cooldown.getLeft(), leftOffset, y);
+                    graphics.renderItem(cooldown.getLeft(), leftOffset, y);
 
-                    this.font.draw(poseStack,
+                    graphics.drawString(this.font,
                         cooldown.getRight(),
                         leftOffset + 18,
-                        y + this.font.lineHeight / 2f,
-                        0xFFFFFF);
+                        y + this.font.lineHeight / 2,
+                        0xffffff);
 
                     if (mouseX >= leftOffset &&
                         mouseX <= leftOffset + 16 &&
                         mouseY >= y &&
                         mouseY <= y + 16)
                     {
-                        this.renderTooltip(poseStack,
+                        graphics.renderTooltip(this.font,
                             cooldown.getLeft(),
                             mouseX,
                             mouseY);
@@ -546,28 +545,28 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    private void renderTooltips(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    private void renderTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
         // Render tooltips
         if (this.applyButton.isMouseOver(mouseX, mouseY))
         {
-            this.renderTooltip(poseStack, APPLY, mouseX, mouseY);
+            graphics.renderTooltip(this.font, APPLY, mouseX, mouseY);
         }
 
         if (this.deleteButton.isMouseOver(mouseX, mouseY))
         {
-            this.renderTooltip(poseStack, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
+            graphics.renderTooltip(this.font, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
         }
 
         if (this.sliderButton.isMouseOver(mouseX, mouseY))
         {
             List<Component> list = List.of(SLIDER, Component.empty(), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
-            this.renderComponentTooltip(poseStack, list, mouseX, mouseY);
+            graphics.renderComponentTooltip(this.font, list, mouseX, mouseY);
         }
 
         if (this.cooldownButton.isMouseOver(mouseX, mouseY))
         {
-            this.renderTooltip(poseStack, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
+            graphics.renderTooltip(this.font, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
         }
     }
 
