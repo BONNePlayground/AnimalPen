@@ -909,17 +909,42 @@ public class VariantScreenSelection extends Screen
         else if ((keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) &&
             this.buttons.size() > 1)
         {
+            int button;
+
             if (keyCode == GLFW.GLFW_KEY_DOWN)
             {
-                this.selectedButton = Math.min(this.selectedButton + 1, this.buttons.size() - 1);
+                button = Math.min(this.selectedButton + 1, this.buttons.size() - 1);
             }
             else
             {
-                this.selectedButton = Math.max(this.selectedButton - 1, 0);
+                button = Math.max(this.selectedButton - 1, 0);
             }
 
-            this.ensureButtonVisible();
+            if (button != this.selectedButton)
+            {
+                this.ensureButtonVisible(button);
+                this.handleVariantButton(this.buttons.get(button), button);
+            }
+
             return true;
+        }
+        else if (keyCode == GLFW.GLFW_KEY_ENTER)
+        {
+            if (this.selectedButton >= 0 &&
+                this.selectedButton < this.buttons.size() &&
+                this.applyButton.isActive())
+            {
+                this.handleApplyButton(null);
+                return true;
+            }
+        }
+        else if (keyCode == GLFW.GLFW_KEY_DELETE)
+        {
+            if (this.selectedButton >= 0 && this.selectedButton < this.buttons.size())
+            {
+                this.handleDeleteButton(null);
+                return true;
+            }
         }
 
         // Handle other key presses with the parent implementation
@@ -962,14 +987,14 @@ public class VariantScreenSelection extends Screen
     /**
      * This method ensures that selected button is on the screen.
      */
-    private void ensureButtonVisible()
+    private void ensureButtonVisible(int buttonIndex)
     {
-        if (this.selectedButton < 0 || this.selectedButton >= this.buttons.size())
+        if (buttonIndex < 0 || buttonIndex >= this.buttons.size())
         {
             return;
         }
 
-        Button targetButton = this.buttons.get(this.selectedButton);
+        Button targetButton = this.buttons.get(buttonIndex);
         int buttonTop = targetButton.y;
         int buttonBottom = buttonTop + targetButton.getHeight();
         float areaDifference = this.buttons.size() * targetButton.getHeight() - this.buttonAreaHeight;
