@@ -7,10 +7,12 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
@@ -20,7 +22,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -44,7 +48,7 @@ import net.minecraft.world.phys.Vec3;
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
 
-public class AnimalPenTileEntity extends BlockEntity
+public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockInterface<Animal>
 {
     public AnimalPenTileEntity(
         BlockPos blockPos,
@@ -61,6 +65,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         tag.put(TAG_INVENTORY, this.inventory.createTag(provider));
         tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
+        tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
     }
 
 
@@ -86,6 +91,15 @@ public class AnimalPenTileEntity extends BlockEntity
             {
                 this.deathTicker.add(i);
             }
+        }
+
+        if (tag.contains(TAG_DISPLAY_SIZE, Tag.TAG_LONG))
+        {
+            this.displaySize = tag.getLong(TAG_DISPLAY_SIZE);
+        }
+        else
+        {
+            this.displaySize = -1;
         }
     }
 
@@ -121,11 +135,12 @@ public class AnimalPenTileEntity extends BlockEntity
      *
      * @return Animal instance stored in block entity.
      */
+    @Override
     public Animal getStoredAnimal()
     {
-        if (this.storedAnimal == null && !this.inventory.getItem(0).isEmpty())
+        if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
-            CompoundTag tag = this.inventory.getItem(0).get(DataComponents.ENTITY_DATA).copyTag();
+            CompoundTag tag = this.getItemStack().get(DataComponents.ENTITY_DATA).copyTag();
 
             if (!tag.contains(AnimalCageItem.TAG_ENTITY_ID) || this.level == null)
             {
@@ -135,7 +150,7 @@ public class AnimalPenTileEntity extends BlockEntity
             EntityType.create(tag, this.level).map(entity -> (Animal) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
-        else if (this.storedAnimal != null && this.inventory.getItem(0).isEmpty())
+        else if (this.storedAnimal != null && this.getItemStack().isEmpty())
         {
             this.storedAnimal = null;
         }
@@ -237,7 +252,7 @@ public class AnimalPenTileEntity extends BlockEntity
                 }
 
                 Animal animal = this.getStoredAnimal();
-                
+
                 if (animal == null)
                 {
                     // Animal is not loaded.
@@ -297,10 +312,21 @@ public class AnimalPenTileEntity extends BlockEntity
                     return false;
                 }
 
-                // clear tag.
-                itemInHand.remove(DataComponents.ENTITY_DATA);
-                player.setItemInHand(interactionHand, itemInHand);
+                // Handle animal variants
+                if (newCount > 1 &&
+                    !AnimalCageItem.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
+                {
+                    ((AnimalPenInterface) animal).animalPenUpdateCount(-1);
+                    itemInHandTag.putLong(AnimalCageItem.TAG_AMOUNT, 1);
+                    itemInHand.setTag(itemInHandTag);
+                }
+                else
+                {
+                    AnimalCageItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
+                    itemInHand.setTag(new CompoundTag());
+                }
 
+                player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
                 return true;
@@ -311,6 +337,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
     /**
      * This method processes player interaction with pen tile entity with any item in mian hand.
+     *
      * @param player the player
      * @param interactionHand the interaction hand
      * @return {@code true} if interaction was successful, {@code false} otherwise.
@@ -323,7 +350,7 @@ public class AnimalPenTileEntity extends BlockEntity
         {
             if (player.isCrouching() && !player.level().isClientSide())
             {
-                ItemStack item = this.inventory.getItem(0);
+                ItemStack item = this.getItemStack();
                 player.setItemInHand(interactionHand, item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 this.inventory.setChanged();
@@ -341,11 +368,17 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenInteract(player, interactionHand, this.getBlockPos()))
         {
-            ItemStack item = this.inventory.getItem(0);
+            ItemStack item = this.getItemStack();
+
+            Optional<ListTag> optionalVariants = AnimalCageItem.getAnimalVariants(item);
 
             // Reset tag, as some animals may need it.
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
+
+            // Restore animal variants
+            optionalVariants.ifPresent(variants -> tag.put(AnimalCageItem.TAG_VARIANTS, variants));
+
             item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
@@ -368,12 +401,6 @@ public class AnimalPenTileEntity extends BlockEntity
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (!(weapon.getItem() instanceof SwordItem) && !(weapon.getItem() instanceof AxeItem))
-        {
-            // not a weapon in hand.
-            return;
-        }
-
         Animal animal = this.getStoredAnimal();
 
         if (animal == null)
@@ -392,7 +419,7 @@ public class AnimalPenTileEntity extends BlockEntity
 
         if (((AnimalPenInterface) animal).animalPenGetCount() <= 0)
         {
-            ItemStack item = this.inventory.getItem(0);
+            ItemStack item = this.getItemStack();
             item.remove(DataComponents.ENTITY_DATA);
 
             Block.popResource(level, this.getBlockPos().above(), item);
@@ -420,7 +447,7 @@ public class AnimalPenTileEntity extends BlockEntity
             forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
         int reward = animal.getExperienceReward();
-        ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1, 0.5), reward);
+        ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
     }
 
 
@@ -437,7 +464,7 @@ public class AnimalPenTileEntity extends BlockEntity
                 CompoundTag tag = new CompoundTag();
                 animal.save(tag);
 
-                this.inventory.getItem(0).set(DataComponents.ENTITY_DATA, CustomData.of(tag));
+                this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
             }
 
             this.level.sendBlockUpdated(this.getBlockPos(),
@@ -450,12 +477,158 @@ public class AnimalPenTileEntity extends BlockEntity
 
     /**
      * Returns inventory of this tile entity
+     *
      * @return inventory
      */
     public SimpleContainer getInventory()
     {
         return this.inventory;
     }
+
+
+    /**
+     * This method returns item stack of currently stored cage.
+     *
+     * @return The currently stored cage.
+     */
+    private ItemStack getItemStack()
+    {
+        return this.inventory.getItem(0);
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Animal Pen Block Interface
+// ---------------------------------------------------------------------
+
+
+    /**
+     * Returns the list of entity variants stored in cage.
+     *
+     * @return List of entity variants in cage.
+     */
+    @Override
+    public ListTag getEntityVariants()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return new ListTag();
+        }
+
+        return AnimalCageItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new);
+    }
+
+
+    /**
+     * This method returns animal display size.
+     *
+     * @return The display size of animal.
+     */
+    @Override
+    public long getAnimalDisplaySize()
+    {
+        return this.displaySize < 1 ? this.getAnimalCount() :
+            Math.min(this.displaySize, this.getAnimalCount());
+    }
+
+
+    /**
+     * This method changes animal display size.
+     *
+     * @param size The animal display size.
+     */
+    @Override
+    public void setAnimalDisplaySize(long size)
+    {
+        this.displaySize = size;
+        this.triggerUpdate();
+    }
+
+
+    /**
+     * This method sets new animal variant from given CompoundTag tag.
+     *
+     * @param animalVariant a new animal variant
+     */
+    @Override
+    public void updateAnimalVariant(CompoundTag animalVariant)
+    {
+        if (this.getStoredAnimal() == null || animalVariant == null || animalVariant.isEmpty())
+        {
+            return;
+        }
+
+        // Save extra data
+        CompoundTag extraData = new CompoundTag();
+        ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(extraData);
+
+        // load new variant
+        this.storedAnimal.load(animalVariant);
+
+        // Apply data
+        ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
+        this.triggerUpdate();
+    }
+
+
+    /**
+     * This method removes animal pen variant with given index.
+     *
+     * @param index the variant index to be removed
+     */
+    @Override
+    public void removeAnimalVariant(int index)
+    {
+        if (this.getStoredAnimal() == null || this.getEntityVariants().size() <= index)
+        {
+            return;
+        }
+
+        this.getEntityVariants().remove(index);
+        this.inventory.setChanged();
+    }
+
+
+    /**
+     * This method returns the count of animals in pen.
+     *
+     * @return The animal count in pen.
+     */
+    @Override
+    public long getAnimalCount()
+    {
+        return this.getStoredAnimal() == null ? 0 :
+            ((AnimalPenInterface) this.getStoredAnimal()).animalPenGetCount();
+    }
+
+
+    @Override
+    public boolean canGrowEntity()
+    {
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+    }
+
+
+    /**
+     * This method returns the description lines that will be displayed above tile entity.
+     *
+     * @return List of pairs that contains display icon and text next to it
+     */
+    @Override
+    public List<Pair<ItemStack, Component>> getCooldownLines()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return Collections.emptyList();
+        }
+
+        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter());
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Variables
+// ---------------------------------------------------------------------
 
 
     /**
@@ -481,6 +654,8 @@ public class AnimalPenTileEntity extends BlockEntity
 
     private Animal storedAnimal;
 
+    private long displaySize = -1;
+
     private int tickCounter;
 
     private final List<Integer> deathTicker = new ArrayList<>();
@@ -488,4 +663,6 @@ public class AnimalPenTileEntity extends BlockEntity
     public static final String TAG_INVENTORY = "inventory";
 
     public static final String TAG_DEATH_TICKER = "death_ticker";
+
+    public static final String TAG_DISPLAY_SIZE = "display_size";
 }
