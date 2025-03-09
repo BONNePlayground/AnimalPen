@@ -274,7 +274,7 @@ public class VariantScreenSelection extends Screen
         RenderSystem.setShaderTexture(0, TEXTURE);
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
-        this.blit(poseStack, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
+        blit(poseStack, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
     }
 
 
@@ -336,7 +336,7 @@ public class VariantScreenSelection extends Screen
         RenderSystem.setShaderTexture(0, TEXTURE);
 
         // Render icon instead of delete button.
-        this.blit(poseStack,
+        blit(poseStack,
             this.deleteButton.getX() + 1,
             this.deleteButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 9),
@@ -345,7 +345,7 @@ public class VariantScreenSelection extends Screen
             12);
 
         // Render icon instead of apply button.
-        this.blit(poseStack,
+        blit(poseStack,
             this.applyButton.getX() + 1,
             this.applyButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 12),
@@ -382,7 +382,7 @@ public class VariantScreenSelection extends Screen
             scrollPosition = this.bodyTopPos;
         }
 
-        this.blit(poseStack,
+        blit(poseStack,
             this.leftPos + 9,
             scrollPosition,
             176 + (this.needsScrollBars() ? 0 : 12),
@@ -490,7 +490,7 @@ public class VariantScreenSelection extends Screen
     {
         RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
 
-        this.blit(poseStack,
+        blit(poseStack,
             this.leftPos - 12,
             this.topPos + (this.imageHeight - 17) / 2,
             149 + (this.isCooldownOpened ? 0 : 11),
@@ -500,7 +500,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.isCooldownOpened)
         {
-            this.blit(poseStack,
+            blit(poseStack,
                 this.leftPos - 12 - this.cooldownWidth,
                 this.topPos,
                 0,
@@ -522,7 +522,7 @@ public class VariantScreenSelection extends Screen
                     int y = top + i * 16;
 
                     ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
-                    itemRenderer.renderGuiItem(cooldown.getLeft(), leftOffset, y);
+                    itemRenderer.renderGuiItem(poseStack, cooldown.getLeft(), leftOffset, y);
 
                     this.font.draw(poseStack,
                         cooldown.getRight(),
