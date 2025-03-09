@@ -304,7 +304,7 @@ public class AnimalCageItem extends Item
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -352,7 +352,7 @@ public class AnimalCageItem extends Item
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -394,7 +394,7 @@ public class AnimalCageItem extends Item
                 if (player != null)
                 {
                     player.displayClientMessage(
-                        new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                        Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                             withStyle(ChatFormatting.DARK_RED), true);
                 }
 

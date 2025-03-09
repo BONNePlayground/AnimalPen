@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -37,25 +38,21 @@ public class InfinitePlayerAttack
     @Shadow
     private ItemStack destroyingItem;
 
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
 
     @Shadow
     private BlockPos destroyBlockPos;
 
 
-    @Inject(method = "startDestroyBlock",
+    @Inject(method = "method_41930",
         at = @At(value = "INVOKE",
             shift = At.Shift.AFTER,
             target = "Lnet/minecraft/client/multiplayer/ClientLevel;destroyBlockProgress(ILnet/minecraft/core/BlockPos;I)V"))
-    private void performBlockAttack(BlockPos blockPos,
+    private void performBlockAttack(BlockState blockState,
+        BlockPos blockPos,
         Direction direction,
-        CallbackInfoReturnable<Boolean> cir)
+        int i,
+        CallbackInfoReturnable<Packet> cir)
     {
-        BlockState blockState = this.minecraft.level.getBlockState(this.destroyBlockPos);
-
         if (blockState.is(AnimalPenBlock.ANIMAL_PENS) && this.destroyingItem.is(AnimalPenBlock.ATTACK_TOOLS) ||
             blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) && this.destroyingItem.is(AquariumBlock.ATTACK_TOOLS))
         {

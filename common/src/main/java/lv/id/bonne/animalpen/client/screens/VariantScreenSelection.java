@@ -28,8 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -115,7 +113,7 @@ public class VariantScreenSelection extends Screen
                 y,
                 buttonWidth,
                 buttonHeight,
-                new TranslatableComponent(BUTTON_TEXT, (index + 1)),
+                Component.translatable(BUTTON_TEXT, (index + 1)),
                 button -> handleVariantButton(button, index))));
         }
 
@@ -124,7 +122,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + 111,
             11,
             14,
-            TextComponent.EMPTY,
+            Component.empty(),
             this::handleDeleteButton));
 
         // Apply variant button
@@ -132,7 +130,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + 111,
             14,
             14,
-            TextComponent.EMPTY,
+            Component.empty(),
             this::handleApplyButton));
 
         this.applyButton.active = false;
@@ -158,7 +156,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + 112,
             Math.max(6, (int) (this.sliderAreaWidth / maxValue)),
             12,
-            new TextComponent(""),
+            Component.empty(),
             button -> {}));
         this.sliderButton.active = maxValue > 1;
         this.sliderButton.visible = this.blockEntityInterface.canGrowEntity() && maxValue > 1;
@@ -192,7 +190,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + (this.imageHeight - 17) / 2,
             11,
             17,
-            new TextComponent(""),
+            Component.empty(),
             this::handleCooldownButton));
     }
 
@@ -414,13 +412,13 @@ public class VariantScreenSelection extends Screen
 
         if (this.blockEntityInterface.canGrowEntity())
         {
-            text = new TranslatableComponent(SIZE_TEXT,
+            text = Component.translatable(SIZE_TEXT,
                 this.blockEntityInterface.getAnimalDisplaySize(),
                 this.blockEntityInterface.getAnimalCount());
         }
         else
         {
-            text = new TranslatableComponent(FIXED_TEXT,
+            text = Component.translatable(FIXED_TEXT,
                 this.blockEntityInterface.getAnimalDisplaySize());
         }
 
@@ -568,7 +566,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.sliderButton.isMouseOver(mouseX, mouseY))
         {
-            List<Component> list = List.of(SLIDER, new TextComponent(""), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
+            List<Component> list = List.of(SLIDER, Component.empty(), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
             this.renderComponentTooltip(poseStack, list, mouseX, mouseY);
         }
 
@@ -1093,47 +1091,47 @@ public class VariantScreenSelection extends Screen
      * The title of menu
      */
     private static final Component TITLE =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen");
+        Component.translatable("gui.animal_pen.variant_selection_screen");
 
     /**
      * The APPLY of button tooltip
      */
     private static final Component APPLY =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.apply_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.apply_tooltip");
 
     /**
      * The DELETE of button tooltip
      */
     private static final Component DELETE =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.delete_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.delete_tooltip");
 
     /**
      * The DELETE of button tooltip
      */
     private static final Component SELECT_TO_DELETE =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.select_to_delete_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.select_to_delete_tooltip");
 
     /**
      * The COOLDOWN of button tooltip
      */
     private static final Component COOLDOWN_OPEN =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.cooldown_open_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.cooldown_open_tooltip");
 
     /**
      * The COOLDOWN of button tooltip
      */
     private static final Component COOLDOWN_CLOSE =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
 
     /**
      * The SLIDER of button tooltip
      */
     private static final Component SLIDER =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.slider_tooltip");
     private static final Component SLIDER_HELPER_DRAG =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip_drag");
+        Component.translatable("gui.animal_pen.variant_selection_screen.slider_tooltip_drag");
     private static final Component SLIDER_HELPER_ARROW =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip_arrow");
+        Component.translatable("gui.animal_pen.variant_selection_screen.slider_tooltip_arrow");
 
     /**
      * The button text location

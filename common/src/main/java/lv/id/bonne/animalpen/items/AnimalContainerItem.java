@@ -293,7 +293,7 @@ public class AnimalContainerItem extends Item
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.water_animal_container.error.too_many_variants").
+                    Component.translatable("item.animal_pen.water_animal_container.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -341,7 +341,7 @@ public class AnimalContainerItem extends Item
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.water_animal_container.error.too_many_variants").
+                    Component.translatable("item.animal_pen.water_animal_container.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -383,7 +383,7 @@ public class AnimalContainerItem extends Item
                 if (player != null)
                 {
                     player.displayClientMessage(
-                        new TranslatableComponent("item.animal_pen.water_animal_container.error.too_many_variants").
+                        Component.translatable("item.animal_pen.water_animal_container.error.too_many_variants").
                             withStyle(ChatFormatting.DARK_RED), true);
                 }
 
