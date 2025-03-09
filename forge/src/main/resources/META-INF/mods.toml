@@ -1,17 +1,17 @@
 modLoader = "javafml"
 loaderVersion = "[49,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/BONNePlayground/AnimalPen/issues"
 license = "GNU GPL 3.0"
 
 [[mods]]
 modId = "animal_pen"
 version = "${version}"
 displayName = "Animal Pen"
-authors = ""
+authors = "BONNe1704"
 description = '''
-
+A simple mod aimed to reduce lag on servers by placing animals in single block.
 '''
-#logoFile = ""
+logoFile = "assets/animal_pen/icon.png"
 
 [[dependencies.animal_pen]]
 modId = "forge"

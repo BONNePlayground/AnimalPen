@@ -10,6 +10,7 @@
   "item.animal_pen.animal_cage.error.wrong": "Animal cage contains different animal",
   "item.animal_pen.animal_cage.error.unknown": "Failed to catch animal",
   "item.animal_pen.animal_cage.error.not_animal": "Can catch only animals",
+  "item.animal_pen.animal_cage.error.too_many_variants": "Variant cannot be stored. Memory is full",
 
   "item.animal_pen.water_animal_container": "Water Animal Container",
   "item.animal_pen.water_animal_container.entity": "Entity: %s",
@@ -21,6 +22,7 @@
   "item.animal_pen.water_animal_container.error.wrong": "Animal cage contains different water animal",
   "item.animal_pen.water_animal_container.error.unknown": "Failed to catch water animal",
   "item.animal_pen.water_animal_container.error.not_water_animal": "Can catch only water animals",
+  "item.animal_pen.water_animal_container.error.too_many_variants": "Variant cannot be stored. Memory is full",
 
   "category.animal_pen.animal_pen": "Animal Pen Items",
 
@@ -56,5 +58,19 @@
   "display.animal_pen.egg_cooldown": "%d cooldown",
   "display.animal_pen.egg_ready": "§2Ready",
   "display.animal_pen.sniff_cooldown": "%d cooldown",
-  "display.animal_pen.sniff_ready": "§2Ready"
+  "display.animal_pen.sniff_ready": "§2Ready",
+
+
+  "gui.animal_pen.variant_selection_screen": "§8Variant Selection",
+  "gui.animal_pen.variant_selection_screen.select_variant": "Pose %d",
+  "gui.animal_pen.variant_selection_screen.entity_size": "%d / %d",
+  "gui.animal_pen.variant_selection_screen.fixed_size": "%d",
+  "gui.animal_pen.variant_selection_screen.apply_tooltip": "Click to apply this variant",
+  "gui.animal_pen.variant_selection_screen.delete_tooltip": "Click to remove this variant",
+  "gui.animal_pen.variant_selection_screen.select_to_delete_tooltip": "Select a variant to remove it",
+  "gui.animal_pen.variant_selection_screen.slider_tooltip": "The amount of entities displayed.",
+  "gui.animal_pen.variant_selection_screen.slider_tooltip_drag": "§7 Drag to change displayed size",
+  "gui.animal_pen.variant_selection_screen.slider_tooltip_arrow": "§7 or use left/right arrows.",
+  "gui.animal_pen.variant_selection_screen.cooldown_open_tooltip": "Click to view cooldowns",
+  "gui.animal_pen.variant_selection_screen.cooldown_close_tooltip": "Click to hide cooldowns"
 }
