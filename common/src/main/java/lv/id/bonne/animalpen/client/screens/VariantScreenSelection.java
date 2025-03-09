@@ -960,7 +960,7 @@ public class VariantScreenSelection extends Screen
         }
 
         Button targetButton = this.buttons.get(buttonIndex);
-        int buttonTop = targetButton.y;
+        int buttonTop = targetButton.getY();
         int buttonBottom = buttonTop + targetButton.getHeight();
         float areaDifference = this.buttons.size() * targetButton.getHeight() - this.buttonAreaHeight;
 
