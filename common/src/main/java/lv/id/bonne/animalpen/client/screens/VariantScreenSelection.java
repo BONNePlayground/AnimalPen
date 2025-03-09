@@ -250,12 +250,11 @@ public class VariantScreenSelection extends Screen
         super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render title of the menu.
-        GuiComponent.drawString(poseStack,
-            this.font,
+        this.font.draw(poseStack,
             this.title,
-            this.leftPos + 88 - this.font.width(this.title) / 2,
-            this.topPos + 3 + 7 - this.font.lineHeight / 2,
-            0xffffff);
+            this.leftPos + 88 - this.font.width(this.title) / 2f,
+            this.topPos + 3 + 7 - this.font.lineHeight / 2f,
+            4210752);
 
         this.renderVariantButtons(poseStack, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(poseStack, mouseX, mouseY);
