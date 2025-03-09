@@ -23,7 +23,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -237,7 +236,7 @@ public class VariantScreenSelection extends Screen
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(graphics);
+        this.renderTransparentBackground(graphics);
         this.updateButtonPositions();
 
         super.render(graphics, mouseX, mouseY, partialTicks);
@@ -266,9 +265,9 @@ public class VariantScreenSelection extends Screen
      * @param graphics The pose stack
      */
     @Override
-    public void renderBackground(GuiGraphics graphics)
+    public void renderTransparentBackground(GuiGraphics graphics)
     {
-        super.renderBackground(graphics);
+        super.renderTransparentBackground(graphics);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int offsetX = this.leftPos;
@@ -770,7 +769,7 @@ public class VariantScreenSelection extends Screen
 
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount)
+    public boolean mouseScrolled(double mouseX, double mouseY, double var, double amount)
     {
         if (!this.needsScrollBars())
         {
