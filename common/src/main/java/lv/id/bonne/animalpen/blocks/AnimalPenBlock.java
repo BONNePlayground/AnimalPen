@@ -12,8 +12,8 @@ import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
@@ -302,12 +302,12 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     /**
      * Tag that stores which tools can attack entity in animal pen
      */
-    public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
+    public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registries.ITEM,
         new ResourceLocation(AnimalPen.MOD_ID, "can_attack_pen"));
 
     /**
      * Tag that stores animal pens tag key.
      */
-    public static final TagKey<Block> ANIMAL_PENS = TagKey.create(Registry.BLOCK_REGISTRY,
+    public static final TagKey<Block> ANIMAL_PENS = TagKey.create(Registries.BLOCK,
         new ResourceLocation(AnimalPen.MOD_ID, "animal_pens"));
 }

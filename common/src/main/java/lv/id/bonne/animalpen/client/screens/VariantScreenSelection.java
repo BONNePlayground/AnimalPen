@@ -3,7 +3,7 @@ package lv.id.bonne.animalpen.client.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -109,29 +109,26 @@ public class VariantScreenSelection extends Screen
             int y = this.bodyTopPos + (i * buttonHeight);
             final int index = i;
 
-            this.buttons.add(this.addWidget(new Button(buttonPos,
-                y,
-                buttonWidth,
-                buttonHeight,
-                Component.translatable(BUTTON_TEXT, (index + 1)),
-                button -> handleVariantButton(button, index))));
+            this.buttons.add(this.addWidget(Button.builder(Component.translatable(BUTTON_TEXT, (index + 1)), 
+                    button -> handleVariantButton(button, index)).
+                pos(buttonPos, y).
+                size(buttonWidth, buttonHeight).
+                build()));
         }
 
         // Delete variant button
-        this.deleteButton = this.addWidget(new Button(this.leftPos + 157,
-            this.topPos + 111,
-            11,
-            14,
-            Component.empty(),
-            this::handleDeleteButton));
-
+        this.deleteButton = this.addWidget(Button.builder(Component.empty(), 
+                this::handleDeleteButton).
+            pos(this.leftPos + 157, this.topPos + 111).
+            size(11, 14).
+            build());
+        
         // Apply variant button
-        this.applyButton = this.addWidget(new Button(this.leftPos + 73,
-            this.topPos + 111,
-            14,
-            14,
-            Component.empty(),
-            this::handleApplyButton));
+        this.applyButton = this.addWidget(Button.builder(Component.empty(),
+                this::handleApplyButton).
+            pos(this.leftPos + 73, this.topPos + 111).
+            size(14, 14).
+            build());
 
         this.applyButton.active = false;
 
@@ -145,25 +142,24 @@ public class VariantScreenSelection extends Screen
             currentValue = 1;
         }
 
-        if (currentValue > maxValue)
+        if (currentValue > maxValue && maxValue != 0)
         {
             currentValue = maxValue;
         }
 
         this.sliderBarPos = this.leftPos + 89;
 
-        this.sliderButton = this.addRenderableWidget(new Button(this.sliderBarPos,
-            this.topPos + 112,
-            Math.max(6, (int) (this.sliderAreaWidth / maxValue)),
-            12,
-            Component.empty(),
-            button -> {}));
+        this.sliderButton = this.addWidget(Button.builder(Component.empty(),
+                button -> {}).
+            pos(this.sliderBarPos, this.topPos + 112).
+            size(Math.max(6, (int) (this.sliderAreaWidth / maxValue)), 12).
+            build());
         this.sliderButton.active = maxValue > 1;
         this.sliderButton.visible = this.blockEntityInterface.canGrowEntity() && maxValue > 1;
 
         // Calculate initial X position based on current value
         int initialX = this.calculateSizeBarOffset(currentValue);
-        this.sliderButton.x = this.sliderBarPos + initialX;
+        this.sliderButton.setX(this.sliderBarPos + initialX);
 
         // Create display entity.
 
@@ -186,12 +182,11 @@ public class VariantScreenSelection extends Screen
             });
 
         // Create cooldown menu renderer
-        this.cooldownButton = this.addWidget(new Button(this.leftPos - 12,
-            this.topPos + (this.imageHeight - 17) / 2,
-            11,
-            17,
-            Component.empty(),
-            this::handleCooldownButton));
+        this.cooldownButton = this.addWidget(Button.builder(Component.empty(),
+                this::handleCooldownButton).
+            pos(this.leftPos - 12, this.topPos + (this.imageHeight - 17) / 2).
+            size(11, 17).
+            build());
     }
 
 
@@ -293,7 +288,7 @@ public class VariantScreenSelection extends Screen
     private void renderVariantButtons(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
         // Enable scissor test to restrict rendering area
-        this.enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
+        enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
 
         // Render only visible buttons
 
@@ -309,7 +304,7 @@ public class VariantScreenSelection extends Screen
             }
         }
 
-        this.disableScissor();
+        disableScissor();
     }
 
 
@@ -322,10 +317,10 @@ public class VariantScreenSelection extends Screen
         int height = button.getHeight();
 
         // Draw top line
-        fill(poseStack, button.x, button.y, button.x + width, button.y + 1, color);
-        fill(poseStack, button.x, button.y + height - 1, button.x + width, button.y + height, color);
-        fill(poseStack, button.x, button.y, button.x + 1, button.y + height, color);
-        fill(poseStack, button.x + width - 1, button.y, button.x + width, button.y + height, color);
+        fill(poseStack, button.getX(), button.getY(), button.getX() + width, button.getY() + 1, color);
+        fill(poseStack, button.getX(), button.getY() + height - 1, button.getX() + width, button.getY() + height, color);
+        fill(poseStack, button.getX(), button.getY(), button.getX() + 1, button.getY() + height, color);
+        fill(poseStack, button.getX() + width - 1, button.getY(), button.getX() + width, button.getY() + height, color);
     }
 
 
@@ -342,8 +337,8 @@ public class VariantScreenSelection extends Screen
 
         // Render icon instead of delete button.
         this.blit(poseStack,
-            this.deleteButton.x + 1,
-            this.deleteButton.y + 1,
+            this.deleteButton.getX() + 1,
+            this.deleteButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 9),
             39,
             9,
@@ -351,8 +346,8 @@ public class VariantScreenSelection extends Screen
 
         // Render icon instead of apply button.
         this.blit(poseStack,
-            this.applyButton.x + 1,
-            this.applyButton.y + 1,
+            this.applyButton.getX() + 1,
+            this.applyButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 12),
             51,
             12,
@@ -470,8 +465,8 @@ public class VariantScreenSelection extends Screen
         poseStack.translate(x, y, 50);
         poseStack.scale(this.entityScale, this.entityScale, this.entityScale);
         poseStack.translate(0, this.entityOffset, 0);
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(this.entityRotation));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(this.entityRotation));
         EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
         erd.setRenderShadow(false);
@@ -577,34 +572,6 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    /**
-     * Enable rendering area limitation.
-     * @param x1 The top corner X
-     * @param y1 The top corner Y
-     * @param x2 The bottom corner X
-     * @param y2 The bottom corner y
-     */
-    private void enableScissor(int x1, int y1, int x2, int y2)
-    {
-        double scale = this.minecraft.getWindow().getGuiScale();
-
-        RenderSystem.enableScissor(
-            (int) (x1 * scale),
-            (int) (this.minecraft.getWindow().getHeight() - y2 * scale),
-            (int) ((x2 - x1) * scale),
-            (int) ((y2 - y1) * scale));
-    }
-
-
-    /**
-     * Disable rendering area limitation.
-     */
-    private void disableScissor()
-    {
-        RenderSystem.disableScissor();
-    }
-
-
 // ---------------------------------------------------------------------
 // Section: Actions
 // ---------------------------------------------------------------------
@@ -672,8 +639,8 @@ public class VariantScreenSelection extends Screen
      */
     private void handleVariantButton(Button button, int index)
     {
-        if (button.y + button.getHeight() < this.bodyTopPos ||
-            button.y > this.bodyTopPos + this.buttonAreaHeight)
+        if (button.getY() + button.getHeight() < this.bodyTopPos ||
+            button.getY() > this.bodyTopPos + this.buttonAreaHeight)
         {
             return;
         }
@@ -860,7 +827,7 @@ public class VariantScreenSelection extends Screen
 
             // Snap to correct position
             int snapPoint = this.calculateSizeBarOffset(newValue);
-            this.sliderButton.x = this.sliderBarPos + snapPoint;
+            this.sliderButton.setX(this.sliderBarPos + snapPoint);
 
             return true;
         }
@@ -901,7 +868,7 @@ public class VariantScreenSelection extends Screen
             if (newValue != currentValue)
             {
                 // Update scroll button position
-                this.sliderButton.x = this.sliderBarPos + this.calculateSizeBarOffset(newValue);
+                this.sliderButton.setX(this.sliderBarPos + this.calculateSizeBarOffset(newValue));
                 this.blockEntityInterface.setAnimalDisplaySize(newValue);
 
                 NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
@@ -943,7 +910,7 @@ public class VariantScreenSelection extends Screen
         for (int i = 0; i < this.buttons.size(); i++)
         {
             Button button = this.buttons.get(i);
-            button.y = this.bodyTopPos + (i * buttonHeight) - scrollOffset;
+            button.setY(this.bodyTopPos + (i * buttonHeight) - scrollOffset);
         }
     }
 
