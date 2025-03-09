@@ -457,7 +457,7 @@ public class VariantScreenSelection extends Screen
             animal.setPose(Pose.SWIMMING);
             animal.setSwimming(true);
             ((EntityAccessor) animal).setWasTouchingWater(true);
-            y += 10;
+            y -= 10;
         }
 
         poseStack.pushPose();
