@@ -3,8 +3,8 @@
   "id": "animal_pen",
   "version": "${version}",
   "name": "Animal Pen",
-  "description": "",
-  "authors": [""],
+  "description": "A simple mod aimed to reduce lag on servers by placing animals in single block.",
+  "authors": ["BONNe1704"],
   "contact": {
     "homepage": ""  },
   "license": "GPL-3.0",
