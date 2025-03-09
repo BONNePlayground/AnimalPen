@@ -61,7 +61,7 @@
   "display.animal_pen.sniff_ready": "§2Ready",
 
 
-  "gui.animal_pen.variant_selection_screen": "Variant Selection",
+  "gui.animal_pen.variant_selection_screen": "§8Variant Selection",
   "gui.animal_pen.variant_selection_screen.select_variant": "Pose %d",
   "gui.animal_pen.variant_selection_screen.entity_size": "%d / %d",
   "gui.animal_pen.variant_selection_screen.fixed_size": "%d",

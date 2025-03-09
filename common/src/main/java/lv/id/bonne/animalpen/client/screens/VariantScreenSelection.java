@@ -18,7 +18,6 @@ import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -243,12 +242,11 @@ public class VariantScreenSelection extends Screen
         super.render(poseStack, mouseX, mouseY, partialTicks);
 
         // Render title of the menu.
-        GuiComponent.drawString(poseStack,
-            this.font,
+        this.font.draw(poseStack,
             this.title,
-            this.leftPos + 88 - this.font.width(this.title) / 2,
-            this.topPos + 3 + 7 - this.font.lineHeight / 2,
-            0xffffff);
+            this.leftPos + 88 - this.font.width(this.title) / 2f,
+            this.topPos + 3 + 7 - this.font.lineHeight / 2f,
+            4210752);
 
         this.renderVariantButtons(poseStack, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(poseStack, mouseX, mouseY);
@@ -841,12 +839,8 @@ public class VariantScreenSelection extends Screen
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if (!this.sliderButton.isActive() || !this.blockEntityInterface.canGrowEntity())
-        {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-
-        if (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT)
+        if ((keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) &&
+            this.sliderButton.isActive() && this.blockEntityInterface.canGrowEntity())
         {
             // Get current value
             long currentValue = this.blockEntityInterface.getAnimalDisplaySize();
@@ -874,6 +868,46 @@ public class VariantScreenSelection extends Screen
                 NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
                     UpdateAnimalSizeData.encode(this.position, newValue));
 
+                return true;
+            }
+        }
+        else if ((keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) &&
+            this.buttons.size() > 1)
+        {
+            int button;
+
+            if (keyCode == GLFW.GLFW_KEY_DOWN)
+            {
+                button = Math.min(this.selectedButton + 1, this.buttons.size() - 1);
+            }
+            else
+            {
+                button = Math.max(this.selectedButton - 1, 0);
+            }
+
+            if (button != this.selectedButton)
+            {
+                this.ensureButtonVisible(button);
+                this.handleVariantButton(this.buttons.get(button), button);
+            }
+
+            return true;
+        }
+        else if (keyCode == GLFW.GLFW_KEY_ENTER)
+        {
+            if (this.selectedButton >= 0 &&
+                this.selectedButton < this.buttons.size() &&
+                this.applyButton.isActive())
+            {
+                this.handleApplyButton(null);
+                return true;
+            }
+        }
+        else if (keyCode == GLFW.GLFW_KEY_DELETE)
+        {
+            if (this.selectedButton >= 0 && this.selectedButton < this.buttons.size())
+            {
+                this.handleDeleteButton(null);
                 return true;
             }
         }
@@ -911,6 +945,36 @@ public class VariantScreenSelection extends Screen
         {
             Button button = this.buttons.get(i);
             button.setY(this.bodyTopPos + (i * buttonHeight) - scrollOffset);
+        }
+    }
+
+
+    /**
+     * This method ensures that selected button is on the screen.
+     */
+    private void ensureButtonVisible(int buttonIndex)
+    {
+        if (buttonIndex < 0 || buttonIndex >= this.buttons.size())
+        {
+            return;
+        }
+
+        Button targetButton = this.buttons.get(buttonIndex);
+        int buttonTop = targetButton.getY();
+        int buttonBottom = buttonTop + targetButton.getHeight();
+        float areaDifference = this.buttons.size() * targetButton.getHeight() - this.buttonAreaHeight;
+
+        if (buttonTop < this.bodyTopPos)
+        {
+            float newScrollPos = (this.bodyTopPos - buttonTop) / areaDifference;
+            this.currentVariantScroll = Mth.clamp(this.currentVariantScroll - newScrollPos, 0.0f, 1.0f);
+            this.updateButtonPositions();
+        }
+        else if (buttonBottom > this.bodyTopPos + this.buttonAreaHeight)
+        {
+            float newScrollPos = (buttonBottom - this.bodyTopPos - buttonAreaHeight) / areaDifference;
+            this.currentVariantScroll = Mth.clamp(this.currentVariantScroll + newScrollPos, 0.0f, 1.0f);
+            this.updateButtonPositions();
         }
     }
 
