@@ -19,8 +19,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 
+/**
+ * The type Configuration.
+ */
 public class Configuration
 {
+    /**
+     * Init.
+     */
     public void init()
     {
         this.cooldownList.clear();
@@ -36,6 +42,9 @@ public class Configuration
         this.waterAnimalSize = 0.33f;
         this.growthMultiplier = 0.001f;
 
+        this.attackCooldown = 5;
+        this.maxStoredAnimalVariants = 10;
+
         this.growAnimals = false;
         this.growWaterAnimals = false;
 
@@ -45,17 +54,32 @@ public class Configuration
     }
 
 
+    /**
+     * Is invalid boolean.
+     *
+     * @return the boolean
+     */
     public boolean isInvalid()
     {
         return this.dropLimitList == null ||
             this.cooldownList == null ||
             this.blockedAnimals == null ||
             this.waterAnimalSize == null ||
+            this.waterAnimalSize <= 0 ||
             this.animalSize == null ||
-            this.growthMultiplier == null;
+            this.animalSize <= 0 ||
+            this.growthMultiplier == null ||
+            this.growthMultiplier < 0 ||
+            this.attackCooldown == null ||
+            this.attackCooldown < 0 ||
+            this.maxStoredAnimalVariants == null ||
+            this.maxStoredAnimalVariants < 0;
     }
 
 
+    /**
+     * Sets defaults.
+     */
     public void setDefaults()
     {
         if (this.dropLimitList == null)
@@ -88,6 +112,16 @@ public class Configuration
         if (this.growthMultiplier == null || this.growthMultiplier < 0)
         {
             this.growthMultiplier = 0.001f;
+        }
+
+        if (this.attackCooldown == null || this.attackCooldown < 0)
+        {
+            this.attackCooldown = 1;
+        }
+
+        if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0)
+        {
+            this.maxStoredAnimalVariants = 10;
         }
     }
 
@@ -127,7 +161,7 @@ public class Configuration
             add(new CooldownEntry(EntityType.BEE.arch$registryName(),
                 60 * 20 + 20,
                 -1 * 20,
-                10 * 20));
+                20));
 
         // Init non-used to show options
         this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
@@ -179,6 +213,7 @@ public class Configuration
 
     /**
      * This method returns cooldowns for given item using on given entity.
+     *
      * @param entity Entity that is targeted.
      * @param usedItem Item that is used.
      * @param entityAmount Amount of entities.
@@ -207,6 +242,7 @@ public class Configuration
 
     /**
      * This method returns drop limit for given item.
+     *
      * @param item Drop limit for item.
      * @return Limit of items that can be dropped at once.
      */
@@ -218,6 +254,7 @@ public class Configuration
 
     /**
      * The maximal amount of animals a pen can store.
+     *
      * @return The maximal amount of animals.
      */
     public long getMaximalAnimalCount()
@@ -294,6 +331,7 @@ public class Configuration
 
     /**
      * This indicates is given entity is blocked from being picked up.
+     *
      * @param entityType Entity that need to be checked.
      * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
      */
@@ -303,13 +341,46 @@ public class Configuration
     }
 
 
+    /**
+     * Gets attack cooldown.
+     *
+     * @return the attack cooldown
+     */
+    public int getAttackCooldown()
+    {
+        return this.attackCooldown;
+    }
+
+
+    /**
+     * Gets max stored variants.
+     *
+     * @return the max stored variants
+     */
+    public int getMaxStoredVariants()
+    {
+        return this.maxStoredAnimalVariants;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
 
 
+    /**
+     * The type Cooldown entry.
+     */
     public static class CooldownEntry
     {
+        /**
+         * Instantiates a new Cooldown entry.
+         *
+         * @param entity the entity
+         * @param base the base
+         * @param increment the increment
+         * @param max the max
+         */
         public CooldownEntry(ResourceLocation entity, int base, int increment, int max)
         {
             this.entity = entity;
@@ -319,6 +390,12 @@ public class Configuration
         }
 
 
+        /**
+         * Gets value.
+         *
+         * @param entityAmount the entity amount
+         * @return the value
+         */
         public int getValue(long entityAmount)
         {
             if (this.incrementPerAnimal > 0)
@@ -379,6 +456,12 @@ public class Configuration
     @SerializedName("cooldowns")
     private Map<ResourceLocation, List<CooldownEntry>> cooldownList = new HashMap<>();
 
+    @JsonComment("A cooldown value in game ticks between attacks that players can perform on animal pens.")
+    @JsonComment("Default value: 5 game tick")
+    @Expose
+    @SerializedName("attack_cooldown")
+    private Integer attackCooldown;
+
     @JsonComment("List of drop limits for items when player harvests items.")
     @JsonComment("<item> : <drop_limit>.")
     @Expose
@@ -426,6 +509,14 @@ public class Configuration
     @Expose
     @SerializedName("turtle_scute_drop_time")
     private boolean dropScuteAtStart = false;
+
+    @JsonComment("Allows to set how many different animal variants can be stored per item.")
+    @JsonComment("Players will not be able to store more different variants than this value.")
+    @JsonComment("Be aware, this increases NBT data size, so not recommended to put infinite amount.")
+    @JsonComment("Default value = 10")
+    @Expose
+    @SerializedName("max_stored_animal_variants")
+    private Integer maxStoredAnimalVariants;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose
