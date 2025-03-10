@@ -188,9 +188,9 @@ public class VariantScreenSelection extends Screen
 
         // Create cooldown menu renderer
         this.cooldownButton = this.addWidget(new Button(this.leftPos - 12,
-            this.topPos + (this.imageHeight - 17) / 2,
+            this.topPos + (this.imageHeight - 18) / 2,
             11,
-            17,
+            18,
             new TextComponent(""),
             this::handleCooldownButton));
     }
@@ -510,11 +510,11 @@ public class VariantScreenSelection extends Screen
 
         this.blit(poseStack,
             this.leftPos - 12,
-            this.topPos + (this.imageHeight - 17) / 2,
+            this.topPos + (this.imageHeight - 18) / 2,
             149 + (this.isCooldownOpened ? 0 : 11),
-            1 + (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 17 : 0),
+            (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 18 : 1),
             11,
-            17);
+            18);
 
         if (this.isCooldownOpened)
         {
