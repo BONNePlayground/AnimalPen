@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +21,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -255,21 +257,20 @@ public class AnimalContainerItem extends Item
      */
     public static Optional<ListTag> getAnimalVariants(ItemStack itemStack)
     {
-        if (!itemStack.has(DataComponents.ENTITY_DATA))
+        if (!itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
         {
             return Optional.empty();
         }
 
-        CompoundTag tag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
+        CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
 
-        if (tag.contains(TAG_VARIANTS))
-        {
-            return Optional.of(tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND));
-        }
-        else
+        if (customData == null)
         {
             return Optional.empty();
         }
+
+        CompoundTag tag = customData.copyTag();
+        return Optional.of(tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND));
     }
 
 
@@ -287,17 +288,8 @@ public class AnimalContainerItem extends Item
             return false;
         }
 
-        if (!itemStack.has(DataComponents.ENTITY_DATA))
-        {
-            return false;
-        }
-
-        CompoundTag itemTag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
-
-        if (!itemTag.contains(TAG_ENTITY_ID))
-        {
-            return false;
-        }
+        CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+        CompoundTag itemTag = customData == null ? new CompoundTag() : customData.copyTag();
 
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
 
@@ -318,7 +310,7 @@ public class AnimalContainerItem extends Item
         variantList.add(variant);
 
         itemTag.put(TAG_VARIANTS, variantList);
-        itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
+        itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(itemTag));
 
         return true;
     }
@@ -338,18 +330,17 @@ public class AnimalContainerItem extends Item
             return true;
         }
 
-        if (!mainItem.has(DataComponents.ENTITY_DATA) || !redundantItem.has(DataComponents.ENTITY_DATA))
+        CustomData mainData = mainItem.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+        CustomData redundantData = redundantItem.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+
+        if (redundantData == null)
         {
-            return false;
+            // Nothing to merge over.
+            return true;
         }
 
-        CompoundTag itemTag = mainItem.get(DataComponents.ENTITY_DATA).copyTag();
-        CompoundTag redundantTag = redundantItem.get(DataComponents.ENTITY_DATA).copyTag();
-
-        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
-        {
-            return false;
-        }
+        CompoundTag itemTag = mainData == null ? new CompoundTag() : mainData.copyTag();
+        CompoundTag redundantTag = redundantData.copyTag();
 
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
         ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
@@ -383,18 +374,17 @@ public class AnimalContainerItem extends Item
             return;
         }
 
-        if (!mainItem.has(DataComponents.ENTITY_DATA) || !redundantItem.has(DataComponents.ENTITY_DATA))
+        CustomData mainData = mainItem.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+        CustomData redundantData = redundantItem.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+
+        if (redundantData == null)
         {
+            // Nothing to merge over.
             return;
         }
 
-        CompoundTag itemTag = mainItem.get(DataComponents.ENTITY_DATA).copyTag();
-        CompoundTag redundantTag = redundantItem.get(DataComponents.ENTITY_DATA).copyTag();
-
-        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
-        {
-            return;
-        }
+        CompoundTag itemTag = mainData == null ? new CompoundTag() : mainData.copyTag();
+        CompoundTag redundantTag = redundantData.copyTag();
 
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
         ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
@@ -417,7 +407,7 @@ public class AnimalContainerItem extends Item
         }
 
         itemTag.put(TAG_VARIANTS, variantList);
-        mainItem.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
+        mainItem.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(itemTag));
     }
 
 

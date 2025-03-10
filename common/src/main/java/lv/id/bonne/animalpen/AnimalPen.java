@@ -1,7 +1,6 @@
 package lv.id.bonne.animalpen;
 
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -15,13 +14,7 @@ import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
-import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+import lv.id.bonne.animalpen.registries.*;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
@@ -36,6 +29,7 @@ public final class AnimalPen
         AnimalPenBlockRegistry.register();
         AnimalPensItemRegistry.register();
         AnimalPenTileEntityRegistry.register();
+        AnimalPenDataComponentRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
 

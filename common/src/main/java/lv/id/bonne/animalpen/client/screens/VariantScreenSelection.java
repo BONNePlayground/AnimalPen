@@ -598,7 +598,7 @@ public class VariantScreenSelection extends Screen
         }
 
         // Remove entity from list.
-        this.blockEntityInterface.getEntityVariants().remove(this.selectedButton);
+        this.blockEntityInterface.removeAnimalVariant(this.selectedButton);
 
         NetworkManager.sendToServer(new RemoveDisplayAnimalData(this.position, this.selectedButton));
 
@@ -656,7 +656,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.selectedButton == -1)
         {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(0);
+            tag = null;
         }
         else
         {
