@@ -704,18 +704,12 @@ public class VariantScreenSelection extends Screen
 
         CompoundTag tag;
 
-        if (this.selectedButton == -1)
-        {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(0);
-        }
-        else
+        if (this.selectedButton != -1)
         {
             tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+            this.displayEntity.load(tag);
+            this.currentXOnEntity = 0;
         }
-
-        this.currentXOnEntity = 0;
-
-        this.displayEntity.load(tag);
     }
 
 
