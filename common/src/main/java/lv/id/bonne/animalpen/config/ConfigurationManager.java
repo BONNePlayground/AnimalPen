@@ -76,7 +76,7 @@ public class ConfigurationManager
 
             if (this.isInvalid())
             {
-                this.configuration.setDefaults();
+                this.configuration.setDefaults(false);
                 this.writeConfig(false);
             }
         }
@@ -129,7 +129,6 @@ public class ConfigurationManager
     protected void reset()
     {
         this.configuration = new Configuration();
-        this.configuration.init();
     }
 
 
