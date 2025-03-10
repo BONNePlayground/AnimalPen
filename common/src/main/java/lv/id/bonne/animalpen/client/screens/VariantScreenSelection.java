@@ -666,18 +666,19 @@ public class VariantScreenSelection extends Screen
 
         CompoundTag tag;
 
-        if (this.selectedButton == -1)
+        if (this.selectedButton != -1)
         {
-            tag = null;
+            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+
         }
         else
         {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+            tag = new CompoundTag();
+            this.blockEntityInterface.getStoredAnimal().save(tag);
         }
 
-        this.currentXOnEntity = 0;
-
         this.displayEntity.load(tag);
+        this.currentXOnEntity = 0;
     }
 
 
