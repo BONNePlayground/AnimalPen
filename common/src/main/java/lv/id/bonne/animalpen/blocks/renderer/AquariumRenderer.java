@@ -147,7 +147,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            render(animal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -159,7 +159,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
                 this.dyingAnimal.deathTime = tick;
 
                 this.minecraft.getEntityRenderDispatcher().
-                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 

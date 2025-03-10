@@ -150,7 +150,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            render(animal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -162,7 +162,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
                 this.dyingAnimal.deathTime = tick;
 
                 this.minecraft.getEntityRenderDispatcher().
-                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 
