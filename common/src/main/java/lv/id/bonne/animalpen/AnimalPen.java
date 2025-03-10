@@ -9,8 +9,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
+import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
+import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
+import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
@@ -37,6 +41,23 @@ public final class AnimalPen
 
         CommandRegistrationEvent.EVENT.register(
             (dispatcher, var2, var3) -> AnimalPenCommands.register(dispatcher));
+
+        // Networking
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S,
+            UpdateDisplayAnimalData.ID,
+            UpdateDisplayAnimalData.STREAM_CODEC,
+            UpdateDisplayAnimalData::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S,
+            RemoveDisplayAnimalData.ID,
+            RemoveDisplayAnimalData.STREAM_CODEC,
+            RemoveDisplayAnimalData::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S,
+            UpdateAnimalSizeData.ID,
+            UpdateAnimalSizeData.STREAM_CODEC,
+            UpdateAnimalSizeData::handle);
     }
 
 
