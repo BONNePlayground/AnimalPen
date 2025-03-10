@@ -197,6 +197,18 @@ public class VariantScreenSelection extends Screen
 
 
     @Override
+    public void tick()
+    {
+        super.tick();
+
+        if (this.displayEntity != null)
+        {
+            this.displayEntity.tickCount++;
+        }
+    }
+
+
+    @Override
     public boolean isPauseScreen()
     {
         return false;
@@ -259,7 +271,7 @@ public class VariantScreenSelection extends Screen
         this.renderOtherButtons(poseStack, mouseX, mouseY);
         this.renderScrollBar(poseStack, mouseX, mouseY);
         this.renderSizeBar(poseStack, mouseX, mouseY, partialTicks);
-        this.renderEntity(poseStack);
+        this.renderEntity(poseStack, partialTicks);
         this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
 
         this.renderTooltips(poseStack, mouseX, mouseY, partialTicks);
@@ -442,7 +454,7 @@ public class VariantScreenSelection extends Screen
      * This method renders the entity in proper position.
      * @param poseStack The pose stack.
      */
-    private void renderEntity(@NotNull PoseStack poseStack)
+    private void renderEntity(@NotNull PoseStack poseStack, float partialTicks)
     {
 //        this.enableScissor(
 //            this.leftPos + 73, this.bodyTopPos,
@@ -476,7 +488,7 @@ public class VariantScreenSelection extends Screen
         EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
         erd.setRenderShadow(false);
-        erd.render(this.displayEntity, 0, 0, 0, 0, 1, poseStack, immediate, 0xF000F0);
+        erd.render(this.displayEntity, 0, 0, 0, 0, partialTicks, poseStack, immediate, 0xF000F0);
         erd.setRenderShadow(true);
         immediate.endBatch();
         poseStack.popPose();
