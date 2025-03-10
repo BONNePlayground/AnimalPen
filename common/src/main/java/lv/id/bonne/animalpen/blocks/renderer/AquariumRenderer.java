@@ -147,7 +147,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
-            render(animal, 0, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0, partialTicks, poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -160,7 +160,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
                 this.minecraft.getEntityRenderDispatcher().
                     getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 
