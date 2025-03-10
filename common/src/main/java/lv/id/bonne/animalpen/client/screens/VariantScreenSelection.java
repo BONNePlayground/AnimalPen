@@ -22,13 +22,16 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -165,7 +168,7 @@ public class VariantScreenSelection extends Screen
         CompoundTag defaultAnimal = new CompoundTag();
         this.blockEntityInterface.getStoredAnimal().save(defaultAnimal);
 
-        EntityType.create(defaultAnimal, this.minecraft.level).
+        EntityType.create(defaultAnimal, this.minecraft.level, EntitySpawnReason.TRIGGERED).
             map(entity -> (LivingEntity) entity).
             ifPresent(entity ->
             {
@@ -270,7 +273,8 @@ public class VariantScreenSelection extends Screen
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
-        graphics.blit(TEXTURE, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight);
+
+        graphics.blit(RenderType::guiTextured, TEXTURE, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
 
@@ -330,22 +334,28 @@ public class VariantScreenSelection extends Screen
     private void renderOtherButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
     {
         // Render icon instead of delete button.
-        graphics.blit(TEXTURE,
+        graphics.blit(RenderType::guiTextured,
+            TEXTURE,
             this.deleteButton.getX() + 1,
             this.deleteButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 9),
             39,
             9,
-            12);
+            12,
+            256,
+            256);
 
         // Render icon instead of apply button.
-        graphics.blit(TEXTURE,
+        graphics.blit(RenderType::guiTextured,
+            TEXTURE,
             this.applyButton.getX() + 1,
             this.applyButton.getY() + 1,
             176 + (this.selectedButton != -1 ? 0 : 12),
             51,
             12,
-            12);
+            12,
+            256,
+            256);
     }
 
 
@@ -374,13 +384,16 @@ public class VariantScreenSelection extends Screen
             scrollPosition = this.bodyTopPos;
         }
 
-        graphics.blit(TEXTURE,
+        graphics.blit(RenderType::guiTextured,
+            TEXTURE,
             this.leftPos + 9,
             scrollPosition,
             176 + (this.needsScrollBars() ? 0 : 12),
             0,
             12,
-            scrollThumbHeight);
+            scrollThumbHeight,
+            256,
+            256);
     }
 
 
@@ -469,7 +482,7 @@ public class VariantScreenSelection extends Screen
         EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
         erd.setRenderShadow(false);
-        erd.render(this.displayEntity, 0, 0, 0, 0, 1, poseStack, immediate, 0xF000F0);
+        erd.render(this.displayEntity, 0, 0, 0, 0, poseStack, immediate, 0xF000F0);
         erd.setRenderShadow(true);
         immediate.endBatch();
         poseStack.popPose();
@@ -489,23 +502,29 @@ public class VariantScreenSelection extends Screen
     {
         RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
 
-        graphics.blit(COOLDOWN_TEXTURE,
+        graphics.blit(RenderType::guiTextured,
+            COOLDOWN_TEXTURE,
             this.leftPos - 12,
             this.topPos + (this.imageHeight - 17) / 2,
             149 + (this.isCooldownOpened ? 0 : 11),
             1 + (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 17 : 0),
             11,
-            17);
+            17,
+            256,
+            256);
 
         if (this.isCooldownOpened)
         {
-            graphics.blit(COOLDOWN_TEXTURE,
+            graphics.blit(RenderType::guiTextured,
+                COOLDOWN_TEXTURE,
                 this.leftPos - 12 - this.cooldownWidth,
                 this.topPos,
                 0,
                 1,
                 this.cooldownWidth,
-                this.imageHeight + 1);
+                this.imageHeight + 1,
+                256,
+                256);
 
             List<Pair<ItemStack, Component>> textList = this.blockEntityInterface.getCooldownLines();
 

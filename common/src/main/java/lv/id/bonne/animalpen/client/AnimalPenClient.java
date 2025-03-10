@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -50,23 +51,23 @@ public class AnimalPenClient
         {
             if (!(player.level().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
             {
-                return EventResult.pass();
+                return InteractionResult.PASS;
             }
 
             if (!player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || player.isCrouching())
             {
-                return EventResult.pass();
+                return InteractionResult.PASS;
             }
 
             if (blockEntity.getStoredAnimal() == null)
             {
-                return EventResult.pass();
+                return InteractionResult.PASS;
             }
 
             Minecraft.getInstance().execute(() ->
                 Minecraft.getInstance().setScreen(new VariantScreenSelection(blockPos)));
 
-            return EventResult.interruptTrue();
+            return InteractionResult.SUCCESS;
         });
     }
 }

@@ -174,7 +174,7 @@ public class AnimalContainerItem extends Item
         itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
 
         // Manage variants
-        AnimalContainerItem.storeAnimalVariant(itemStack, animal, player);
+        AnimalContainerItem.storeAnimalVariant(itemStack, livingEntity, player);
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
 

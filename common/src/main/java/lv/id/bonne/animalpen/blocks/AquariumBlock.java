@@ -144,7 +144,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
             !level.isClientSide() &&
             level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity)
         {
-            if (player.getCooldowns().isOnCooldown(weapon.getItem()))
+            if (player.getCooldowns().isOnCooldown(weapon))
             {
                 // item is on cooldown. Prevent attack
                 return;
@@ -156,7 +156,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
 
             if (cooldown > 0)
             {
-                player.getCooldowns().addCooldown(weapon.getItem(), cooldown);
+                player.getCooldowns().addCooldown(weapon, cooldown);
             }
 
             return;
