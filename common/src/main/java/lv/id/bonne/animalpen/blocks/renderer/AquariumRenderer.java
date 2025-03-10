@@ -16,7 +16,6 @@ import java.util.List;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -140,7 +139,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
         {
             float scale = 1 + animalSize *
-                ((AnimalPenInterface) animal).animalPenGetCount() *
+                tileEntity.getAnimalDisplaySize() *
                 AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
@@ -148,7 +147,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            render(animal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
         CompoundTag cloneTag = new CompoundTag();
         animal.save(cloneTag);
@@ -160,7 +159,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
                 this.dyingAnimal.deathTime = tick;
 
                 this.minecraft.getEntityRenderDispatcher().
-                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, this.minecraft.getFrameTimeNs(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 
@@ -176,23 +175,28 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedLight,
         int combinedOverlay)
     {
-        long count = ((AnimalPenInterface) animal).animalPenGetCount();
+        long count = tileEntity.getAnimalCount();
 
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 3/16f, -0.51f);
+        poseStack.translate(0, 2/16f, -0.51f);
 
-        // Scale for pixel-perfect rendering
-        poseStack.scale(-0.015f, -0.015f, 0F);
+        // Create text
+        Component text = Component.translatable("display.animal_pen.count", count);
+        int textWidth = this.font.width(text);
+
+        float maxWidth = 30f;
+        float scale = Math.min(1.0f, maxWidth / textWidth) * 0.015f;
+
+        // Apply scaling
+        poseStack.scale(-scale, -scale, 0F);
+        poseStack.translate(-textWidth / 2D, -this.font.lineHeight / 2f, 0);
 
         // Render text
-        Component text = Component.translatable("display.animal_pen.count", count);
-        poseStack.translate(-this.font.width(text) / 2D, 0, 0);
-
         this.font.drawInBatch(
             text,                    // The text component
-            0, 0,                 // X, Y position in the matrix
+            0, 0,                    // X, Y position in the matrix
             0xFFFFFF,                // Color (white)
             false,                   // Drop shadow
             poseStack.last().pose(), // Transformation matrix
@@ -201,7 +205,6 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
             0,                       // Packed overlay
             combinedLight            // Lighting conditions
         );
-
         poseStack.popPose();
     }
 
@@ -215,8 +218,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedOverlay)
     {
         // Get your list of components
-        List<Pair<ItemStack, Component>> textList =
-            ((AnimalPenInterface) animal).animalPenGetLines(tileEntity.getTickCounter());
+        List<Pair<ItemStack, Component>> textList = tileEntity.getCooldownLines();
 
         if (textList.isEmpty())
         {

@@ -1,0 +1,66 @@
+package lv.id.bonne.animalpen.network.packets;
+
+
+import org.jetbrains.annotations.NotNull;
+
+import dev.architectury.networking.NetworkManager;
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+
+
+/**
+ * This is a simple packet send from client to server to indicate that animal display size is changed.
+ */
+public record UpdateAnimalSizeData(BlockPos position, long size) implements CustomPacketPayload
+{
+    /**
+     * This method handles incoming packet on server.
+     * @param data The incoming packet.
+     * @param packetContext The packet context.
+     */
+    public static void handle(UpdateAnimalSizeData data, NetworkManager.PacketContext packetContext)
+    {
+        BlockPos blockPos = data.position();
+        long size = data.size();
+
+        packetContext.queue(() ->
+        {
+            Level level = packetContext.getPlayer().level();
+
+            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            {
+                animalPen.setAnimalDisplaySize(size);
+            }
+            else
+            {
+                AnimalPen.LOGGER.error("Block entity not found at the position!");
+            }
+        });
+    }
+
+
+    @Override
+    @NotNull
+    public Type<? extends CustomPacketPayload> type()
+    {
+        return UpdateAnimalSizeData.ID;
+    }
+
+
+    public static final Type<UpdateAnimalSizeData> ID =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_animal_size"));
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateAnimalSizeData> STREAM_CODEC = StreamCodec.composite(
+        BlockPos.STREAM_CODEC, UpdateAnimalSizeData::position,
+        ByteBufCodecs.VAR_LONG, UpdateAnimalSizeData::size,
+        UpdateAnimalSizeData::new
+    );
+}
