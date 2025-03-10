@@ -324,5 +324,5 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
      * Tag that stores which tools can attack entity in aquarium
      */
     public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registries.ITEM,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "can_attack_aquarium"));
 }

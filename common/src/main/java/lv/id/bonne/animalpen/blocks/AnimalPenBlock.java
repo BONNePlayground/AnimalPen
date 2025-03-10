@@ -305,11 +305,11 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
      * Tag that stores which tools can attack entity in animal pen
      */
     public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registries.ITEM,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_pen"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "can_attack_pen"));
 
     /**
      * Tag that stores animal pens tag key.
      */
     public static final TagKey<Block> ANIMAL_PENS = TagKey.create(Registries.BLOCK,
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_pens"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pens"));
 }

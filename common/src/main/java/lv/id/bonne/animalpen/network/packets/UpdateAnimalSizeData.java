@@ -55,7 +55,7 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
 
 
     public static final Type<UpdateAnimalSizeData> ID =
-        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_animal_size"));
+        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_animal_size"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateAnimalSizeData> STREAM_CODEC = StreamCodec.composite(

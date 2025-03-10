@@ -58,7 +58,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
 
 
     public static final CustomPacketPayload.Type<UpdateDisplayAnimalData> ID =
-        new CustomPacketPayload.Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal"));
+        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(

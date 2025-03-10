@@ -55,7 +55,7 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
 
 
     public static final Type<RemoveDisplayAnimalData> ID =
-        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "remove_display_animal"));
+        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "remove_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
