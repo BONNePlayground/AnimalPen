@@ -30,7 +30,7 @@ public class AnimalPenDataComponentRegistry
      * The custom component that stores entity variants.
      */
     public static final RegistrySupplier<DataComponentType<CustomData>> ENTITY_VARIANTS =
-        REGISTRY.register(new ResourceLocation(AnimalPen.MOD_ID, "variants"),
+        REGISTRY.register(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "variants"),
             () -> DataComponentType.<CustomData>builder().persistent(CustomData.CODEC).
                 networkSynchronized(CustomData.STREAM_CODEC).build());
 }
