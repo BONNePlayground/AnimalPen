@@ -24,33 +24,9 @@ import net.minecraft.world.item.Items;
  */
 public class Configuration
 {
-    /**
-     * Init.
-     */
-    public void init()
+    public Configuration()
     {
-        this.cooldownList.clear();
-        this.populateDefaultCooldowns();
-
-        // Init block drop limits at once.
-        this.dropLimitList.clear();
-        this.populateDefaultDropLimits();
-
-        this.maximalAnimalCount = Integer.MAX_VALUE;
-
-        this.animalSize = 0.33f;
-        this.waterAnimalSize = 0.33f;
-        this.growthMultiplier = 0.001f;
-
-        this.attackCooldown = 5;
-        this.maxStoredAnimalVariants = 10;
-
-        this.growAnimals = false;
-        this.growWaterAnimals = false;
-
-        this.dropScuteAtStart = false;
-
-        this.blockedAnimals.clear();
+        this.setDefaults(true);
     }
 
 
@@ -80,48 +56,58 @@ public class Configuration
     /**
      * Sets defaults.
      */
-    public void setDefaults()
+    public void setDefaults(boolean init)
     {
-        if (this.dropLimitList == null)
+        if (this.dropLimitList == null || init)
         {
             this.dropLimitList = new HashMap<>();
             this.populateDefaultDropLimits();
         }
 
-        if (this.cooldownList == null)
+        if (this.cooldownList == null || init)
         {
             this.cooldownList = new HashMap<>();
             this.populateDefaultCooldowns();
         }
 
-        if (this.blockedAnimals == null)
+        if (this.blockedAnimals == null || init)
         {
             this.blockedAnimals = new HashSet<>();
         }
 
-        if (this.animalSize == null || this.animalSize <= 0)
+        if (this.animalSize == null || this.animalSize <= 0 || init)
         {
             this.animalSize = 0.33f;
         }
 
-        if (this.waterAnimalSize == null || this.waterAnimalSize <= 0)
+        if (this.waterAnimalSize == null || this.waterAnimalSize <= 0 || init)
         {
             this.waterAnimalSize = 0.33f;
         }
 
-        if (this.growthMultiplier == null || this.growthMultiplier < 0)
+        if (this.growthMultiplier == null || this.growthMultiplier < 0 || init)
         {
             this.growthMultiplier = 0.001f;
         }
 
-        if (this.attackCooldown == null || this.attackCooldown < 0)
+        if (this.attackCooldown == null || this.attackCooldown < 0 || init)
         {
             this.attackCooldown = 1;
         }
 
-        if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0)
+        if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0 || init)
         {
             this.maxStoredAnimalVariants = 10;
+        }
+
+        if (init)
+        {
+            this.maximalAnimalCount = Integer.MAX_VALUE;
+
+            this.growAnimals = false;
+            this.growWaterAnimals = false;
+
+            this.dropScuteAtStart = false;
         }
     }
 
