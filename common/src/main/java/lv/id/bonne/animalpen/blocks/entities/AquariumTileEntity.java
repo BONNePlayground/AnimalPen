@@ -18,8 +18,8 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
-import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -147,7 +147,14 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
-            CompoundTag tag = this.getItemStack().get(DataComponents.ENTITY_DATA).copyTag();
+            CustomData customData = this.getItemStack().get(DataComponents.ENTITY_DATA);
+
+            if (customData == null)
+            {
+                return this.storedAnimal;
+            }
+
+            CompoundTag tag = customData.copyTag();
 
             if (!tag.contains(AnimalContainerItem.TAG_ENTITY_ID) || this.level == null)
             {
@@ -330,6 +337,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     AnimalContainerItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
                     itemInHand.remove(DataComponents.ENTITY_DATA);
+                    itemInHand.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -426,6 +434,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         {
             ItemStack item = this.getItemStack();
             item.remove(DataComponents.ENTITY_DATA);
+            item.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
@@ -469,22 +478,8 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         if (animal != null)
         {
-            CustomData customData = this.getItemStack().get(DataComponents.ENTITY_DATA);
-
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
-
-            if (customData != null)
-            {
-                CompoundTag data = customData.copyTag();
-
-                ListTag list = data.getList(AnimalCageItem.TAG_VARIANTS, Tag.TAG_COMPOUND);
-
-                if (!list.isEmpty())
-                {
-                    tag.put(AnimalCageItem.TAG_VARIANTS, list);
-                }
-            }
 
             this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
         }
@@ -608,7 +603,21 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return;
         }
 
-        this.getEntityVariants().remove(index);
+        CustomData customData = this.getItemStack().get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+
+        if (customData == null)
+        {
+            return;
+        }
+
+        this.getItemStack().set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(),
+            customData.update(tag ->
+            {
+                ListTag list = tag.getList(AnimalContainerItem.TAG_VARIANTS, CompoundTag.TAG_COMPOUND);
+                list.remove(index);
+            })
+        );
+
         this.inventory.setChanged();
     }
 

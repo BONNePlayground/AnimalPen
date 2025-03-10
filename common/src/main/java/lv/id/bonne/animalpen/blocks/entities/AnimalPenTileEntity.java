@@ -15,6 +15,7 @@ import java.util.*;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -140,7 +141,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
-            CompoundTag tag = this.getItemStack().get(DataComponents.ENTITY_DATA).copyTag();
+            CustomData customData = this.getItemStack().get(DataComponents.ENTITY_DATA);
+
+            if (customData == null)
+            {
+                return this.storedAnimal;
+            }
+
+            CompoundTag tag = customData.copyTag();
 
             if (!tag.contains(AnimalCageItem.TAG_ENTITY_ID) || this.level == null)
             {
@@ -324,6 +332,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 {
                     AnimalCageItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
                     itemInHand.remove(DataComponents.ENTITY_DATA);
+                    itemInHand.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -370,15 +379,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             ItemStack item = this.getItemStack();
 
-            Optional<ListTag> optionalVariants = AnimalCageItem.getAnimalVariants(item);
-
             // Reset tag, as some animals may need it.
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
-
-            // Restore animal variants
-            optionalVariants.ifPresent(variants -> tag.put(AnimalCageItem.TAG_VARIANTS, variants));
-
             item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
@@ -421,6 +424,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             ItemStack item = this.getItemStack();
             item.remove(DataComponents.ENTITY_DATA);
+            item.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
@@ -461,22 +465,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
             if (animal != null)
             {
-                CustomData customData = this.getItemStack().get(DataComponents.ENTITY_DATA);
-
                 CompoundTag tag = new CompoundTag();
                 animal.save(tag);
-
-                if (customData != null)
-                {
-                    CompoundTag data = customData.copyTag();
-
-                    ListTag list = data.getList(AnimalCageItem.TAG_VARIANTS, Tag.TAG_COMPOUND);
-
-                    if (!list.isEmpty())
-                    {
-                        tag.put(AnimalCageItem.TAG_VARIANTS, list);
-                    }
-                }
 
                 this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
             }
@@ -598,7 +588,21 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        this.getEntityVariants().remove(index);
+        CustomData customData = this.getItemStack().get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+
+        if (customData == null)
+        {
+            return;
+        }
+
+        this.getItemStack().set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(),
+            customData.update(tag ->
+            {
+                ListTag list = tag.getList(AnimalCageItem.TAG_VARIANTS, CompoundTag.TAG_COMPOUND);
+                list.remove(index);
+            })
+        );
+
         this.inventory.setChanged();
     }
 
