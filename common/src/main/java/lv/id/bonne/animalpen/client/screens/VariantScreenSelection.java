@@ -236,7 +236,7 @@ public class VariantScreenSelection extends Screen
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderTransparentBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         this.updateButtonPositions();
 
         super.render(graphics, mouseX, mouseY, partialTicks);
@@ -265,10 +265,8 @@ public class VariantScreenSelection extends Screen
      * @param graphics The pose stack
      */
     @Override
-    public void renderTransparentBackground(GuiGraphics graphics)
+    public void renderMenuBackground(GuiGraphics graphics)
     {
-        super.renderTransparentBackground(graphics);
-
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
@@ -602,8 +600,7 @@ public class VariantScreenSelection extends Screen
         // Remove entity from list.
         this.blockEntityInterface.getEntityVariants().remove(this.selectedButton);
 
-        NetworkManager.sendToServer(RemoveDisplayAnimalData.ID,
-            RemoveDisplayAnimalData.encode(this.position, this.selectedButton));
+        NetworkManager.sendToServer(new RemoveDisplayAnimalData(this.position, this.selectedButton));
 
         // Update data
         this.selectedButton = -1;
@@ -621,8 +618,7 @@ public class VariantScreenSelection extends Screen
     private void handleApplyButton(Button button)
     {
         // Send message to server
-        NetworkManager.sendToServer(UpdateDisplayAnimalData.ID,
-            UpdateDisplayAnimalData.encode(this.position,
+        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
                 this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton)));
         // Update current client gui.
         this.displayEntity.load(
@@ -822,8 +818,7 @@ public class VariantScreenSelection extends Screen
             long newValue = this.calculateSizeFromPosition(newX);
             this.blockEntityInterface.setAnimalDisplaySize(newValue);
 
-            NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
-                UpdateAnimalSizeData.encode(this.position, newValue));
+            NetworkManager.sendToServer(new UpdateAnimalSizeData(this.position, newValue));
 
             // Snap to correct position
             int snapPoint = this.calculateSizeBarOffset(newValue);
@@ -867,8 +862,7 @@ public class VariantScreenSelection extends Screen
                 this.sliderButton.setX(this.sliderBarPos + this.calculateSizeBarOffset(newValue));
                 this.blockEntityInterface.setAnimalDisplaySize(newValue);
 
-                NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
-                    UpdateAnimalSizeData.encode(this.position, newValue));
+                NetworkManager.sendToServer(new UpdateAnimalSizeData(this.position, newValue));
 
                 return true;
             }

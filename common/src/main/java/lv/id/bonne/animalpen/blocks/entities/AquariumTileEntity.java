@@ -18,6 +18,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
+import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
@@ -323,12 +324,12 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     ((AnimalPenInterface) animal).animalPenUpdateCount(-1);
                     itemInHandTag.putLong(AnimalContainerItem.TAG_AMOUNT, 1);
-                    itemInHand.setTag(itemInHandTag);
+                    itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(itemInHandTag));
                 }
                 else
                 {
                     AnimalContainerItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
-                    itemInHand.setTag(new CompoundTag());
+                    itemInHand.remove(DataComponents.ENTITY_DATA);
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -383,7 +384,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             // Restore animal variants
             optionalVariants.ifPresent(variants -> tag.put(AnimalContainerItem.TAG_VARIANTS, variants));
 
-            tem.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
+            item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
 
@@ -468,8 +469,23 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         if (animal != null)
         {
+            CustomData customData = this.getItemStack().get(DataComponents.ENTITY_DATA);
+
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
+
+            if (customData != null)
+            {
+                CompoundTag data = customData.copyTag();
+
+                ListTag list = data.getList(AnimalCageItem.TAG_VARIANTS, Tag.TAG_COMPOUND);
+
+                if (!list.isEmpty())
+                {
+                    tag.put(AnimalCageItem.TAG_VARIANTS, list);
+                }
+            }
+
             this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
         }
 

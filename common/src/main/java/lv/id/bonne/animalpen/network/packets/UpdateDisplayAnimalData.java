@@ -1,6 +1,8 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -8,6 +10,10 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -15,34 +21,17 @@ import net.minecraft.world.level.Level;
 /**
  * This is a simple packet send from client to server to indicate that animal variant is changed.
  */
-public class UpdateDisplayAnimalData
+public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implements CustomPacketPayload
 {
     /**
-     * The simple packet encoding.
-     * @param position The block position that is affected.
-     * @param tag The new variant of entity.
-     * @return packet buffer.
-     */
-    public static FriendlyByteBuf encode(BlockPos position, CompoundTag tag)
-    {
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-
-        buffer.writeNbt(tag);
-        buffer.writeBlockPos(position);
-
-        return buffer;
-    }
-
-
-    /**
      * This method handles incoming packet on server.
-     * @param friendlyByteBuf The incoming packet.
+     * @param data The incoming packet.
      * @param packetContext The packet context.
      */
-    public static void handle(FriendlyByteBuf friendlyByteBuf, NetworkManager.PacketContext packetContext)
+    public static void handle(UpdateDisplayAnimalData data, NetworkManager.PacketContext packetContext)
     {
-        CompoundTag animalVariant = friendlyByteBuf.readNbt();
-        BlockPos blockPos = friendlyByteBuf.readBlockPos();
+        CompoundTag animalVariant = data.tag();
+        BlockPos blockPos = data.position();
 
         packetContext.queue(() ->
         {
@@ -60,8 +49,21 @@ public class UpdateDisplayAnimalData
     }
 
 
-    /**
-     * The resource ID.
-     */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal");
+    @Override
+    @NotNull
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type()
+    {
+        return UpdateDisplayAnimalData.ID;
+    }
+
+
+    public static final CustomPacketPayload.Type<UpdateDisplayAnimalData> ID =
+        new CustomPacketPayload.Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal"));
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
+        BlockPos.STREAM_CODEC, UpdateDisplayAnimalData::position,
+        ByteBufCodecs.COMPOUND_TAG, UpdateDisplayAnimalData::tag,
+        UpdateDisplayAnimalData::new
+    );
 }

@@ -1,12 +1,16 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -14,34 +18,17 @@ import net.minecraft.world.level.Level;
 /**
  * This is a simple packet send from client to server to indicate that animal variant is removed.
  */
-public class RemoveDisplayAnimalData
+public record RemoveDisplayAnimalData(BlockPos position, int index) implements CustomPacketPayload
 {
     /**
-     * The encoding of the packet.
-     * @param position The block position that is affected.
-     * @param index The removed variant index.
-     * @return packet buffer.
-     */
-    public static FriendlyByteBuf encode(BlockPos position, int index)
-    {
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-
-        buffer.writeBlockPos(position);
-        buffer.writeInt(index);
-
-        return buffer;
-    }
-
-
-    /**
      * This method handles incoming packet on server.
-     * @param friendlyByteBuf The incoming packet.
+     * @param data The incoming packet.
      * @param packetContext The packet context.
      */
-    public static void handle(FriendlyByteBuf friendlyByteBuf, NetworkManager.PacketContext packetContext)
+    public static void handle(RemoveDisplayAnimalData data, NetworkManager.PacketContext packetContext)
     {
-        BlockPos blockPos = friendlyByteBuf.readBlockPos();
-        int index = friendlyByteBuf.readInt();
+        BlockPos blockPos = data.position();
+        int index = data.index();
 
         packetContext.queue(() ->
         {
@@ -59,8 +46,21 @@ public class RemoveDisplayAnimalData
     }
 
 
-    /**
-     * The resource ID.
-     */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "remove_display_animal");
+    @Override
+    @NotNull
+    public Type<? extends CustomPacketPayload> type()
+    {
+        return RemoveDisplayAnimalData.ID;
+    }
+
+
+    public static final Type<RemoveDisplayAnimalData> ID =
+        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "remove_display_animal"));
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, RemoveDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
+        BlockPos.STREAM_CODEC, RemoveDisplayAnimalData::position,
+        ByteBufCodecs.INT, RemoveDisplayAnimalData::index,
+        RemoveDisplayAnimalData::new
+    );
 }

@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.items;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -254,10 +255,16 @@ public class AnimalContainerItem extends Item
      */
     public static Optional<ListTag> getAnimalVariants(ItemStack itemStack)
     {
-        if (itemStack.getOrCreateTag().contains(TAG_VARIANTS))
+        if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
-            return Optional.of(itemStack.getOrCreateTag().getList(TAG_VARIANTS,
-                Tag.TAG_COMPOUND));
+            return Optional.empty();
+        }
+
+        CompoundTag tag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
+
+        if (tag.contains(TAG_VARIANTS))
+        {
+            return Optional.of(tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND));
         }
         else
         {
@@ -280,7 +287,12 @@ public class AnimalContainerItem extends Item
             return false;
         }
 
-        CompoundTag itemTag = itemStack.getOrCreateTag();
+        if (!itemStack.has(DataComponents.ENTITY_DATA))
+        {
+            return false;
+        }
+
+        CompoundTag itemTag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
 
         if (!itemTag.contains(TAG_ENTITY_ID))
         {
@@ -306,7 +318,7 @@ public class AnimalContainerItem extends Item
         variantList.add(variant);
 
         itemTag.put(TAG_VARIANTS, variantList);
-        itemStack.setTag(itemTag);
+        itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
 
         return true;
     }
@@ -326,8 +338,13 @@ public class AnimalContainerItem extends Item
             return true;
         }
 
-        CompoundTag itemTag = mainItem.getOrCreateTag();
-        CompoundTag redundantTag = redundantItem.getOrCreateTag();
+        if (!mainItem.has(DataComponents.ENTITY_DATA) || !redundantItem.has(DataComponents.ENTITY_DATA))
+        {
+            return false;
+        }
+
+        CompoundTag itemTag = mainItem.get(DataComponents.ENTITY_DATA).copyTag();
+        CompoundTag redundantTag = redundantItem.get(DataComponents.ENTITY_DATA).copyTag();
 
         if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
         {
@@ -366,8 +383,13 @@ public class AnimalContainerItem extends Item
             return;
         }
 
-        CompoundTag itemTag = mainItem.getOrCreateTag();
-        CompoundTag redundantTag = redundantItem.getOrCreateTag();
+        if (!mainItem.has(DataComponents.ENTITY_DATA) || !redundantItem.has(DataComponents.ENTITY_DATA))
+        {
+            return;
+        }
+
+        CompoundTag itemTag = mainItem.get(DataComponents.ENTITY_DATA).copyTag();
+        CompoundTag redundantTag = redundantItem.get(DataComponents.ENTITY_DATA).copyTag();
 
         if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
         {
@@ -395,7 +417,7 @@ public class AnimalContainerItem extends Item
         }
 
         itemTag.put(TAG_VARIANTS, variantList);
-        mainItem.setTag(itemTag);
+        mainItem.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
     }
 
 
