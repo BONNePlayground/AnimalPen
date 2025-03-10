@@ -108,7 +108,7 @@ public class VariantScreenSelection extends Screen
             int y = this.bodyTopPos + (i * buttonHeight);
             final int index = i;
 
-            this.buttons.add(this.addWidget(Button.builder(Component.translatable(BUTTON_TEXT, (index + 1)), 
+            this.buttons.add(this.addWidget(Button.builder(Component.translatable(BUTTON_TEXT, (index + 1)),
                     button -> handleVariantButton(button, index)).
                 pos(buttonPos, y).
                 size(buttonWidth, buttonHeight).
@@ -116,12 +116,12 @@ public class VariantScreenSelection extends Screen
         }
 
         // Delete variant button
-        this.deleteButton = this.addWidget(Button.builder(Component.empty(), 
+        this.deleteButton = this.addWidget(Button.builder(Component.empty(),
                 this::handleDeleteButton).
             pos(this.leftPos + 157, this.topPos + 111).
             size(11, 14).
             build());
-        
+
         // Apply variant button
         this.applyButton = this.addWidget(Button.builder(Component.empty(),
                 this::handleApplyButton).
@@ -183,8 +183,8 @@ public class VariantScreenSelection extends Screen
         // Create cooldown menu renderer
         this.cooldownButton = this.addWidget(Button.builder(Component.empty(),
                 this::handleCooldownButton).
-            pos(this.leftPos - 12, this.topPos + (this.imageHeight - 17) / 2).
-            size(11, 17).
+            pos(this.leftPos - 12, this.topPos + (this.imageHeight - 18) / 2).
+            size(11, 18).
             build());
     }
 
@@ -503,11 +503,11 @@ public class VariantScreenSelection extends Screen
 
         blit(poseStack,
             this.leftPos - 12,
-            this.topPos + (this.imageHeight - 17) / 2,
+            this.topPos + (this.imageHeight - 18) / 2,
             149 + (this.isCooldownOpened ? 0 : 11),
-            1 + (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 17 : 0),
+            (this.cooldownButton.isMouseOver(mouseX, mouseY) ? 18 : 1),
             11,
-            17);
+            18);
 
         if (this.isCooldownOpened)
         {
