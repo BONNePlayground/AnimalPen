@@ -5,6 +5,7 @@ plugins {
 loom {
     forge {
         mixinConfig "animal_pen.mixins.json"
+        mixinConfig "animal_pen-forge.mixins.json"
     }
 }
 
