@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.mixin.animal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +20,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
@@ -31,10 +32,14 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 
 @Mixin(Sheep.class)
@@ -45,15 +50,6 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         super(entityType, level);
     }
-
-
-    @Shadow
-    @Final
-    private static Map<DyeColor, ItemLike> COLOR_BY_DYE;
-
-
-    @Shadow
-    public abstract DyeColor getColor();
 
 
     @Shadow
@@ -128,19 +124,20 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return false;
             }
 
-            if (player.level().isClientSide())
+            if (!(player.level() instanceof ServerLevel serverLevel))
             {
                 // Next is processed only for server side.
                 return true;
             }
 
-            this.setSheared(true);
-
             itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
 
-            ItemLike itemLike = COLOR_BY_DYE.get(this.getColor());
-
-            int woolCount = 1;
+            LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.SHEAR_SHEEP);
+            LootParams lootParams = new LootParams.Builder(serverLevel).
+                withParameter(LootContextParams.ORIGIN, position.getCenter()).
+                withParameter(LootContextParams.THIS_ENTITY, (Sheep) (Object) this).
+                withParameter(LootContextParams.TOOL, itemStack).
+                create(LootContextParamSets.SHEARING);
 
             int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
 
@@ -149,28 +146,48 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            for (int i = 0; i < this.animalPen$animalCount && woolCount < dropLimits; i++)
-            {
-                woolCount += player.level().getRandom().nextInt(3);
-            }
+            List<ItemStack> itemStackList = new ArrayList<>();
 
-            while (woolCount > 0)
-            {
-                ItemStack woolStack = new ItemStack(itemLike);
+            int woolCount = 0;
+            int animalCounter = 0;
 
-                if (woolCount > 64)
+            while (woolCount <= dropLimits && animalCounter++ < this.animalPen$animalCount)
+            {
+                List<ItemStack> randomItems = lootTable.getRandomItems(lootParams);
+
+                if (randomItems.isEmpty())
                 {
-                    woolStack.setCount(64);
-                    woolCount -= 64;
-                }
-                else
-                {
-                    woolStack.setCount(woolCount);
-                    woolCount = 0;
+                    // Just a stop on infinite loop
+                    break;
                 }
 
-                Block.popResource(player.level(), position.above(), woolStack);
+                woolCount += randomItems.stream().mapToInt(ItemStack::getCount).sum();
+
+                randomItems.forEach(item -> {
+                    boolean added = false;
+
+                    for (ItemStack stack : itemStackList)
+                    {
+                        if (ItemStack.isSameItemSameComponents(item, stack) &&
+                            stack.getCount() < stack.getMaxStackSize())
+                        {
+                            stack.grow(item.getCount());
+                            added = true;
+                            break;
+                        }
+                    }
+
+                    if (!added)
+                    {
+                        itemStackList.add(item);
+                    }
+                });
             }
+
+            itemStackList.forEach(seedStack ->
+                Block.popResource(player.level(), position.above(), seedStack));
+
+            this.setSheared(true);
 
             player.level().playSound(null,
                 position,
