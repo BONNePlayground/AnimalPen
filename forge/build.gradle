@@ -82,7 +82,7 @@ curseforge {
         apiKey = System.getenv("CURSEFORGE_TOKEN")
         id = "1206722"
         changelog = rootProject.file("CHANGELOG_LATEST.md").text
-        changelogType = "markdown"
+        changelogType = "text"
         releaseType = "release"
         addGameVersion "1.18.2"
         addGameVersion "Forge"
