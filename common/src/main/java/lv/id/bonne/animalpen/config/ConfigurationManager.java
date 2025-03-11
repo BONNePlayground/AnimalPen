@@ -128,7 +128,7 @@ public class ConfigurationManager
      */
     protected void reset()
     {
-        this.configuration = new Configuration();
+        this.configuration = Configuration.getDefaultConfig();
     }
 
 
