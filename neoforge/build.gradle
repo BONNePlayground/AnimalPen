@@ -63,11 +63,11 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "animalpens"
     versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}"
-    versionName = "${rootProject.mod_version}-${rootProject.minecraft_version}-Forge"
+    versionName = "${rootProject.mod_version}-${rootProject.minecraft_version}-NeoForge"
     versionType = "release"
     uploadFile = remapJar
-    gameVersions = ["1.20.3","1.20.4"]
-    loaders = ["forge"]
+    gameVersions = ["1.20.5","1.20.6"]
+    loaders = ["neoforge"]
     dependencies {
         required.project "architectury-api"
         optional.project "patchouli"
@@ -85,17 +85,17 @@ curseforge {
         changelog = rootProject.file("CHANGELOG_LATEST.md").text
         changelogType = "text"
         releaseType = "release"
-        addGameVersion "1.20.3"
-        addGameVersion "1.20.4"
-        addGameVersion "Forge"
-        addGameVersion "Java 17"
+        addGameVersion "1.20.5"
+        addGameVersion "1.20.6"
+        addGameVersion "NeoForge"
+        addGameVersion "Java 21"
 
         relations {
             requiredDependency "architectury-api"
             optionalDependency "patchouli"
         }
         mainArtifact(remapJar) {
-            displayName = "${rootProject.archives_name}-forge-${rootProject.minecraft_version}-${rootProject.mod_version}"
+            displayName = "${rootProject.archives_name}-neoforge-${rootProject.minecraft_version}-${rootProject.mod_version}"
         }
         options {
             javaVersionAutoDetect = false
