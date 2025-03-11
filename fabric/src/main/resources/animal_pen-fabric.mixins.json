@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "lv.id.bonne.animalpen.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "InfinitePlayerAttack"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
