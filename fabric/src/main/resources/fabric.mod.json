@@ -19,7 +19,8 @@
     ]
   },
   "mixins": [
-    "animal_pen.mixins.json"
+    "animal_pen.mixins.json",
+    "animal_pen-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.10",
