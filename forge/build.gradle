@@ -1,5 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
 loom {
@@ -55,4 +57,47 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "animalpens"
+    versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}"
+    versionName = "${rootProject.mod_version}-${rootProject.minecraft_version}-Forge"
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = ["1.19"]
+    loaders = ["forge"]
+    dependencies {
+        required.project "architectury-api"
+        optional.project "patchouli"
+    }
+    changelog = rootProject.file("CHANGELOG_LATEST.md").text
+
+    syncBodyFrom = rootProject.file("README.md").text
+    tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
+}
+
+curseforge {
+    project {
+        apiKey = System.getenv("CURSEFORGE_TOKEN")
+        id = "1206722"
+        changelog = rootProject.file("CHANGELOG_LATEST.md").text
+        changelogType = "text"
+        releaseType = "release"
+        addGameVersion "1.19"
+        addGameVersion "Forge"
+        addGameVersion "Java 17"
+
+        relations {
+            requiredDependency "architectury-api"
+            optionalDependency "patchouli"
+        }
+        mainArtifact(remapJar) {
+            displayName = "${rootProject.archives_name}-forge-${rootProject.minecraft_version}-${rootProject.mod_version}"
+        }
+        options {
+            javaVersionAutoDetect = false
+        }
+    }
 }
