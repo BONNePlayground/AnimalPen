@@ -24,9 +24,12 @@ import net.minecraft.world.item.Items;
  */
 public class Configuration
 {
-    public Configuration()
+    public static Configuration getDefaultConfig()
     {
-        this.setDefaults(true);
+        Configuration configuration = new Configuration();
+        configuration.setDefaults(true);
+
+        return configuration;
     }
 
 
@@ -92,7 +95,7 @@ public class Configuration
 
         if (this.attackCooldown == null || this.attackCooldown < 0 || init)
         {
-            this.attackCooldown = 1;
+            this.attackCooldown = 5;
         }
 
         if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0 || init)
