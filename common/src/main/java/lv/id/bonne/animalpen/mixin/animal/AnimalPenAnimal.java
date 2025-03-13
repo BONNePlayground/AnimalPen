@@ -19,6 +19,7 @@ import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
+import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,10 +49,6 @@ public abstract class AnimalPenAnimal extends Mob
     {
         super(entityType, level);
     }
-
-
-    @Shadow
-    public abstract boolean isFood(ItemStack itemStack);
 
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
@@ -130,7 +127,7 @@ public abstract class AnimalPenAnimal extends Mob
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.isFood(itemStack))
+        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
             if (this.animalPen$foodCooldown > 0)
             {
@@ -277,7 +274,12 @@ public abstract class AnimalPenAnimal extends Mob
     @Intrinsic
     public List<ItemStack> animalPen$getFood()
     {
-        return Collections.emptyList();
+        if (ANIMAL_PEN$FOOD_LIST == null)
+        {
+            ANIMAL_PEN$FOOD_LIST = AnimalPenFoodRegistry.getFood(this.getType().arch$registryName());
+        }
+
+        return ANIMAL_PEN$FOOD_LIST;
     }
 
 
@@ -286,4 +288,7 @@ public abstract class AnimalPenAnimal extends Mob
 
     @Unique
     protected long animalPen$animalCount = 0;
+
+    @Unique
+    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;
 }

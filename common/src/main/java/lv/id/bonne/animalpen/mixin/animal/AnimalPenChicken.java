@@ -10,15 +10,12 @@ package lv.id.bonne.animalpen.mixin.animal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,7 +26,6 @@ import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -43,11 +39,6 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         super(entityType, level);
     }
-
-
-    @Shadow
-    @Final
-    private static Ingredient FOOD_ITEMS;
 
 
     @Intrinsic
@@ -188,13 +179,6 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
 
         return lines;
-    }
-
-
-    @Intrinsic
-    public List<ItemStack> animalPen$getFood()
-    {
-        return Arrays.stream(FOOD_ITEMS.getItems()).collect(Collectors.toList());
     }
 
 

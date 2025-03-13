@@ -12,14 +12,13 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -224,7 +223,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.isFood(itemStack))
+        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
             if (this.animalPen$foodCooldown > 0)
             {
@@ -291,13 +290,6 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         lines.add(Pair.of(Items.TURTLE_EGG.getDefaultInstance(), component));
 
         return lines;
-    }
-
-
-    @Intrinsic
-    public List<ItemStack> animalPen$getFood()
-    {
-        return Collections.singletonList(Items.SEAGRASS.getDefaultInstance());
     }
 
 

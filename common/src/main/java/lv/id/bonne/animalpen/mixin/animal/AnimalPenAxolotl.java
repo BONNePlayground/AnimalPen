@@ -10,29 +10,24 @@ package lv.id.bonne.animalpen.mixin.animal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.*;
 import java.util.List;
-import java.util.Map;
 
-import dev.architectury.registry.registries.Registries;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -72,7 +67,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.isFood(itemStack))
+        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
             if (player.getLevel().isClientSide())
             {
@@ -199,27 +194,6 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     }
 
 
-    @Intrinsic
-    @Override
-    public List<ItemStack> animalPen$getFood()
-    {
-        if (ANIMAL_PEN$FOOD_LIST == null)
-        {
-            ANIMAL_PEN$FOOD_LIST = Registries.get(AnimalPen.MOD_ID).
-                get(Registry.ITEM_REGISTRY).entrySet().stream().
-                map(Map.Entry::getValue).
-                map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.AXOLOTL_TEMPT_ITEMS)).
-                toList();
-        }
-
-        return ANIMAL_PEN$FOOD_LIST;
-    }
-
-
     @Unique
     private int animalPen$storedFood = 0;
-
-    @Unique
-    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;
 }
