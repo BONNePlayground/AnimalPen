@@ -91,6 +91,12 @@ public class AnimalPenFoodRegistry
             return Collections.emptyList();
         }
 
+        if (DATA.get(entity).ingredients().isEmpty())
+        {
+            // Empty ingredients.
+            return Collections.emptyList();
+        }
+
         // Search through all items and matches them as food items.
         return Registries.get(AnimalPen.MOD_ID).
             get(Registry.ITEM_REGISTRY).entrySet().stream().
