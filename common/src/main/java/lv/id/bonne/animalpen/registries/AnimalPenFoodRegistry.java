@@ -102,6 +102,7 @@ public class AnimalPenFoodRegistry
             get(Registry.ITEM_REGISTRY).entrySet().stream().
             map(Map.Entry::getValue).
             map(Item::getDefaultInstance).
+            filter(stack -> !stack.isEmpty()).
             filter(stack -> DATA.get(entity).matches(stack)).
             toList();
     }
