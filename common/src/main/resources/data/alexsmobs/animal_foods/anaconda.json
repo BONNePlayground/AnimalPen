@@ -1,0 +1,11 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "minecraft:chicken"
+    },
+    {
+      "item": "minecraft:cooked_chicken"
+    }
+  ]
+}

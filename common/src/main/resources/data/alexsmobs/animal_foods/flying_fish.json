@@ -1,0 +1,11 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "minecraft:kelp"
+    },
+    {
+      "item": "minecraft:seagrass"
+    }
+  ]
+}
