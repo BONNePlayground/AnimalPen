@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -38,15 +39,35 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener
         for (Map.Entry<ResourceLocation, JsonElement> entry : jsonMap.entrySet())
         {
             ResourceLocation id = entry.getKey();
+
             try
             {
                 JsonElement element = entry.getValue();
+
                 if (!element.isJsonObject())
                 {
                     AnimalPen.LOGGER.error("Invalid JSON format for " + id + ": Expected a JSON object.");
                     continue;
                 }
+
                 JsonObject json = element.getAsJsonObject();
+
+                if (json.has("condition") && json.get("condition").isJsonPrimitive())
+                {
+                    JsonPrimitive primitive = json.getAsJsonPrimitive("condition");
+
+                    if (primitive.isString() && primitive.getAsString().startsWith("mod:"))
+                    {
+                        String modId = primitive.getAsString().substring(4);
+
+                        if (!modId.isBlank() && !Platform.isModLoaded(modId))
+                        {
+                            // Do not load entities that needs mod to be enabled. Do not need error message.
+                            continue;
+                        }
+                    }
+                }
+
 
                 // New JSON structure: direct array of ingredients.
                 JsonArray ingredientsArray = json.has("food_items") && json.get("food_items").isJsonArray()
