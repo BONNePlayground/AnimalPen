@@ -12,28 +12,23 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
-import java.util.Map;
 
-import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -73,7 +68,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.isFood(itemStack))
+        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
             if (player.level().isClientSide())
             {
@@ -174,24 +169,24 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         MutableComponent component =
             Component.translatable("display.animal_pen.stored_food", this.animalPen$storedFood);
 
-        List<ItemStack> food = this.animalPen$getFood();
+        ItemStack[] food = this.animalPen$getFood();
         ItemStack foodItem;
 
-        if (food.isEmpty())
+        if (food == null || food.length == 0)
         {
             // No food item for this entity.
             return lines;
         }
-        else if (food.size() == 1)
+        else if (food.length == 1)
         {
-            foodItem = food.get(0);
+            foodItem = food[0];
         }
         else
         {
-            int size = food.size();
+            int size = food.length;
             int index = (tick / 100) % size;
 
-            foodItem = food.get(index);
+            foodItem = food[index];
         }
 
         lines.add(Pair.of(foodItem, component));
@@ -200,27 +195,6 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     }
 
 
-    @Intrinsic
-    @Override
-    public List<ItemStack> animalPen$getFood()
-    {
-        if (ANIMAL_PEN$FOOD_LIST == null)
-        {
-            ANIMAL_PEN$FOOD_LIST = RegistrarManager.get(AnimalPen.MOD_ID).
-                get(Registries.ITEM).entrySet().stream().
-                map(Map.Entry::getValue).
-                map(Item::getDefaultInstance).
-                filter(stack -> stack.is(ItemTags.AXOLOTL_FOOD)).
-                toList();
-        }
-
-        return ANIMAL_PEN$FOOD_LIST;
-    }
-
-
     @Unique
     private int animalPen$storedFood = 0;
-
-    @Unique
-    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;
 }
