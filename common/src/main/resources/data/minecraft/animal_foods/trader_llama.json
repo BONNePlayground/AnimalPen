@@ -1,0 +1,10 @@
+{
+  "food_items": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:hay_block"
+    }
+  ]
+}
