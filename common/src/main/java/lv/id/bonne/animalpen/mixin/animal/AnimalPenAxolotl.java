@@ -168,24 +168,24 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         MutableComponent component =
             new TranslatableComponent("display.animal_pen.stored_food", this.animalPen$storedFood);
 
-        List<ItemStack> food = this.animalPen$getFood();
+        ItemStack[] food = this.animalPen$getFood();
         ItemStack foodItem;
 
-        if (food.isEmpty())
+        if (food == null || food.length == 0)
         {
             // No food item for this entity.
             return lines;
         }
-        else if (food.size() == 1)
+        else if (food.length == 1)
         {
-            foodItem = food.get(0);
+            foodItem = food[0];
         }
         else
         {
-            int size = food.size();
+            int size = food.length;
             int index = (tick / 100) % size;
 
-            foodItem = food.get(index);
+            foodItem = food[index];
         }
 
         lines.add(Pair.of(foodItem, component));

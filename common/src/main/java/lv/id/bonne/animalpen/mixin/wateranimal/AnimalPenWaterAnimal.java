@@ -8,6 +8,7 @@ package lv.id.bonne.animalpen.mixin.wateranimal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -244,24 +245,24 @@ public abstract class AnimalPenWaterAnimal extends Mob
                     plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
-        List<ItemStack> food = this.animalPen$getFood();
+        ItemStack[] food = this.animalPen$getFood();
         ItemStack foodItem;
 
-        if (food.isEmpty())
+        if (food == null || food.length == 0)
         {
             // No food item for this entity.
             return lines;
         }
-        else if (food.size() == 1)
+        else if (food.length == 1)
         {
-            foodItem = food.get(0);
+            foodItem = food[0];
         }
         else
         {
-            int size = food.size();
+            int size = food.length;
             int index = (tick / 100) % size;
 
-            foodItem = food.get(index);
+            foodItem = food[index];
         }
 
         lines.add(Pair.of(foodItem, component));
@@ -271,14 +272,10 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
 
     @Intrinsic
-    public List<ItemStack> animalPen$getFood()
+    @Nullable
+    public ItemStack[] animalPen$getFood()
     {
-        if (ANIMAL_PEN$FOOD_LIST == null)
-        {
-            ANIMAL_PEN$FOOD_LIST = AnimalPenFoodRegistry.getFood(this.getType().arch$registryName());
-        }
-
-        return ANIMAL_PEN$FOOD_LIST;
+        return AnimalPenFoodRegistry.getFood(this.getType().arch$registryName());
     }
 
 
@@ -287,7 +284,4 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
     @Unique
     protected long animalPen$animalCount = 0;
-
-    @Unique
-    private static List<ItemStack> ANIMAL_PEN$FOOD_LIST = null;
 }

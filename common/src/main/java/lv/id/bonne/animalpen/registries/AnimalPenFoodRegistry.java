@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -81,30 +82,25 @@ public class AnimalPenFoodRegistry
      * This method returns the food items for given animal.
      *
      * @param entity The entity resource location.
-     * @return List of ItemStacks that are food for given entity.
+     * @return Array of ItemStacks that are food for given entity.
      */
-    public static List<ItemStack> getFood(ResourceLocation entity)
+    @Nullable
+    public static ItemStack[] getFood(ResourceLocation entity)
     {
         if (!DATA.containsKey(entity))
         {
             // Returns empty list as food is not defined.
-            return Collections.emptyList();
+            return null;
         }
 
         if (DATA.get(entity).ingredient().isEmpty())
         {
             // Empty ingredients.
-            return Collections.emptyList();
+            return null;
         }
 
         // Search through all items and matches them as food items.
-        return Registries.get(AnimalPen.MOD_ID).
-            get(Registry.ITEM_REGISTRY).entrySet().stream().
-            map(Map.Entry::getValue).
-            map(Item::getDefaultInstance).
-            filter(stack -> !stack.isEmpty()).
-            filter(stack -> DATA.get(entity).matches(stack)).
-            toList();
+        return DATA.get(entity).ingredient().getItems();
     }
 
 
