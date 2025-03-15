@@ -60,7 +60,7 @@ public final class AnimalPen
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalFoodReloadListener(),
-            new ResourceLocation(MOD_ID, "animal_foods"));
+            ResourceLocation.tryBuild(MOD_ID, "animal_foods"));
     }
 
 
