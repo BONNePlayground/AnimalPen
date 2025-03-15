@@ -1,0 +1,8 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "tag": "alexsmobs:seal_breedables"
+    }
+  ]
+}
