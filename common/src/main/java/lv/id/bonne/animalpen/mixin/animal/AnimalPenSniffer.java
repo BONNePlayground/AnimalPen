@@ -20,7 +20,6 @@ import lv.id.bonne.animalpen.util.Utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -61,6 +60,12 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         if (this.animalPen$sniffingCooldown > 0)
         {
             this.animalPen$sniffingCooldown--;
+            value = true;
+        }
+
+        if (this.animalPen$eggCooldown > 0)
+        {
+            this.animalPen$eggCooldown--;
             return true;
         }
 
@@ -74,10 +79,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$sniffingCooldown > 0)
-        {
-            tag.putInt("sniff_cooldown", this.animalPen$sniffingCooldown);
-        }
+        tag.putInt("egg_cooldown", this.animalPen$eggCooldown);
+        tag.putInt("sniff_cooldown", this.animalPen$sniffingCooldown);
     }
 
 
@@ -87,10 +90,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("sniff_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$sniffingCooldown = tag.getInt("sniff_cooldown");
-        }
+        this.animalPen$sniffingCooldown = tag.getInt("sniff_cooldown");
+        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
     }
 
 
@@ -105,7 +106,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(Items.BUCKET))
+        if (itemStack.is(Items.BOWL))
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
@@ -162,6 +163,60 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
             this.animalPen$sniffingCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
+                Items.BOWL,
+                this.animalPen$animalCount);
+
+            return true;
+        }
+        else if (itemStack.is(Items.BUCKET))
+        {
+            if (this.animalPen$eggCooldown > 0)
+            {
+                return false;
+            }
+
+            if (player.level().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SNIFFER_EGG);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
+
+            while (eggCount > 0)
+            {
+                ItemStack eggStack = new ItemStack(Items.SNIFFER_EGG);
+
+                if (eggCount > 64)
+                {
+                    eggStack.setCount(64);
+                    eggCount -= 64;
+                }
+                else
+                {
+                    eggStack.setCount(eggCount);
+                    eggCount = 0;
+                }
+
+                Block.popResource(player.level(), position.above(), eggStack);
+            }
+
+            player.level().playSound(null,
+                position,
+                SoundEvents.SNIFFER_EGG_PLOP,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
@@ -180,6 +235,39 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
         if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
             this.getType(),
+            Items.BOWL,
+            this.animalPen$animalCount) != 0)
+        {
+            MutableComponent component;
+
+            if (this.animalPen$sniffingCooldown == 0)
+            {
+                component = Component.translatable("display.animal_pen.sniff_ready").
+                    withStyle(ChatFormatting.GREEN);
+            }
+            else
+            {
+                component = Component.translatable("display.animal_pen.sniff_cooldown",
+                    LocalTime.of(0, 0, 0).
+                        plusSeconds(this.animalPen$sniffingCooldown / 20).format(AnimalPen.DATE_FORMATTER));
+            }
+
+
+            List<ItemStack> food = List.of(Items.TORCHFLOWER_SEEDS.getDefaultInstance(),
+                Items.PITCHER_POD.getDefaultInstance());
+
+            ItemStack foodItem;
+
+            int size = food.size();
+            int index = (tick / 100) % size;
+
+            foodItem = food.get(index);
+
+            lines.add(Pair.of(foodItem, component));
+        }
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.getType(),
             Items.BUCKET,
             this.animalPen$animalCount) == 0)
         {
@@ -189,30 +277,20 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
         MutableComponent component;
 
-        if (this.animalPen$sniffingCooldown == 0)
+        if (this.animalPen$eggCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.sniff_ready").
+            component = Component.translatable("display.animal_pen.egg_ready").
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.sniff_cooldown",
+            component = Component.translatable("display.animal_pen.egg_cooldown",
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$sniffingCooldown / 20).format(AnimalPen.DATE_FORMATTER));
+                    plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
+        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
 
-        List<ItemStack> food = List.of(Items.TORCHFLOWER_SEEDS.getDefaultInstance(),
-            Items.PITCHER_POD.getDefaultInstance());
-
-        ItemStack foodItem;
-
-        int size = food.size();
-        int index = (tick / 100) % size;
-
-        foodItem = food.get(index);
-
-        lines.add(Pair.of(foodItem, component));
 
         return lines;
     }
@@ -220,4 +298,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
     @Unique
     private int animalPen$sniffingCooldown;
+
+    @Unique
+    private int animalPen$eggCooldown;
 }

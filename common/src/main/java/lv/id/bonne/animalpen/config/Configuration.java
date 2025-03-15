@@ -187,6 +187,11 @@ public class Configuration
                 60 * 5 * 20 + 20,
                 -1 * 20,
                 10 * 20));
+        this.cooldownList.computeIfAbsent(Items.BOWL.arch$registryName(), i -> new ArrayList<>()).
+            add(new CooldownEntry(EntityType.SNIFFER.arch$registryName(),
+                60 * 5 * 20 + 20,
+                -1 * 20,
+                10 * 20));
     }
 
 
