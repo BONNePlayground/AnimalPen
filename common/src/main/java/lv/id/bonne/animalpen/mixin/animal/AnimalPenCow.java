@@ -19,7 +19,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -162,13 +161,6 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
 
         return lines;
-    }
-
-
-    @Intrinsic
-    public List<ItemStack> animalPen$getFood()
-    {
-        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
     }
 
 

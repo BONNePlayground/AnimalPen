@@ -1,0 +1,14 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "minecraft:apple"
+    },
+    {
+      "item": "minecraft:grass"
+    },
+    {
+      "tag": "minecraft:leaves"
+    }
+  ]
+}
