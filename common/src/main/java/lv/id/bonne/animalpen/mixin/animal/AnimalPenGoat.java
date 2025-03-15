@@ -12,14 +12,12 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -163,13 +161,6 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
         lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
 
         return lines;
-    }
-
-
-    @Intrinsic
-    public List<ItemStack> animalPen$getFood()
-    {
-        return Collections.singletonList(Items.WHEAT.getDefaultInstance());
     }
 
 

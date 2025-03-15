@@ -1,0 +1,30 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "tag": "minecraft:meat"
+    },
+    {
+      "item": "minecraft:cod"
+    },
+    {
+      "item": "minecraft:cooked_cod"
+    },
+    {
+      "item": "minecraft:salmon"
+    },
+    {
+      "item": "minecraft:cooked_salmon"
+    },
+    {
+      "item": "minecraft:tropical_fish"
+    },
+    {
+      "item": "minecraft:pufferfish"
+    },
+    {
+      "item": "minecraft:rabbit_stew"
+    }
+  ]
+}
+

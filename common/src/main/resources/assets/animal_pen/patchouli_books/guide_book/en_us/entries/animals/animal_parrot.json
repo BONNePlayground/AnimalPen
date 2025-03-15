@@ -1,0 +1,17 @@
+{
+  "name": "Parrot",
+  "icon": "minecraft:parrot_bear_spawn_egg",
+  "category": "animal_pen:category_animal_pen",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:parrot",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Animal Pen will kill the parrot and drop its loot."
+    }
+  ]
+}
