@@ -9,8 +9,10 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.registry.ReloadListenerRegistry;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
+import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
@@ -18,6 +20,8 @@ import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
@@ -54,6 +58,11 @@ public final class AnimalPen
             NetworkManager.Side.C2S,
             UpdateAnimalSizeData.ID,
             UpdateAnimalSizeData::handle);
+
+        // register the listener
+        ReloadListenerRegistry.register(PackType.SERVER_DATA,
+            new AnimalFoodReloadListener(),
+            new ResourceLocation(MOD_ID, "animal_foods"));
     }
 
 

@@ -1,0 +1,8 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "alexsmobs:cosmic_cod"
+    }
+  ]
+}
