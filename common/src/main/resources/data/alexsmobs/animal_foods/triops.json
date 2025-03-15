@@ -1,0 +1,188 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "minecraft:apple"
+    },
+    {
+      "item": "minecraft:baked_potato"
+    },
+    {
+      "item": "minecraft:beef"
+    },
+    {
+      "item": "minecraft:beetroot"
+    },
+    {
+      "item": "minecraft:beetroot_soup"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:chicken"
+    },
+    {
+      "item": "minecraft:chorus_fruit"
+    },
+    {
+      "item": "minecraft:cod"
+    },
+    {
+      "item": "minecraft:cooked_beef"
+    },
+    {
+      "item": "minecraft:cooked_chicken"
+    },
+    {
+      "item": "minecraft:cooked_cod"
+    },
+    {
+      "item": "minecraft:cooked_mutton"
+    },
+    {
+      "item": "minecraft:cooked_porkchop"
+    },
+    {
+      "item": "minecraft:cooked_rabbit"
+    },
+    {
+      "item": "minecraft:cooked_salmon"
+    },
+    {
+      "item": "minecraft:cookie"
+    },
+    {
+      "item": "minecraft:dried_kelp"
+    },
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "minecraft:glow_berries"
+    },
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:golden_carrot"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:melon_slice"
+    },
+    {
+      "item": "minecraft:mushroom_stew"
+    },
+    {
+      "item": "minecraft:mutton"
+    },
+    {
+      "item": "minecraft:poisonous_potato"
+    },
+    {
+      "item": "minecraft:porkchop"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:pufferfish"
+    },
+    {
+      "item": "minecraft:pumpkin_pie"
+    },
+    {
+      "item": "minecraft:rabbit"
+    },
+    {
+      "item": "minecraft:rabbit_stew"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:salmon"
+    },
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "item": "minecraft:suspicious_stew"
+    },
+    {
+      "item": "minecraft:sweet_berries"
+    },
+    {
+      "item": "minecraft:tropical_fish"
+    },
+    {
+      "item": "alexsmobs:maggot"
+    },
+    {
+      "item": "alexsmobs:banana"
+    },
+    {
+      "item": "alexsmobs:lobster_tail"
+    },
+    {
+      "item": "alexsmobs:cooked_lobster_tail"
+    },
+    {
+      "item": "alexsmobs:sopa_de_macaco"
+    },
+    {
+      "item": "alexsmobs:moose_ribs"
+    },
+    {
+      "item": "alexsmobs:cooked_moose_ribs"
+    },
+    {
+      "item": "alexsmobs:blobfish"
+    },
+    {
+      "item": "alexsmobs:fish_oil"
+    },
+    {
+      "item": "alexsmobs:shrimp_fried_rice"
+    },
+    {
+      "item": "alexsmobs:boiled_emu_egg"
+    },
+    {
+      "item": "alexsmobs:kangaroo_meat"
+    },
+    {
+      "item": "alexsmobs:cooked_kangaroo_meat"
+    },
+    {
+      "item": "alexsmobs:kangaroo_burger"
+    },
+    {
+      "item": "alexsmobs:gongylidia"
+    },
+    {
+      "item": "alexsmobs:cosmic_cod"
+    },
+    {
+      "item": "alexsmobs:rainbow_jelly"
+    },
+    {
+      "item": "alexsmobs:raw_catfish"
+    },
+    {
+      "item": "alexsmobs:cooked_catfish"
+    },
+    {
+      "item": "alexsmobs:flying_fish"
+    },
+    {
+      "item": "alexsmobs:mosquito_repellent_stew"
+    }
+  ]
+}

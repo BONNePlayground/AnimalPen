@@ -1,0 +1,11 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    {
+      "item": "alexsmobs:raw_catfish"
+    },
+    {
+      "item": "alexsmobs:cooked_catfish"
+    }
+  ]
+}
