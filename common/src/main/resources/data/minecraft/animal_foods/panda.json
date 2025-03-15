@@ -1,7 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:bamboo"
+      "tag": "minecraft:panda_food"
     }
   ]
 }

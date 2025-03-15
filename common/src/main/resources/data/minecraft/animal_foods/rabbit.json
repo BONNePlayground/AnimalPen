@@ -1,13 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:carrot"
-    },
-    {
-      "item": "minecraft:golden_carrot"
-    },
-    {
-      "item": "minecraft:dandelion"
+      "tag": "minecraft:rabbit_food"
     }
   ]
 }

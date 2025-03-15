@@ -1,10 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:cod"
-    },
-    {
-      "item": "minecraft:salmon"
+      "tag": "minecraft:ocelot_food"
     }
   ]
 }

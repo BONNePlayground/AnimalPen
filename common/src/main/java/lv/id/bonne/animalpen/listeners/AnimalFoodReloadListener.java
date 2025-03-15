@@ -75,10 +75,14 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener
 
                 Ingredient ingredient;
 
-                try {
+                try
+                {
                     ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, ingredientsArray).
-                        getOrThrow(false,
-                            error -> AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + error));
+                        getOrThrow(text ->
+                        {
+                            AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + text);
+                            return new IllegalArgumentException(text);
+                        });
                 }
                 catch (Exception e)
                 {

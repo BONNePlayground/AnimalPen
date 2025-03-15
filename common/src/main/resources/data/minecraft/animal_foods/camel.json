@@ -1,7 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:cactus"
+      "tag": "minecraft:camel_food"
     }
   ]
 }

@@ -1,13 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:carrot"
-    },
-    {
-      "item": "minecraft:potato"
-    },
-    {
-      "item": "minecraft:beetroot"
+      "tag": "minecraft:pig_food"
     }
   ]
 }

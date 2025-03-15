@@ -1,7 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:crimson_fungus"
+      "tag": "minecraft:hoglin_food"
     }
   ]
 }

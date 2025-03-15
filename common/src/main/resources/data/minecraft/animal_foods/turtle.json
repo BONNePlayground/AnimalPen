@@ -1,7 +1,7 @@
 {
   "food_items": [
     {
-      "item": "minecraft:seagrass"
+      "tag": "minecraft:turtle_food"
     }
   ]
 }
