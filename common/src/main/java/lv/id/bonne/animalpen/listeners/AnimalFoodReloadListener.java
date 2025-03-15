@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.listeners;
 
 
 import com.google.gson.*;
+import com.mojang.serialization.JsonOps;
 import java.util.Map;
 
 import dev.architectury.platform.Platform;
@@ -74,14 +75,13 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener
 
                 Ingredient ingredient;
 
-                try
-                {
-                    ingredient = !ingredientsArray.isEmpty() ?
-                        Ingredient.fromJson(ingredientsArray) : Ingredient.EMPTY;
+                try {
+                    ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, ingredientsArray).
+                        getOrThrow(false,
+                            error -> AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + error));
                 }
                 catch (Exception e)
                 {
-                    AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + e.getMessage());
                     continue;
                 }
 
