@@ -2,16 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:rabbit"
-    },
-    {
-      "item": "minecraft:cooked_rabbit"
-    },
-    {
-      "item": "minecraft:chicken"
-    },
-    {
-      "item": "minecraft:cooked_chicken"
+      "tag": "alexsmobs:maned_wolf_breedables"
     }
   ]
 }

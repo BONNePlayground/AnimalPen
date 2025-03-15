@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:wheat"
+      "tag": "alexsmobs:bison_breedables"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:salmon"
+      "tag": "alexsmobs:grizzly_breedables"
     }
   ]
 }

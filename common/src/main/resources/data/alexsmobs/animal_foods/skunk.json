@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:sweet_berries"
+      "tag": "alexsmobs:skunk_breedables"
     }
   ]
 }

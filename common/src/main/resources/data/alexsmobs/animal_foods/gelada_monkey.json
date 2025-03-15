@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:dead_bush"
+      "tag": "alexsmobs:gelada_monkey_breedables"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "alexsmobs:mungal_spores"
+      "tag": "alexsmobs:mungus_breedables"
     }
   ]
 }

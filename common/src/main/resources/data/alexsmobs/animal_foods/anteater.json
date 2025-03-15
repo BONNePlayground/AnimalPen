@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "alexsmobs:leafcutter_ant_pupa"
+      "tag": "alexsmobs:anteater_foodstuffs"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "tag": "minecraft:flowers"
+      "tag": "alexsmobs:hummingbird_breedables"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:chorus_fruit"
+      "tag": "alexsmobs:endergrade_breedables"
     }
   ]
 }

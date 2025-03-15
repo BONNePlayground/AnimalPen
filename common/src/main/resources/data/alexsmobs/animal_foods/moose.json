@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:dandelion"
+      "tag": "alexsmobs:moose_breedables"
     }
   ]
 }

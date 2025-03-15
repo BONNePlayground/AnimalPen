@@ -2,10 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "alexsmobs:lobster_tail"
-    },
-    {
-      "item": "alexsmobs:cooked_lobster_tail"
+      "tag": "alexsmobs:platypus_breedables"
     }
   ]
 }

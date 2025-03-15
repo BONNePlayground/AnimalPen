@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:sea_pickle"
+      "tag": "alexsmobs:catfish_item_fascinations"
     }
   ]
 }

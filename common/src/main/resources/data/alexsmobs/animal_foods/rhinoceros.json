@@ -2,10 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:dead_bush"
-    },
-    {
-      "item": "minecraft:grass"
+      "tag": "alexsmobs:rhinoceros_breedables"
     }
   ]
 }

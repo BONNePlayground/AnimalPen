@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:brown_mushroom"
+      "tag": "alexsmobs:banana_slug_breedables"
     }
   ]
 }

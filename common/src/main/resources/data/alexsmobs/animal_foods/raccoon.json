@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:bread"
+      "tag": "alexsmobs:raccoon_breedables"
     }
   ]
 }

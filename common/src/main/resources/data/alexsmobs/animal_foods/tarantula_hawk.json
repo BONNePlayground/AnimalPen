@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:fermented_spider_eye"
+      "tag": "alexsmobs:tarantula_hawk_breedables"
     }
   ]
 }

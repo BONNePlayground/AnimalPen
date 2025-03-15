@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:pumpkin_seeds"
+      "tag": "alexsmobs:crow_breedables"
     }
   ]
 }

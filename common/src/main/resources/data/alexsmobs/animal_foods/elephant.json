@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "alexsmobs:acacia_blossom"
+      "tag": "alexsmobs:elephant_breedables"
     }
   ]
 }

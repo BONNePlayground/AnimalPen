@@ -2,10 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "alexsmobs:moose_ribs"
-    },
-    {
-      "item": "alexsmobs:cooked_moose_ribs"
+      "tag": "alexsmobs:snow_leopard_breedables"
     }
   ]
 }

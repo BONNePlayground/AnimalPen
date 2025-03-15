@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:rotten_flesh"
+      "tag": "alexsmobs:bald_eagle_breedables"
     }
   ]
 }

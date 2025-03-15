@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "tag": "alexsmobs:bananas"
+      "tag": "alexsmobs:gorilla_breedables"
     }
   ]
 }

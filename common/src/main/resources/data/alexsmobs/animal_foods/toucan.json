@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:egg"
+      "tag": "alexsmobs:toucan_breedables"
     }
   ]
 }

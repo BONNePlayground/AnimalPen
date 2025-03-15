@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:sugar"
+      "tag": "alexsmobs:cockroach_breedables"
     }
   ]
 }

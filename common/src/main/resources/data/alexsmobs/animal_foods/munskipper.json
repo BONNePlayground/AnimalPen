@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "tag": "alexsmobs:caiman_breedables"
+      "tag": "alexsmobs:mudskipper_breedables"
     }
   ]
 }

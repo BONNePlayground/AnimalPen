@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "tag": "alexsmobs:insect_items"
+      "tag": "alexsmobs:rain_frog_breedables"
     }
   ]
 }

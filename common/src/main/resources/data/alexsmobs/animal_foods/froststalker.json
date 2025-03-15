@@ -2,10 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:porkchop"
-    },
-    {
-      "item": "minecraft:cooked_porkchop"
+      "tag": "alexsmobs:froststalker_breedables"
     }
   ]
 }

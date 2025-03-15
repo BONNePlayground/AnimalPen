@@ -2,7 +2,7 @@
   "condition": "mod:alexsmobs",
   "food_items": [
     {
-      "item": "minecraft:cod"
+      "tag": "alexsmobs:seagull_breedables"
     }
   ]
 }
