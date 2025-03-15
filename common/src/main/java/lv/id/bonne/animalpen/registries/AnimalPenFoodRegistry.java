@@ -91,7 +91,7 @@ public class AnimalPenFoodRegistry
             return Collections.emptyList();
         }
 
-        if (DATA.get(entity).ingredients().isEmpty())
+        if (DATA.get(entity).ingredient().isEmpty())
         {
             // Empty ingredients.
             return Collections.emptyList();
@@ -111,7 +111,7 @@ public class AnimalPenFoodRegistry
     /**
      * The type Animal food data.
      */
-    public record AnimalFoodData(List<Ingredient> ingredients)
+    public record AnimalFoodData(Ingredient ingredient)
     {
         /**
          * Returns true if the provided stack matches any of the defined ingredients.
@@ -121,7 +121,7 @@ public class AnimalPenFoodRegistry
          */
         public boolean matches(ItemStack stack)
         {
-            return this.ingredients.stream().anyMatch(ing -> ing.test(stack));
+            return this.ingredient.test(stack);
         }
     }
 
@@ -133,5 +133,5 @@ public class AnimalPenFoodRegistry
     /**
      * The empty data object to not initialize it all time.
      */
-    private static final AnimalFoodData EMPTY = new AnimalFoodData(Collections.emptyList());
+    private static final AnimalFoodData EMPTY = new AnimalFoodData(Ingredient.EMPTY);
 }

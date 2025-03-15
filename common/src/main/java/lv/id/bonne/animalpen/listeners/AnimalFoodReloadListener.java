@@ -2,8 +2,6 @@ package lv.id.bonne.animalpen.listeners;
 
 
 import com.google.gson.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import dev.architectury.platform.Platform;
@@ -74,26 +72,21 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener
                     ? json.getAsJsonArray("food_items")
                     : new JsonArray();
 
-                List<Ingredient> ingredientList = new ArrayList<>();
+                Ingredient ingredient;
 
-                for (JsonElement ingredientElem : ingredientsArray)
+                try
                 {
-                    if (ingredientElem.isJsonObject())
-                    {
-                        try
-                        {
-                            Ingredient ingredient = Ingredient.fromJson(ingredientElem.getAsJsonObject());
-                            ingredientList.add(ingredient);
-                        }
-                        catch (Exception e)
-                        {
-                            AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + e.getMessage());
-                        }
-                    }
+                    ingredient = !ingredientsArray.isEmpty() ?
+                        Ingredient.fromJson(ingredientsArray) : Ingredient.EMPTY;
+                }
+                catch (Exception e)
+                {
+                    AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + e.getMessage());
+                    continue;
                 }
 
                 // Create data instance and register it.
-                AnimalPenFoodRegistry.AnimalFoodData data = new AnimalPenFoodRegistry.AnimalFoodData(ingredientList);
+                AnimalPenFoodRegistry.AnimalFoodData data = new AnimalPenFoodRegistry.AnimalFoodData(ingredient);
                 AnimalPenFoodRegistry.register(id, data);
             }
             catch (JsonSyntaxException e)
