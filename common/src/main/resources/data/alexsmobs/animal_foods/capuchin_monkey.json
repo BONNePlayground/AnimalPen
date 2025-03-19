@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:capuchin_monkey_breedables"
-    }
+    "#alexsmobs:capuchin_monkey_breedables"
   ]
 }

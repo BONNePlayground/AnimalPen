@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:tusklin_breedables"
-    }
+    "#alexsmobs:tusklin_breedables"
   ]
 }

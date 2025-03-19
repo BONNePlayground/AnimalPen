@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:toucan_breedables"
-    }
+    "#alexsmobs:toucan_breedables"
   ]
 }

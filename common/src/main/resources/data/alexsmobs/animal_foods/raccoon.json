@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:raccoon_breedables"
-    }
+    "#alexsmobs:raccoon_breedables"
   ]
 }

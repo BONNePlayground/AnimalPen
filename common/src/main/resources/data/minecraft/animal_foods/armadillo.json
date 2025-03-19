@@ -1,7 +1,5 @@
 {
   "food_items": [
-    {
-      "tag": "minecraft:armadillo_food"
-    }
+    "#minecraft:armadillo_food"
   ]
 }

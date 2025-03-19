@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:endergrade_breedables"
-    }
+    "#alexsmobs:endergrade_breedables"
   ]
 }

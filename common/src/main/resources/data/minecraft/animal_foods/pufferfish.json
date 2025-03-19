@@ -1,10 +1,6 @@
 {
   "food_items": [
-    {
-      "item": "minecraft:seagrass"
-    },
-    {
-      "item": "minecraft:kelp"
-    }
+    "minecraft:seagrass",
+    "minecraft:kelp"
   ]
 }

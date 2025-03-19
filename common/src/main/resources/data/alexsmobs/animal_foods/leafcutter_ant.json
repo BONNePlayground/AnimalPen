@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:leafcutter_ant_foodstuffs"
-    }
+    "#alexsmobs:leafcutter_ant_foodstuffs"
   ]
 }

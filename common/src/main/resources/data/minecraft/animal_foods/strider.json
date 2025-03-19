@@ -1,7 +1,5 @@
 {
   "food_items": [
-    {
-      "tag": "minecraft:strider_food"
-    }
+    "#minecraft:strider_food"
   ]
 }

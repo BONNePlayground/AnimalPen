@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:sugar_glider_breedables"
-    }
+    "#alexsmobs:sugar_glider_breedables"
   ]
 }

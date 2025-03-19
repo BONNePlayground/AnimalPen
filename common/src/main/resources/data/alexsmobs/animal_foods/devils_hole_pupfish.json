@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:pupfish_eatables"
-    }
+    "#alexsmobs:pupfish_eatables"
   ]
 }

@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:snow_leopard_breedables"
-    }
+    "#alexsmobs:snow_leopard_breedables"
   ]
 }

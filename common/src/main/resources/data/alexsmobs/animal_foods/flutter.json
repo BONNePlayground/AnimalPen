@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:flutter_breedables"
-    }
+    "#alexsmobs:flutter_breedables"
   ]
 }

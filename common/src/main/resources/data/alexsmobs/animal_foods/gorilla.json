@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:gorilla_breedables"
-    }
+    "#alexsmobs:gorilla_breedables"
   ]
 }

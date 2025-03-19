@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:banana_slug_breedables"
-    }
+    "#alexsmobs:banana_slug_breedables"
   ]
 }

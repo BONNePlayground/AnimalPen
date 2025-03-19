@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:gazelle_breedables"
-    }
+    "#alexsmobs:gazelle_breedables"
   ]
 }

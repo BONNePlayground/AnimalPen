@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:cosmaw_breedables"
-    }
+    "#alexsmobs:cosmaw_breedables"
   ]
 }

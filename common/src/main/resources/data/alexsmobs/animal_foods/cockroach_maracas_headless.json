@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:cockroach_breedables"
-    }
+    "#alexsmobs:cockroach_breedables"
   ]
 }

@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:blue_jay_breedables"
-    }
+    "#alexsmobs:blue_jay_breedables"
   ]
 }

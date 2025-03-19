@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:roadrunner_breedables"
-    }
+    "#alexsmobs:roadrunner_breedables"
   ]
 }

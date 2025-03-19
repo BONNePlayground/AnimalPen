@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:seagull_breedables"
-    }
+    "#alexsmobs:seagull_breedables"
   ]
 }

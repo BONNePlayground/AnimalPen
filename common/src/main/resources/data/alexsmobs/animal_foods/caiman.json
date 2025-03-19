@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:caiman_breedables"
-    }
+    "#alexsmobs:caiman_breedables"
   ]
 }

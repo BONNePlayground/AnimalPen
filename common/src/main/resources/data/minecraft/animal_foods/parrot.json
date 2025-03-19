@@ -1,7 +1,5 @@
 {
   "food_items": [
-    {
-      "tag": "minecraft:parrot_food"
-    }
+    "#minecraft:parrot_food"
   ]
 }

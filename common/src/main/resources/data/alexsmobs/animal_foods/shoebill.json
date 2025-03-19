@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:shoebill_lure_foods"
-    }
+    "#alexsmobs:shoebill_lure_foods"
   ]
 }

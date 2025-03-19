@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:warped_toad_breedables"
-    }
+    "#alexsmobs:warped_toad_breedables"
   ]
 }

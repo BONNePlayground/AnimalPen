@@ -1,8 +1,6 @@
 {
   "condition": "mod:alexsmobs",
   "food_items": [
-    {
-      "tag": "alexsmobs:rain_frog_breedables"
-    }
+    "#alexsmobs:rain_frog_breedables"
   ]
 }
