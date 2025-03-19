@@ -1,0 +1,6 @@
+{
+  "condition": "mod:alexsmobs",
+  "food_items": [
+    "#alexsmobs:leafcutter_ant_foodstuffs"
+  ]
+}

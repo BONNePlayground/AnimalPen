@@ -8,14 +8,15 @@ package lv.id.bonne.animalpen.mixin.wateranimal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
+import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -125,7 +126,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (this.animal$isFood(itemStack))
+        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
             if (this.animalPen$foodCooldown > 0)
             {
@@ -243,24 +244,24 @@ public abstract class AnimalPenWaterAnimal extends Mob
                     plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        List<ItemStack> food = this.animalPen$getFood();
+        ItemStack[] food = this.animalPen$getFood();
         ItemStack foodItem;
 
-        if (food.isEmpty())
+        if (food == null || food.length == 0)
         {
             // No food item for this entity.
             return lines;
         }
-        else if (food.size() == 1)
+        else if (food.length == 1)
         {
-            foodItem = food.get(0);
+            foodItem = food[0];
         }
         else
         {
-            int size = food.size();
+            int size = food.length;
             int index = (tick / 100) % size;
 
-            foodItem = food.get(index);
+            foodItem = food[index];
         }
 
         lines.add(Pair.of(foodItem, component));
@@ -269,18 +270,11 @@ public abstract class AnimalPenWaterAnimal extends Mob
     }
 
 
-
-    @Unique
-    public boolean animal$isFood(ItemStack itemStack)
-    {
-        return false;
-    }
-
-
     @Intrinsic
-    public List<ItemStack> animalPen$getFood()
+    @Nullable
+    public ItemStack[] animalPen$getFood()
     {
-        return Collections.emptyList();
+        return AnimalPenFoodRegistry.getFood(this.getType().arch$registryName());
     }
 
 

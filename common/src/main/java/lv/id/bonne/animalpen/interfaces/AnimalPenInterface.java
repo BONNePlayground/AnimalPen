@@ -80,7 +80,7 @@ public interface AnimalPenInterface
 
     /**
      * This method returns the list of food items that animal eats.
-     * @return List of food items.
+     * @return Array of food items.
      */
-    List<ItemStack> getFood();
+    ItemStack[] getFood();
 }
