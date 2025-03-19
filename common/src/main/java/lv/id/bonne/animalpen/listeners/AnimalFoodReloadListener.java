@@ -1,9 +1,9 @@
 package lv.id.bonne.animalpen.listeners;
 
 
-import com.google.gson.*;
-import com.mojang.serialization.JsonOps;
-import java.util.Map;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.*;
 
 import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -12,107 +12,74 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.Ingredient;
 
 
 /**
  * This class handles animal food resource data loading into registry.
  */
-public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener
+public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener<AnimalFoodReloadListener.AnimalFoodEntry>
 {
-    /**
-     * Instantiates a new Animal food reload listener.
-     */
-    public AnimalFoodReloadListener()
-    {
-        super(GSON, FOLDER);
+    public static final Codec<AnimalFoodEntry> CODEC =
+        RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("condition").forGetter(AnimalFoodEntry::condition),
+            TaggableIngredient.CODEC.fieldOf("food_items").forGetter(AnimalFoodEntry::ingredient)
+        ).apply(instance, AnimalFoodEntry::new));
+
+
+
+    // Pass the Codec and folder name to the parent constructor.
+    public AnimalFoodReloadListener() {
+        super(CODEC, FOLDER);
     }
 
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsonMap, ResourceManager resourceManager, ProfilerFiller profiler)
+    protected void apply(Map<ResourceLocation, AnimalFoodEntry> objectMap, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         // Clear the registry before reloading new data.
         AnimalPenFoodRegistry.clear();
 
-        for (Map.Entry<ResourceLocation, JsonElement> entry : jsonMap.entrySet())
+        // Iterate over each decoded file.
+        objectMap.forEach((id, entry) ->
         {
-            ResourceLocation id = entry.getKey();
-
-            try
+            if (entry.condition().isPresent())
             {
-                JsonElement element = entry.getValue();
+                String condition = entry.condition().get();
 
-                if (!element.isJsonObject())
+                if (condition.startsWith("mod:"))
                 {
-                    AnimalPen.LOGGER.error("Invalid JSON format for " + id + ": Expected a JSON object.");
-                    continue;
-                }
+                    String modId = condition.substring(4);
 
-                JsonObject json = element.getAsJsonObject();
-
-                if (json.has("condition") && json.get("condition").isJsonPrimitive())
-                {
-                    JsonPrimitive primitive = json.getAsJsonPrimitive("condition");
-
-                    if (primitive.isString() && primitive.getAsString().startsWith("mod:"))
+                    if (!modId.isBlank() && !Platform.isModLoaded(modId))
                     {
-                        String modId = primitive.getAsString().substring(4);
-
-                        if (!modId.isBlank() && !Platform.isModLoaded(modId))
-                        {
-                            // Do not load entities that needs mod to be enabled. Do not need error message.
-                            continue;
-                        }
+                        // Skip loading this entry if the required mod isn't loaded.
+                        return;
                     }
                 }
+            }
 
-
-                // New JSON structure: direct array of ingredients.
-                JsonArray ingredientsArray = json.has("food_items") && json.get("food_items").isJsonArray()
-                    ? json.getAsJsonArray("food_items")
-                    : new JsonArray();
-
-                Ingredient ingredient;
-
-                try
-                {
-                    ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, ingredientsArray).
-                        getOrThrow(text ->
-                        {
-                            AnimalPen.LOGGER.error("Error parsing ingredient in " + id + ": " + text);
-                            return new IllegalArgumentException(text);
-                        });
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-
-                // Create data instance and register it.
-                AnimalPenFoodRegistry.AnimalFoodData data = new AnimalPenFoodRegistry.AnimalFoodData(ingredient);
+            if (!entry.ingredient().isEmpty())
+            {
+                // Create and register your data instance.
+                AnimalPenFoodRegistry.AnimalFoodData data = new AnimalPenFoodRegistry.AnimalFoodData(entry.ingredient());
                 AnimalPenFoodRegistry.register(id, data);
             }
-            catch (JsonSyntaxException e)
-            {
-                AnimalPen.LOGGER.error("JSON syntax error in " + id + ": " + e.getMessage());
-            }
-            catch (Exception e)
-            {
-                AnimalPen.LOGGER.error("Error processing file " + id + ": " + e.getMessage());
-            }
-        }
+        });
+
 
         AnimalPen.LOGGER.info("Loaded " + AnimalPenFoodRegistry.getAll().size() + " animal food entries.");
     }
 
 
     /**
-     * This creates instance of GSON reader for food items.
+     * This is dummy record to detect if mod condition is present and prevent loading if mod is not loaded.
+     * @param condition The optional conditional text
+     * @param ingredient The Ingredient parsing.
      */
-    private static final Gson GSON = new GsonBuilder().
-        registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).
-        create();
+    public record AnimalFoodEntry(Optional<String> condition, TaggableIngredient ingredient)
+    {
+    }
+
 
     /**
      * The location of data folder.

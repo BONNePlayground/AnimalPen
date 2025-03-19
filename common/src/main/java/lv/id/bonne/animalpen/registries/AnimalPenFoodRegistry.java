@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import lv.id.bonne.animalpen.listeners.TaggableIngredient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 
 /**
@@ -69,7 +69,7 @@ public class AnimalPenFoodRegistry
      */
     public static boolean isFood(ResourceLocation entity, ItemStack stack)
     {
-        return DATA.getOrDefault(entity, EMPTY).matches(stack);
+        return DATA.containsKey(entity) && DATA.get(entity).matches(stack);
     }
 
 
@@ -88,21 +88,14 @@ public class AnimalPenFoodRegistry
             return null;
         }
 
-        if (DATA.get(entity).ingredient().isEmpty())
-        {
-            // Empty ingredients.
-            return null;
-        }
-
-        // Search through all items and matches them as food items.
-        return DATA.get(entity).ingredient().getItems();
+        return DATA.get(entity).ingredient().getItemStacks();
     }
 
 
     /**
      * The type Animal food data.
      */
-    public record AnimalFoodData(Ingredient ingredient)
+    public record AnimalFoodData(TaggableIngredient ingredient)
     {
         /**
          * Returns true if the provided stack matches any of the defined ingredients.
@@ -120,9 +113,4 @@ public class AnimalPenFoodRegistry
      * The registry of animal foods.
      */
     private static final Map<ResourceLocation, AnimalFoodData> DATA = new HashMap<>();
-
-    /**
-     * The empty data object to not initialize it all time.
-     */
-    private static final AnimalFoodData EMPTY = new AnimalFoodData(Ingredient.EMPTY);
 }
