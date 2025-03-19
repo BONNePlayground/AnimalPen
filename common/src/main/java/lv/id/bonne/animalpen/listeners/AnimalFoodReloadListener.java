@@ -8,6 +8,7 @@ import java.util.*;
 import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -29,7 +30,7 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener<A
 
     // Pass the Codec and folder name to the parent constructor.
     public AnimalFoodReloadListener() {
-        super(CODEC, FOLDER);
+        super(CODEC, FileToIdConverter.json(FOLDER));
     }
 
 
