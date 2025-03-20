@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
@@ -96,8 +97,17 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         }
         else
         {
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity &&
-                entity.interactWithPen(player, interactionHand))
+            if (!(level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity))
+            {
+                return InteractionResult.FAIL;
+            }
+
+            if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenBlock.ATTACK_TOOLS))
+            {
+                this.attack(blockState, level, blockPos, player);
+                return InteractionResult.SUCCESS;
+            }
+            else if (entity.interactWithPen(player, interactionHand))
             {
                 return ItemInteractionResult.SUCCESS;
             }
@@ -125,6 +135,12 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             }
 
             entity.attackThePen(player, level);
+
+            if (PlayerHooks.isFake(player))
+            {
+                // Fake players do not need cooldowns
+                return;
+            }
 
             int cooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getAttackCooldown();
 
