@@ -15,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
@@ -124,13 +123,13 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         {
             if (!(level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity))
             {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
 
             if (PlayerHooks.isFake(player) && itemInHand.is(AquariumBlock.ATTACK_TOOLS))
             {
                 this.attack(blockState, level, blockPos, player);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
