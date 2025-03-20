@@ -124,13 +124,13 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         {
             if (!(level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity))
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
             if (PlayerHooks.isFake(player) && itemInHand.is(AquariumBlock.ATTACK_TOOLS))
             {
                 this.attack(blockState, level, blockPos, player);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else if (entity.interactWithPen(player, interactionHand))
             {

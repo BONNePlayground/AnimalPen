@@ -98,13 +98,13 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         {
             if (!(level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity))
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
             if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenBlock.ATTACK_TOOLS))
             {
                 this.attack(blockState, level, blockPos, player);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
