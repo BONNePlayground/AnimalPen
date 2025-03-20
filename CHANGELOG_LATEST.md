@@ -17,3 +17,5 @@
     ```
 - Adds Alex's Mobs food items to be included by default 
 - Implements ability for `fake` players to use `attack_items` as interaction.
+- Adds sniffers ability to get eggs. (using bucket)
+- Replace bucket with bowl for sniffers to get seeds.
