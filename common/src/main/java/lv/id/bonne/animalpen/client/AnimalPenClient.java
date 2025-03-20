@@ -9,12 +9,12 @@ package lv.id.bonne.animalpen.client;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
@@ -60,6 +60,11 @@ public class AnimalPenClient
             }
 
             if (blockEntity.getStoredAnimal() == null)
+            {
+                return InteractionResult.PASS;
+            }
+
+            if (PlayerHooks.isFake(player))
             {
                 return InteractionResult.PASS;
             }
