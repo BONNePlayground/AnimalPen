@@ -8,6 +8,7 @@ package lv.id.bonne.animalpen.client;
 
 
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
@@ -49,6 +50,11 @@ public class AnimalPenClient
             }
 
             if (blockEntity.getStoredAnimal() == null)
+            {
+                return InteractionResult.PASS;
+            }
+
+            if (PlayerHooks.isFake(player))
             {
                 return InteractionResult.PASS;
             }
