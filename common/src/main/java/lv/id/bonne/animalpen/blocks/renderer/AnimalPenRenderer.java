@@ -49,7 +49,8 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         @NotNull PoseStack poseStack,
         @NotNull MultiBufferSource buffer,
         int combinedLight,
-        int combinedOverlay)
+        int combinedOverlay,
+        Vec3 location)
     {
         Animal animal = tileEntity.getStoredAnimal();
 

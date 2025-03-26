@@ -79,8 +79,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
-        this.animalPen$scuteCount = tag.getInt("scute_count");
+        this.animalPen$eggCooldown = tag.getIntOr("egg_cooldown", 0);
+        this.animalPen$scuteCount = tag.getIntOr("scute_count", 0);
     }
 
 

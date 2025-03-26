@@ -75,7 +75,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
+        this.animalPen$eggCooldown = tag.getIntOr("egg_cooldown", 0);
     }
 
 

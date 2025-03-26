@@ -42,7 +42,8 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         @NotNull PoseStack poseStack,
         @NotNull MultiBufferSource buffer,
         int combinedLight,
-        int combinedOverlay)
+        int combinedOverlay,
+        Vec3 location)
     {
         Mob animal = tileEntity.getStoredAnimal();
 

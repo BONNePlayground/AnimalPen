@@ -67,10 +67,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$scuteCooldown > 0)
-        {
-            tag.putInt("scute_cooldown", this.animalPen$scuteCooldown);
-        }
+        tag.putInt("scute_cooldown", this.animalPen$scuteCooldown);
     }
 
 
@@ -80,10 +77,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("scute_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$scuteCooldown = tag.getInt("scute_cooldown");
-        }
+        this.animalPen$scuteCooldown = tag.getIntOr("scute_cooldown", 0);
     }
 
 

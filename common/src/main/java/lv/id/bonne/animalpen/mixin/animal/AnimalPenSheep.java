@@ -13,13 +13,11 @@ import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -28,7 +26,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -101,7 +99,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        this.animalPen$woolCooldown = tag.getInt("wool_cooldown");
+        this.animalPen$woolCooldown = tag.getIntOr("wool_cooldown", 0);
     }
 
 

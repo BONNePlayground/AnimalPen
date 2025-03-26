@@ -90,8 +90,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        this.animalPen$sniffingCooldown = tag.getInt("sniff_cooldown");
-        this.animalPen$eggCooldown = tag.getInt("egg_cooldown");
+        this.animalPen$sniffingCooldown = tag.getIntOr("sniff_cooldown", 0);
+        this.animalPen$eggCooldown = tag.getIntOr("egg_cooldown", 0);
     }
 
 

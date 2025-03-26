@@ -10,10 +10,7 @@ package lv.id.bonne.animalpen.blocks.entities;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
@@ -28,10 +25,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
@@ -67,7 +64,12 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         super.saveAdditional(tag, provider);
 
         tag.put(TAG_INVENTORY, this.inventory.createTag(provider));
-        tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
+
+        if (!this.deathTicker.isEmpty())
+        {
+            tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
+        }
+
         tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
     }
 
@@ -81,29 +83,16 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         this.deathTicker.clear();
         this.storedAnimal = null;
 
-        if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
-        {
-            this.inventory.fromTag(tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND), provider);
-        }
+        this.inventory.fromTag(tag.getListOrEmpty(TAG_INVENTORY), provider);
 
-        if (tag.contains(TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
-        {
-            int[] intArray = tag.getIntArray(TAG_DEATH_TICKER);
-
-            for (int i : intArray)
+        tag.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
+            for (int death : deaths)
             {
-                this.deathTicker.add(i);
+                this.deathTicker.add(death);
             }
-        }
+        });
 
-        if (tag.contains(TAG_DISPLAY_SIZE, Tag.TAG_LONG))
-        {
-            this.displaySize = tag.getLong(TAG_DISPLAY_SIZE);
-        }
-        else
-        {
-            this.displaySize = -1;
-        }
+        this.displaySize = tag.getLongOr(TAG_DISPLAY_SIZE, -1);
     }
 
 
@@ -314,7 +303,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     return true;
                 }
 
-                long newCount = itemInHandTag.getLong(AnimalContainerItem.TAG_AMOUNT);
+                long newCount = itemInHandTag.getLongOr(AnimalContainerItem.TAG_AMOUNT, 0);
 
                 if (newCount <= 0 || !((AnimalPenInterface) animal).animalPenUpdateCount(newCount))
                 {
@@ -517,6 +506,16 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     }
 
 
+    @Override
+    public void preRemoveSideEffects(BlockPos blockPos, BlockState blockState)
+    {
+        if (this.level != null)
+        {
+            Containers.dropContents(this.level, blockPos, this.inventory.getItems());
+        }
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: Animal Pen Block Interface
 // ---------------------------------------------------------------------
@@ -608,10 +607,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         this.getItemStack().set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(),
             customData.update(tag ->
-            {
-                ListTag list = tag.getList(AnimalContainerItem.TAG_VARIANTS, CompoundTag.TAG_COMPOUND);
-                list.remove(index);
-            })
+                tag.getList(AnimalContainerItem.TAG_VARIANTS).ifPresent(list -> list.remove(index)))
         );
 
         this.inventory.setChanged();

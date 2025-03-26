@@ -3,8 +3,8 @@ package lv.id.bonne.animalpen.items;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
@@ -28,6 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -46,38 +47,33 @@ public class AnimalContainerItem extends Item
     @Override
     public void appendHoverText(ItemStack itemStack,
         TooltipContext tooltipContext,
-        List<Component> list,
+        TooltipDisplay tooltipDisplay,
+        Consumer<Component> list,
         TooltipFlag tooltipFlag)
     {
-        super.appendHoverText(itemStack, tooltipContext, list, tooltipFlag);
-
-        if (!list.isEmpty())
-        {
-            // Add emtpy line
-            list.add(Component.empty());
-        }
+        super.appendHoverText(itemStack, tooltipContext, tooltipDisplay, list, tooltipFlag);
 
         if (itemStack.has(DataComponents.ENTITY_DATA))
         {
-            list.add(Component.translatable("item.animal_pen.water_animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID))).
+            list.accept(Component.translatable("item.animal_pen.water_animal_container.entity",
+                    AnimalContainerItem.getEntityTranslationName(itemStack.get(DataComponents.ENTITY_DATA).copyTag().getStringOr(TAG_ENTITY_ID, ""))).
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (itemStack.has(DataComponents.ENTITY_DATA))
         {
-            list.add(Component.translatable("item.animal_pen.water_animal_container.amount",
-                    itemStack.get(DataComponents.ENTITY_DATA).copyTag().getLong(TAG_AMOUNT)).
+            list.accept(Component.translatable("item.animal_pen.water_animal_container.amount",
+                    itemStack.get(DataComponents.ENTITY_DATA).copyTag().getLongOr(TAG_AMOUNT, 0)).
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
-            list.add(Component.translatable("item.animal_pen.water_animal_container.tip").
+            list.accept(Component.translatable("item.animal_pen.water_animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
         }
 
-        list.add(Component.translatable("item.animal_pen.water_animal_container.warning").
+        list.accept(Component.translatable("item.animal_pen.water_animal_container.warning").
             withStyle(ChatFormatting.GRAY));
     }
 
@@ -163,12 +159,12 @@ public class AnimalContainerItem extends Item
         {
             long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
 
-            if (maxCount > 0 && itemTag.getLong(TAG_AMOUNT) + 1 > maxCount)
+            if (maxCount > 0 && itemTag.getLongOr(TAG_AMOUNT, 0) + 1 > maxCount)
             {
                 return InteractionResult.FAIL;
             }
 
-            itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
+            itemTag.putLong(TAG_AMOUNT, itemTag.getLongOr(TAG_AMOUNT, 0) + 1);
         }
 
         itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
@@ -222,9 +218,9 @@ public class AnimalContainerItem extends Item
             return true;
         }
 
-        String entityType = itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID);
-
-        return ResourceLocation.bySeparator(entityType, ':').equals(entity.getType().arch$registryName());
+        return itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID).
+            map(entityType -> ResourceLocation.bySeparator(entityType, ':').equals(entity.getType().arch$registryName())).
+            orElse(false);
     }
 
 
@@ -270,7 +266,7 @@ public class AnimalContainerItem extends Item
         }
 
         CompoundTag tag = customData.copyTag();
-        return Optional.of(tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND));
+        return tag.getList(TAG_VARIANTS);
     }
 
 
@@ -291,7 +287,7 @@ public class AnimalContainerItem extends Item
         CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
         CompoundTag itemTag = customData == null ? new CompoundTag() : customData.copyTag();
 
-        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+        ListTag variantList = itemTag.getListOrEmpty(TAG_VARIANTS);
 
         if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
         {
@@ -342,8 +338,8 @@ public class AnimalContainerItem extends Item
         CompoundTag itemTag = mainData == null ? new CompoundTag() : mainData.copyTag();
         CompoundTag redundantTag = redundantData.copyTag();
 
-        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
-        ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+        ListTag variantList = itemTag.getListOrEmpty(TAG_VARIANTS);
+        ListTag redundantList = redundantTag.getListOrEmpty(TAG_VARIANTS);
 
         if (variantList.size() + redundantList.size() > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
         {
@@ -386,8 +382,8 @@ public class AnimalContainerItem extends Item
         CompoundTag itemTag = mainData == null ? new CompoundTag() : mainData.copyTag();
         CompoundTag redundantTag = redundantData.copyTag();
 
-        ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
-        ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
+        ListTag variantList = itemTag.getListOrEmpty(TAG_VARIANTS);
+        ListTag redundantList = redundantTag.getListOrEmpty(TAG_VARIANTS);
 
         for (Tag tag : redundantList)
         {

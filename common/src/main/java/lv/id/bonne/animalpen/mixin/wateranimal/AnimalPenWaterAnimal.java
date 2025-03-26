@@ -116,8 +116,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
     @Intrinsic
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
-        this.animalPen$foodCooldown = tag.getInt("food_cooldown");
-        this.animalPen$animalCount = tag.getLong("animal_count");
+        this.animalPen$foodCooldown = tag.getIntOr("food_cooldown", 0);
+        this.animalPen$animalCount = tag.getLongOr("animal_count", 0);
     }
 
 

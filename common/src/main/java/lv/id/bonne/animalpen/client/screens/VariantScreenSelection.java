@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -512,8 +511,6 @@ public class VariantScreenSelection extends Screen
      */
     private void renderCooldown(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
-
         graphics.blit(RenderType::guiTextured,
             COOLDOWN_TEXTURE,
             this.leftPos - 12,
@@ -648,12 +645,14 @@ public class VariantScreenSelection extends Screen
      */
     private void handleApplyButton(Button button)
     {
-        // Send message to server
-        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
-                this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton)));
-        // Update current client gui.
-        this.displayEntity.load(
-            this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton));
+        this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton).
+            ifPresent(tag ->
+            {
+                // Send message to server
+                NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, tag));
+                // Update current client gui.
+                this.displayEntity.load(tag);
+            });
 
         this.selectedButton = -1;
     }

@@ -26,8 +26,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.FrogVariant;
+import net.minecraft.world.entity.animal.frog.FrogVariant;
 import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.frog.FrogVariants;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -71,10 +72,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$frogLightCooldown > 0)
-        {
-            tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
-        }
+        tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
     }
 
 
@@ -83,10 +81,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("frog_light_cooldown"))
-        {
-            this.animalPen$frogLightCooldown = tag.getInt("frog_light_cooldown");
-        }
+        this.animalPen$frogLightCooldown = tag.getIntOr("frog_light_cooldown", 0);
     }
 
 
@@ -126,15 +121,15 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
 
             Item frogLightItem;
 
-            if (variant.is(FrogVariant.WARM))
+            if (variant.is(FrogVariants.WARM))
             {
                 frogLightItem = Items.PEARLESCENT_FROGLIGHT;
             }
-            else if (variant.is(FrogVariant.COLD))
+            else if (variant.is(FrogVariants.COLD))
             {
                 frogLightItem = Items.VERDANT_FROGLIGHT;
             }
-            else if (variant.is(FrogVariant.TEMPERATE))
+            else if (variant.is(FrogVariants.TEMPERATE))
             {
                 frogLightItem = Items.OCHRE_FROGLIGHT;
             }

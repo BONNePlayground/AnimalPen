@@ -20,7 +20,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -107,12 +106,7 @@ public abstract class AnimalPenWaterCreature extends Mob
     @Intrinsic
     public void animalPen$animalPenSaveTag(CompoundTag tag)
     {
-        if (this.animalPen$foodCooldown > 0)
-        {
-            tag.putInt("food_cooldown", this.animalPen$foodCooldown);
-        }
-
-        // this tag is necessary for animal pickups
+        tag.putInt("food_cooldown", this.animalPen$foodCooldown);
         tag.putLong("animal_count", this.animalPen$animalCount);
     }
 
@@ -120,15 +114,8 @@ public abstract class AnimalPenWaterCreature extends Mob
     @Intrinsic
     public void animalPen$animalPenLoadTag(CompoundTag tag)
     {
-        if (tag.contains("food_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$foodCooldown = tag.getInt("food_cooldown");
-        }
-
-        if (tag.contains("animal_count", Tag.TAG_LONG))
-        {
-            this.animalPen$animalCount = tag.getLong("animal_count");
-        }
+        this.animalPen$foodCooldown = tag.getIntOr("food_cooldown", 0);
+        this.animalPen$animalCount = tag.getLongOr("animal_count", 0);
     }
 
 

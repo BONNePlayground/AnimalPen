@@ -76,7 +76,7 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        this.animalPen$milkCooldown = tag.getInt("milk_cooldown");
+        this.animalPen$milkCooldown = tag.getIntOr("milk_cooldown", 0);
     }
 
 

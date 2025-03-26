@@ -17,7 +17,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -199,46 +198,6 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
 // ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------
-
-
-    /**
-     * This method drops all items from container when block is broken.
-     *
-     * @param state The BlockState.
-     * @param level Level where block is broken.
-     * @param pos Position of broken block.
-     * @param newState New block state.
-     * @param isMoving Boolean if block is moving.
-     */
-    @Override
-    public void onRemove(BlockState state,
-        @NotNull Level level,
-        @NotNull BlockPos pos,
-        BlockState newState,
-        boolean isMoving)
-    {
-        if (!state.is(newState.getBlock()))
-        {
-            BlockEntity tile = level.getBlockEntity(pos);
-
-            if (tile instanceof AquariumTileEntity entity)
-            {
-                for (int i = 0; i < entity.getInventory().getContainerSize(); i++)
-                {
-                    Containers.dropItemStack(level,
-                        pos.getX(),
-                        pos.getY(),
-                        pos.getZ(),
-                        entity.getInventory().getItem(i));
-                }
-
-                entity.getInventory().clearContent();
-                level.updateNeighbourForOutputSignal(pos, this);
-            }
-        }
-
-        super.onRemove(state, level, pos, newState, isMoving);
-    }
 
 
     /**
