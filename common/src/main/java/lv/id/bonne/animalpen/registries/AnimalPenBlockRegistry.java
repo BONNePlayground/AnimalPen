@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -46,6 +47,34 @@ public class AnimalPenBlockRegistry
             new BlockItem(block.get(), new Item.Properties().tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB)));
     }
 
+
+    /**
+     * This method registers animal pen with specified wood type
+     * @param woodType that is registered.
+     * @param woodBlock block which properties are copied.
+     */
+    public static void registerPen(WoodType woodType, @Nullable Block woodBlock)
+    {
+        String woodName = woodType.name().toLowerCase();
+
+        if (woodType.name().contains(":"))
+        {
+            // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
+            woodName = woodName.replaceAll(":", "_");
+        }
+
+        // Register the block
+        RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
+            () -> new AnimalPenBlock(
+                BlockBehaviour.Properties.copy(woodBlock != null ? woodBlock : Blocks.OAK_WOOD).
+                    strength(1.0f).
+                    sound(SoundType.WOOD).
+                    noOcclusion()));
+
+        ANIMAL_PENS.put(woodType, block);
+    }
+
+
     /**
      * The main block registry.
      */
@@ -63,26 +92,13 @@ public class AnimalPenBlockRegistry
     );
 
     static {
-        // Register a variant for each wood type
-        WoodType.values().forEach(woodType ->
-        {
-            String woodName = woodType.name().toLowerCase();
-
-            if (woodType.name().contains(":"))
-            {
-                // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
-                woodName = woodName.replaceAll(":", "_");
-            }
-
-            // Register the block
-            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
-                () -> new AnimalPenBlock(
-                    BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).
-                        strength(1.0f).
-                        sound(SoundType.WOOD).
-                        noOcclusion()));
-
-            ANIMAL_PENS.put(woodType, block);
-        });
+        registerPen(WoodType.OAK, Blocks.OAK_WOOD);
+        registerPen(WoodType.SPRUCE, Blocks.SPRUCE_WOOD);
+        registerPen(WoodType.BIRCH, Blocks.BIRCH_WOOD);
+        registerPen(WoodType.ACACIA, Blocks.ACACIA_WOOD);
+        registerPen(WoodType.JUNGLE, Blocks.JUNGLE_WOOD);
+        registerPen(WoodType.DARK_OAK, Blocks.DARK_OAK_WOOD);
+        registerPen(WoodType.CRIMSON, Blocks.CRIMSON_STEM);
+        registerPen(WoodType.WARPED, Blocks.WARPED_STEM);
     }
 }
