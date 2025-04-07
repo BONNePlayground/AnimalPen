@@ -105,5 +105,6 @@ public class AnimalPenBlockRegistry
         registerPen(WoodType.WARPED, Material.NETHER_WOOD, MaterialColor.WARPED_STEM, SoundType.STEM);
         registerPen(WoodType.MANGROVE, Material.WOOD, MaterialColor.COLOR_RED, SoundType.WOOD);
         registerPen(WoodType.BAMBOO, Material.WOOD, MaterialColor.COLOR_YELLOW, SoundType.BAMBOO_WOOD, FeatureFlags.UPDATE_1_20);
+        registerPen(WoodType.CHERRY, Material.WOOD, MaterialColor.TERRACOTTA_WHITE, SoundType.CHERRY_WOOD, FeatureFlags.UPDATE_1_20);
     }
 }
