@@ -19,6 +19,7 @@ import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.MapColor;
 
 
 public class AnimalPenBlockRegistry
@@ -51,6 +53,42 @@ public class AnimalPenBlockRegistry
                         ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
     }
 
+
+    /**
+     * This method registers animal pen with specified wood type
+     * @param woodType that is registered.
+     */
+    public static void registerPen(WoodType woodType, MapColor mapColor, FeatureFlag... flags)
+    {
+        String woodName;
+
+        if (woodType.name().contains(":"))
+        {
+            // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
+            woodName = woodType.name().toLowerCase().replaceAll(":", "_");
+        }
+        else
+        {
+            woodName = woodType.name().toLowerCase();
+        }
+
+        // Register the block
+        RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
+            () -> new AnimalPenBlock(
+                BlockBehaviour.Properties.of().
+                    mapColor(mapColor).
+                    strength(1.0f).
+                    sound(woodType.soundType()).
+                    noOcclusion().
+                    requiredFeatures(flags).
+                    setId(ResourceKey.create(Registries.BLOCK,
+                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
+            ));
+
+        ANIMAL_PENS.put(woodType, block);
+    }
+
+
     /**
      * The main block registry.
      */
@@ -71,33 +109,17 @@ public class AnimalPenBlockRegistry
     );
 
     static {
-        // Register a variant for each wood type
-        WoodType.values().forEach(woodType ->
-        {
-            String woodName;
-
-            if (woodType.name().contains(":"))
-            {
-                // replace ':' with '_'. Tinkers construct adds wood type as `<modid>:<name>`
-                woodName = woodType.name().toLowerCase().replaceAll(":", "_");
-            }
-            else
-            {
-                woodName = woodType.name().toLowerCase();
-            }
-
-            // Register the block
-            RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
-                () -> new AnimalPenBlock(
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
-                        strength(1.0f).
-                        sound(SoundType.WOOD).
-                        noOcclusion().
-                    setId(ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
-                ));
-
-            ANIMAL_PENS.put(woodType, block);
-        });
+        registerPen(WoodType.OAK, MapColor.WOOD);
+        registerPen(WoodType.SPRUCE,  MapColor.PODZOL);
+        registerPen(WoodType.BIRCH, MapColor.SAND);
+        registerPen(WoodType.ACACIA, MapColor.COLOR_GRAY);
+        registerPen(WoodType.JUNGLE, MapColor.DIRT);
+        registerPen(WoodType.DARK_OAK, MapColor.COLOR_BROWN);
+        registerPen(WoodType.CRIMSON, MapColor.CRIMSON_STEM);
+        registerPen(WoodType.WARPED, MapColor.WARPED_STEM);
+        registerPen(WoodType.MANGROVE, MapColor.COLOR_RED);
+        registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW);
+        registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY);
+        registerPen(WoodType.PALE_OAK, MapColor.STONE);
     }
 }
