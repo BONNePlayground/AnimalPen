@@ -18,7 +18,6 @@ import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlag;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -26,8 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 
 
 public class AnimalPenBlockRegistry
@@ -55,7 +53,7 @@ public class AnimalPenBlockRegistry
      * This method registers animal pen with specified wood type
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, Material material, MaterialColor materialColor, SoundType soundType, FeatureFlag... flags)
+    public static void registerPen(WoodType woodType, MapColor mapColor, SoundType soundType, FeatureFlag... flags)
     {
         String woodName = woodType.name().toLowerCase();
 
@@ -68,7 +66,8 @@ public class AnimalPenBlockRegistry
         // Register the block
         RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
             () -> new AnimalPenBlock(
-                BlockBehaviour.Properties.of(material, materialColor).
+                BlockBehaviour.Properties.of().
+                    mapColor(mapColor).
                     strength(1.0f).
                     sound(soundType).
                     noOcclusion().
@@ -95,16 +94,16 @@ public class AnimalPenBlockRegistry
     );
 
     static {
-        registerPen(WoodType.OAK, Material.WOOD, MaterialColor.WOOD, SoundType.WOOD);
-        registerPen(WoodType.SPRUCE, Material.WOOD, MaterialColor.PODZOL, SoundType.WOOD);
-        registerPen(WoodType.BIRCH, Material.WOOD, MaterialColor.SAND, SoundType.WOOD);
-        registerPen(WoodType.ACACIA, Material.WOOD, MaterialColor.COLOR_GRAY, SoundType.WOOD);
-        registerPen(WoodType.JUNGLE, Material.WOOD, MaterialColor.DIRT, SoundType.WOOD);
-        registerPen(WoodType.DARK_OAK, Material.WOOD, MaterialColor.COLOR_BROWN, SoundType.WOOD);
-        registerPen(WoodType.CRIMSON, Material.NETHER_WOOD, MaterialColor.CRIMSON_STEM, SoundType.STEM);
-        registerPen(WoodType.WARPED, Material.NETHER_WOOD, MaterialColor.WARPED_STEM, SoundType.STEM);
-        registerPen(WoodType.MANGROVE, Material.WOOD, MaterialColor.COLOR_RED, SoundType.WOOD);
-        registerPen(WoodType.BAMBOO, Material.WOOD, MaterialColor.COLOR_YELLOW, SoundType.BAMBOO_WOOD, FeatureFlags.UPDATE_1_20);
-        registerPen(WoodType.CHERRY, Material.WOOD, MaterialColor.TERRACOTTA_WHITE, SoundType.CHERRY_WOOD, FeatureFlags.UPDATE_1_20);
+        registerPen(WoodType.OAK, MapColor.WOOD, SoundType.WOOD);
+        registerPen(WoodType.SPRUCE,  MapColor.PODZOL, SoundType.WOOD);
+        registerPen(WoodType.BIRCH, MapColor.SAND, SoundType.WOOD);
+        registerPen(WoodType.ACACIA, MapColor.COLOR_GRAY, SoundType.WOOD);
+        registerPen(WoodType.JUNGLE, MapColor.DIRT, SoundType.WOOD);
+        registerPen(WoodType.DARK_OAK, MapColor.COLOR_BROWN, SoundType.WOOD);
+        registerPen(WoodType.CRIMSON, MapColor.CRIMSON_STEM, SoundType.STEM);
+        registerPen(WoodType.WARPED, MapColor.WARPED_STEM, SoundType.STEM);
+        registerPen(WoodType.MANGROVE, MapColor.COLOR_RED, SoundType.WOOD);
+        registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW, SoundType.BAMBOO_WOOD);
+        registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY, SoundType.CHERRY_WOOD);
     }
 }
