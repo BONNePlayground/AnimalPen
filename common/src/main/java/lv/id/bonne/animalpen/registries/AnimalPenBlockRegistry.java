@@ -20,7 +20,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlag;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -121,6 +120,6 @@ public class AnimalPenBlockRegistry
         registerPen(WoodType.MANGROVE, MapColor.COLOR_RED);
         registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW);
         registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY);
-        registerPen(WoodType.PALE_OAK, MapColor.STONE, FeatureFlags.WINTER_DROP);
+        registerPen(WoodType.PALE_OAK, MapColor.STONE);
     }
 }
