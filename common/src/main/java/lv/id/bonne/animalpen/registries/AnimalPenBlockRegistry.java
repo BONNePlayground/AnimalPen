@@ -53,7 +53,7 @@ public class AnimalPenBlockRegistry
      * This method registers animal pen with specified wood type
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, MapColor mapColor, SoundType soundType, FeatureFlag... flags)
+    public static void registerPen(WoodType woodType, MapColor mapColor, FeatureFlag... flags)
     {
         String woodName = woodType.name().toLowerCase();
 
@@ -69,7 +69,7 @@ public class AnimalPenBlockRegistry
                 BlockBehaviour.Properties.of().
                     mapColor(mapColor).
                     strength(1.0f).
-                    sound(soundType).
+                    sound(woodType.soundType()).
                     noOcclusion().
                     requiredFeatures(flags)));
 
@@ -94,16 +94,16 @@ public class AnimalPenBlockRegistry
     );
 
     static {
-        registerPen(WoodType.OAK, MapColor.WOOD, SoundType.WOOD);
-        registerPen(WoodType.SPRUCE,  MapColor.PODZOL, SoundType.WOOD);
-        registerPen(WoodType.BIRCH, MapColor.SAND, SoundType.WOOD);
-        registerPen(WoodType.ACACIA, MapColor.COLOR_GRAY, SoundType.WOOD);
-        registerPen(WoodType.JUNGLE, MapColor.DIRT, SoundType.WOOD);
-        registerPen(WoodType.DARK_OAK, MapColor.COLOR_BROWN, SoundType.WOOD);
-        registerPen(WoodType.CRIMSON, MapColor.CRIMSON_STEM, SoundType.STEM);
-        registerPen(WoodType.WARPED, MapColor.WARPED_STEM, SoundType.STEM);
-        registerPen(WoodType.MANGROVE, MapColor.COLOR_RED, SoundType.WOOD);
-        registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW, SoundType.BAMBOO_WOOD);
-        registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY, SoundType.CHERRY_WOOD);
+        registerPen(WoodType.OAK, MapColor.WOOD);
+        registerPen(WoodType.SPRUCE,  MapColor.PODZOL);
+        registerPen(WoodType.BIRCH, MapColor.SAND);
+        registerPen(WoodType.ACACIA, MapColor.COLOR_GRAY);
+        registerPen(WoodType.JUNGLE, MapColor.DIRT);
+        registerPen(WoodType.DARK_OAK, MapColor.COLOR_BROWN);
+        registerPen(WoodType.CRIMSON, MapColor.CRIMSON_STEM);
+        registerPen(WoodType.WARPED, MapColor.WARPED_STEM);
+        registerPen(WoodType.MANGROVE, MapColor.COLOR_RED);
+        registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW);
+        registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY);
     }
 }
