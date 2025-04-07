@@ -17,6 +17,8 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlag;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -53,7 +55,7 @@ public class AnimalPenBlockRegistry
      * This method registers animal pen with specified wood type
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, Material material, MaterialColor materialColor, SoundType soundType)
+    public static void registerPen(WoodType woodType, Material material, MaterialColor materialColor, SoundType soundType, FeatureFlag... flags)
     {
         String woodName = woodType.name().toLowerCase();
 
@@ -69,7 +71,8 @@ public class AnimalPenBlockRegistry
                 BlockBehaviour.Properties.of(material, materialColor).
                     strength(1.0f).
                     sound(soundType).
-                    noOcclusion()));
+                    noOcclusion().
+                    requiredFeatures(flags)));
 
         ANIMAL_PENS.put(woodType, block);
     }
@@ -101,5 +104,6 @@ public class AnimalPenBlockRegistry
         registerPen(WoodType.CRIMSON, Material.NETHER_WOOD, MaterialColor.CRIMSON_STEM, SoundType.STEM);
         registerPen(WoodType.WARPED, Material.NETHER_WOOD, MaterialColor.WARPED_STEM, SoundType.STEM);
         registerPen(WoodType.MANGROVE, Material.WOOD, MaterialColor.COLOR_RED, SoundType.WOOD);
+        registerPen(WoodType.BAMBOO, Material.WOOD, MaterialColor.COLOR_YELLOW, SoundType.BAMBOO_WOOD, FeatureFlags.UPDATE_1_20);
     }
 }
