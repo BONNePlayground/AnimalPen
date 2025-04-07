@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "animal_pen",
+  "category": "building",
   "group": "animal_pens",
   "pattern": [
     "   ",
