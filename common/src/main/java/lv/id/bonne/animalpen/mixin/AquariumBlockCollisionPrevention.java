@@ -26,6 +26,12 @@ public abstract class AquariumBlockCollisionPrevention
         BlockPos pos,
         CallbackInfoReturnable<Boolean> cir)
     {
+        if (world == null || pos == null)
+        {
+            // Some plugins calls `canSurvive` with `pos` and `level` being null.
+            return;
+        }
+
         BlockPos belowPos = pos.below();
         BlockState belowState = world.getBlockState(belowPos);
 
