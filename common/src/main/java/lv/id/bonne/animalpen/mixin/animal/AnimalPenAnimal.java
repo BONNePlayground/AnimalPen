@@ -280,6 +280,23 @@ public abstract class AnimalPenAnimal extends Mob
     }
 
 
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        // Default value if animals are here.
+        int value = 1;
+
+        if (this.animalPen$foodCooldown > 0 || this.animalPen$getFood().length == 0)
+        {
+            // if cooldown or cooldown is not applicable return existing value
+            return value;
+        }
+
+        // second bit value
+        return value | 2;
+    }
+
+
     @Unique
     protected int animalPen$foodCooldown = 0;
 

@@ -449,6 +449,25 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     }
 
 
+    /**
+     * This method returns redstone signal based on current signal that should be sent out by animal.
+     * @return the redstone signal value based on bit value:
+     *    - 1 - is animal
+     *    - 2 - can feed
+     *    - 4 - can interact 1
+     *    - 8 - can interact 2
+     */
+    public int getRedStoneSignal()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return 0;
+        }
+
+        return ((AnimalPenInterface) this.storedAnimal).getRedStoneSignal();
+    }
+
+
     private void triggerUpdate()
     {
         this.setChanged();

@@ -182,6 +182,21 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     }
 
 
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$eggCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
+    }
+
+
     @Unique
     private int animalPen$eggCooldown;
 }

@@ -83,4 +83,16 @@ public interface AnimalPenInterface
      * @return Array of food items.
      */
     ItemStack[] getFood();
+
+
+    /**
+     * This method returns the redstone signal that indicates available actions.
+     * @return redstone signal based on bit value:
+     *    - 1 - animal count > 0
+     *    - 2 - can feed animal
+     *    - 4 - can perform first interaction
+     *    - 8 - can perform second interaction
+     *    and other values combined using `|`
+     */
+    int getRedStoneSignal();
 }

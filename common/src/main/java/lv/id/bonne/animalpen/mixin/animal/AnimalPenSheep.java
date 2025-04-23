@@ -247,6 +247,21 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     }
 
 
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$woolCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
+    }
+
+
     @Unique
     private int animalPen$woolCooldown;
 }

@@ -162,6 +162,32 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
 
 // ---------------------------------------------------------------------
+// Section: Redstone related
+// ---------------------------------------------------------------------
+
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state)
+    {
+        return true;
+    }
+
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos)
+    {
+        BlockEntity tile = world.getBlockEntity(pos);
+
+        if (tile instanceof AnimalPenTileEntity animalPen)
+        {
+            return animalPen.getRedStoneSignal();
+        }
+
+        return 0;
+    }
+
+
+// ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------
 

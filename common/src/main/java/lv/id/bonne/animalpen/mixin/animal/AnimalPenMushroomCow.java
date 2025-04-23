@@ -291,6 +291,21 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     }
 
 
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$supCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 8 as it is second interaction
+            return super.animalPen$getRedStoneSignal() | 8;
+        }
+    }
+
+
     @Unique
     private int animalPen$supCooldown;
 }
