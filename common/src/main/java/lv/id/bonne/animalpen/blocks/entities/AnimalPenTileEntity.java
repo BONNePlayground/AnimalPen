@@ -622,18 +622,18 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     /**
      * This method returns the description lines that will be displayed above tile entity.
-     *
+     * @param shortText Indicates if text should be short or long version
      * @return List of pairs that contains display icon and text next to it
      */
     @Override
-    public List<Pair<ItemStack, Component>> getCooldownLines()
+    public List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText)
     {
         if (this.getStoredAnimal() == null)
         {
             return Collections.emptyList();
         }
 
-        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter());
+        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter(), shortText);
     }
 
 

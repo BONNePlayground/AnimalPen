@@ -260,14 +260,15 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.BUCKET,
-            this.animalPen$animalCount) == 0)
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -277,17 +278,25 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
 
         if (this.animalPen$eggCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.egg_ready").
+            component.append(new TranslatableComponent(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001")).
                 withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.egg_cooldown",
+            component.append(new TranslatableComponent(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.egg_cooldown",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
-        lines.add(Pair.of(Items.TURTLE_EGG.getDefaultInstance(), component));
+        lines.add(Pair.of(
+            new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.TURTLE_EGG.getDefaultInstance()},
+            component));
 
         return lines;
     }

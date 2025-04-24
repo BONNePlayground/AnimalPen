@@ -178,14 +178,15 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.HONEY_BLOCK,
-            this.animalPen$animalCount) == 0)
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.HONEY_BLOCK,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -194,40 +195,52 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         if (this.animalPen$pollenCooldown != 0)
         {
             MutableComponent component = new TranslatableComponent(
-                "display.animal_pen.pollen_cooldown",
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.pollen_cooldown",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$pollenCooldown / 20).format(AnimalPen.DATE_FORMATTER));
 
-            lines.add(Pair.of(Items.HONEY_BLOCK.getDefaultInstance(), component));
+            lines.add(Pair.of(
+                new ItemStack[]{Items.HONEY_BLOCK.getDefaultInstance(), Items.HONEY_BLOCK.getDefaultInstance()},
+                component));
         }
 
-        if (this.animalPen$pollenCount >= 0)
+        if (this.animalPen$pollenCount == 5)
         {
-            MutableComponent component;
+            MutableComponent component = new TranslatableComponent("display.animal_pen.pollen_level_max",
+                new TextComponent("\uE000"),
+                this.animalPen$pollenCount);
 
-            if (this.animalPen$pollenCount == 5)
-            {
-                component = new TranslatableComponent("display.animal_pen.pollen_level_max",
-                    this.animalPen$pollenCount);
-            }
-            else
-            {
-                component = new TranslatableComponent("display.animal_pen.pollen_level",
-                    this.animalPen$pollenCount);
-            }
+            lines.add(Pair.of(new ItemStack[]{Items.HONEY_BLOCK.getDefaultInstance()}, component));
 
-            ItemStack itemStack;
+            component = new TranslatableComponent(shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001"));
+
+            ItemStack toolStack;
+            ItemStack resultStack;
 
             if ((tick / 100) % 2 == 0)
             {
-                itemStack = Items.SHEARS.getDefaultInstance();
+                toolStack = Items.SHEARS.getDefaultInstance();
+                resultStack = Items.HONEYCOMB.getDefaultInstance();
             }
             else
             {
-                itemStack = Items.GLASS_BOTTLE.getDefaultInstance();
+                toolStack = Items.GLASS_BOTTLE.getDefaultInstance();
+                resultStack = Items.HONEY_BOTTLE.getDefaultInstance();
             }
 
-            lines.add(Pair.of(itemStack, component));
+            lines.add(Pair.of(new ItemStack[]{toolStack, resultStack}, component));
+        }
+        else
+        {
+            MutableComponent component = new TranslatableComponent("display.animal_pen.pollen_level",
+                new TextComponent("\uE000"),
+                this.animalPen$pollenCount);
+
+            lines.add(Pair.of(new ItemStack[]{Items.HONEY_BLOCK.getDefaultInstance()}, component));
         }
 
         return lines;

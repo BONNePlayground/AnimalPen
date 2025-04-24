@@ -218,31 +218,38 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
 
     @Intrinsic
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = new LinkedList<>();
+        List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.APPLE,
-            this.animalPen$animalCount) == 0)
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.APPLE,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
+        MutableComponent component;
 
         if (this.animalPen$foodCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.food_ready").
-                withStyle(ChatFormatting.GREEN));
+            component = new TranslatableComponent(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.food_ready",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001")).
+                withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.food_cooldown",
+            component = new TranslatableComponent(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.food_cooldown",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001"),
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
+                    plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
         ItemStack[] food = this.animalPen$getFood();
@@ -265,7 +272,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
             foodItem = food[index];
         }
 
-        lines.add(Pair.of(foodItem, component));
+        lines.add(Pair.of(new ItemStack[]{foodItem, foodItem}, component));
 
         return lines;
     }

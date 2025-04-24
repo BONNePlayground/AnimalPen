@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -526,7 +529,7 @@ public class VariantScreenSelection extends Screen
                 this.cooldownWidth,
                 this.imageHeight + 1);
 
-            List<Pair<ItemStack, Component>> textList = this.blockEntityInterface.getCooldownLines();
+            List<Pair<ItemStack[], Component>> textList = this.blockEntityInterface.getCooldownLines(false);
 
             if (!textList.isEmpty())
             {
@@ -535,30 +538,105 @@ public class VariantScreenSelection extends Screen
 
                 for (int i = 0; i < textList.size(); i++)
                 {
-                    Pair<ItemStack, Component> cooldown = textList.get(i);
-
-                    int y = top + i * 16;
-
-                    ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
-                    itemRenderer.renderGuiItem(cooldown.getLeft(), leftOffset, y);
-
-                    this.font.draw(poseStack,
-                        cooldown.getRight(),
-                        leftOffset + 18,
-                        y + this.font.lineHeight / 2f,
-                        0xFFFFFF);
-
-                    if (mouseX >= leftOffset &&
-                        mouseX <= leftOffset + 16 &&
-                        mouseY >= y &&
-                        mouseY <= y + 16)
-                    {
-                        this.renderTooltip(poseStack,
-                            cooldown.getLeft(),
-                            mouseX,
-                            mouseY);
-                    }
+                    this.renderTextLine(poseStack, textList.get(i), leftOffset, top + i * 16, mouseX, mouseY);
                 }
+            }
+        }
+    }
+
+
+    /**
+     * This method renders text component and inserts icons in their correct spots.
+     * @param poseStack The pose stack.
+     * @param componentPair The pair that contains icons and text
+     * @param leftOffset Offset from left side.
+     * @param y The offset from top side.
+     * @param mouseX The mouse X location.
+     * @param mouseY The mouse Y location.
+     */
+    private void renderTextLine(@NotNull PoseStack poseStack,
+        Pair<ItemStack[], Component> componentPair,
+        int leftOffset,
+        int y,
+        int mouseX,
+        int mouseY)
+    {
+        Component text = componentPair.getRight();
+        ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
+        ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
+
+        // Track positions of rendered items for tooltip detection
+        List<Pair<ItemStack, Rect2i>> itemPositions = new ArrayList<>();
+
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
+        int whiteSpace = this.font.width(" ");
+        boolean isFirst = true;
+
+        // Process each text part
+        for (Component part : text.toFlatList(Style.EMPTY))
+        {
+            String content = part.getString();
+
+            if (content.equals("\uE000"))
+            {
+                if (first == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    leftOffset -= whiteSpace;
+                }
+
+                // Render the first item
+                this.itemRenderer.renderGuiItem(first, leftOffset, y);
+                itemPositions.add(Pair.of(first, new Rect2i(leftOffset, y, 16, 16)));
+                leftOffset += 16 - whiteSpace;
+            }
+            else if (content.equals("\uE001"))
+            {
+                if (second == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    leftOffset -= whiteSpace;
+                }
+
+                // Render the second item (if available)
+                this.itemRenderer.renderGuiItem(second, leftOffset, y);
+                itemPositions.add(Pair.of(second, new Rect2i(leftOffset, y, 16, 16)));
+                leftOffset += 16 - whiteSpace;
+            }
+            else
+            {
+                // Render regular text
+                this.font.draw(poseStack, part, leftOffset, y + this.font.lineHeight / 2f + 2, 0xFFFFFF);
+                leftOffset += this.font.width(part);
+            }
+
+            isFirst = false;
+        }
+
+        // Handle tooltips for all item positions
+        for (Pair<ItemStack, Rect2i> itemPos : itemPositions)
+        {
+            Rect2i rect = itemPos.getRight();
+
+            if (mouseX >= rect.getX() &&
+                mouseX <= rect.getX() + rect.getWidth() &&
+                mouseY >= rect.getY() &&
+                mouseY <= rect.getY() + rect.getHeight())
+            {
+                this.renderTooltip(poseStack, itemPos.getLeft(), mouseX, mouseY);
+                break;
             }
         }
     }

@@ -214,14 +214,15 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.SHEARS,
-            this.animalPen$animalCount) == 0)
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.SHEARS,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -231,17 +232,27 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
         if (this.animalPen$woolCooldown == 0)
         {
-            component.append(new TranslatableComponent("display.animal_pen.wool_ready").
+            component.append(new TranslatableComponent(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001")).
                 withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            component.append(new TranslatableComponent("display.animal_pen.wool_cooldown",
+            component.append(new TranslatableComponent(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.wool_cooldown",
+                new TextComponent("\uE000"),
+                new TextComponent("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
-        lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));
+        ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
+
+        lines.add(Pair.of(
+            new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
+            component));
 
         return lines;
     }

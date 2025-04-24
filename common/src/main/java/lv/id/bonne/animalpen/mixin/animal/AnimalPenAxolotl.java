@@ -18,6 +18,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -152,21 +153,25 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.APPLE,
-            this.animalPen$animalCount) == 0)
+        if (this.animalPen$getFood() == null ||
+            this.animalPen$getFood().length == 0 ||
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.APPLE,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
         }
 
         MutableComponent component =
-            new TranslatableComponent("display.animal_pen.stored_food", this.animalPen$storedFood);
+            new TranslatableComponent("display.animal_pen.stored_food",
+                new TextComponent("\uE000"),
+                this.animalPen$storedFood);
 
         ItemStack[] food = this.animalPen$getFood();
         ItemStack foodItem;
@@ -188,7 +193,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             foodItem = food[index];
         }
 
-        lines.add(Pair.of(foodItem, component));
+        lines.add(Pair.of(new ItemStack[]{foodItem}, component));
 
         return lines;
     }

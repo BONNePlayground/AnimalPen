@@ -26,6 +26,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
@@ -210,7 +211,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedOverlay)
     {
         // Get your list of components
-        List<Pair<ItemStack, Component>> textList = tileEntity.getCooldownLines();
+        List<Pair<ItemStack[], Component>> textList = tileEntity.getCooldownLines(true);
 
         if (textList.isEmpty())
         {
@@ -235,15 +236,15 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         double totalHeight = 1.75 + 0.25 * (textList.size() - 1);
         double maxWidth = 0;
 
-        for (Pair<ItemStack, Component> pair : textList)
+        for (Pair<ItemStack[], Component> pair : textList)
         {
-            maxWidth = Math.max(0, this.font.width(pair.getRight()));
+            maxWidth = Math.max(maxWidth, this.calculateMaxWidth(pair));
         }
-
-        maxWidth += 4;
 
         poseStack.pushPose();
         poseStack.translate(0, totalHeight, 0);
+
+        maxWidth = -maxWidth / 2;
 
         for (int i = 0; i < textList.size(); i++)
         {
@@ -251,33 +252,172 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
             // Move to the center of the block and above it
             poseStack.translate(0.0, -0.125 * i, 0.00);
+            poseStack.scale(-0.0125F, -0.0125F, 0.0125F);
 
-            // Render text
-            poseStack.pushPose();
-            poseStack.scale(-0.0125f, -0.0125f, -0.0125f);
-            poseStack.translate(-maxWidth / 2, -6, 0);
-            this.font.draw(poseStack, textList.get(i).getRight(), 8, 0, 0xFFFFFF);
-            poseStack.popPose();
+            // apply offset
+            poseStack.translate(maxWidth, 0, 0);
+            this.renderTextLine(textList.get(i), poseStack, buffer, combinedLight, combinedOverlay);
 
-            // Render Item Stack
-            poseStack.pushPose();
-            poseStack.scale(0.25f, 0.25f, 0.25f);
-            poseStack.translate(maxWidth / 2 * 0.05, 0, 0);
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-            this.minecraft.getItemRenderer().renderStatic(
-                textList.get(i).getLeft(),
-                ItemTransforms.TransformType.GROUND,
-                combinedLight,
-                combinedOverlay,
-                poseStack,
-                buffer,
-                0
-            );
-            poseStack.popPose();
             poseStack.popPose();
         }
 
         poseStack.popPose();
+    }
+
+
+    private double calculateMaxWidth(Pair<ItemStack[], Component> pair)
+    {
+        Component text = pair.getRight();
+        ItemStack first = pair.getLeft().length > 0 ? pair.getLeft()[0] : null;
+        ItemStack second = pair.getLeft().length > 1 ? pair.getLeft()[1] : null;
+
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
+        int whiteSpace = this.font.width(" ");
+        boolean isFirst = true;
+
+        double width = 0;
+
+        // Process each text part
+        for (Component part : text.toFlatList(Style.EMPTY))
+        {
+            String content = part.getString();
+
+            if (content.equals("\uE000"))
+            {
+                if (first == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    width -= whiteSpace;
+                }
+
+                // Render the first item
+                width += 16 - whiteSpace;
+            }
+            else if (content.equals("\uE001"))
+            {
+                if (second == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    width -= whiteSpace;
+                }
+
+                // Render the second item (if available)
+                width += 16 - whiteSpace;
+            }
+            else
+            {
+                // Render regular text
+                width += this.font.width(part);
+            }
+
+            isFirst = false;
+        }
+
+        return width;
+    }
+
+
+    private void renderTextLine(Pair<ItemStack[], Component> componentPair,
+        @NotNull PoseStack poseStack,
+        @NotNull MultiBufferSource buffer,
+        int combinedLight,
+        int combinedOverlay)
+    {
+        Component text = componentPair.getRight();
+        ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
+        ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
+
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
+        int whiteSpace = this.font.width(" ");
+        boolean isFirst = true;
+
+        int leftOffset = 0;
+
+        // Process each text part
+        for (Component part : text.toFlatList(Style.EMPTY))
+        {
+            // apply offset
+            poseStack.translate(leftOffset, 0 , 0);
+            String content = part.getString();
+
+            if (content.equals("\uE000"))
+            {
+                if (first == null)
+                {
+                    leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                // Render the first item
+                poseStack.pushPose();
+                // image is 20x smaller and flipped than text
+                poseStack.scale(-20f, -20f, 20f);
+                poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                this.minecraft.getItemRenderer().renderStatic(
+                    first,
+                    ItemTransforms.TransformType.GROUND,
+                    combinedLight,
+                    combinedOverlay,
+                    poseStack,
+                    buffer,
+                    0
+                );
+                poseStack.popPose();
+
+                leftOffset = 8 - whiteSpace;
+            }
+            else if (content.equals("\uE001"))
+            {
+                if (second == null)
+                {
+                    leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                // Render the second item
+                poseStack.pushPose();
+                // image is 20x smaller and flipped than text
+                poseStack.scale(-20f, -20f, 20f);
+                poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                this.minecraft.getItemRenderer().renderStatic(
+                    second,
+                    ItemTransforms.TransformType.GROUND,
+                    combinedLight,
+                    combinedOverlay,
+                    poseStack,
+                    buffer,
+                    0
+                );
+                poseStack.popPose();
+
+                leftOffset = 8 - whiteSpace;
+            }
+            else
+            {
+                // Render regular text
+                poseStack.pushPose();
+                this.font.draw(poseStack, part, 0, -6, 0xFFFFFF);
+                poseStack.popPose();
+
+                leftOffset = this.font.width(part);
+            }
+
+            isFirst = false;
+        }
     }
 
 

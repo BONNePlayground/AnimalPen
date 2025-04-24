@@ -58,9 +58,10 @@ public interface AnimalPenInterface
     /**
      * This method returns the description lines that will be displayed above tile entity.
      * @param tick tile entity tick counter.
+     * @param shortLine indicates if text should be short or long.
      * @return List of pairs that contains display icon and text next to it
      */
-    List<Pair<ItemStack, Component>> animalPenGetLines(int tick);
+    List<Pair<ItemStack[], Component>> animalPenGetLines(int tick, boolean shortLine);
 
 
     /**
