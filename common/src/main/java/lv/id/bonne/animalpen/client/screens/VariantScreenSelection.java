@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -199,6 +197,25 @@ public class VariantScreenSelection extends Screen
     }
 
 
+    /**
+     * This returns position of block that relates to current screen.
+     * @return block position.
+     */
+    public BlockPos getPosition()
+    {
+        return this.position;
+    }
+
+
+    /**
+     * This inits that update will be triggered after 5 ticks.
+     */
+    public void update()
+    {
+        this.needsUpdate = 5;
+    }
+
+
     @Override
     public void tick()
     {
@@ -207,6 +224,19 @@ public class VariantScreenSelection extends Screen
         if (this.displayEntity != null)
         {
             this.displayEntity.tickCount++;
+        }
+
+        if (!(this.minecraft.level.getBlockEntity(this.position) instanceof AnimalPenBlockInterface<?>) ||
+            this.blockEntityInterface.getStoredAnimal() == null)
+        {
+            // close screen
+            this.minecraft.setScreen(null);
+            return;
+        }
+
+        if (this.needsUpdate > 0 && --this.needsUpdate == 0)
+        {
+            this.init();
         }
     }
 
@@ -722,9 +752,6 @@ public class VariantScreenSelection extends Screen
         {
             return;
         }
-
-        // Remove entity from list.
-        this.blockEntityInterface.getEntityVariants().remove(this.selectedButton);
 
         NetworkManager.sendToServer(RemoveDisplayAnimalData.ID,
             RemoveDisplayAnimalData.encode(this.position, this.selectedButton));
@@ -1244,6 +1271,11 @@ public class VariantScreenSelection extends Screen
      * This boolean indicates if player is holding slider button
      */
     private boolean isSelectingSizeBar;
+
+    /**
+     * This boolean indicates if player screen requires update.
+     */
+    private int needsUpdate;
 
     /**
      * The title of menu

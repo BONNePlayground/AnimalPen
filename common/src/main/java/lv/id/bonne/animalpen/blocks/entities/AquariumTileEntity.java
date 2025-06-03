@@ -15,11 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
 import lv.id.bonne.animalpen.mixin.accessors.WaterAnimalInvoker;
+import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -229,6 +231,19 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 return true;
@@ -322,6 +337,19 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     AnimalContainerItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
                     itemInHand.setTag(new CompoundTag());
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -588,6 +616,18 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         // Apply data
         ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
         this.triggerUpdate();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 
@@ -605,6 +645,18 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         this.getEntityVariants().remove(index);
         this.inventory.setChanged();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 

@@ -12,10 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.mixin.accessors.AnimalInvoker;
+import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -26,6 +28,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -225,6 +228,19 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 return true;
@@ -318,6 +334,19 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 {
                     AnimalCageItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
                     itemInHand.setTag(new CompoundTag());
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -579,6 +608,19 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         // Apply data
         ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
         this.triggerUpdate();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            // Trigger update.
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 
@@ -597,6 +639,19 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         this.getEntityVariants().remove(index);
         this.inventory.setChanged();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            // Trigger screen Update
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 

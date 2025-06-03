@@ -16,10 +16,7 @@ import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
-import lv.id.bonne.animalpen.network.packets.AnimalFoodRegistryData;
-import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
-import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
-import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
+import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
@@ -79,6 +76,11 @@ public final class AnimalPen
             NetworkManager.Side.S2C,
             AnimalFoodRegistryData.ID,
             AnimalFoodRegistryData::handle);
+
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.S2C,
+            UpdateVariantScreenData.ID,
+            UpdateVariantScreenData::handle);
 
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
