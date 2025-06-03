@@ -247,6 +247,65 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        if (itemStack.is(Items.BOWL))
+        {
+            if (this.animalPen$supCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
+
+            itemStack.shrink(1);
+
+            ItemStack bowlStack;
+            boolean suspicious = this.effect != null;
+
+            if (suspicious)
+            {
+                bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
+                SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
+
+                this.effect = null;
+                this.effectDuration = 0;
+            }
+            else
+            {
+                bowlStack = new ItemStack(Items.MUSHROOM_STEW);
+            }
+
+            SoundEvent soundEvent;
+
+            if (suspicious)
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY;
+            }
+            else
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK;
+            }
+
+            level.playSound(null,
+                position,
+                soundEvent,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BOWL,
+                this.animalPen$animalCount);
+
+            return bowlStack;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
     public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);

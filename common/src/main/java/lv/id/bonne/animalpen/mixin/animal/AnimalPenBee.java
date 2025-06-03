@@ -18,6 +18,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -173,6 +174,63 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         }
 
         return false;
+    }
+
+
+    @Intrinsic
+    @Override
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        if (this.animalPen$pollenCount < 5)
+        {
+            return ItemStack.EMPTY;
+        }
+
+        if (itemStack.is(Items.SHEARS))
+        {
+            if (itemStack.hurt(1, level.getRandom(), null))
+            {
+                itemStack.setCount(0);
+            }
+
+            Block.popResource(level, position.above(), new ItemStack(Items.HONEYCOMB, 3));
+
+            level.playSound(null,
+                position,
+                SoundEvents.BEEHIVE_SHEAR,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$pollenCount = 0;
+            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.HONEY_BLOCK,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+        else if (itemStack.is(Items.GLASS_BOTTLE))
+        {
+            itemStack.shrink(1);
+
+            level.playSound(null,
+                position,
+                SoundEvents.BOTTLE_FILL,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$pollenCount = 0;
+            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.HONEY_BLOCK,
+                this.animalPen$animalCount);
+
+            return new ItemStack(Items.HONEY_BOTTLE);
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
     }
 
 

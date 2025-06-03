@@ -13,6 +13,7 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -53,6 +54,16 @@ public interface AnimalPenInterface
      * @return {@code true} if interaction was successful, {@code false} otherwise
      */
     boolean animalPenInteract(Player player, InteractionHand hand, BlockPos position);
+
+
+    /**
+     * This method processes dispenser interaction with animals in pen.
+     * @param level the server level
+     * @param itemStack the item stack
+     * @param position the position of pen
+     * @return ItemStack that should be added in dispenser.
+     */
+    ItemStack animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position);
 
 
     /**

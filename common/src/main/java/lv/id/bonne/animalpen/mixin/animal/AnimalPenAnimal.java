@@ -219,6 +219,13 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Intrinsic
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        return ItemStack.EMPTY;
+    }
+
+
+    @Intrinsic
     public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
         List<Pair<ItemStack[], Component>> lines = new LinkedList<>();

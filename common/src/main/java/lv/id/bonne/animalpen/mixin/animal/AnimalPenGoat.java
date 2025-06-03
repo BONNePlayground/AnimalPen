@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -128,6 +129,38 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
         }
 
         return false;
+    }
+
+
+    @Intrinsic
+    @Override
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        if (itemStack.is(Items.BUCKET))
+        {
+            if (this.animalPen$milkCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
+
+            itemStack.shrink(1);
+
+            level.playSound(null,
+                position,
+                SoundEvents.COW_MILK,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount);
+
+            return Items.MILK_BUCKET.getDefaultInstance();
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
     }
 
 

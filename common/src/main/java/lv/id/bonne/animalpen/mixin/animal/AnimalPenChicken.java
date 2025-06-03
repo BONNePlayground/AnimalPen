@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -144,6 +145,63 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         }
 
         return false;
+    }
+
+
+    @Intrinsic
+    @Override
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        if (this.animalPen$eggCooldown > 0)
+        {
+            return ItemStack.EMPTY;
+        }
+
+        if (itemStack.is(Items.BUCKET))
+        {
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
+
+            while (eggCount > 0)
+            {
+                ItemStack eggStack = new ItemStack(Items.EGG);
+
+                if (eggCount > 16)
+                {
+                    eggStack.setCount(16);
+                    eggCount -= 16;
+                }
+                else
+                {
+                    eggStack.setCount(eggCount);
+                    eggCount = 0;
+                }
+
+                Block.popResource(level, position.above(), eggStack);
+            }
+
+            level.playSound(null,
+                position,
+                SoundEvents.CHICKEN_EGG,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
     }
 
 

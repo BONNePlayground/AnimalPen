@@ -9,6 +9,7 @@
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "accessors.AnimalInvoker",
+    "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.WaterAnimalInvoker",
     "animal.AnimalPenAnimal",

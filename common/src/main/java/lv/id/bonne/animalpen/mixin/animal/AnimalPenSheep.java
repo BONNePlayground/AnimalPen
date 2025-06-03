@@ -19,6 +19,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -209,6 +210,77 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         }
 
         return false;
+    }
+
+
+    @Intrinsic
+    @Override
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
+    {
+        if (itemStack.is(Items.SHEARS))
+        {
+            if (this.animalPen$woolCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
+
+            this.setSheared(true);
+
+            if (itemStack.hurt(1, level.getRandom(), null))
+            {
+                itemStack.setCount(0);
+            }
+
+            ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
+
+            int woolCount = 1;
+
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            for (int i = 0; i < this.animalPen$animalCount && woolCount < dropLimits; i++)
+            {
+                woolCount += level.getRandom().nextInt(3);
+            }
+
+            while (woolCount > 0)
+            {
+                ItemStack woolStack = new ItemStack(itemLike);
+
+                if (woolCount > 64)
+                {
+                    woolStack.setCount(64);
+                    woolCount -= 64;
+                }
+                else
+                {
+                    woolStack.setCount(woolCount);
+                    woolCount = 0;
+                }
+
+                Block.popResource(level, position.above(), woolStack);
+            }
+
+            level.playSound(null,
+                position,
+                SoundEvents.SHEEP_SHEAR,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.SHEARS,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
     }
 
 
