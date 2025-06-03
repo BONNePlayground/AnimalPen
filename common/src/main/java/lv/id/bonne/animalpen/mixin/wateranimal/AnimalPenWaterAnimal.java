@@ -299,7 +299,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
         // Default value if animals are here.
         int value = 1;
 
-        if (this.animalPen$foodCooldown > 0 || this.animalPen$getFood().length == 0)
+        if (this.animalPen$foodCooldown > 0 || this.animalPen$getFood() == null || this.animalPen$getFood().length == 0)
         {
             // if cooldown or cooldown is not applicable return existing value
             return value;
