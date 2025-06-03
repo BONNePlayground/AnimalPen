@@ -494,24 +494,26 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     }
 
 
-    private void triggerUpdate()
+    public void triggerUpdate()
     {
         this.setChanged();
 
-        if (this.level != null && !this.level.isClientSide())
+        if (this.level == null || this.level.isClientSide())
         {
-            Animal animal = this.getStoredAnimal();
-
-            if (animal != null)
-            {
-                animal.save(this.getItemStack().getOrCreateTag());
-            }
-
-            this.level.sendBlockUpdated(this.getBlockPos(),
-                this.getBlockState(),
-                this.getBlockState(),
-                Block.UPDATE_CLIENTS);
+            return;
         }
+
+        Animal animal = this.getStoredAnimal();
+
+        if (animal != null)
+        {
+            animal.save(this.getItemStack().getOrCreateTag());
+        }
+
+        this.level.sendBlockUpdated(this.getBlockPos(),
+            this.getBlockState(),
+            this.getBlockState(),
+            Block.UPDATE_CLIENTS);
     }
 
 

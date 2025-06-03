@@ -496,7 +496,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     }
 
 
-    private void triggerUpdate()
+    public void triggerUpdate()
     {
         this.setChanged();
 

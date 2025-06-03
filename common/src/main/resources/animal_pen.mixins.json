@@ -21,6 +21,7 @@
     "animal.AnimalPenMushroomCow",
     "animal.AnimalPenSheep",
     "animal.AnimalPenTurtle",
+    "wateranimal.AnimalPenAbstractFish",
     "wateranimal.AnimalPenWaterAnimal"
   ],
   "injectors": {

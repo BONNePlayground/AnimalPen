@@ -79,4 +79,9 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      * @return List of pairs that contains display icon and text next to it
      */
     List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText);
+
+    /**
+     * This method triggers block to trigger save.
+     */
+    void triggerUpdate();
 }

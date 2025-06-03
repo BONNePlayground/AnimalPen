@@ -54,6 +54,8 @@ public final class AnimalPen
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BUCKET)));
         DispenserBlock.registerBehavior(Items.BOWL,
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BOWL)));
+        DispenserBlock.registerBehavior(Items.WATER_BUCKET,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.WATER_BUCKET)));
 
         // Networking
 

@@ -64,6 +64,7 @@ public class UseToolsBehaviour implements DispenseItemBehavior
             {
                 ItemStack output =
                     ((AnimalPenInterface) ani.getStoredAnimal()).animalPenInteract((ServerLevel) level, itemStack, blockPos);
+                ani.triggerUpdate();
 
                 if (output.isEmpty())
                 {
