@@ -4,14 +4,9 @@ package lv.id.bonne.animalpen.registries;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import dev.architectury.registry.registries.Registries;
-import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -21,6 +16,12 @@ import net.minecraft.world.item.crafting.Ingredient;
  */
 public class AnimalPenFoodRegistry
 {
+    public static void setSyncedData(Map<ResourceLocation, AnimalFoodData> newData)
+    {
+        DATA.clear();
+        DATA.putAll(newData);
+    }
+
     /**
      * Clear the registry
      */

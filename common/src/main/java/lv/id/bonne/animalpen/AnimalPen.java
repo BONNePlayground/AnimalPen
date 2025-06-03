@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
@@ -15,6 +16,7 @@ import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
+import lv.id.bonne.animalpen.network.packets.AnimalFoodRegistryData;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
@@ -73,10 +75,20 @@ public final class AnimalPen
             UpdateAnimalSizeData.ID,
             UpdateAnimalSizeData::handle);
 
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.S2C,
+            AnimalFoodRegistryData.ID,
+            AnimalFoodRegistryData::handle);
+
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalFoodReloadListener(),
             new ResourceLocation(MOD_ID, "animal_foods"));
+
+        PlayerEvent.PLAYER_JOIN.register(player ->
+            NetworkManager.sendToPlayer(player,
+                AnimalFoodRegistryData.ID,
+                AnimalFoodRegistryData.encode()));
     }
 
 
