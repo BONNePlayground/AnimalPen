@@ -8,20 +8,23 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
+import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
-import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
-import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
-import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
+import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
+import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.DispenserBlock;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
@@ -42,6 +45,18 @@ public final class AnimalPen
         CommandRegistrationEvent.EVENT.register(
             (dispatcher, selection) -> AnimalPenCommands.register(dispatcher));
 
+        // Dispenser interaction
+        DispenserBlock.registerBehavior(Items.SHEARS,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.SHEARS)));
+        DispenserBlock.registerBehavior(Items.GLASS_BOTTLE,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.GLASS_BOTTLE)));
+        DispenserBlock.registerBehavior(Items.BUCKET,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BUCKET)));
+        DispenserBlock.registerBehavior(Items.BOWL,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BOWL)));
+        DispenserBlock.registerBehavior(Items.WATER_BUCKET,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.WATER_BUCKET)));
+
         // Networking
 
         NetworkManager.registerReceiver(
@@ -59,10 +74,25 @@ public final class AnimalPen
             UpdateAnimalSizeData.ID,
             UpdateAnimalSizeData::handle);
 
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.S2C,
+            AnimalFoodRegistryData.ID,
+            AnimalFoodRegistryData::handle);
+
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.S2C,
+            UpdateVariantScreenData.ID,
+            UpdateVariantScreenData::handle);
+
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalFoodReloadListener(),
             new ResourceLocation(MOD_ID, "animal_foods"));
+
+        PlayerEvent.PLAYER_JOIN.register(player ->
+            NetworkManager.sendToPlayer(player,
+                AnimalFoodRegistryData.ID,
+                AnimalFoodRegistryData.encode()));
     }
 
 
