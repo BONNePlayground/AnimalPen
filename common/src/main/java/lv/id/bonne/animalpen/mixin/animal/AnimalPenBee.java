@@ -272,9 +272,9 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
             lines.add(Pair.of(new ItemStack[]{Items.HONEY_BLOCK.getDefaultInstance()}, component));
 
-            component = new TranslatableComponent(shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
-                new TextComponent("\uE000"),
-                new TextComponent("\uE001"));
+            component = Component.translatable(shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"));
 
             ItemStack toolStack;
             ItemStack resultStack;
@@ -294,8 +294,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         }
         else
         {
-            MutableComponent component = new TranslatableComponent("display.animal_pen.pollen_level",
-                new TextComponent("\uE000"),
+            MutableComponent component = Component.translatable("display.animal_pen.pollen_level",
+                Component.literal("\uE000"),
                 this.animalPen$pollenCount);
 
             lines.add(Pair.of(new ItemStack[]{Items.HONEY_BLOCK.getDefaultInstance()}, component));

@@ -19,8 +19,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -158,10 +156,10 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             if (bucket != null)
             {
-                MutableComponent component = new TranslatableComponent(
+                MutableComponent component = Component.translatable(
                     "display.animal_pen.full_ready",
-                    new TextComponent("\uE000"),
-                    new TextComponent("\uE001")).
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                     withStyle(ChatFormatting.GREEN);
 
                 lines.add(Pair.of(
@@ -194,6 +192,10 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
         else if (this.getType() == EntityType.TROPICAL_FISH)
         {
             itemStack = new ItemStack(Items.TROPICAL_FISH_BUCKET);
+        }
+        else if (this.getType() == EntityType.TADPOLE)
+        {
+            itemStack = new ItemStack(Items.TADPOLE_BUCKET);
         }
         else
         {
