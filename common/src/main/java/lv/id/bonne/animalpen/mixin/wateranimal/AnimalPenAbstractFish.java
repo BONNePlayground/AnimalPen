@@ -167,7 +167,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                     withStyle(ChatFormatting.GREEN));
 
                 lines.add(Pair.of(
-                    new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), this.pen$getFishBucket()},
+                    new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
                     component));
             }
         }
