@@ -8,19 +8,19 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
@@ -199,16 +199,63 @@ public class AnimalCageItem extends Item
         }
 
         BlockEntity blockEntity = useOnContext.getLevel().getBlockEntity(useOnContext.getClickedPos());
+        Player player = useOnContext.getPlayer();
 
-        if (!(blockEntity instanceof AnimalPenTileEntity tileEntity))
-        {
-            return super.useOn(useOnContext);
-        }
-
-        if (useOnContext.getPlayer() != null &&
-            tileEntity.processContainer(useOnContext.getPlayer(), useOnContext.getHand()))
+        if (player != null &&
+            blockEntity instanceof AnimalPenTileEntity tileEntity &&
+            tileEntity.processContainer(player, useOnContext.getHand()))
         {
             return InteractionResult.SUCCESS;
+        }
+
+        if (player != null &&
+            player.isCrouching() &&
+            useOnContext.getClickedFace() == Direction.UP)
+        {
+            // Try to release animal.
+            ItemStack itemInHand = useOnContext.getItemInHand();
+            CompoundTag itemTag = itemInHand.getOrCreateTag().copy();
+
+            if (!itemTag.contains(TAG_ENTITY_ID))
+            {
+                // Empty
+                return super.useOn(useOnContext);
+            }
+
+            ServerLevel level = (ServerLevel) useOnContext.getLevel();
+
+            ListTag pos = new ListTag();
+            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getX()));
+            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getY() + 1));
+            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getZ()));
+
+            itemTag.put("Pos", pos);
+            itemTag.remove("UUID");
+            itemTag.remove(TAG_VARIANTS);
+            itemTag.remove(TAG_AMOUNT);
+
+            EntityType.create(itemTag, level).
+                map(entity -> (Animal) entity).
+                ifPresent(clone ->
+                {
+                    clone.finalizeSpawn(level,
+                        level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
+                        MobSpawnType.EVENT,
+                        null,
+                        itemTag);
+                    level.addFreshEntity(clone);
+
+                    long amount = itemInHand.getOrCreateTag().getLong(TAG_AMOUNT);
+                    itemInHand.getOrCreateTag().putLong(TAG_AMOUNT, amount - 1);
+
+                    if (amount - 1 <= 0)
+                    {
+                        // Clear item tag.
+                        itemInHand.setTag(new CompoundTag());
+                    }
+
+                    player.setItemInHand(useOnContext.getHand(), itemInHand);
+                });
         }
 
         return super.useOn(useOnContext);
