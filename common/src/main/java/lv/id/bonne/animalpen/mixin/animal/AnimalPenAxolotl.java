@@ -243,37 +243,37 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 this.animalPen$storedFood);
 
         ItemStack[] food = this.animalPen$getFood();
-        ItemStack foodItem;
 
-        if (food == null || food.length == 0)
+        if (food != null && food.length != 0)
         {
-            // No food item for this entity.
-            return lines;
-        }
-        else if (food.length == 1)
-        {
-            foodItem = food[0];
-        }
-        else
-        {
-            int size = food.length;
-            int index = (tick / 100) % size;
+            ItemStack foodItem;
 
-            foodItem = food[index];
+            if (food.length == 1)
+            {
+                foodItem = food[0];
+            }
+            else
+            {
+                int size = food.length;
+                int index = (tick / 100) % size;
+
+                foodItem = food[index];
+            }
+
+            lines.add(Pair.of(new ItemStack[]{foodItem}, component));
         }
 
-        lines.add(Pair.of(new ItemStack[]{foodItem}, component));
 
         if (!shortLine && this.animalPen$animalCount > 1)
         {
-            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
-            this.saveToBucketTag(bucket);
-
-            component.append(new TranslatableComponent(
+            component = new TranslatableComponent(
                 "display.animal_pen.full_ready",
                 new TextComponent("\uE000"),
                 new TextComponent("\uE001")).
-                withStyle(ChatFormatting.GREEN));
+                withStyle(ChatFormatting.GREEN);
+
+            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+            this.saveToBucketTag(bucket);
 
             lines.add(Pair.of(
                 new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},

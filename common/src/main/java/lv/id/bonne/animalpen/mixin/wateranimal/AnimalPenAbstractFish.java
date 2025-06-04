@@ -152,19 +152,17 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
             return lines;
         }
 
-        MutableComponent component = new TextComponent("");
-
         if (this.animalPen$animalCount > 1)
         {
             ItemStack bucket = this.pen$getFishBucket();
 
             if (bucket != null)
             {
-                component.append(new TranslatableComponent(
+                MutableComponent component = new TranslatableComponent(
                     "display.animal_pen.full_ready",
                     new TextComponent("\uE000"),
                     new TextComponent("\uE001")).
-                    withStyle(ChatFormatting.GREEN));
+                    withStyle(ChatFormatting.GREEN);
 
                 lines.add(Pair.of(
                     new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
