@@ -15,10 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -228,6 +230,19 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 return true;
@@ -321,6 +336,19 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 {
                     AnimalContainerItem.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
                     itemInHand.setTag(new CompoundTag());
+
+                    if (this.level != null && !this.level.isClientSide())
+                    {
+                        // Trigger screen Update
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                                filter(other ->
+                                    other.distanceToSqr(this.getBlockPos().getX(),
+                                        this.getBlockPos().getY(),
+                                        this.getBlockPos().getZ()) < 50).
+                                toList(),
+                            UpdateVariantScreenData.ID,
+                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                    }
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
@@ -448,7 +476,26 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     }
 
 
-    private void triggerUpdate()
+    /**
+     * This method returns redstone signal based on current signal that should be sent out by animal.
+     * @return the redstone signal value based on bit value:
+     *    - 1 - is animal
+     *    - 2 - can feed
+     *    - 4 - can interact 1
+     *    - 8 - can interact 2
+     */
+    public int getRedStoneSignal()
+    {
+        if (this.getStoredAnimal() == null)
+        {
+            return 0;
+        }
+
+        return ((AnimalPenInterface) this.storedAnimal).getRedStoneSignal();
+    }
+
+
+    public void triggerUpdate()
     {
         this.setChanged();
 
@@ -568,6 +615,18 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         // Apply data
         ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
         this.triggerUpdate();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 
@@ -585,6 +644,18 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         this.getEntityVariants().remove(index);
         this.inventory.setChanged();
+
+        if (this.level != null && !this.level.isClientSide())
+        {
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(player ->
+                        player.distanceToSqr(this.getBlockPos().getX(),
+                            this.getBlockPos().getY(),
+                            this.getBlockPos().getZ()) < 50).
+                    toList(),
+                UpdateVariantScreenData.ID,
+                UpdateVariantScreenData.encode(this.getBlockPos()));
+        }
     }
 
 
@@ -608,18 +679,18 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
     /**
      * This method returns the description lines that will be displayed above tile entity.
-     *
+     * @param shortText Indicates if text should be short or long version
      * @return List of pairs that contains display icon and text next to it
      */
     @Override
-    public List<Pair<ItemStack, Component>> getCooldownLines()
+    public List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText)
     {
         if (this.getStoredAnimal() == null)
         {
             return Collections.emptyList();
         }
 
-        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter());
+        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter(), shortText);
     }
 
     
