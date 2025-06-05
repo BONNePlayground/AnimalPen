@@ -249,18 +249,14 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 return ItemStack.EMPTY;
             }
 
-            itemStack.shrink(1);
-
             ItemStack bowlStack;
-            boolean suspicious = this.effect != null;
+            boolean suspicious = this.stewEffects != null;
 
             if (suspicious)
             {
                 bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
-                SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
-
-                this.effect = null;
-                this.effectDuration = 0;
+                SuspiciousStewItem.saveMobEffects(bowlStack, this.stewEffects);
+                this.stewEffects = null;
             }
             else
             {
@@ -278,7 +274,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 soundEvent = SoundEvents.MOOSHROOM_MILK;
             }
 
-            level.playSound(null,
+           level.playSound(null,
                 position,
                 soundEvent,
                 SoundSource.NEUTRAL,
