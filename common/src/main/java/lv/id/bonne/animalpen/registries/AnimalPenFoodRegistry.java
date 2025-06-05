@@ -1,8 +1,6 @@
 package lv.id.bonne.animalpen.registries;
 
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -123,7 +121,7 @@ public class AnimalPenFoodRegistry
          * Codec for animal food data.
          */
         public static final StreamCodec<RegistryFriendlyByteBuf, AnimalFoodData> STREAM_CODEC =
-            Ingredient.CONTENTS_STREAM_CODEC.map(AnimalFoodData::new, AnimalFoodData::ingredient);
+            TaggableIngredient.CONTENTS_STREAM_CODEC.map(AnimalFoodData::new, AnimalFoodData::ingredient);
     }
 
     /**

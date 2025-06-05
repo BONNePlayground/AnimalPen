@@ -13,17 +13,16 @@ import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -32,6 +31,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -62,6 +62,10 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Shadow
     public abstract boolean isSheared();
+
+
+    @Shadow
+    public abstract DyeColor getColor();
 
 
     @Intrinsic
@@ -248,9 +252,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             itemStack.hurtAndBreak(1, level, null, item -> {});
 
-            ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
-
-            int woolCount = 1;
+            ItemLike itemLike = this.pen$getWoolItem(this.getColor());
 
             int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
 
@@ -259,28 +261,39 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            for (int i = 0; i < this.animalPen$animalCount && woolCount < dropLimits; i++)
+            List<ItemStack> itemStackList = new ArrayList<>();
+
+            int woolCount = 0;
+            int animalCounter = 0;
+
+            while (woolCount <= dropLimits && animalCounter++ < this.animalPen$animalCount)
             {
-                woolCount += level.getRandom().nextInt(3);
+                ItemStack woolStack = new ItemStack(itemLike, level.random.nextInt(1, 4));
+                woolCount += woolStack.getCount();
+
+                boolean added = false;
+
+                for (ItemStack stack : itemStackList)
+                {
+                    if (ItemStack.isSameItemSameComponents(woolStack, stack) &&
+                        stack.getCount() < stack.getMaxStackSize())
+                    {
+                        stack.grow(woolStack.getCount());
+                        added = true;
+                        break;
+                    }
+                }
+
+                if (!added)
+                {
+                    itemStackList.add(woolStack);
+                }
             }
 
-            while (woolCount > 0)
-            {
-                ItemStack woolStack = new ItemStack(itemLike);
+            itemStackList.forEach(seedStack ->
+                Block.popResource(level, position.above(), seedStack));
 
-                if (woolCount > 64)
-                {
-                    woolStack.setCount(64);
-                    woolCount -= 64;
-                }
-                else
-                {
-                    woolStack.setCount(woolCount);
-                    woolCount = 0;
-                }
-
-                Block.popResource(level, position.above(), woolStack);
-            }
+            this.setSheared(true);
 
             level.playSound(null,
                 position,
@@ -337,7 +350,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                     plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
+        ItemLike itemLike = this.pen$getWoolItem(this.getColor());
 
         lines.add(Pair.of(
             new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
@@ -359,6 +372,15 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             // signal | 4 as it is first interaction
             return super.animalPen$getRedStoneSignal() | 4;
         }
+    }
+
+
+    @Unique
+    public Item pen$getWoolItem(DyeColor color)
+    {
+        String colorName = color.getName();
+        ResourceLocation woolId = ResourceLocation.withDefaultNamespace(colorName + "_wool");
+        return BuiltInRegistries.ITEM.getValue(woolId);
     }
 
 

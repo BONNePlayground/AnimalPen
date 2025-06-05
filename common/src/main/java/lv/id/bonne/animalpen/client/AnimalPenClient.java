@@ -52,7 +52,7 @@ public class AnimalPenClient
             if (Minecraft.getInstance().player != player)
             {
                 // fixes local host issues.
-                return EventResult.pass();
+                return InteractionResult.PASS;
             }
 
             if (!(player.level().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))

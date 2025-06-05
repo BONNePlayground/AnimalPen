@@ -250,13 +250,13 @@ public class AnimalCageItem extends Item
             itemTag.remove(TAG_VARIANTS);
             itemTag.remove(TAG_AMOUNT);
 
-            EntityType.create(itemTag, level).
+            EntityType.create(itemTag, level, EntitySpawnReason.SPAWN_ITEM_USE).
                 map(entity -> (Animal) entity).
                 ifPresent(clone ->
                 {
                     clone.finalizeSpawn(level,
                         level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
-                        MobSpawnType.EVENT,
+                        EntitySpawnReason.SPAWN_ITEM_USE,
                         null);
                     level.addFreshEntity(clone);
 

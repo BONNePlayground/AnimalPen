@@ -21,11 +21,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.AgeableWaterCreature;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -241,13 +238,13 @@ public class AnimalContainerItem extends Item
             itemTag.remove(TAG_VARIANTS);
             itemTag.remove(TAG_AMOUNT);
 
-            EntityType.create(itemTag, level).
-                map(entity -> (WaterAnimal) entity).
+            EntityType.create(itemTag, level, EntitySpawnReason.SPAWN_ITEM_USE).
+                map(entity -> (PathfinderMob) entity).
                 ifPresent(clone ->
                 {
                     clone.finalizeSpawn(level,
                         level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
-                        MobSpawnType.EVENT,
+                        EntitySpawnReason.SPAWN_ITEM_USE,
                         null);
                     level.addFreshEntity(clone);
 

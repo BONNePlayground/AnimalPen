@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -13,6 +14,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -159,4 +162,25 @@ public class TaggableIngredient implements Predicate<ItemStack>
     private ItemStack[] itemStacks;
 
     public static final Codec<TaggableIngredient> CODEC = codec();
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC =
+        new StreamCodec<>()
+        {
+            public void encode(RegistryFriendlyByteBuf buf, TaggableIngredient ingredient)
+            {
+                ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode(buf,
+                    ingredient.itemStacks == null ? Collections.emptyList() : Arrays.asList(ingredient.values));
+            }
+
+
+            public TaggableIngredient decode(RegistryFriendlyByteBuf buf)
+            {
+                int size = buf.readVarInt();
+                return new TaggableIngredient(
+                    Stream.generate(() -> ItemStack.STREAM_CODEC.decode(buf)).
+                        limit(size).
+                        map(item -> new ItemValue(item.getItemHolder())).toArray(Value[]::new));
+            }
+        };
 }
