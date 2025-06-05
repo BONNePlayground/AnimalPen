@@ -22,11 +22,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -189,6 +191,25 @@ public class VariantScreenSelection extends Screen
     }
 
 
+    /**
+     * This returns position of block that relates to current screen.
+     * @return block position.
+     */
+    public BlockPos getPosition()
+    {
+        return this.position;
+    }
+
+
+    /**
+     * This inits that update will be triggered after 5 ticks.
+     */
+    public void update()
+    {
+        this.needsUpdate = 5;
+    }
+
+
     @Override
     public void tick()
     {
@@ -197,6 +218,19 @@ public class VariantScreenSelection extends Screen
         if (this.displayEntity != null)
         {
             this.displayEntity.tickCount++;
+        }
+
+        if (!(this.minecraft.level.getBlockEntity(this.position) instanceof AnimalPenBlockInterface<?>) ||
+            this.blockEntityInterface.getStoredAnimal() == null)
+        {
+            // close screen
+            this.minecraft.setScreen(null);
+            return;
+        }
+
+        if (this.needsUpdate > 0 && --this.needsUpdate == 0)
+        {
+            this.init();
         }
     }
 
@@ -521,7 +555,7 @@ public class VariantScreenSelection extends Screen
                 this.cooldownWidth,
                 this.imageHeight + 1);
 
-            List<Pair<ItemStack, Component>> textList = this.blockEntityInterface.getCooldownLines();
+            List<Pair<ItemStack[], Component>> textList = this.blockEntityInterface.getCooldownLines(false);
 
             if (!textList.isEmpty())
             {
@@ -530,29 +564,110 @@ public class VariantScreenSelection extends Screen
 
                 for (int i = 0; i < textList.size(); i++)
                 {
-                    Pair<ItemStack, Component> cooldown = textList.get(i);
-
-                    int y = top + i * 16;
-
-                    graphics.renderItem(cooldown.getLeft(), leftOffset, y);
-
-                    graphics.drawString(this.font,
-                        cooldown.getRight(),
-                        leftOffset + 18,
-                        y + this.font.lineHeight / 2,
-                        0xffffff);
-
-                    if (mouseX >= leftOffset &&
-                        mouseX <= leftOffset + 16 &&
-                        mouseY >= y &&
-                        mouseY <= y + 16)
-                    {
-                        graphics.renderTooltip(this.font,
-                            cooldown.getLeft(),
-                            mouseX,
-                            mouseY);
-                    }
+                    this.renderTextLine(graphics, textList.get(i), leftOffset, top + i * 16, mouseX, mouseY);
                 }
+            }
+        }
+    }
+
+
+    /**
+     * This method renders text component and inserts icons in their correct spots.
+     * @param graphics The pose stack.
+     * @param componentPair The pair that contains icons and text
+     * @param leftOffset Offset from left side.
+     * @param y The offset from top side.
+     * @param mouseX The mouse X location.
+     * @param mouseY The mouse Y location.
+     */
+    private void renderTextLine(@NotNull GuiGraphics graphics,
+        Pair<ItemStack[], Component> componentPair,
+        int leftOffset,
+        int y,
+        int mouseX,
+        int mouseY)
+    {
+        Component text = componentPair.getRight();
+        ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
+        ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
+
+        // Track positions of rendered items for tooltip detection
+        List<Pair<ItemStack, Rect2i>> itemPositions = new ArrayList<>();
+
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
+        int whiteSpace = this.font.width(" ");
+        boolean isFirst = true;
+
+        // Process each text part
+        for (Component part : text.toFlatList(Style.EMPTY))
+        {
+            String content = part.getString();
+
+            if (content.equals("\uE000"))
+            {
+                if (first == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    leftOffset -= whiteSpace;
+                }
+
+                // Render the first item
+                graphics.renderItem(first, leftOffset, y);
+                itemPositions.add(Pair.of(first, new Rect2i(leftOffset, y, 16, 16)));
+                leftOffset += 16 - whiteSpace;
+            }
+            else if (content.equals("\uE001"))
+            {
+                if (second == null)
+                {
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                if (!isFirst)
+                {
+                    // move closer to previous part to overlap white space.
+                    leftOffset -= whiteSpace;
+                }
+
+                // Render the second item (if available)
+                graphics.renderItem(second, leftOffset, y);
+                itemPositions.add(Pair.of(second, new Rect2i(leftOffset, y, 16, 16)));
+                leftOffset += 16 - whiteSpace;
+            }
+            else
+            {
+                // Render regular text
+                graphics.drawString(this.font,
+                    part,
+                    leftOffset,
+                    y + this.font.lineHeight / 2 + 2,
+                    0xffffff);
+
+                leftOffset += this.font.width(part);
+            }
+
+            isFirst = false;
+        }
+
+        // Handle tooltips for all item positions
+        for (Pair<ItemStack, Rect2i> itemPos : itemPositions)
+        {
+            Rect2i rect = itemPos.getRight();
+
+            if (mouseX >= rect.getX() &&
+                mouseX <= rect.getX() + rect.getWidth() &&
+                mouseY >= rect.getY() &&
+                mouseY <= rect.getY() + rect.getHeight())
+            {
+                graphics.renderTooltip(this.font, itemPos.getLeft(), mouseX, mouseY);
+                break;
             }
         }
     }
@@ -610,9 +725,6 @@ public class VariantScreenSelection extends Screen
         {
             return;
         }
-
-        // Remove entity from list.
-        this.blockEntityInterface.getEntityVariants().remove(this.selectedButton);
 
         NetworkManager.sendToServer(RemoveDisplayAnimalData.ID,
             RemoveDisplayAnimalData.encode(this.position, this.selectedButton));
@@ -1132,6 +1244,11 @@ public class VariantScreenSelection extends Screen
      * This boolean indicates if player is holding slider button
      */
     private boolean isSelectingSizeBar;
+
+    /**
+     * This boolean indicates if player screen requires update.
+     */
+    private int needsUpdate;
 
     /**
      * The title of menu
