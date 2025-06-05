@@ -168,17 +168,12 @@ public class TaggableIngredient implements Predicate<ItemStack>
         return new TaggableIngredient(stream.toArray(Value[]::new));
     }
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC;
-
-    static
-    {
-        CONTENTS_STREAM_CODEC =
-            ItemStack.OPTIONAL_LIST_STREAM_CODEC.map(
-                list -> fromValues(list.stream().map(ItemStack::getItemHolder).map(ItemValue::new)),
-                ingredient -> Arrays.stream(ingredient.values).
-                    flatMap(value -> value.getItems().stream()).
-                    map(Holder::value).
-                    map(Item::getDefaultInstance).
-                    toList());
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC =
+        ItemStack.OPTIONAL_LIST_STREAM_CODEC.map(
+            list -> fromValues(list.stream().map(ItemStack::getItemHolder).map(ItemValue::new)),
+            ingredient -> Arrays.stream(ingredient.values).
+                flatMap(value -> value.getItems().stream()).
+                map(Holder::value).
+                map(Item::getDefaultInstance).
+                toList());
 }
