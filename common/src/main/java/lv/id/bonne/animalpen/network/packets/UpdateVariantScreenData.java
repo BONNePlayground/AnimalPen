@@ -74,7 +74,7 @@ public record UpdateVariantScreenData(BlockPos position) implements CustomPacket
 
 
     public static final Type<UpdateVariantScreenData> ID =
-        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_variant_screen_data"));
+        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_variant_screen_data"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateVariantScreenData> STREAM_CODEC = StreamCodec.composite(

@@ -12,20 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.Level;
 
 
 public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> data) implements CustomPacketPayload
@@ -50,7 +42,7 @@ public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry
 
 
     public static final CustomPacketPayload.Type<AnimalFoodRegistryData> ID =
-        new CustomPacketPayload.Type<>(new ResourceLocation(AnimalPen.MOD_ID, "animal_food_registry_sync"));
+        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_food_registry_sync"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AnimalFoodRegistryData> STREAM_CODEC =

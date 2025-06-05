@@ -22,6 +22,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -145,7 +146,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
                 return ItemStack.EMPTY;
             }
 
-            itemStack.hurtAndBreak(1, level.getRandom(), null, () -> itemStack.setCount(0));
+            itemStack.hurtAndBreak(1, level, null, item -> {});
 
             Block.popResource(level, position.above(), new ItemStack(Items.ARMADILLO_SCUTE));
 

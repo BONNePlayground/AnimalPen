@@ -70,7 +70,7 @@ public class UseToolsBehaviour implements DispenseItemBehavior
                     return itemStack;
                 }
 
-                if (!itemStack.isEmpty() && blockSource.blockEntity().addItem(output.copy()) < 0)
+                if (!itemStack.isEmpty() && !blockSource.blockEntity().insertItem(output.copy()).isEmpty())
                 {
                     // If it failed to insert into dispenser, use default dispense behaviour
                     this.defaultDispenseItemBehavior.dispense(blockSource, output.copy());

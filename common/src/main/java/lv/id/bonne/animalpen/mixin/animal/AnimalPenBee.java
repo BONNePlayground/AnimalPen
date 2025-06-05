@@ -188,7 +188,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         if (itemStack.is(Items.SHEARS))
         {
-            itemStack.hurtAndBreak(1, level.getRandom(), null, () -> itemStack.setCount(0));
+            itemStack.hurtAndBreak(1, level, null, item -> {});
 
             Block.popResource(level, position.above(), new ItemStack(Items.HONEYCOMB, 3));
 
