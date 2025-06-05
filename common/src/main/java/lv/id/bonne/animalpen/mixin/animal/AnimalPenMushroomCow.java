@@ -255,7 +255,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             if (suspicious)
             {
                 bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
-                SuspiciousStewItem.saveMobEffects(bowlStack, this.stewEffects);
+                bowlStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, this.stewEffects);
                 this.stewEffects = null;
             }
             else

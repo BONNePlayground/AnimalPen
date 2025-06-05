@@ -46,6 +46,7 @@ public final class AnimalPen
         // Dispenser interaction
         DispenserBlock.registerBehavior(Items.SHEARS,
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.SHEARS)));
+
         DispenserBlock.registerBehavior(Items.GLASS_BOTTLE,
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.GLASS_BOTTLE)));
         DispenserBlock.registerBehavior(Items.BUCKET,
@@ -54,6 +55,8 @@ public final class AnimalPen
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BOWL)));
         DispenserBlock.registerBehavior(Items.WATER_BUCKET,
             new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.WATER_BUCKET)));
+        DispenserBlock.registerBehavior(Items.BRUSH,
+            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BRUSH)));
 
         // Networking
 
@@ -72,14 +75,14 @@ public final class AnimalPen
             UpdateAnimalSizeData.STREAM_CODEC,
             UpdateAnimalSizeData::handle);
 
-        NetworkManager.registerReceiver(
-            NetworkManager.Side.S2C,
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
             AnimalFoodRegistryData.ID,
+            AnimalFoodRegistryData.STREAM_CODEC,
             AnimalFoodRegistryData::handle);
 
-        NetworkManager.registerReceiver(
-            NetworkManager.Side.S2C,
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
             UpdateVariantScreenData.ID,
+            UpdateVariantScreenData.STREAM_CODEC,
             UpdateVariantScreenData::handle);
 
         // register the listener
@@ -89,8 +92,7 @@ public final class AnimalPen
 
         PlayerEvent.PLAYER_JOIN.register(player ->
             NetworkManager.sendToPlayer(player,
-                AnimalFoodRegistryData.ID,
-                AnimalFoodRegistryData.encode()));
+                new AnimalFoodRegistryData(AnimalPenFoodRegistry.getAll())));
     }
 
 

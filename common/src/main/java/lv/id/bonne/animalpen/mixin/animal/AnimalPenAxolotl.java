@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.mixin.animal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 

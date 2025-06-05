@@ -226,10 +226,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             this.setSheared(true);
 
-            if (itemStack.hurt(1, level.getRandom(), null))
-            {
-                itemStack.setCount(0);
-            }
+            itemStack.hurtAndBreak(1, level.getRandom(), null, () -> itemStack.setCount(0));
 
             ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());
 

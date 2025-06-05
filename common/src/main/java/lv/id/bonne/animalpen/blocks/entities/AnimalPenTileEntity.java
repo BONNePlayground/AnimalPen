@@ -249,8 +249,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                                         this.getBlockPos().getY(),
                                         this.getBlockPos().getZ()) < 50).
                                 toList(),
-                            UpdateVariantScreenData.ID,
-                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos()));
                     }
                 }
 
@@ -359,8 +358,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                                         this.getBlockPos().getY(),
                                         this.getBlockPos().getZ()) < 50).
                                 toList(),
-                            UpdateVariantScreenData.ID,
-                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos()));
                     }
                 }
 
@@ -627,13 +625,12 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             // Trigger update.
             NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(player ->
-                        player.distanceToSqr(this.getBlockPos().getX(),
+                    filter(other ->
+                        other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),
                             this.getBlockPos().getZ()) < 50).
                     toList(),
-                UpdateVariantScreenData.ID,
-                UpdateVariantScreenData.encode(this.getBlockPos()));
+                new UpdateVariantScreenData(this.getBlockPos()));
         }
     }
 
@@ -672,13 +669,12 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             // Trigger screen Update
             NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(player ->
-                        player.distanceToSqr(this.getBlockPos().getX(),
+                    filter(other ->
+                        other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),
                             this.getBlockPos().getZ()) < 50).
                     toList(),
-                UpdateVariantScreenData.ID,
-                UpdateVariantScreenData.encode(this.getBlockPos()));
+                new UpdateVariantScreenData(this.getBlockPos()));
         }
     }
 

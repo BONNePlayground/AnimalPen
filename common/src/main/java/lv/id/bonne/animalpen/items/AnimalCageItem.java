@@ -220,7 +220,17 @@ public class AnimalCageItem extends Item
         {
             // Try to release animal.
             ItemStack itemInHand = useOnContext.getItemInHand();
-            CompoundTag itemTag = itemInHand.getOrCreateTag().copy();
+
+            CompoundTag itemTag;
+
+            if (!itemInHand.has(DataComponents.ENTITY_DATA))
+            {
+                return super.useOn(useOnContext);
+            }
+            else
+            {
+                itemTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
+            }
 
             if (!itemTag.contains(TAG_ENTITY_ID))
             {
@@ -247,17 +257,22 @@ public class AnimalCageItem extends Item
                     clone.finalizeSpawn(level,
                         level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
                         MobSpawnType.EVENT,
-                        null,
-                        itemTag);
+                        null);
                     level.addFreshEntity(clone);
 
-                    long amount = itemInHand.getOrCreateTag().getLong(TAG_AMOUNT);
-                    itemInHand.getOrCreateTag().putLong(TAG_AMOUNT, amount - 1);
+                    CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
+
+                    long amount = tag.getLong(TAG_AMOUNT);
+                    tag.putLong(TAG_AMOUNT, amount - 1);
 
                     if (amount - 1 <= 0)
                     {
                         // Clear item tag.
-                        itemInHand.setTag(new CompoundTag());
+                        itemInHand.remove(DataComponents.ENTITY_DATA);
+                    }
+                    else
+                    {
+                        itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
                     }
 
                     player.setItemInHand(useOnContext.getHand(), itemInHand);

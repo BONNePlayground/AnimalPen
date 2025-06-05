@@ -256,7 +256,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 return ItemStack.EMPTY;
             }
 
-            LootTable lootTable = level.getServer().getLootData().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
+            LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
             LootParams lootParams = new LootParams.Builder(level).
                 withParameter(LootContextParams.ORIGIN, position.getCenter()).
                 withParameter(LootContextParams.THIS_ENTITY, this).
@@ -269,7 +269,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
-            List<ItemStack> droppedSeeds = new LinkedList<>();
+            List<ItemStack> itemStackList = new ArrayList<>();
 
             int seedCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
@@ -285,10 +285,28 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
 
                 seedCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
 
-                droppedSeeds.addAll(randomItems);
+                randomItems.forEach(item -> {
+                    boolean added = false;
+
+                    for (ItemStack stack : itemStackList)
+                    {
+                        if (ItemStack.isSameItemSameComponents(item, stack) &&
+                            stack.getCount() < stack.getMaxStackSize())
+                        {
+                            stack.grow(item.getCount());
+                            added = true;
+                            break;
+                        }
+                    }
+
+                    if (!added)
+                    {
+                        itemStackList.add(item);
+                    }
+                });
             }
 
-            Utils.mergeItemStacks(droppedSeeds).forEach(seedStack ->
+            itemStackList.forEach(seedStack ->
                 Block.popResource(level, position.above(), seedStack));
 
             level.playSound(null,
