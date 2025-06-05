@@ -1,12 +1,16 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import lv.id.bonne.animalpen.listeners.TaggableIngredient;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,6 +20,12 @@ import net.minecraft.world.item.ItemStack;
  */
 public class AnimalPenFoodRegistry
 {
+    public static void setSyncedData(Map<ResourceLocation, AnimalFoodData> newData)
+    {
+        DATA.clear();
+        DATA.putAll(newData);
+    }
+
     /**
      * Clear the registry
      */
@@ -107,6 +117,13 @@ public class AnimalPenFoodRegistry
         {
             return this.ingredient.test(stack);
         }
+
+
+        /**
+         * Codec for animal food data.
+         */
+        public static final StreamCodec<RegistryFriendlyByteBuf, AnimalFoodData> STREAM_CODEC =
+            Ingredient.CONTENTS_STREAM_CODEC.map(AnimalFoodData::new, AnimalFoodData::ingredient);
     }
 
     /**
