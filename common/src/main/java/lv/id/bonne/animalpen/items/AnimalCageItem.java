@@ -255,7 +255,7 @@ public class AnimalCageItem extends Item
 
                     CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
-                    long amount = tag.getLong(TAG_AMOUNT);
+                    long amount = tag.getLongOr(TAG_AMOUNT, 0);
                     tag.putLong(TAG_AMOUNT, amount - 1);
 
                     if (amount - 1 <= 0)
