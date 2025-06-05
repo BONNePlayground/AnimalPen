@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import dev.architectury.registry.registries.RegistrarManager;
@@ -163,24 +164,21 @@ public class TaggableIngredient implements Predicate<ItemStack>
 
     public static final Codec<TaggableIngredient> CODEC = codec();
 
+    private static TaggableIngredient fromValues(Stream<? extends Value> stream) {
+        return new TaggableIngredient(stream.toArray(Value[]::new));
+    }
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC =
-        new StreamCodec<>()
-        {
-            public void encode(RegistryFriendlyByteBuf buf, TaggableIngredient ingredient)
-            {
-                ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode(buf,
-                    ingredient.itemStacks == null ? Collections.emptyList() : Arrays.asList(ingredient.values));
-            }
+    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC;
 
-
-            public TaggableIngredient decode(RegistryFriendlyByteBuf buf)
-            {
-                int size = buf.readVarInt();
-                return new TaggableIngredient(
-                    Stream.generate(() -> ItemStack.STREAM_CODEC.decode(buf)).
-                        limit(size).
-                        map(item -> new ItemValue(item.getItemHolder())).toArray(Value[]::new));
-            }
-        };
+    static
+    {
+        CONTENTS_STREAM_CODEC =
+            ItemStack.OPTIONAL_LIST_STREAM_CODEC.map(
+                list -> fromValues(list.stream().map(ItemStack::getItemHolder).map(ItemValue::new)),
+                ingredient -> Arrays.stream(ingredient.values).
+                    flatMap(value -> value.getItems().stream()).
+                    map(Holder::value).
+                    map(Item::getDefaultInstance).
+                    toList());
+    }
 }
