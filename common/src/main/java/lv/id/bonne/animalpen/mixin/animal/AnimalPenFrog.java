@@ -8,6 +8,8 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -117,23 +119,9 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                 froglightCount = Math.min(froglightCount, dropLimits);
             }
 
-            Holder<FrogVariant> variant = this.getVariant();
+            Item frogLightItem = this.pen$getFrogLightItem();
 
-            Item frogLightItem;
-
-            if (variant.is(FrogVariants.WARM))
-            {
-                frogLightItem = Items.PEARLESCENT_FROGLIGHT;
-            }
-            else if (variant.is(FrogVariants.COLD))
-            {
-                frogLightItem = Items.VERDANT_FROGLIGHT;
-            }
-            else if (variant.is(FrogVariants.TEMPERATE))
-            {
-                frogLightItem = Items.OCHRE_FROGLIGHT;
-            }
-            else
+            if (frogLightItem == null)
             {
                 return false;
             }
@@ -186,15 +174,17 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     }
 
 
+    @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.MAGMA_BLOCK,
-            this.animalPen$animalCount) == 0)
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.MAGMA_BLOCK,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -204,19 +194,81 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
 
         if (this.animalPen$frogLightCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.frog_light_ready").
+            component = Component.translatable(
+                    shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.frog_light_cooldown",
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.frog_light_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$frogLightCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        lines.add(Pair.of(Items.MAGMA_BLOCK.getDefaultInstance(), component));
+        Item frogLightItem = this.pen$getFrogLightItem();
+
+        if (frogLightItem != null)
+        {
+            lines.add(Pair.of(
+                new ItemStack[]{Items.MAGMA_BLOCK.getDefaultInstance(),
+                    frogLightItem.getDefaultInstance()},
+                component));
+        }
 
         return lines;
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$frogLightCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
+    }
+
+
+    /**
+     * This method returns frog light item based on frog type.
+     * @return forg light item or null.
+     */
+    @Nullable
+    @Unique
+    private Item pen$getFrogLightItem()
+    {
+        Holder<FrogVariant> variant = this.getVariant();
+
+        Item frogLightItem;
+
+        if (variant.is(FrogVariants.WARM))
+        {
+            frogLightItem = Items.PEARLESCENT_FROGLIGHT;
+        }
+        else if (variant.is(FrogVariants.COLD))
+        {
+            frogLightItem = Items.VERDANT_FROGLIGHT;
+        }
+        else if (variant.is(FrogVariants.TEMPERATE))
+        {
+            frogLightItem = Items.OCHRE_FROGLIGHT;
+        }
+        else
+        {
+            frogLightItem = null;
+        }
+
+        return frogLightItem;
     }
 
 

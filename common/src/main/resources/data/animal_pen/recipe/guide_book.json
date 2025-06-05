@@ -13,14 +13,14 @@
       "modid": "patchouli"
     }
   ],
-  "criteria": {
-    "tick": {
-      "trigger": "minecraft:tick"
+  "type": "patchouli:shapeless_book_recipe",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "animal_pen:animal_cage"
     }
-  },
-  "rewards": {
-    "loot": [
-      "animal_pen:grant_book_on_first_join"
-    ]
-  }
+  ],
+  "book": "animal_pen:guide_book"
 }
