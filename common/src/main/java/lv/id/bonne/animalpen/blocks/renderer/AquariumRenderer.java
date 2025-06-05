@@ -372,6 +372,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
                     combinedOverlay,
                     poseStack,
                     buffer,
+                    Minecraft.getInstance().level,
                     0
                 );
                 poseStack.popPose();
@@ -399,6 +400,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
                     combinedOverlay,
                     poseStack,
                     buffer,
+                    Minecraft.getInstance().level,
                     0
                 );
                 poseStack.popPose();
