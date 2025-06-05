@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
@@ -183,6 +184,32 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         }
 
         return super.getDestroyProgress(blockState, player, blockGetter, blockPos);
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Redstone related
+// ---------------------------------------------------------------------
+
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state)
+    {
+        return true;
+    }
+
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos)
+    {
+        BlockEntity tile = world.getBlockEntity(pos);
+
+        if (tile instanceof AquariumTileEntity aquarium)
+        {
+            return aquarium.getRedStoneSignal();
+        }
+
+        return 0;
     }
 
 
