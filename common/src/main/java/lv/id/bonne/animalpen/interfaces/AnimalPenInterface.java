@@ -13,6 +13,7 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -56,11 +57,22 @@ public interface AnimalPenInterface
 
 
     /**
+     * This method processes dispenser interaction with animals in pen.
+     * @param level the server level
+     * @param itemStack the item stack
+     * @param position the position of pen
+     * @return ItemStack that should be added in dispenser.
+     */
+    ItemStack animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position);
+
+
+    /**
      * This method returns the description lines that will be displayed above tile entity.
      * @param tick tile entity tick counter.
+     * @param shortLine indicates if text should be short or long.
      * @return List of pairs that contains display icon and text next to it
      */
-    List<Pair<ItemStack, Component>> animalPenGetLines(int tick);
+    List<Pair<ItemStack[], Component>> animalPenGetLines(int tick, boolean shortLine);
 
 
     /**
@@ -83,4 +95,16 @@ public interface AnimalPenInterface
      * @return Array of food items.
      */
     ItemStack[] getFood();
+
+
+    /**
+     * This method returns the redstone signal that indicates available actions.
+     * @return redstone signal based on bit value:
+     *    - 1 - animal count > 0
+     *    - 2 - can feed animal
+     *    - 4 - can perform first interaction
+     *    - 8 - can perform second interaction
+     *    and other values combined using `|`
+     */
+    int getRedStoneSignal();
 }
