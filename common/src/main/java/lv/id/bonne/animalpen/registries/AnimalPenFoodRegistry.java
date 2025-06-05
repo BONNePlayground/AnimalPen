@@ -16,6 +16,12 @@ import net.minecraft.world.item.crafting.Ingredient;
  */
 public class AnimalPenFoodRegistry
 {
+    public static void setSyncedData(Map<ResourceLocation, AnimalFoodData> newData)
+    {
+        DATA.clear();
+        DATA.putAll(newData);
+    }
+
     /**
      * Clear the registry
      */

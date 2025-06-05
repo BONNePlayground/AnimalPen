@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -149,36 +150,117 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        if (this.animalPen$eggCooldown > 0)
+        {
+            return ItemStack.EMPTY;
+        }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.BUCKET,
-            this.animalPen$animalCount) == 0)
+        if (itemStack.is(Items.BUCKET))
+        {
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
+
+            while (eggCount > 0)
+            {
+                ItemStack eggStack = new ItemStack(Items.EGG);
+
+                if (eggCount > 16)
+                {
+                    eggStack.setCount(16);
+                    eggCount -= 16;
+                }
+                else
+                {
+                    eggStack.setCount(eggCount);
+                    eggCount = 0;
+                }
+
+                Block.popResource(level, position.above(), eggStack);
+            }
+
+            level.playSound(null,
+                position,
+                SoundEvents.CHICKEN_EGG,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
+
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
         }
 
-        MutableComponent component;
+        MutableComponent component = Component.literal("");
 
         if (this.animalPen$eggCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.egg_ready").
-                withStyle(ChatFormatting.GREEN);
+            component.append(Component.translatable(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
+                withStyle(ChatFormatting.GREEN));
         }
         else
         {
-            component = Component.translatable("display.animal_pen.egg_cooldown",
+            component.append(Component.translatable(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.egg_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER));
+                    plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER)));
         }
 
-        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
+        lines.add(Pair.of(
+            new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.EGG.getDefaultInstance()},
+            component));
 
         return lines;
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$eggCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
     }
 
 
