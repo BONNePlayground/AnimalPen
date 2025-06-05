@@ -23,7 +23,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -240,14 +239,70 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        if (itemStack.is(Items.BOWL))
+        {
+            if (this.animalPen$supCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.BOWL,
-            this.animalPen$animalCount) == 0)
+            ItemStack bowlStack;
+            boolean suspicious = this.stewEffects != null;
+
+            if (suspicious)
+            {
+                bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
+                bowlStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, this.stewEffects);
+                this.stewEffects = null;
+            }
+            else
+            {
+                bowlStack = new ItemStack(Items.MUSHROOM_STEW);
+            }
+
+            SoundEvent soundEvent;
+
+            if (suspicious)
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY;
+            }
+            else
+            {
+                soundEvent = SoundEvents.MOOSHROOM_MILK;
+            }
+
+           level.playSound(null,
+                position,
+                soundEvent,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BOWL,
+                this.animalPen$animalCount);
+
+            return bowlStack;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
+
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BOWL,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -257,12 +312,18 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         if (this.animalPen$supCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.sup_ready").
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.sup_cooldown",
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.soup_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$supCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
@@ -278,9 +339,26 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             itemStack = Items.SUSPICIOUS_STEW.getDefaultInstance();
         }
 
-        lines.add(Pair.of(itemStack, component));
+        lines.add(Pair.of(
+            new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
+            component));
 
         return lines;
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$supCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 8 as it is second interaction
+            return super.animalPen$getRedStoneSignal() | 8;
+        }
     }
 
 

@@ -13,16 +13,16 @@ import org.spongepowered.asm.mixin.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -31,6 +31,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -61,6 +62,10 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Shadow
     public abstract boolean isSheared();
+
+
+    @Shadow
+    public abstract DyeColor getColor();
 
 
     @Intrinsic
@@ -234,14 +239,92 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        if (itemStack.is(Items.SHEARS))
+        {
+            if (this.animalPen$woolCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.SHEARS,
-            this.animalPen$animalCount) == 0)
+            this.setSheared(true);
+
+            itemStack.hurtAndBreak(1, level, null, item -> {});
+
+            ItemLike itemLike = this.pen$getWoolItem(this.getColor());
+
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            List<ItemStack> itemStackList = new ArrayList<>();
+
+            int woolCount = 0;
+            int animalCounter = 0;
+
+            while (woolCount <= dropLimits && animalCounter++ < this.animalPen$animalCount)
+            {
+                ItemStack woolStack = new ItemStack(itemLike, level.random.nextInt(1, 4));
+                woolCount += woolStack.getCount();
+
+                boolean added = false;
+
+                for (ItemStack stack : itemStackList)
+                {
+                    if (ItemStack.isSameItemSameComponents(woolStack, stack) &&
+                        stack.getCount() < stack.getMaxStackSize())
+                    {
+                        stack.grow(woolStack.getCount());
+                        added = true;
+                        break;
+                    }
+                }
+
+                if (!added)
+                {
+                    itemStackList.add(woolStack);
+                }
+            }
+
+            itemStackList.forEach(seedStack ->
+                Block.popResource(level, position.above(), seedStack));
+
+            this.setSheared(true);
+
+            level.playSound(null,
+                position,
+                SoundEvents.SHEEP_SHEAR,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.SHEARS,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
+
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.SHEARS,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -251,19 +334,53 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
         if (this.animalPen$woolCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.wool_ready").
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.wool_cooldown",
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.wool_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$woolCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        lines.add(Pair.of(Items.SHEARS.getDefaultInstance(), component));
+        ItemLike itemLike = this.pen$getWoolItem(this.getColor());
+
+        lines.add(Pair.of(
+            new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
+            component));
 
         return lines;
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$woolCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
+    }
+
+
+    @Unique
+    public Item pen$getWoolItem(DyeColor color)
+    {
+        String colorName = color.getName();
+        ResourceLocation woolId = ResourceLocation.withDefaultNamespace(colorName + "_wool");
+        return BuiltInRegistries.ITEM.getValue(woolId);
     }
 
 

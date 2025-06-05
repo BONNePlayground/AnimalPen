@@ -6,6 +6,8 @@ import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import dev.architectury.registry.registries.RegistrarManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -13,6 +15,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -159,4 +163,17 @@ public class TaggableIngredient implements Predicate<ItemStack>
     private ItemStack[] itemStacks;
 
     public static final Codec<TaggableIngredient> CODEC = codec();
+
+    private static TaggableIngredient fromValues(Stream<? extends Value> stream) {
+        return new TaggableIngredient(stream.toArray(Value[]::new));
+    }
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, TaggableIngredient> CONTENTS_STREAM_CODEC =
+        ItemStack.OPTIONAL_LIST_STREAM_CODEC.map(
+            list -> fromValues(list.stream().map(ItemStack::getItemHolder).map(ItemValue::new)),
+            ingredient -> Arrays.stream(ingredient.values).
+                flatMap(value -> value.getItems().stream()).
+                map(Holder::value).
+                map(Item::getDefaultInstance).
+                toList());
 }
