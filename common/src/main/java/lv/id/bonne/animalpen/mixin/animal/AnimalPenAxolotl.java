@@ -153,7 +153,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         }
         else if (itemStack.is(Items.WATER_BUCKET))
         {
-            if (player.getLevel().isClientSide())
+            if (player.level().isClientSide())
             {
                 // Next is processed only for server side.
                 return true;
@@ -172,7 +172,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             player.setItemInHand(hand,
                 ItemUtils.createFilledResult(itemStack, player, bucket, false));
 
-            player.getLevel().playSound(null,
+            player.level().playSound(null,
                 position,
                 SoundEvents.BUCKET_FILL_AXOLOTL,
                 SoundSource.NEUTRAL,

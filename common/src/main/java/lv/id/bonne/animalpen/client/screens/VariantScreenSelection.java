@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -565,7 +564,7 @@ public class VariantScreenSelection extends Screen
 
                 for (int i = 0; i < textList.size(); i++)
                 {
-                    this.renderTextLine(poseStack, textList.get(i), leftOffset, top + i * 16, mouseX, mouseY);
+                    this.renderTextLine(graphics, textList.get(i), leftOffset, top + i * 16, mouseX, mouseY);
                 }
             }
         }
@@ -574,14 +573,14 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders text component and inserts icons in their correct spots.
-     * @param poseStack The pose stack.
+     * @param graphics The pose stack.
      * @param componentPair The pair that contains icons and text
      * @param leftOffset Offset from left side.
      * @param y The offset from top side.
      * @param mouseX The mouse X location.
      * @param mouseY The mouse Y location.
      */
-    private void renderTextLine(@NotNull PoseStack poseStack,
+    private void renderTextLine(@NotNull GuiGraphics graphics,
         Pair<ItemStack[], Component> componentPair,
         int leftOffset,
         int y,
@@ -598,7 +597,6 @@ public class VariantScreenSelection extends Screen
         // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
         int whiteSpace = this.font.width(" ");
         boolean isFirst = true;
-        ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
 
         // Process each text part
         for (Component part : text.toFlatList(Style.EMPTY))
@@ -620,7 +618,7 @@ public class VariantScreenSelection extends Screen
                 }
 
                 // Render the first item
-                graphics.renderItem(poseStack, first, leftOffset, y);
+                graphics.renderItem(first, leftOffset, y);
                 itemPositions.add(Pair.of(first, new Rect2i(leftOffset, y, 16, 16)));
                 leftOffset += 16 - whiteSpace;
             }
@@ -639,14 +637,19 @@ public class VariantScreenSelection extends Screen
                 }
 
                 // Render the second item (if available)
-                graphics.renderItem(poseStack, second, leftOffset, y);
+                graphics.renderItem(second, leftOffset, y);
                 itemPositions.add(Pair.of(second, new Rect2i(leftOffset, y, 16, 16)));
                 leftOffset += 16 - whiteSpace;
             }
             else
             {
                 // Render regular text
-                graphics.drawString(poseStack, part, leftOffset, y + this.font.lineHeight / 2f + 2, 0xFFFFFF);
+                graphics.drawString(this.font,
+                    part,
+                    leftOffset,
+                    y + this.font.lineHeight / 2 + 2,
+                    0xffffff);
+
                 leftOffset += this.font.width(part);
             }
 
@@ -663,7 +666,7 @@ public class VariantScreenSelection extends Screen
                 mouseY >= rect.getY() &&
                 mouseY <= rect.getY() + rect.getHeight())
             {
-                this.renderTooltip(poseStack, itemPos.getLeft(), mouseX, mouseY);
+                graphics.renderTooltip(this.font, itemPos.getLeft(), mouseX, mouseY);
                 break;
             }
         }

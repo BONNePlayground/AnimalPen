@@ -431,7 +431,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
                 this.font.drawInBatch(
                     part,  // The text component
-                    -6, 0,                     // X, Y position in the matrix
+                    0, -6,                     // X, Y position in the matrix
                     0xFFFFFF,                    // Color (white)
                     false,                       // Drop shadow
                     poseStack.last().pose(),     // Transformation matrix

@@ -231,13 +231,19 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     @Override
     public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        if (this.animalPen$sniffingCooldown > 0)
+        if (itemStack.is(Items.BOWL))
         {
-            return ItemStack.EMPTY;
-        }
+            if (this.animalPen$sniffingCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
 
-        if (itemStack.is(Items.BUCKET))
-        {
+            LootTable lootTable = level.getServer().getLootData().getLootTable(BuiltInLootTables.SNIFFER_DIGGING);
+            LootParams lootParams = new LootParams.Builder(level).
+                withParameter(LootContextParams.ORIGIN, position.getCenter()).
+                withParameter(LootContextParams.THIS_ENTITY, this).
+                create(LootContextParamSets.GIFT);
+
             int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TORCHFLOWER_SEEDS);
 
             if (dropLimits <= 0)
@@ -245,35 +251,84 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 dropLimits = Integer.MAX_VALUE;
             }
 
+            List<ItemStack> droppedSeeds = new LinkedList<>();
+
             int seedCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
             while (seedCount > 0)
             {
-                ItemStack seedStack = new ItemStack(Items.TORCHFLOWER_SEEDS);
-                int stackSize = seedStack.getMaxStackSize();
+                List<ItemStack> randomItems = lootTable.getRandomItems(lootParams);
 
-                if (seedCount > stackSize)
+                if (randomItems.isEmpty())
                 {
-                    seedStack.setCount(stackSize);
-                    seedCount -= stackSize;
-                }
-                else
-                {
-                    seedStack.setCount(seedCount);
-                    seedCount = 0;
+                    // Just a stop on infinite loop
+                    break;
                 }
 
-                Block.popResource(level, position.above(), seedStack);
+                seedCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
+
+                droppedSeeds.addAll(randomItems);
             }
+
+            Utils.mergeItemStacks(droppedSeeds).forEach(seedStack ->
+                Block.popResource(level, position.above(), seedStack));
 
             level.playSound(null,
                 position,
-                SoundEvents.SNIFFER_DIGGING,
+                SoundEvents.SNIFFER_DROP_SEED,
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
 
             this.animalPen$sniffingCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BOWL,
+                this.animalPen$animalCount);
+
+            return ItemStack.EMPTY;
+        }
+        else if (itemStack.is(Items.BUCKET))
+        {
+            if (this.animalPen$eggCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
+
+            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SNIFFER_EGG);
+
+            if (dropLimits <= 0)
+            {
+                dropLimits = Integer.MAX_VALUE;
+            }
+
+            int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
+
+            while (eggCount > 0)
+            {
+                ItemStack eggStack = new ItemStack(Items.SNIFFER_EGG);
+
+                if (eggCount > 64)
+                {
+                    eggStack.setCount(64);
+                    eggCount -= 64;
+                }
+                else
+                {
+                    eggStack.setCount(eggCount);
+                    eggCount = 0;
+                }
+
+                Block.popResource(level, position.above(), eggStack);
+            }
+
+            level.playSound(null,
+                position,
+                SoundEvents.SNIFFER_EGG_PLOP,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
@@ -291,96 +346,100 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!shortLine ||
             AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount) != 0)
         {
-            // Nothing to return.
-            return lines;
-        }
-
-        MutableComponent component;
+            MutableComponent component;
 
             if (this.animalPen$sniffingCooldown == 0)
             {
                 component = Component.translatable(
-                    shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
-                    Component.literal("\uE000"),
-                    Component.literal("\uE001")).
+                        shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                        Component.literal("\uE000"),
+                        Component.literal("\uE001")).
                     withStyle(ChatFormatting.GREEN);
             }
             else
             {
                 component = Component.translatable(
-                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.sniff_cooldown",
-                Component.literal("\uE000"),
-                Component.literal("\uE001"),
+                    shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.sniff_cooldown",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001"),
                     LocalTime.of(0, 0, 0).
                         plusSeconds(this.animalPen$sniffingCooldown / 20).format(AnimalPen.DATE_FORMATTER));
             }
-
 
             List<ItemStack> food = List.of(Items.TORCHFLOWER_SEEDS.getDefaultInstance(),
                 Items.PITCHER_POD.getDefaultInstance());
 
             ItemStack foodItem;
-        lines.add(Pair.of(
-            new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.TORCHFLOWER_SEEDS.getDefaultInstance()},
-            component));
-
-        return lines;
-    }
 
             int size = food.size();
             int index = (tick / 100) % size;
 
             foodItem = food.get(index);
 
-            lines.add(Pair.of(foodItem, component));
+            lines.add(Pair.of(
+                new ItemStack[]{Items.BOWL.getDefaultInstance(), foodItem},
+                component));
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.BUCKET,
-            this.animalPen$animalCount) == 0)
+        if (!shortLine ||
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount) != 0)
         {
-            // Nothing to return.
-            return lines;
+            MutableComponent component;
+
+            if (this.animalPen$eggCooldown == 0)
+            {
+                component = Component.translatable(
+                        shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                        Component.literal("\uE000"),
+                        Component.literal("\uE001")).
+                    withStyle(ChatFormatting.GREEN);
+            }
+            else
+            {
+                component = Component.translatable(
+                    shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.egg_cooldown",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001"),
+                    LocalTime.of(0, 0, 0).
+                        plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER));
+            }
+
+            lines.add(Pair.of(
+                new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.SNIFFER_EGG.getDefaultInstance()},
+                component));
         }
-
-        MutableComponent component;
-
-        if (this.animalPen$eggCooldown == 0)
-        {
-            component = Component.translatable("display.animal_pen.egg_ready").
-                withStyle(ChatFormatting.GREEN);
-        }
-        else
-        {
-            component = Component.translatable("display.animal_pen.egg_cooldown",
-                LocalTime.of(0, 0, 0).
-                    plusSeconds(this.animalPen$eggCooldown / 20).format(AnimalPen.DATE_FORMATTER));
-        }
-
-        lines.add(Pair.of(Items.EGG.getDefaultInstance(), component));
-
 
         return lines;
+    }
+
 
     @Intrinsic
     public int animalPen$getRedStoneSignal()
     {
-        if (this.animalPen$sniffingCooldown > 0)
-        {
-            return super.animalPen$getRedStoneSignal();
-        }
-        else
+        int returnValue = super.animalPen$getRedStoneSignal();
+
+        if (this.animalPen$sniffingCooldown <= 0)
         {
             // signal | 4 as it is first interaction
-            return super.animalPen$getRedStoneSignal() | 4;
+            returnValue |= 4;
         }
+
+        if (this.animalPen$eggCooldown <= 0)
+        {
+            // signal | 8 as it is second interaction
+            returnValue |=  8;
+        }
+
+        return returnValue;
     }
 
 
