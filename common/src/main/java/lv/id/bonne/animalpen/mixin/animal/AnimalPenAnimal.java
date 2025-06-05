@@ -219,14 +219,23 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Intrinsic
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = new LinkedList<>();
+        return ItemStack.EMPTY;
+    }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.APPLE,
-            this.animalPen$animalCount) == 0)
+
+    @Intrinsic
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
+
+        if (this.animalPen$getFood() == null ||
+            this.animalPen$getFood().length == 0 ||
+            shortLine && AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.APPLE,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -236,12 +245,16 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (this.animalPen$foodCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.food_ready").
+            component = Component.translatable(shortLine ? "display.animal_pen.ready" : "display.animal_pen.food_ready",
+                Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.food_cooldown",
+            component = Component.translatable(shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.food_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$foodCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
@@ -266,7 +279,7 @@ public abstract class AnimalPenAnimal extends Mob
             foodItem = food[index];
         }
 
-        lines.add(Pair.of(foodItem, component));
+        lines.add(Pair.of(new ItemStack[]{foodItem, foodItem}, component));
 
         return lines;
     }
@@ -277,6 +290,23 @@ public abstract class AnimalPenAnimal extends Mob
     public ItemStack[] animalPen$getFood()
     {
         return AnimalPenFoodRegistry.getFood(this.getType().arch$registryName());
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        // Default value if animals are here.
+        int value = 1;
+
+        if (this.animalPen$foodCooldown > 0 || this.animalPen$getFood() == null || this.animalPen$getFood().length == 0)
+        {
+            // if cooldown or cooldown is not applicable return existing value
+            return value;
+        }
+
+        // second bit value
+        return value | 2;
     }
 
 

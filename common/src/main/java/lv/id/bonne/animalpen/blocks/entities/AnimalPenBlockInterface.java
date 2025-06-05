@@ -75,7 +75,13 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
 
     /**
      * This method returns the description lines for cooldowns.
+     * @param shortText Indicates if text should be short or long version
      * @return List of pairs that contains display icon and text next to it
      */
-    List<Pair<ItemStack, Component>> getCooldownLines();
+    List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText);
+
+    /**
+     * This method triggers block to trigger save.
+     */
+    void triggerUpdate();
 }

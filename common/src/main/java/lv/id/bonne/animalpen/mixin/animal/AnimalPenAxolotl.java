@@ -15,6 +15,7 @@ import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -30,6 +32,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
@@ -37,6 +40,10 @@ import net.minecraft.world.level.Level;
 @Mixin(Axolotl.class)
 public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 {
+    @Shadow
+    public abstract void saveToBucketTag(ItemStack arg);
+
+
     protected AnimalPenAxolotl(EntityType<? extends Mob> entityType,
         Level level)
     {
@@ -146,6 +153,36 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
             return true;
         }
+        else if (itemStack.is(Items.WATER_BUCKET))
+        {
+            if (player.level().isClientSide())
+            {
+                // Next is processed only for server side.
+                return true;
+            }
+
+            if (this.animalPen$animalCount <= 1)
+            {
+                return false;
+            }
+
+            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+            this.saveToBucketTag(bucket);
+
+            this.animalPen$animalCount--;
+
+            player.setItemInHand(hand,
+                ItemUtils.createFilledResult(itemStack, player, bucket, false));
+
+            player.level().playSound(null,
+                position,
+                SoundEvents.BUCKET_FILL_AXOLOTL,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            return true;
+        }
 
         return false;
     }
@@ -153,43 +190,95 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        if (itemStack.is(Items.WATER_BUCKET))
+        {
+            if (this.animalPen$animalCount <= 1)
+            {
+                return ItemStack.EMPTY;
+            }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.APPLE,
-            this.animalPen$animalCount) == 0)
+            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+            this.saveToBucketTag(bucket);
+
+            itemStack.shrink(1);
+
+            level.playSound(null,
+                position,
+                SoundEvents.BUCKET_FILL_AXOLOTL,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$animalCount--;
+
+            return bucket;
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
+
+        if (this.animalPen$getFood() == null ||
+            this.animalPen$getFood().length == 0 ||
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.APPLE,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
         }
 
         MutableComponent component =
-            Component.translatable("display.animal_pen.stored_food", this.animalPen$storedFood);
+            Component.translatable("display.animal_pen.stored_food",
+                Component.literal("\uE000"),
+                this.animalPen$storedFood);
 
         ItemStack[] food = this.animalPen$getFood();
-        ItemStack foodItem;
 
-        if (food == null || food.length == 0)
+        if (food != null && food.length != 0)
         {
-            // No food item for this entity.
-            return lines;
-        }
-        else if (food.length == 1)
-        {
-            foodItem = food[0];
-        }
-        else
-        {
-            int size = food.length;
-            int index = (tick / 100) % size;
+            ItemStack foodItem;
 
-            foodItem = food[index];
+            if (food.length == 1)
+            {
+                foodItem = food[0];
+            }
+            else
+            {
+                int size = food.length;
+                int index = (tick / 100) % size;
+
+                foodItem = food[index];
+            }
+
+            lines.add(Pair.of(new ItemStack[]{foodItem}, component));
         }
 
-        lines.add(Pair.of(foodItem, component));
+
+        if (!shortLine && this.animalPen$animalCount > 1)
+        {
+            component = Component.translatable(
+                "display.animal_pen.full_ready",
+                Component.literal("\uE000"),
+                Component.literal("\uE001")).
+                withStyle(ChatFormatting.GREEN);
+
+            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+            this.saveToBucketTag(bucket);
+
+            lines.add(Pair.of(
+                new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
+                component));
+        }
 
         return lines;
     }

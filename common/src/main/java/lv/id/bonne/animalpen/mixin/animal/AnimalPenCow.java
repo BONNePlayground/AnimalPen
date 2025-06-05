@@ -20,6 +20,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
@@ -131,14 +133,47 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public List<Pair<ItemStack, Component>> animalPen$animalPenGetLines(int tick)
+    public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        List<Pair<ItemStack, Component>> lines = super.animalPen$animalPenGetLines(tick);
+        if (itemStack.is(Items.BUCKET))
+        {
+            if (this.animalPen$milkCooldown > 0)
+            {
+                return ItemStack.EMPTY;
+            }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-            this.getType(),
-            Items.BUCKET,
-            this.animalPen$animalCount) == 0)
+            itemStack.shrink(1);
+
+            level.playSound(null,
+                position,
+                SoundEvents.COW_MILK,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+
+            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount);
+
+            return Items.MILK_BUCKET.getDefaultInstance();
+        }
+
+        return super.animalPen$animalPenInteract(level, itemStack, position);
+    }
+
+
+    @Intrinsic
+    @Override
+    public List<Pair<ItemStack[], Component>> animalPen$animalPenGetLines(int tick, boolean shortLine)
+    {
+        List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
+
+        if (shortLine &&
+            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.getType(),
+                Items.BUCKET,
+                this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
@@ -148,19 +183,42 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
 
         if (this.animalPen$milkCooldown == 0)
         {
-            component = Component.translatable("display.animal_pen.milk_ready").
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+                    Component.literal("\uE000"),
+                    Component.literal("\uE001")).
                 withStyle(ChatFormatting.GREEN);
         }
         else
         {
-            component = Component.translatable("display.animal_pen.milk_cooldown",
+            component = Component.translatable(
+                shortLine ? "display.animal_pen.cooldown" : "display.animal_pen.milk_cooldown",
+                Component.literal("\uE000"),
+                Component.literal("\uE001"),
                 LocalTime.of(0, 0, 0).
                     plusSeconds(this.animalPen$milkCooldown / 20).format(AnimalPen.DATE_FORMATTER));
         }
 
-        lines.add(Pair.of(Items.MILK_BUCKET.getDefaultInstance(), component));
+        lines.add(Pair.of(
+            new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.MILK_BUCKET.getDefaultInstance()},
+            component));
 
         return lines;
+    }
+
+
+    @Intrinsic
+    public int animalPen$getRedStoneSignal()
+    {
+        if (this.animalPen$milkCooldown > 0)
+        {
+            return super.animalPen$getRedStoneSignal();
+        }
+        else
+        {
+            // signal | 4 as it is first interaction
+            return super.animalPen$getRedStoneSignal() | 4;
+        }
     }
 
 
