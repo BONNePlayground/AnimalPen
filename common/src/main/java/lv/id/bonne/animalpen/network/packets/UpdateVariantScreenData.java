@@ -7,44 +7,36 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import java.util.function.Supplier;
+
 import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 
 
 /**
  * This method triggers update on VariantSelectionScreen
  */
-public class UpdateVariantScreenData
+public record UpdateVariantScreenData(BlockPos position)
 {
-    /**
-     * The encoding of the packet.
-     * @param position The block position that is affected.
-     * @return packet buffer.
-     */
-    public static FriendlyByteBuf encode(BlockPos position)
+    public static void encode(UpdateVariantScreenData packet, FriendlyByteBuf buffer)
     {
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-        buffer.writeBlockPos(position);
-
-        return buffer;
+        buffer.writeBlockPos(packet.position);
     }
 
 
-    /**
-     * This method handles incoming packet on server.
-     * @param friendlyByteBuf The incoming packet.
-     * @param packetContext The packet context.
-     */
-    public static void handle(FriendlyByteBuf friendlyByteBuf, NetworkManager.PacketContext packetContext)
+    public static UpdateVariantScreenData decode(FriendlyByteBuf buffer)
     {
-        BlockPos blockPos = friendlyByteBuf.readBlockPos();
+        return new UpdateVariantScreenData(buffer.readBlockPos());
+    }
+
+
+    public void handle(Supplier<NetworkManager.PacketContext> context)
+    {
+        NetworkManager.PacketContext packetContext = context.get();
 
         if (packetContext.getEnv() == EnvType.SERVER)
         {
@@ -64,7 +56,7 @@ public class UpdateVariantScreenData
                 return;
             }
 
-            if (!screenSelection.getPosition().equals(blockPos))
+            if (!screenSelection.getPosition().equals(this.position))
             {
                 // Only if it is the same screen
                 return;
@@ -74,10 +66,4 @@ public class UpdateVariantScreenData
             screenSelection.update();
         });
     }
-
-
-    /**
-     * The resource ID.
-     */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_variant_screen_data");
 }
