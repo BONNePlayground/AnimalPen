@@ -9,9 +9,10 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
+import dev.architectury.utils.Env;
+import dev.architectury.utils.EnvExecutor;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
@@ -76,20 +77,19 @@ public final class AnimalPen
             UpdateAnimalSizeData.STREAM_CODEC,
             UpdateAnimalSizeData::handle);
 
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
-            AnimalFoodRegistryData.ID,
-            AnimalFoodRegistryData.STREAM_CODEC,
-            AnimalFoodRegistryData::handle);
-
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
-            UpdateVariantScreenData.ID,
-            UpdateVariantScreenData.STREAM_CODEC,
-            UpdateVariantScreenData::handle);
-
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalFoodReloadListener(),
             new ResourceLocation(MOD_ID, "animal_foods"));
+
+        EnvExecutor.runInEnv(Env.SERVER, () -> AnimalPen::initializeServer);
+    }
+
+
+    private static void initializeServer()
+    {
+        NetworkManager.registerS2CPayloadType(AnimalFoodRegistryData.ID, AnimalFoodRegistryData.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(UpdateVariantScreenData.ID, UpdateVariantScreenData.STREAM_CODEC);
 
         PlayerEvent.PLAYER_JOIN.register(player ->
             NetworkManager.sendToPlayer(player,
@@ -102,9 +102,6 @@ public final class AnimalPen
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
-
-    public static final NetworkChannel CHANNEL =
-        NetworkChannel.create(new ResourceLocation(AnimalPen.MOD_ID, "network"));
 
     public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
         appendValue(MINUTE_OF_HOUR, 2).

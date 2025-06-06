@@ -243,7 +243,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -352,7 +352,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
