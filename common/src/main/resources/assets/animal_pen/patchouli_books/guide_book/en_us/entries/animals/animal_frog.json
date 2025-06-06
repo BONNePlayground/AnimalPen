@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:magma_block",
-      "text": "Feed frogs magma block will drop their frog light."
+      "text": "Feed frogs magma block will drop their frog light. [redstone interaction 1]"
     }
   ]
 }
