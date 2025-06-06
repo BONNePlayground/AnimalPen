@@ -256,6 +256,7 @@ public class AnimalContainerItem extends Item
                     {
                         // Clear item tag.
                         itemInHand.remove(DataComponents.ENTITY_DATA);
+                        itemInHand.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
                     }
                     else
                     {
