@@ -308,7 +308,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 CompoundTag itemInHandTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
                 if (animal == null ||
-                    !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).
+                    !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).orElse("").
                         equals(animal.getType().arch$registryName().toString()))
                 {
                     // Cannot do with different animal types.

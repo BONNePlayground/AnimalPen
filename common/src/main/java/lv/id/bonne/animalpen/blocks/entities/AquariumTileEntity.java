@@ -304,7 +304,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 CompoundTag itemInHandTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
                 if (animal == null ||
-                    !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
+                    !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).orElse("").
                         equals(animal.getType().arch$registryName().toString()))
                 {
                     // Cannot do with different animal types.
