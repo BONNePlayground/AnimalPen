@@ -242,10 +242,6 @@ public class AnimalContainerItem extends Item
                 map(entity -> (PathfinderMob) entity).
                 ifPresent(clone ->
                 {
-                    clone.finalizeSpawn(level,
-                        level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
-                        EntitySpawnReason.SPAWN_ITEM_USE,
-                        null);
                     level.addFreshEntity(clone);
 
                     CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
