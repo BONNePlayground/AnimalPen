@@ -10,20 +10,23 @@
     },
     {
       "type": "patchouli:text",
-      "text": "First bit [000x] returns if animal pen is empty. It will emit signal 0 only if animal pen is empty."
+      "title": "[000x]",
+      "text": "First bit returns if animal pen is empty. It will emit signal 0 only if animal pen is empty."
     },
     {
       "type": "patchouli:text",
-      "text": "Second bit [00x0] returns if animal can be breed. When outcome is 3, 7, 11 or 15, breeding is available. When outcome is 0, 1, 5, 9, or 13, breeding is on cooldown."
-
+      "title": "[00x0]",
+      "text": "Second bit returns if animal can be breed. $(br2)When outcome is 3, 7, 11 or 15, breeding is available. $(br2)When outcome is 0, 1, 5, 9, or 13, breeding is on cooldown."
     },
     {
       "type": "patchouli:text",
-      "text": "Third bit [0x00] returns if player can use first interaction. When outcome is 5, 7, 13, or 15, first interaction is available. When outcome is 0, 1, 3, 9, or 11, interaction is on cooldown."
+      "title": "[0x00]",
+      "text": "Third bit returns if player can use first interaction. $(br2)When outcome is 5, 7, 13, or 15, first interaction is available. $(br2)When outcome is 0, 1, 3, 9, or 11, interaction is on cooldown."
     },
     {
       "type": "patchouli:text",
-      "text": "Forth bit [x000] returns if player can use second interaction. When outcome is 9, 11, 13, or 15, second interaction is available. When outcome is 0, 1, 3, 5, or 7, interaction is on cooldown."
+      "title": "[x000]",
+      "text": "Forth bit returns if player can use second interaction. $(br2)When outcome is 9, 11, 13, or 15, second interaction is available. $(br2)When outcome is 0, 1, 3, 5, or 7, interaction is on cooldown."
     }
   ]
 }
