@@ -27,11 +27,6 @@
       "type": "patchouli:crafting",
       "recipe": "animal_pen:animal_pen_spruce",
       "recipe2": "animal_pen:animal_pen_warped"
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "minecraft:dispenser",
-      "text": "You can use dispenser to interact with tools: (bucket, water bucket, shear, brush, glass bottle, bowl)."
     }
   ]
 }

@@ -1,0 +1,29 @@
+{
+  "name": "Redstone Signal",
+  "icon": "minecraft:comparator",
+  "category": "animal_pen:category_aquarium",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can get status of aquarium using Redstone Comparator. It will return value based on available actions under binary value [0000]."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "First bit [000x] returns if aquarium is empty. It will emit signal 0 only if aquarium is empty."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Second bit [00x0] returns if animal can be breed. When outcome is 3, 7, 11 or 15, breeding is available. When outcome is 0, 1, 5, 9, or 13, breeding is on cooldown."
+
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Third bit [0x00] returns if player can use first interaction. When outcome is 5, 7, 13, or 15, first interaction is available. When outcome is 0, 1, 3, 9, or 11, interaction is on cooldown."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Forth bit [x000] returns if player can use second interaction. When outcome is 9, 11, 13, or 15, second interaction is available. When outcome is 0, 1, 3, 5, or 7, interaction is on cooldown."
+    }
+  ]
+}

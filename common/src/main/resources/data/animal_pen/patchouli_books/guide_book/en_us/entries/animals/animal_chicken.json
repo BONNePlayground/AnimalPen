@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bucket",
-      "text": "Use a bucket on the Chicken Pen to collect eggs. More chickens mean more eggs."
+      "text": "Use a bucket on the Chicken Pen to collect eggs. More chickens mean more eggs. [redstone interaction 1]"
     }
   ]
 }
