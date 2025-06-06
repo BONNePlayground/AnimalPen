@@ -464,7 +464,7 @@ public class VariantScreenSelection extends Screen
         else
         {
             text = new TranslatableComponent(FIXED_TEXT,
-                this.blockEntityInterface.getAnimalDisplaySize());
+                this.blockEntityInterface.getAnimalCount());
         }
 
         poseStack.pushPose();
