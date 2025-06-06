@@ -231,14 +231,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
                                         this.getBlockPos().getZ()) < 50).
                                 toList(),
-                            UpdateVariantScreenData.ID,
-                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos()));
                     }
                 }
 
@@ -337,14 +336,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
                                         this.getBlockPos().getZ()) < 50).
                                 toList(),
-                            UpdateVariantScreenData.ID,
-                            UpdateVariantScreenData.encode(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos()));
                     }
                 }
 
@@ -613,14 +611,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         if (this.level != null && !this.level.isClientSide())
         {
             // Trigger update.
-            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(player ->
-                        player.distanceToSqr(this.getBlockPos().getX(),
+            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(other ->
+                        other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),
                             this.getBlockPos().getZ()) < 50).
                     toList(),
-                UpdateVariantScreenData.ID,
-                UpdateVariantScreenData.encode(this.getBlockPos()));
+                new UpdateVariantScreenData(this.getBlockPos()));
         }
     }
 
@@ -644,14 +641,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         if (this.level != null && !this.level.isClientSide())
         {
             // Trigger screen Update
-            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(player ->
-                        player.distanceToSqr(this.getBlockPos().getX(),
+            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                    filter(other ->
+                        other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),
                             this.getBlockPos().getZ()) < 50).
                     toList(),
-                UpdateVariantScreenData.ID,
-                UpdateVariantScreenData.encode(this.getBlockPos()));
+                new UpdateVariantScreenData(this.getBlockPos()));
         }
     }
 

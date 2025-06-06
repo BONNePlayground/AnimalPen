@@ -21,12 +21,12 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bucket",
-      "text": "Using a bucket on the Animal Pen with a mooshroom inside will give the player a bucket of milk."
+      "text": "Using a bucket on the Animal Pen with a mooshroom inside will give the player a bucket of milk. [redstone interaction 1]"
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bowl",
-      "text": "Using a bowl on the Animal Pen with a mooshroom inside will give the player mushroom stew."
+      "text": "Using a bowl on the Animal Pen with a mooshroom inside will give the player mushroom stew. [redstone interaction 2]"
     },
     {
       "type": "patchouli:spotlight",

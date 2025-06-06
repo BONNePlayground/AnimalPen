@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
@@ -17,10 +18,7 @@ import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
-import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import lv.id.bonne.animalpen.registries.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Items;
@@ -74,14 +72,15 @@ public final class AnimalPen
             UpdateAnimalSizeData.ID,
             UpdateAnimalSizeData::handle);
 
-        NetworkManager.registerReceiver(
-            NetworkManager.Side.S2C,
-            AnimalFoodRegistryData.ID,
+        // Register into separate channel, as S2C crashes on fabric servers.
+        CHANNEL.register(AnimalFoodRegistryData.class,
+            AnimalFoodRegistryData::encode,
+            AnimalFoodRegistryData::decode,
             AnimalFoodRegistryData::handle);
 
-        NetworkManager.registerReceiver(
-            NetworkManager.Side.S2C,
-            UpdateVariantScreenData.ID,
+        CHANNEL.register(UpdateVariantScreenData.class,
+            UpdateVariantScreenData::encode,
+            UpdateVariantScreenData::decode,
             UpdateVariantScreenData::handle);
 
         // register the listener
@@ -90,9 +89,7 @@ public final class AnimalPen
             new ResourceLocation(MOD_ID, "animal_foods"));
 
         PlayerEvent.PLAYER_JOIN.register(player ->
-            NetworkManager.sendToPlayer(player,
-                AnimalFoodRegistryData.ID,
-                AnimalFoodRegistryData.encode()));
+            CHANNEL.sendToPlayer(player, AnimalFoodRegistryData.serverData()));
     }
 
 
@@ -101,6 +98,9 @@ public final class AnimalPen
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
+
+    public static final NetworkChannel CHANNEL =
+        NetworkChannel.create(new ResourceLocation(AnimalPen.MOD_ID, "network"));
 
     public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
         appendValue(MINUTE_OF_HOUR, 2).
