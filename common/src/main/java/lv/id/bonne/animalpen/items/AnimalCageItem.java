@@ -238,11 +238,6 @@ public class AnimalCageItem extends Item
                 map(entity -> (Animal) entity).
                 ifPresent(clone ->
                 {
-                    clone.finalizeSpawn(level,
-                        level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
-                        MobSpawnType.EVENT,
-                        null,
-                        itemTag);
                     level.addFreshEntity(clone);
 
                     long amount = itemInHand.getOrCreateTag().getLong(TAG_AMOUNT);
