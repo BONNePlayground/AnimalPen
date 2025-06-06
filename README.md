@@ -10,7 +10,7 @@ No more overcrowded barns - keep your animals neatly contained while still breed
 ## 🎮 How It Works:
 
 ✔️ **Animal Cage & Container** – Capture land animals with the **Animal Cage** and water creatures with the **Animal Container**.  
-✔️ **Feeding animals acts as breeding** – No need for free-roaming animals, just feed them inside their pen!  
+✔️ **Feeding animals acts as breeding** – No need for free-roaming animals, just feed them inside their pen!
 ✔️ **Most vanilla interactions**(1) are possible, including:  
     🗡️ _Animal farming_ for loot  
     ✂️ _Shearing sheep_  
@@ -19,11 +19,12 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     🐝 _Bee pollen regeneration_  
     🐢 _Turtle scutes dropping based on settings_  
     🖌️ _Brush scutes from armadillo_
+    🧺 _Water bucket to pick up fishes or axolotls_
 
 ✔️ **Custom Interactions:**  
-🔹 Chickens & Turtles – Use a bucket to collect eggs.  
+🔹 Chickens, Turtles and Sniffers – Use a bucket to collect eggs.  
 🔹 Turtles – Drop **scutes** after feeding (configurable timing).  
-🔹 Sniffers – Require a bucket to drop seeds.  
+🔹 Sniffers – Require a bowl to drop seeds.  
 🔹 Fish Feeding – Fish eat **kelp & seagrass**, while other water creatures eat **fish**.  
 🔹 Frogs – Drop **Frog Lights** when fed a Magma Cube.
 
@@ -31,6 +32,8 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     • Picking up an animal **saves its variant** inside the cage.  
     • Right-click an empty-handed pen to **view stored variants**.  
     • If _visual animal growing_ is enabled, you can adjust the display size of the animals.
+
+✔️ **Releasing animals** by crouch clicking on ground.
 
 (1) Features not added:  
      Any animal transformation  
@@ -134,10 +137,10 @@ To add/change animal food you need to create a file: `<mod_that_adds_animal>/ani
 
 ## 📜 Commands:
 
-Use these commands to manage the mod:
+Use these commands (server moderators) to manage the mod:
 
-💾 `/animal_pen reset` – Resets the config file to default values.  
-🔄 `/animal_pen reload` – Reloads the config file without restarting the game.
+💾 `/animal_pen reset` – Resets the config file to default values. 
+🔄 `/animal_pen reload` – Reloads the config file without restarting the game. 
 
 ***
 
