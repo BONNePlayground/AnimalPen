@@ -21,12 +21,12 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bowl",
-      "text": "Use a bowl on the Sniffer Pen to collect ancient seeds. More sniffers mean more seeds."
+      "text": "Use a bowl on the Sniffer Pen to collect ancient seeds. More sniffers mean more seeds. [redstone interaction 1]"
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bucket",
-      "text": "Use a bucket on the Sniffer Pen to collect eggs. More sniffers mean more eggs."
+      "text": "Use a bucket on the Sniffer Pen to collect eggs. More sniffers mean more eggs. [redstone interaction 2]"
     }
   ]
 }
