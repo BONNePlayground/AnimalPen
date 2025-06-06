@@ -254,10 +254,6 @@ public class AnimalCageItem extends Item
                 map(entity -> (Animal) entity).
                 ifPresent(clone ->
                 {
-                    clone.finalizeSpawn(level,
-                        level.getCurrentDifficultyAt(useOnContext.getClickedPos()),
-                        MobSpawnType.EVENT,
-                        null);
                     level.addFreshEntity(clone);
 
                     CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
