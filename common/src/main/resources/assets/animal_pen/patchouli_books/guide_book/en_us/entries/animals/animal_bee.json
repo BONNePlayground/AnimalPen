@@ -22,12 +22,12 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:shears",
-      "text": "Using shears will remove collected pollen and drop honeycombs."
+      "text": "Using shears will remove collected pollen and drop honeycombs. [redstone interaction 1]"
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:glass_bottle",
-      "text": "Using a glass bottle will remove collected pollen and fill the bottle with honey."
+      "text": "Using a glass bottle will remove collected pollen and fill the bottle with honey. [redstone interaction 1]"
     }
   ]
 }

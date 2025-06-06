@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "You can craft an Animal Pen from simple materials: glass, a water bucket, and stone."
+      "text": "You can craft an Aquarium from simple materials: glass, a water bucket, and stone."
     },
     {
       "type": "patchouli:crafting",

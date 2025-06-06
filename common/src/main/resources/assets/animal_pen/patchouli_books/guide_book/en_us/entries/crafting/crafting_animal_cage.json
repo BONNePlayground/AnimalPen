@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "With an Animal Cage, you can pick up any Minecraft animal and deposit them into Animal Pens. You cannot pick up tamed or baby animals. Clicking an empty cage on an Animal Pen while crouching will give you half of the animals from the pen."
+      "text": "With an Animal Cage, you can pick up any Minecraft animal and deposit them into Animal Pens. You cannot pick up tamed or baby animals. Clicking an empty cage on an Animal Pen while crouching will give you half of the animals from the pen. You can release animals by crouch clicking on ground."
     },
     {
       "type": "patchouli:crafting",

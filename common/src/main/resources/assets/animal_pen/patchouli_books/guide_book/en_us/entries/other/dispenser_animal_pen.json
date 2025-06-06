@@ -1,0 +1,37 @@
+{
+  "name": "Dispenser",
+  "icon": "minecraft:dispenser",
+  "category": "animal_pen:category_animal_pen",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can interact with some tools using dispenser."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can use water bucket on animal pen that contains axolotl."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:shears",
+      "text": "You can use shears on animal pen that contains bee and sheep."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:glass_bottle",
+      "text": "You can use glass bottle on animal pen that contains bee."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bucket",
+      "text": "You can use bucket on animal pen that contains chicken, cow, goat or turtle."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:bowl",
+      "text": "You can use bowl on animal pen that contains mushroom cow."
+    }
+  ]
+}

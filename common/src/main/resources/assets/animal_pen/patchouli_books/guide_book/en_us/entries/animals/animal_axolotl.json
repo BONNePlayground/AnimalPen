@@ -17,6 +17,11 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:diamond_sword",
       "text": "Using a sword or axe on the Animal Pen will kill the axolotl."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can pick up axolotls from pens using water bucket."
     }
   ]
 }
