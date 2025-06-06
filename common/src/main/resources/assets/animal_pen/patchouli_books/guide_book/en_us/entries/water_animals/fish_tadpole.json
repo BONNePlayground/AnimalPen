@@ -1,0 +1,22 @@
+{
+  "name": "Tadpole",
+  "icon": "minecraft:tadpole_spawn_egg",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:tadpole",
+      "scale": 1
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:diamond_sword",
+      "text": "Using a sword or axe on the Aquarium will kill the tadpole and drop its loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can pick up tadpole from aquariums using water bucket."
+    }
+  ]
+}
