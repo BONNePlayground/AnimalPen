@@ -10,6 +10,11 @@
     {
       "type": "patchouli:crafting",
       "recipe": "animal_pen:aquarium_block"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:dispenser",
+      "text": "You can use dispenser to interact with tools: (water bucket)."
     }
   ]
 }
