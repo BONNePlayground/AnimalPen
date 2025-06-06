@@ -232,9 +232,9 @@ public class AnimalContainerItem extends Item
             ServerLevel level = (ServerLevel) useOnContext.getLevel();
 
             ListTag pos = new ListTag();
-            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getX()));
+            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getX() + 0.5));
             pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getY() + 1));
-            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getZ()));
+            pos.add(DoubleTag.valueOf(useOnContext.getClickedPos().getZ() + 0.5));
 
             itemTag.put("Pos", pos);
             itemTag.remove("UUID");
