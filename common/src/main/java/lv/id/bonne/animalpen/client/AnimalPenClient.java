@@ -9,6 +9,7 @@ package lv.id.bonne.animalpen.client;
 
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.hooks.level.entity.PlayerHooks;
+import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
@@ -16,6 +17,8 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
+import lv.id.bonne.animalpen.network.packets.AnimalFoodRegistryData;
+import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
@@ -70,5 +73,15 @@ public class AnimalPenClient
 
             return InteractionResult.SUCCESS;
         });
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            AnimalFoodRegistryData.ID,
+            AnimalFoodRegistryData.STREAM_CODEC,
+            AnimalFoodRegistryData::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            UpdateVariantScreenData.ID,
+            UpdateVariantScreenData.STREAM_CODEC,
+            UpdateVariantScreenData::handle);
     }
 }
