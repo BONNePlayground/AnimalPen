@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
@@ -101,6 +102,9 @@ public final class AnimalPen
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
+
+    public static final NetworkChannel CHANNEL =
+        NetworkChannel.create(new ResourceLocation(AnimalPen.MOD_ID, "network"));
 
     public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
         appendValue(MINUTE_OF_HOUR, 2).

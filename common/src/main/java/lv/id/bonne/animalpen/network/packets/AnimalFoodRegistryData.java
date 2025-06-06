@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.network.packets;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
@@ -74,4 +75,11 @@ public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry
                 return new AnimalFoodRegistryData(map);
             }
         );
+}
+
+
+    public static AnimalFoodRegistryData serverData()
+    {
+        return new AnimalFoodRegistryData(AnimalPenFoodRegistry.getAll());
+    }
 }

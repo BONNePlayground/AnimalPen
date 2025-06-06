@@ -248,7 +248,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -356,7 +356,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),

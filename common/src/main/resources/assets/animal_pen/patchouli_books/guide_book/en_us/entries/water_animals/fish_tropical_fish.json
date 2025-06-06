@@ -17,6 +17,11 @@
       "type": "patchouli:spotlight",
       "item": "minecraft:diamond_sword",
       "text": "Using a sword or axe on the Aquarium will kill the tropical fish and drop its loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can pick up tropical fish from aquariums using water bucket."
     }
   ]
 }
