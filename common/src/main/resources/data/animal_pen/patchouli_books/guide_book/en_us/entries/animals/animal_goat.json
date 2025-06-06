@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bucket",
-      "text": "Using a bucket on the Animal Pen with a goat inside will give the player a bucket of milk."
+      "text": "Using a bucket on the Animal Pen with a goat inside will give the player a bucket of milk. [redstone interaction 1]"
     }
   ]
 }

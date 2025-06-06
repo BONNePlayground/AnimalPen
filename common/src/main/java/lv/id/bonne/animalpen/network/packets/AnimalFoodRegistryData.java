@@ -9,45 +9,34 @@ package lv.id.bonne.animalpen.network.packets;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 
 
-public class AnimalFoodRegistryData
+/**
+ * This packet is used to sync food registry data from server to client.
+ * @param foodRegistryMap The food registry map.
+ */
+public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> foodRegistryMap)
 {
-    /**
-     * The encoding of the packet.
-     * @return packet buffer.
-     */
-    public static FriendlyByteBuf encode()
+    public static void encode(AnimalFoodRegistryData packet, FriendlyByteBuf buffer)
     {
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-        Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> foodRegistry = AnimalPenFoodRegistry.getAll();
+        buffer.writeInt(packet.foodRegistryMap().size());
 
-        buffer.writeInt(foodRegistry.size());
-
-        for (Map.Entry<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> entry : foodRegistry.entrySet())
+        packet.foodRegistryMap().forEach((key, value) ->
         {
-            buffer.writeResourceLocation(entry.getKey());
-            entry.getValue().ingredient().toNetwork(buffer);
-        }
-
-        return buffer;
+            buffer.writeResourceLocation(key);
+            value.ingredient().toNetwork(buffer);
+        });
     }
 
 
-    /**
-     * This method handles incoming packet on server.
-     * @param buffer The incoming packet.
-     * @param packetContext The packet context.
-     */
-    public static void handle(FriendlyByteBuf buffer, NetworkManager.PacketContext packetContext)
+    public static AnimalFoodRegistryData decode(FriendlyByteBuf buffer)
     {
         int size = buffer.readInt();
 
@@ -59,12 +48,18 @@ public class AnimalFoodRegistryData
                 new AnimalPenFoodRegistry.AnimalFoodData(Ingredient.fromNetwork(buffer)));
         }
 
-        packetContext.queue(() -> AnimalPenFoodRegistry.setSyncedData(map));
+        return new AnimalFoodRegistryData(map);
     }
 
 
-    /**
-     * The resource ID.
-     */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "animal_food_registry_sync");
+    public void handle(Supplier<NetworkManager.PacketContext> context)
+    {
+        context.get().queue(() -> AnimalPenFoodRegistry.setSyncedData(this.foodRegistryMap));
+    }
+
+
+    public static AnimalFoodRegistryData serverData()
+    {
+        return new AnimalFoodRegistryData(AnimalPenFoodRegistry.getAll());
+    }
 }

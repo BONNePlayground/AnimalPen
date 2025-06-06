@@ -1,0 +1,16 @@
+{
+  "name": "Dispenser",
+  "icon": "minecraft:dispenser",
+  "category": "animal_pen:category_aquarium",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can interact with some tools using dispenser."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can use water bucket on aquariums that contains fishes."
+    }
+  ]
+}
