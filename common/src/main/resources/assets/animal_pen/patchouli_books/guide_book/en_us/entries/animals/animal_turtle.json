@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:bucket",
-      "text": "Use a bucket on the Turtle Pen to collect eggs. More turtles mean more eggs."
+      "text": "Use a bucket on the Turtle Pen to collect eggs. More turtles mean more eggs. [redstone interaction 1]"
     }
   ]
 }

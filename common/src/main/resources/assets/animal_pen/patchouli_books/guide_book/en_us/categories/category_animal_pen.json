@@ -1,6 +1,6 @@
 {
   "name": "Animal Pen",
-  "description": "The Animal Pen is a simple block that allows players to interact with animals within a single block of space.",
+  "description": "The Animal Pen is a simple block that allows players to interact with animals within a single block of space. It allows to interact with dispensers and outputs redstone signal from comparator.",
   "icon": "animal_pen:animal_pen_oak",
   "sortnum": 1
 }

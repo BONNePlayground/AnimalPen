@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:brush",
-      "text": "Using brush on the Animal Pen will drop armadillo scute."
+      "text": "Using brush on the Animal Pen will drop armadillo scute. [redstone interaction 1]"
     }
   ]
 }

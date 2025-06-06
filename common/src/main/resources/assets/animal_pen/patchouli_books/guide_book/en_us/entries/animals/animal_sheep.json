@@ -21,7 +21,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:shears",
-      "text": "Using shears on the Animal Pen will shear the sheep and drop their wool."
+      "text": "Using shears on the Animal Pen will shear the sheep and drop their wool. [redstone interaction 1]"
     },
     {
       "type": "patchouli:spotlight",

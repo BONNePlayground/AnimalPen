@@ -17,6 +17,11 @@
       "type": "patchouli:spotlight",
       "item": "tag:minecraft:swords,tag:minecraft:axes",
       "text": "Using a sword or axe on the Aquarium will kill the cod and drop its loot."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "text": "You can pick up cod from aquariums using water bucket."
     }
   ]
 }
