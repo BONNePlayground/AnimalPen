@@ -4,15 +4,7 @@
     "#minecraft:swords",
     "#minecraft:axes",
     {
-      "id": "#forge:knives",
-      "required": false
-    },
-    {
-      "id": "#forge:tools/knives",
-      "required": false
-    },
-    {
-      "id": "#c:knives",
+      "id": "#c:tools/knives",
       "required": false
     }
   ]

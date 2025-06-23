@@ -110,7 +110,6 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (itemStack.is(Items.SHEARS) ||
-            itemStack.is(AnimalPenTags.FORGE_SHEARS) ||
             itemStack.is(AnimalPenTags.COMMON_SHEARS))
         {
             if (this.animalPen$pollenCount < 5)

@@ -219,7 +219,6 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
         if (itemStack.is(Items.SHEARS) ||
-            itemStack.is(AnimalPenTags.FORGE_SHEARS) ||
             itemStack.is(AnimalPenTags.COMMON_SHEARS))
         {
             if (this.animalPen$woolCooldown > 0)

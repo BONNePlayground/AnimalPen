@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -99,7 +100,8 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
 
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(Items.BRUSH))
+        if (itemStack.is(Items.BRUSH) ||
+            itemStack.is(AnimalPenTags.COMMON_BRUSHES))
         {
             if (this.animalPen$scuteCooldown > 0)
             {
