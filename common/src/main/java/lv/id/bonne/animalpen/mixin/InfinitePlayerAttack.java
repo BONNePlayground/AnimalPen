@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.core.BlockPos;
@@ -56,8 +57,8 @@ public class InfinitePlayerAttack
     {
         BlockState blockState = this.minecraft.level.getBlockState(this.destroyBlockPos);
 
-        if (blockState.is(AnimalPenBlock.ANIMAL_PENS) && this.destroyingItem.is(AnimalPenBlock.ATTACK_TOOLS) ||
-            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) && this.destroyingItem.is(AquariumBlock.ATTACK_TOOLS))
+        if (blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) && this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
+            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) && this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
         {
             this.destroyBlockPos = new BlockPos(-1, -1, -1);
         }

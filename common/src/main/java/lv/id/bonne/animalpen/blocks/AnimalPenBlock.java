@@ -9,6 +9,7 @@ import java.util.Objects;
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -92,7 +93,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
                 return InteractionResult.FAIL;
             }
 
-            if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenBlock.ATTACK_TOOLS))
+            if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS))
             {
                 this.attack(blockState, level, blockPos, player);
                 return InteractionResult.SUCCESS;
@@ -114,7 +115,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (weapon.is(ATTACK_TOOLS) &&
+        if (weapon.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) &&
             !level.isClientSide() &&
             level.getBlockEntity(blockPos) instanceof AnimalPenTileEntity entity)
         {
@@ -151,7 +152,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (weapon.is(ATTACK_TOOLS))
+        if (weapon.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS))
         {
             // Do not damage break block with tools you kill entity.
             return 0f;
@@ -339,16 +340,4 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
         Block.box(3.0, 5.0, 14.0, 13.0, 7.0, 16.0),
         Block.box(0.0, 5.0, 3.0, 2.0, 7.0, 13.0),
         Block.box(14.0, 5.0, 3.0, 16.0, 7.0, 13.0));
-
-    /**
-     * Tag that stores which tools can attack entity in animal pen
-     */
-    public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_pen"));
-
-    /**
-     * Tag that stores animal pens tag key.
-     */
-    public static final TagKey<Block> ANIMAL_PENS = TagKey.create(Registry.BLOCK_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_pens"));
 }
