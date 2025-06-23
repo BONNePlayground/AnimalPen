@@ -20,7 +20,6 @@ import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -37,6 +36,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(WaterAnimal.class)
@@ -50,14 +51,14 @@ public abstract class AnimalPenWaterAnimal extends Mob
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compoundTag)
+    public void addAdditionalSaveData(ValueOutput compoundTag)
     {
         super.addAdditionalSaveData(compoundTag);
         this.animalPen$animalPenSaveTag(compoundTag);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compoundTag)
+    public void readAdditionalSaveData(ValueInput compoundTag)
     {
         super.readAdditionalSaveData(compoundTag);
         this.animalPen$animalPenLoadTag(compoundTag);
@@ -105,7 +106,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
 
     @Intrinsic
-    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    public void animalPen$animalPenSaveTag(ValueOutput tag)
     {
         // this tag is necessary for animal pickups
         tag.putInt("food_cooldown", this.animalPen$foodCooldown);
@@ -114,7 +115,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
 
     @Intrinsic
-    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    public void animalPen$animalPenLoadTag(ValueInput tag)
     {
         this.animalPen$foodCooldown = tag.getIntOr("food_cooldown", 0);
         this.animalPen$animalCount = tag.getLongOr("animal_count", 0);

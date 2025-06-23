@@ -13,7 +13,6 @@ import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -22,22 +21,22 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -70,26 +69,35 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             // Set as null.
             this.dyingAnimal = null;
 
-            CompoundTag cloneTag = new CompoundTag();
-            animal.save(cloneTag);
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(tileEntity.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput valueOutput =
+                    TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+                animal.save(valueOutput);
 
-            EntityType.create(cloneTag, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
-                map(entity -> (Animal) entity).
-                ifPresent(clone ->
-                {
-                    this.dyingAnimal = clone;
-                    this.dyingAnimal.setPose(Pose.DYING);
+                ValueInput valueInput = TagValueInput.create(scopedCollector,
+                    animal.registryAccess(),
+                    valueOutput.buildResult());
 
-                    // Freeze entity rotation
-                    this.dyingAnimal.yBodyRot = 0.0f;
-                    this.dyingAnimal.setYRot(0.0f);
-                    this.dyingAnimal.yHeadRot = 0.0f;
-                    this.dyingAnimal.yHeadRotO = 0.0f;
+                EntityType.create(valueInput, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
+                    map(entity -> (Animal) entity).
+                    ifPresent(clone ->
+                    {
+                        this.dyingAnimal = clone;
+                        this.dyingAnimal.setPose(Pose.DYING);
 
-                    // Stop animations
-                    this.dyingAnimal.tickCount = 0;
-                    this.dyingAnimal.deathTime = 0;
-                });
+                        // Freeze entity rotation
+                        this.dyingAnimal.yBodyRot = 0.0f;
+                        this.dyingAnimal.setYRot(0.0f);
+                        this.dyingAnimal.yHeadRot = 0.0f;
+                        this.dyingAnimal.yHeadRotO = 0.0f;
+
+                        // Stop animations
+                        this.dyingAnimal.tickCount = 0;
+                        this.dyingAnimal.deathTime = 0;
+                    });
+            }
         }
 
         Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
@@ -158,9 +166,6 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         this.minecraft.getEntityRenderDispatcher().
             render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
-        CompoundTag cloneTag = new CompoundTag();
-        animal.save(cloneTag);
-
         tileEntity.getDeathTicker().forEach(tick ->
         {
             if (this.dyingAnimal != null)
@@ -202,11 +207,11 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.scale(-scale, -scale, 0F);
         poseStack.translate(-textWidth / 2D, -this.font.lineHeight / 2f, 0);
 
-// Render text
+        // Render text
         this.font.drawInBatch(
             text,                    // The text component
             0, 0,                 // X, Y position in the matrix
-            0xFFFFFF,                // Color (white)
+            -1,                      // Color (white)
             false,                   // Drop shadow
             poseStack.last().pose(), // Transformation matrix
             buffer,                  // Buffer source from method parameters
@@ -432,7 +437,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
                 this.font.drawInBatch(
                     part,  // The text component
                     0, -6,                     // X, Y position in the matrix
-                    0xFFFFFF,                    // Color (white)
+                    -1,                          // Color (white)
                     false,                       // Drop shadow
                     poseStack.last().pose(),     // Transformation matrix
                     buffer,                      // Buffer source from method parameters
@@ -452,11 +457,9 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
 
 
     @Override
-    public boolean shouldRenderOffScreen(AnimalPenTileEntity blockEntity)
+    public boolean shouldRenderOffScreen()
     {
-        // If animals are growing, it is easy to get it outside screen.
-        return !blockEntity.getInventory().isEmpty() &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
     }
 
 

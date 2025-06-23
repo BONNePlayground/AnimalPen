@@ -18,7 +18,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
@@ -40,6 +39,8 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(Sheep.class)
@@ -92,7 +93,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    public void animalPen$animalPenSaveTag(ValueOutput tag)
     {
         super.animalPen$animalPenSaveTag(tag);
 
@@ -102,7 +103,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    public void animalPen$animalPenLoadTag(ValueInput tag)
     {
         super.animalPen$animalPenLoadTag(tag);
 

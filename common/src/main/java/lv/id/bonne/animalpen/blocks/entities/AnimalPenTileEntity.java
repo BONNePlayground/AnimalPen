@@ -25,11 +25,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -44,6 +45,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -64,40 +69,40 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider)
+    public void saveAdditional(ValueOutput valueOutput)
     {
-        super.saveAdditional(tag, provider);
+        super.saveAdditional(valueOutput);
 
-        tag.put(TAG_INVENTORY, this.inventory.createTag(provider));
+        ContainerHelper.saveAllItems(valueOutput, this.inventory.getItems(), true);
 
         if (!this.deathTicker.isEmpty())
         {
-            tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
+            valueOutput.putIntArray(TAG_DEATH_TICKER, this.deathTicker.stream().mapToInt(i->i).toArray());
         }
 
-        tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
+        valueOutput.putLong(TAG_DISPLAY_SIZE, this.displaySize);
     }
 
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider)
+    protected void loadAdditional(ValueInput valueInput)
     {
-        super.loadAdditional(tag, provider);
+        super.loadAdditional(valueInput);
 
         this.inventory.clearContent();
         this.deathTicker.clear();
         this.storedAnimal = null;
 
-        this.inventory.fromTag(tag.getListOrEmpty(TAG_INVENTORY), provider);
+        ContainerHelper.loadAllItems(valueInput, this.inventory.getItems());
 
-        tag.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
+        valueInput.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
             {
                 this.deathTicker.add(death);
             }
         });
 
-        this.displaySize = tag.getLongOr(TAG_DISPLAY_SIZE, -1);
+        this.displaySize = valueInput.getLongOr(TAG_DISPLAY_SIZE, -1);
     }
 
 
@@ -151,8 +156,17 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 return this.storedAnimal;
             }
 
-            EntityType.create(tag, this.level, EntitySpawnReason.TRIGGERED).map(entity -> (Animal) entity).
-                ifPresent(animal -> this.storedAnimal = animal);
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
+            {
+                ValueInput valueInput = TagValueInput.create(scopedCollector,
+                    this.level.registryAccess(),
+                    tag);
+
+                EntityType.create(valueInput, this.level, EntitySpawnReason.TRIGGERED).
+                    map(entity -> (Animal) entity).
+                    ifPresent(animal -> this.storedAnimal = animal);
+            }
         }
         else if (this.storedAnimal != null && this.getItemStack().isEmpty())
         {
@@ -290,8 +304,17 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     return false;
                 }
 
-                CompoundTag tag = new CompoundTag();
-                animal.save(tag);
+                CompoundTag tag;
+
+                try (ProblemReporter.ScopedCollector scopedCollector =
+                         new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
+                {
+                    TagValueOutput valueOutput =
+                        TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+                    animal.save(valueOutput);
+                    tag = valueOutput.buildResult();
+                }
+
                 tag.putLong(AnimalCageItem.TAG_AMOUNT, newCount);
 
                 itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
@@ -400,8 +423,17 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             ItemStack item = this.getItemStack();
 
             // Reset tag, as some animals may need it.
-            CompoundTag tag = new CompoundTag();
-            animal.save(tag);
+            CompoundTag tag;
+
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput valueOutput =
+                    TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+                animal.save(valueOutput);
+                tag = valueOutput.buildResult();
+            }
+
             item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
@@ -507,10 +539,18 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         if (animal != null)
         {
-            CompoundTag tag = new CompoundTag();
-                animal.save(tag);
+            CompoundTag tag;
 
-                this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput valueOutput =
+                    TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+                animal.save(valueOutput);
+                tag = valueOutput.buildResult();
+            }
+
+            this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
         }
 
         this.level.sendBlockUpdated(this.getBlockPos(),
@@ -606,22 +646,35 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      * @param animalVariant a new animal variant
      */
     @Override
-    public void updateAnimalVariant(CompoundTag animalVariant)
+    public void updateAnimalVariant(ValueInput animalVariant)
     {
-        if (this.getStoredAnimal() == null || animalVariant == null || animalVariant.isEmpty())
+        if (this.getStoredAnimal() == null || animalVariant == null)
         {
             return;
         }
 
         // Save extra data
-        CompoundTag extraData = new CompoundTag();
-        ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(extraData);
+        CompoundTag extraData;
 
-        // load new variant
-        this.storedAnimal.load(animalVariant);
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
+        {
+            TagValueOutput valueOutput =
+                TagValueOutput.createWithContext(scopedCollector, this.level.registryAccess());
+            ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(valueOutput);
 
-        // Apply data
-        ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
+            extraData = valueOutput.buildResult();
+
+            // load new variant
+            this.storedAnimal.load(animalVariant);
+
+            ValueInput valueInput =
+                TagValueInput.create(scopedCollector, this.level.registryAccess(), extraData);
+
+            // Apply data
+            ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(valueInput);
+        }
+
         this.triggerUpdate();
 
         if (this.level != null && !this.level.isClientSide())

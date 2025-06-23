@@ -20,7 +20,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -38,6 +37,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(Frog.class)
@@ -70,7 +71,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
 
 
     @Override
-    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    public void animalPen$animalPenSaveTag(ValueOutput tag)
     {
         super.animalPen$animalPenSaveTag(tag);
 
@@ -79,7 +80,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
 
 
     @Override
-    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    public void animalPen$animalPenLoadTag(ValueInput tag)
     {
         super.animalPen$animalPenLoadTag(tag);
 

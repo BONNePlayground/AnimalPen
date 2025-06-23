@@ -22,7 +22,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -41,6 +40,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(MushroomCow.class)
@@ -84,7 +85,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    public void animalPen$animalPenSaveTag(ValueOutput tag)
     {
         super.animalPen$animalPenSaveTag(tag);
 
@@ -94,7 +95,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Intrinsic
     @Override
-    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    public void animalPen$animalPenLoadTag(ValueInput tag)
     {
         super.animalPen$animalPenLoadTag(tag);
 

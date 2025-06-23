@@ -11,13 +11,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 /**
@@ -36,14 +37,14 @@ public interface AnimalPenInterface
      * This method is used to save additional information in animal object.
      * @param tag The tag that will be populated with information.
      */
-    void animalPenSaveTag(CompoundTag tag);
+    void animalPenSaveTag(ValueOutput tag);
 
 
     /**
      * This method is used to load additional information into animal object.
      * @param tag The tag that will be read for information.
      */
-    void animalPenLoadTag(CompoundTag tag);
+    void animalPenLoadTag(ValueInput tag);
 
 
     /**

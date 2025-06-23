@@ -1,11 +1,11 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,6 +40,9 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 
 /**
@@ -166,23 +170,33 @@ public class VariantScreenSelection extends Screen
 
         // Create display entity.
 
-        CompoundTag defaultAnimal = new CompoundTag();
-        this.blockEntityInterface.getStoredAnimal().save(defaultAnimal);
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(this.blockEntityInterface.getStoredAnimal().problemPath(),
+                     AnimalPen.LOGGER))
+        {
+            TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector,
+                this.blockEntityInterface.getStoredAnimal().registryAccess());
 
-        EntityType.create(defaultAnimal, this.minecraft.level, EntitySpawnReason.TRIGGERED).
-            map(entity -> (LivingEntity) entity).
-            ifPresent(entity ->
-            {
-                this.displayEntity = entity;
+            this.blockEntityInterface.getStoredAnimal().save(tagValueOutput);
 
-                float width = this.displayEntity.getBbWidth();
-                float height = this.displayEntity.getBbHeight();
+            ValueInput valueInput = TagValueInput.create(scopedCollector,
+                this.blockEntityInterface.getStoredAnimal().registryAccess(),
+                tagValueOutput.buildResult());
 
-                float entitySize = Math.max(1F, Math.max(width, height));
+            EntityType.create(valueInput, this.minecraft.level, EntitySpawnReason.TRIGGERED).
+                map(entity -> (LivingEntity) entity).
+                ifPresent(entity ->
+                {
+                    this.displayEntity = entity;
 
-                this.entityScale = 60F / entitySize * 0.8F;
-                this.entityOffset = Math.max(height, entitySize) * 0.5F;
-            });
+                    float width = this.displayEntity.getBbWidth();
+                    float height = this.displayEntity.getBbHeight();
+
+                    float entitySize = Math.max(1F, Math.max(width, height));
+
+                    this.entityScale = 60F / entitySize * 0.8F;
+                });
+        }
 
         // Create cooldown menu renderer
         this.cooldownButton = this.addWidget(Button.builder(Component.empty(),
@@ -284,18 +298,8 @@ public class VariantScreenSelection extends Screen
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         this.updateButtonPositions();
-
         super.render(graphics, mouseX, mouseY, partialTicks);
-
-        // Render title of the menu.
-        graphics.drawString(this.font,
-            this.title,
-            this.leftPos + 88 - this.font.width(this.title) / 2,
-            this.topPos + 3 + 7 - this.font.lineHeight / 2,
-            4210752,
-            false);
 
         this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(graphics, mouseX, mouseY);
@@ -303,6 +307,14 @@ public class VariantScreenSelection extends Screen
         this.renderSizeBar(graphics, mouseX, mouseY, partialTicks);
         this.renderEntity(graphics, partialTicks);
         this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
+
+        // Render title of the menu.
+        graphics.drawString(this.font,
+            this.title,
+            this.leftPos + 88 - this.font.width(this.title) / 2,
+            this.topPos + 3 + 7 - this.font.lineHeight / 2,
+            -1,
+            false);
 
         this.renderTooltips(graphics, mouseX, mouseY, partialTicks);
     }
@@ -315,11 +327,19 @@ public class VariantScreenSelection extends Screen
     @Override
     public void renderMenuBackground(GuiGraphics graphics)
     {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
-
-        graphics.blit(RenderType::guiTextured, TEXTURE, offsetX, offsetY, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+//
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
+            TEXTURE,
+            offsetX,
+            offsetY,
+            0,
+            0,
+            this.imageWidth,
+            this.imageHeight,
+            256,
+            256);
     }
 
 
@@ -379,7 +399,7 @@ public class VariantScreenSelection extends Screen
     private void renderOtherButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
     {
         // Render icon instead of delete button.
-        graphics.blit(RenderType::guiTextured,
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
             TEXTURE,
             this.deleteButton.getX() + 1,
             this.deleteButton.getY() + 1,
@@ -391,7 +411,7 @@ public class VariantScreenSelection extends Screen
             256);
 
         // Render icon instead of apply button.
-        graphics.blit(RenderType::guiTextured,
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
             TEXTURE,
             this.applyButton.getX() + 1,
             this.applyButton.getY() + 1,
@@ -429,7 +449,7 @@ public class VariantScreenSelection extends Screen
             scrollPosition = this.bodyTopPos;
         }
 
-        graphics.blit(RenderType::guiTextured,
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
             TEXTURE,
             this.leftPos + 9,
             scrollPosition,
@@ -467,24 +487,24 @@ public class VariantScreenSelection extends Screen
                 this.blockEntityInterface.getAnimalCount());
         }
 
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
+        Matrix3x2fStack poseStack = graphics.pose();
+        poseStack.pushMatrix();
 
         float textWidth = this.font.width(text);
         float scale = Math.min(1f, this.sliderAreaWidth / textWidth);
 
         poseStack.translate(this.sliderBarPos,
-            this.topPos + 112 + 7 - this.font.lineHeight * scale / 2f,
-            0);
-        poseStack.scale(scale, scale, 1.0f);
+            this.topPos + 112 + 7 - this.font.lineHeight * scale / 2f);
+        poseStack.scale(scale, scale);
 
         graphics.drawString(this.font,
             text,
             scale < 1 ? 0 : (int) (this.sliderAreaWidth - textWidth) / 2,
             0,
-            0xffffff);
+            -1,
+            true);
 
-        poseStack.popPose();
+        poseStack.popMatrix();
     }
 
 
@@ -494,16 +514,11 @@ public class VariantScreenSelection extends Screen
      */
     private void renderEntity(@NotNull GuiGraphics graphics, float partialTicks)
     {
-//        this.enableScissor(
-//            this.leftPos + 73, this.bodyTopPos,
-//            this.leftPos + 73 + 96, this.bodyTopPos + 92
-//        );
+        // Calculate screen coordinates for rendering
+        int x = this.leftPos + 73;
+        int y = this.bodyTopPos;
 
-        // 73 till black box and 48 till the box middle
-        float x = this.leftPos + 73 + 48;
-        // 46 till black box middle
-        float y = this.bodyTopPos + 46;
-
+        // Reset entity rotation before rendering
         this.displayEntity.yBodyRot = 0.0f;
         this.displayEntity.setYRot(0.0f);
         this.displayEntity.yHeadRot = 0.0f;
@@ -517,22 +532,34 @@ public class VariantScreenSelection extends Screen
             y -= 10;
         }
 
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(x, y, 50);
-        poseStack.scale(this.entityScale, this.entityScale, this.entityScale);
-        poseStack.translate(0, this.entityOffset, 0);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-        poseStack.mulPose(Axis.YP.rotationDegrees(this.entityRotation));
-        EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
-        MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
-        erd.setRenderShadow(false);
-        erd.render(this.displayEntity, 0, 0, 0, partialTicks, poseStack, immediate, 0xF000F0);
-        erd.setRenderShadow(true);
-        immediate.endBatch();
-        poseStack.popPose();
+        // Create quaternion for base Z rotation (face forward)
+        Quaternionf baseRotation = new Quaternionf().rotateZ((float) Math.PI);
+        Quaternionf yawRotation = new Quaternionf().rotateY((float) Math.toRadians(this.entityRotation));
 
-//        this.disableScissor();
+        // Combine rotations
+        baseRotation.mul(yawRotation);
+
+        // Get EntityRenderer and RenderState
+        EntityRenderer<? super LivingEntity, ?> renderer =
+            Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(this.displayEntity);
+        EntityRenderState renderState = renderer.createRenderState(this.displayEntity, 1.0F);
+        renderState.hitboxesRenderState = null;
+
+        // Create vertical offset (Y axis)
+        Vector3f offset = new Vector3f(0.0F,
+            this.displayEntity.getBbHeight() / 2.0F + 0.0625F * this.displayEntity.getScale(),
+            0.0F);
+
+        // Submit entity for rendering via GuiGraphics
+        graphics.submitEntityRenderState(
+            renderState,
+            this.entityScale,
+            offset,
+            baseRotation,
+            null,
+            x, y,
+            x + 96, y + 92
+        );
     }
 
 
@@ -545,7 +572,7 @@ public class VariantScreenSelection extends Screen
      */
     private void renderCooldown(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        graphics.blit(RenderType::guiTextured,
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
             COOLDOWN_TEXTURE,
             this.leftPos - 12,
             this.topPos + (this.imageHeight - 18) / 2,
@@ -558,7 +585,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.isCooldownOpened)
         {
-            graphics.blit(RenderType::guiTextured,
+            graphics.blit(RenderPipelines.GUI_TEXTURED,
                 COOLDOWN_TEXTURE,
                 this.leftPos - 12 - this.cooldownWidth,
                 this.topPos,
@@ -662,7 +689,8 @@ public class VariantScreenSelection extends Screen
                     part,
                     leftOffset,
                     y + this.font.lineHeight / 2 + 2,
-                    0xffffff);
+                    -1,
+                    true);
 
                 leftOffset += this.font.width(part);
             }
@@ -680,7 +708,7 @@ public class VariantScreenSelection extends Screen
                 mouseY >= rect.getY() &&
                 mouseY <= rect.getY() + rect.getHeight())
             {
-                graphics.renderTooltip(this.font, itemPos.getLeft(), mouseX, mouseY);
+                graphics.setTooltipForNextFrame(this.font, itemPos.getLeft(), mouseX, mouseY);
                 break;
             }
         }
@@ -692,23 +720,23 @@ public class VariantScreenSelection extends Screen
         // Render tooltips
         if (this.applyButton.isMouseOver(mouseX, mouseY))
         {
-            graphics.renderTooltip(this.font, APPLY, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, APPLY, mouseX, mouseY);
         }
 
         if (this.deleteButton.isMouseOver(mouseX, mouseY))
         {
-            graphics.renderTooltip(this.font, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
         }
 
         if (this.sliderButton.isMouseOver(mouseX, mouseY))
         {
             List<Component> list = List.of(SLIDER, Component.empty(), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
-            graphics.renderComponentTooltip(this.font, list, mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, list, mouseX, mouseY);
         }
 
         if (this.cooldownButton.isMouseOver(mouseX, mouseY))
         {
-            graphics.renderTooltip(this.font, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
         }
     }
 
@@ -763,8 +791,15 @@ public class VariantScreenSelection extends Screen
             {
                 // Send message to server
                 NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, tag));
+
                 // Update current client gui.
-                this.displayEntity.load(tag);
+                try (ProblemReporter.ScopedCollector scopedCollector =
+                         new ProblemReporter.ScopedCollector(this.displayEntity.problemPath(), AnimalPen.LOGGER))
+                {
+                    ValueInput valueInput =
+                        TagValueInput.create(scopedCollector, this.displayEntity.registryAccess(), tag);
+                    this.displayEntity.load(valueInput);
+                }
             });
 
         this.selectedButton = -1;
@@ -804,11 +839,24 @@ public class VariantScreenSelection extends Screen
         }
         else
         {
-            tag = new CompoundTag();
-            this.blockEntityInterface.getStoredAnimal().save(tag);
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(this.displayEntity.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput valueOutput =
+                    TagValueOutput.createWithContext(scopedCollector, this.displayEntity.registryAccess());
+                this.blockEntityInterface.getStoredAnimal().save(valueOutput);
+                tag = valueOutput.buildResult();
+            }
         }
 
-        this.displayEntity.load(tag);
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(this.displayEntity.problemPath(), AnimalPen.LOGGER))
+        {
+            ValueInput valueInput =
+                TagValueInput.create(scopedCollector, this.displayEntity.registryAccess(), tag);
+            this.displayEntity.load(valueInput);
+        }
+
         this.currentXOnEntity = 0;
     }
 
@@ -1234,14 +1282,9 @@ public class VariantScreenSelection extends Screen
     private float entityScale;
 
     /**
-     * The offset of entity.
-     */
-    private float entityOffset;
-
-    /**
      * The rotation of entity
      */
-    private float entityRotation = -45f;
+    private float entityRotation = -135f;
 
     /**
      * This variable stores X location of mouse when it was clicked on entity panel.

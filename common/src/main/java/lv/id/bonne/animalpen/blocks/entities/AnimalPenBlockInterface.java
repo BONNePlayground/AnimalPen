@@ -11,11 +11,11 @@ package lv.id.bonne.animalpen.blocks.entities;
 import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
 
 
 /**
@@ -65,7 +65,7 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      * This method sets new animal variant from given CompoundTag tag.
      * @param animalVariant a new animal variant
      */
-    void updateAnimalVariant(CompoundTag animalVariant);
+    void updateAnimalVariant(ValueInput animalVariant);
 
     /**
      * This method removes animal pen variant with given index.

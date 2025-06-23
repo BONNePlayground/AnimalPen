@@ -25,7 +25,6 @@ import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -41,6 +40,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(Animal.class)
@@ -55,16 +56,16 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    public void injectAddAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
+    public void injectAddAdditionalSaveData(ValueOutput valueOutput, CallbackInfo ci)
     {
-        this.animalPen$animalPenSaveTag(compoundTag);
+        this.animalPen$animalPenSaveTag(valueOutput);
     }
 
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    public void injectReadAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci)
+    public void injectReadAdditionalSaveData(ValueInput valueInput, CallbackInfo ci)
     {
-        this.animalPen$animalPenLoadTag(compoundTag);
+        this.animalPen$animalPenLoadTag(valueInput);
     }
 
 
@@ -109,7 +110,7 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Intrinsic
-    public void animalPen$animalPenSaveTag(CompoundTag tag)
+    public void animalPen$animalPenSaveTag(ValueOutput tag)
     {
         // this tag is necessary for animal pickups
         tag.putInt("food_cooldown", this.animalPen$foodCooldown);
@@ -118,7 +119,7 @@ public abstract class AnimalPenAnimal extends Mob
 
 
     @Intrinsic
-    public void animalPen$animalPenLoadTag(CompoundTag tag)
+    public void animalPen$animalPenLoadTag(ValueInput tag)
     {
         this.animalPen$foodCooldown = tag.getIntOr("food_cooldown", 0);
         this.animalPen$animalCount = tag.getLongOr("animal_count", 0);

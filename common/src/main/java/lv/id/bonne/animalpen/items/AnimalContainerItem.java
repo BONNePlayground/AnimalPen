@@ -19,10 +19,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.AgeableWaterCreature;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -32,6 +34,9 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 
 /**
@@ -148,8 +153,13 @@ public class AnimalContainerItem extends Item
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
-            itemTag = new CompoundTag();
-            livingEntity.save(itemTag);
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(livingEntity.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector, livingEntity.registryAccess());
+                livingEntity.save(tagValueOutput);
+                itemTag = tagValueOutput.buildResult();
+            }
         }
         else
         {
@@ -234,30 +244,36 @@ public class AnimalContainerItem extends Item
             itemTag.remove(TAG_VARIANTS);
             itemTag.remove(TAG_AMOUNT);
 
-            EntityType.create(itemTag, level, EntitySpawnReason.SPAWN_ITEM_USE).
-                map(entity -> (PathfinderMob) entity).
-                ifPresent(clone ->
-                {
-                    level.addFreshEntity(clone);
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(player.problemPath(), AnimalPen.LOGGER))
+            {
+                ValueInput valueInput = TagValueInput.create(scopedCollector, player.registryAccess(), itemTag);
 
-                    CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
-
-                    long amount = tag.getLongOr(TAG_AMOUNT, 0);
-                    tag.putLong(TAG_AMOUNT, amount - 1);
-
-                    if (amount - 1 <= 0)
+                EntityType.create(valueInput, level, EntitySpawnReason.SPAWN_ITEM_USE).
+                    map(entity -> (Animal) entity).
+                    ifPresent(clone ->
                     {
-                        // Clear item tag.
-                        itemInHand.remove(DataComponents.ENTITY_DATA);
-                        itemInHand.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
-                    }
-                    else
-                    {
-                        itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
-                    }
+                        level.addFreshEntity(clone);
 
-                    player.setItemInHand(useOnContext.getHand(), itemInHand);
-                });
+                        CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
+
+                        long amount = tag.getLongOr(TAG_AMOUNT, 0);
+                        tag.putLong(TAG_AMOUNT, amount - 1);
+
+                        if (amount - 1 <= 0)
+                        {
+                            // Clear item tag.
+                            itemInHand.remove(DataComponents.ENTITY_DATA);
+                            itemInHand.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+                        }
+                        else
+                        {
+                            itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
+                        }
+
+                        player.setItemInHand(useOnContext.getHand(), itemInHand);
+                    });
+            }
         }
 
         return super.useOn(useOnContext);
@@ -361,8 +377,16 @@ public class AnimalContainerItem extends Item
             return false;
         }
 
-        CompoundTag variant = new CompoundTag();
-        animal.save(variant);
+        CompoundTag variant;
+
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(animal.problemPath(), AnimalPen.LOGGER))
+        {
+            TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+            animal.save(tagValueOutput);
+            variant = tagValueOutput.buildResult();
+        }
+
         variantList.add(variant);
 
         itemTag.put(TAG_VARIANTS, variantList);
