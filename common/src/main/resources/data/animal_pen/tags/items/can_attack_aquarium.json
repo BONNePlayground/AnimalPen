@@ -6,6 +6,14 @@
     {
       "id": "#forge:knives",
       "required": false
+    },
+    {
+      "id": "#forge:tools/knives",
+      "required": false
+    },
+    {
+      "id": "#c:knives",
+      "required": false
     }
   ]
 }
