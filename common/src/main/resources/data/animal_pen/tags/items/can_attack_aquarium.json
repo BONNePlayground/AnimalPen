@@ -26,6 +26,18 @@
     {
       "id": "#forge:tools/axes",
       "required": false
+    },
+    {
+      "id": "#c:axes",
+      "required": false
+    },
+    {
+      "id": "#c:swords",
+      "required": false
+    },
+    {
+      "id": "#c:knives",
+      "required": false
     }
   ]
 }
