@@ -13,6 +13,7 @@ import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
@@ -52,7 +53,7 @@ public class UseToolsBehaviour implements DispenseItemBehavior
             BlockPos blockPos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
             BlockState blockState = level.getBlockState(blockPos);
 
-            if (!blockState.is(AnimalPenBlock.ANIMAL_PENS) && !blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()))
+            if (!blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) && !blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()))
             {
                 // If not animal pen/aquarium then return to original output
                 return this.originalBehaviour.dispense(blockSource, itemStack);
