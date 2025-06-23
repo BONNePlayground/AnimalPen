@@ -36,8 +36,14 @@ public class AnimalPenTags
         new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
 
     /**
-     * Tag that stores shears items.
+     * Tag that stores forge shears items.
      */
-    public static final TagKey<Item> SHEARS = TagKey.create(Registries.ITEM,
+    public static final TagKey<Item> FORGE_SHEARS = TagKey.create(Registries.ITEM,
         new ResourceLocation("forge", "shears"));
+
+    /**
+     * Tag that stores common shears items.
+     */
+    public static final TagKey<Item> COMMON_SHEARS = TagKey.create(Registries.ITEM,
+        new ResourceLocation("c", "shears"));
 }
