@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -242,7 +243,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     @Override
     public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        if (itemStack.is(Items.SHEARS))
+        if (itemStack.is(Items.SHEARS) ||
+            itemStack.is(AnimalPenTags.COMMON_SHEARS))
         {
             if (this.animalPen$woolCooldown > 0)
             {
