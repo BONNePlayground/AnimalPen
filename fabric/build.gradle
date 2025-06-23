@@ -61,7 +61,7 @@ modrinth {
     versionName = "${rootProject.mod_version}-${rootProject.minecraft_version}-Fabric"
     versionType = "release"
     uploadFile = remapJar
-    gameVersions = ["1.21.5"]
+    gameVersions = ["1.21.6"]
     loaders = ["fabric"]
     dependencies {
         required.project "architectury-api"
@@ -81,7 +81,7 @@ curseforge {
         changelog = rootProject.file("CHANGELOG_LATEST.md").text
         changelogType = "text"
         releaseType = "release"
-        addGameVersion "1.21.5"
+        addGameVersion "1.21.6"
         addGameVersion "Fabric"
         addGameVersion "Java 21"
 
