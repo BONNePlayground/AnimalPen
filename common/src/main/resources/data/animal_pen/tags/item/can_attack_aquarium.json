@@ -6,6 +6,10 @@
     {
       "id": "#c:tools/knife",
       "required": false
+    },
+    {
+      "id": "#c:tools/melee_weapon",
+      "required": false
     }
   ]
 }
