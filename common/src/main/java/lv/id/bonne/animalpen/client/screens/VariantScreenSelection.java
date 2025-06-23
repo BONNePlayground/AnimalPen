@@ -336,7 +336,7 @@ public class VariantScreenSelection extends Screen
     private void renderVariantButtons(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
         // Enable scissor test to restrict rendering area
-        this.enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
+        enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
 
         // Render only visible buttons
 
@@ -352,7 +352,7 @@ public class VariantScreenSelection extends Screen
             }
         }
 
-        this.disableScissor();
+        disableScissor();
     }
 
 
@@ -693,34 +693,6 @@ public class VariantScreenSelection extends Screen
         {
             this.renderTooltip(poseStack, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
         }
-    }
-
-
-    /**
-     * Enable rendering area limitation.
-     * @param x1 The top corner X
-     * @param y1 The top corner Y
-     * @param x2 The bottom corner X
-     * @param y2 The bottom corner y
-     */
-    private void enableScissor(int x1, int y1, int x2, int y2)
-    {
-        double scale = this.minecraft.getWindow().getGuiScale();
-
-        RenderSystem.enableScissor(
-            (int) (x1 * scale),
-            (int) (this.minecraft.getWindow().getHeight() - y2 * scale),
-            (int) ((x2 - x1) * scale),
-            (int) ((y2 - y1) * scale));
-    }
-
-
-    /**
-     * Disable rendering area limitation.
-     */
-    private void disableScissor()
-    {
-        RenderSystem.disableScissor();
     }
 
 

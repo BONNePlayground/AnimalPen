@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[41,)"
+loaderVersion = "[42,)"
 issueTrackerURL = "https://github.com/BONNePlayground/AnimalPen/issues"
 license = "GNU GPL 3.0"
 
@@ -16,20 +16,20 @@ logoFile = "assets/animal_pen/icon.png"
 [[dependencies.animal_pen]]
 modId = "forge"
 mandatory = true
-versionRange = "[41,)"
+versionRange = "[42,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.animal_pen]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19,)"
+versionRange = "[1.19.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.animal_pen]]
 modId = "architectury"
 mandatory = true
-versionRange = "[5.14.84,)"
+versionRange = "[6.3.56,)"
 ordering = "AFTER"
 side = "BOTH"
