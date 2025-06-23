@@ -10,7 +10,7 @@ No more overcrowded barns - keep your animals neatly contained while still breed
 ## 🎮 How It Works:
 
 ✔️ **Animal Cage & Container** – Capture land animals with the **Animal Cage** and water creatures with the **Animal Container**.  
-✔️ **Feeding animals acts as breeding** – No need for free-roaming animals, just feed them inside their pen!
+✔️ **Feeding animals acts as breeding** – No need for free-roaming animals, just feed them inside their pen!  
 ✔️ **Most vanilla interactions**(1) are possible, including:  
     🗡️ _Animal farming_ for loot  
     ✂️ _Shearing sheep_  
@@ -18,7 +18,7 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     🍄 _Collecting mushroom stew from mooshrooms_  
     🐝 _Bee pollen regeneration_  
     🐢 _Turtle scutes dropping based on settings_  
-    🖌️ _Brush scutes from armadillo_
+    🖌️ _Brush scutes from armadillo_  
     🧺 _Water bucket to pick up fishes or axolotls_
 
 ✔️ **Custom Interactions:**  
@@ -33,7 +33,9 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     • Right-click an empty-handed pen to **view stored variants**.  
     • If _visual animal growing_ is enabled, you can adjust the display size of the animals.
 
-✔️ **Releasing animals** by crouch clicking on ground.
+✔️ **Releasing animals** by crouch clicking on ground.  
+✔️ Animal Pens and Aquariums can send **Redstone** signal with comparator.  
+✔️ **Dispenser** can be used on Animal Pens and Aquariums with certain tools.
 
 (1) Features not added:  
      Any animal transformation  
@@ -139,7 +141,7 @@ To add/change animal food you need to create a file: `<mod_that_adds_animal>/ani
 
 Use these commands (server moderators) to manage the mod:
 
-💾 `/animal_pen reset` – Resets the config file to default values. 
+💾 `/animal_pen reset` – Resets the config file to default values.  
 🔄 `/animal_pen reload` – Reloads the config file without restarting the game. 
 
 ***

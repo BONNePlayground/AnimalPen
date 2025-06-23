@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
@@ -108,7 +109,9 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(Items.SHEARS))
+        if (itemStack.is(Items.SHEARS) ||
+            itemStack.is(AnimalPenTags.FORGE_SHEARS) ||
+            itemStack.is(AnimalPenTags.COMMON_SHEARS))
         {
             if (this.animalPen$pollenCount < 5)
             {
