@@ -10,6 +10,22 @@
     "minecraft:stone_axe",
     "minecraft:iron_axe",
     "minecraft:diamond_axe",
-    "minecraft:netherite_axe"
+    "minecraft:netherite_axe",
+    {
+      "id": "#forge:knives",
+      "required": false
+    },
+    {
+      "id": "#forge:tools/knives",
+      "required": false
+    },
+    {
+      "id": "#forge:tools/swords",
+      "required": false
+    },
+    {
+      "id": "#forge:tools/axes",
+      "required": false
+    }
   ]
 }
