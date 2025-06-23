@@ -9,6 +9,7 @@ import dev.architectury.hooks.level.entity.PlayerHooks;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -117,7 +118,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
                 return InteractionResult.FAIL;
             }
 
-            if (PlayerHooks.isFake(player) && itemInHand.is(AquariumBlock.ATTACK_TOOLS))
+            if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
             {
                 this.attack(blockState, level, blockPos, player);
                 return InteractionResult.SUCCESS;
@@ -139,7 +140,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (weapon.is(ATTACK_TOOLS) &&
+        if (weapon.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS) &&
             !level.isClientSide() &&
             level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity)
         {
@@ -176,7 +177,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        if (weapon.is(ATTACK_TOOLS))
+        if (weapon.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
         {
             // Do not damage break block with tools you kill entity.
             return 0f;
@@ -358,10 +359,4 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
-
-    /**
-     * Tag that stores which tools can attack entity in aquarium
-     */
-    public static final TagKey<Item> ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
 }
