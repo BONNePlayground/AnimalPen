@@ -1,15 +1,11 @@
 {
   "replace": false,
   "values": [
-    "minecraft:wooden_sword",
-    "minecraft:stone_sword",
-    "minecraft:iron_sword",
-    "minecraft:diamond_sword",
-    "minecraft:netherite_sword",
-    "minecraft:wooden_axe",
-    "minecraft:stone_axe",
-    "minecraft:iron_axe",
-    "minecraft:diamond_axe",
-    "minecraft:netherite_axe"
+    "#minecraft:swords",
+    "#minecraft:axes",
+    {
+      "id": "#c:tools/knives",
+      "required": false
+    }
   ]
 }
