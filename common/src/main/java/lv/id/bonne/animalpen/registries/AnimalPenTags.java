@@ -21,29 +21,29 @@ public class AnimalPenTags
      * Tags for animal pen blocks.
      */
     public static final TagKey<Block> ANIMAL_PEN_BLOCKS = TagKey.create(Registries.BLOCK,
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_pens"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pens"));
 
     /**
      * Tag that stores which tools can attack entity in animal pen
      */
     public static final TagKey<Item> ANIMAL_PEN_ATTACK_TOOLS = TagKey.create(Registries.ITEM,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_pen"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "can_attack_pen"));
 
     /**
      * Tag that stores which tools can attack entity in aquarium
      */
     public static final TagKey<Item> AQUARIUM_ATTACK_TOOLS = TagKey.create(Registries.ITEM,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
+        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "can_attack_aquarium"));
 
     /**
      * Tag that stores common shears items.
      */
     public static final TagKey<Item> COMMON_SHEARS = TagKey.create(Registries.ITEM,
-        new ResourceLocation("c", "tools/shears"));
+        ResourceLocation.fromNamespaceAndPath("c", "tools/shear"));
 
     /**
      * Tag that stores common brushes items.
      */
     public static final TagKey<Item> COMMON_BRUSHES = TagKey.create(Registries.ITEM,
-        new ResourceLocation("c", "tools/brushes"));
+        ResourceLocation.fromNamespaceAndPath("c", "tools/brush"));
 }
