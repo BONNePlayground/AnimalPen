@@ -140,7 +140,8 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
     @Override
     public ItemStack animalPen$animalPenInteract(ServerLevel level, ItemStack itemStack, BlockPos position)
     {
-        if (itemStack.is(Items.BRUSH))
+        if (itemStack.is(Items.BRUSH) ||
+            itemStack.is(AnimalPenTags.COMMON_BRUSHES))
         {
             if (this.animalPen$scuteCooldown > 0)
             {

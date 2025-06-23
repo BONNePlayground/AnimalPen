@@ -189,7 +189,6 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         }
 
         if (itemStack.is(Items.SHEARS) ||
-            itemStack.is(AnimalPenTags.FORGE_SHEARS) ||
             itemStack.is(AnimalPenTags.COMMON_SHEARS))
         {
             itemStack.hurtAndBreak(1, level.getRandom(), null, () -> itemStack.setCount(0));
