@@ -42,7 +42,7 @@ public final class AnimalPen
         AnimalPen.CONFIG_MANAGER.readConfig();
 
         CommandRegistrationEvent.EVENT.register(
-            (dispatcher, var2, var3) -> AnimalPenCommands.register(dispatcher));
+            (dispatcher, registry, selection) -> AnimalPenCommands.register(dispatcher));
 
         // Dispenser interaction
         DispenserBlock.registerBehavior(Items.SHEARS,
