@@ -58,19 +58,35 @@ public class AnimalContainerItem extends Item
             list.add(TextComponent.EMPTY);
         }
 
-        if (itemStack.hasTag() &&
-            itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (itemStack.hasTag())
         {
-            list.add(new TranslatableComponent("item.animal_pen.water_animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
-                withStyle(ChatFormatting.GRAY));
-        }
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.water_animal_container.entity",
+                    AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                    withStyle(ChatFormatting.GRAY));
+            }
 
-        if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
-        {
-            list.add(new TranslatableComponent("item.animal_pen.water_animal_container.amount",
-                itemStack.getTag().getLong(TAG_AMOUNT)).
-                withStyle(ChatFormatting.GRAY));
+            if (itemStack.getTag().contains(TAG_AMOUNT))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.water_animal_container.amount",
+                    itemStack.getTag().getLong(TAG_AMOUNT)).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_VARIANTS))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.water_animal_container.variants",
+                    itemStack.getTag().getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(TextComponent.EMPTY);
+                list.add(new TranslatableComponent("item.animal_pen.water_animal_container.release").
+                    withStyle(ChatFormatting.GRAY));
+            }
         }
 
         if (!itemStack.hasTag() ||
@@ -79,9 +95,6 @@ public class AnimalContainerItem extends Item
             list.add(new TranslatableComponent("item.animal_pen.water_animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
         }
-
-        list.add(new TranslatableComponent("item.animal_pen.water_animal_container.warning").
-            withStyle(ChatFormatting.GRAY));
     }
 
 

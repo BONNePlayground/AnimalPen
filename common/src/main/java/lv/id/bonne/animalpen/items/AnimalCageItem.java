@@ -57,19 +57,35 @@ public class AnimalCageItem extends Item
             list.add(TextComponent.EMPTY);
         }
 
-        if (itemStack.hasTag() &&
-            itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (itemStack.hasTag())
         {
-            list.add(new TranslatableComponent("item.animal_pen.animal_cage.entity",
-                AnimalCageItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
-                withStyle(ChatFormatting.GRAY));
-        }
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.animal_cage.entity",
+                    AnimalCageItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                    withStyle(ChatFormatting.GRAY));
+            }
 
-        if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
-        {
-            list.add(new TranslatableComponent("item.animal_pen.animal_cage.amount",
-                itemStack.getTag().getLong(TAG_AMOUNT)).
-                withStyle(ChatFormatting.GRAY));
+            if (itemStack.getTag().contains(TAG_AMOUNT))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.animal_cage.amount",
+                    itemStack.getTag().getLong(TAG_AMOUNT)).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_VARIANTS))
+            {
+                list.add(new TranslatableComponent("item.animal_pen.animal_cage.variants",
+                    itemStack.getTag().getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(TextComponent.EMPTY);
+                list.add(new TranslatableComponent("item.animal_pen.animal_cage.release").
+                    withStyle(ChatFormatting.GRAY));
+            }
         }
 
         if (!itemStack.hasTag() ||
@@ -78,9 +94,6 @@ public class AnimalCageItem extends Item
             list.add(new TranslatableComponent("item.animal_pen.animal_cage.tip").
                 withStyle(ChatFormatting.GRAY));
         }
-
-        list.add(new TranslatableComponent("item.animal_pen.animal_cage.warning").
-            withStyle(ChatFormatting.GRAY));
     }
 
 
