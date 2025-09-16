@@ -141,8 +141,8 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (livingEntity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame() ||
-            livingEntity instanceof AbstractHorse horse && horse.isTamed())
+        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null ||
+            livingEntity instanceof AbstractHorse horse && horse.getOwnerUUID() != null)
         {
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);

@@ -20,12 +20,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -141,6 +139,14 @@ public class AnimalContainerItem extends Item
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.water_animal_container.error.not_water_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
             // only living entities that are not babies
+            return InteractionResult.FAIL;
+        }
+
+        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null)
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
             return InteractionResult.FAIL;
         }
 
