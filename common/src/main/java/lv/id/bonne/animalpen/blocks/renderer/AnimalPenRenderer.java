@@ -54,7 +54,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         int combinedLight,
         int combinedOverlay)
     {
-        Animal animal = tileEntity.getStoredAnimal();
+        Animal animal = tileEntity.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {

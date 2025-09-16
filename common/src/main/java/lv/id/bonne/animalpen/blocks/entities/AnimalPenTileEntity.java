@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -28,7 +27,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -136,7 +134,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      * @return Animal instance stored in block entity.
      */
     @Override
-    public Animal getStoredAnimal()
+    public Optional<Animal> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -144,7 +142,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
             if (!tag.contains(AnimalCageItem.TAG_ENTITY_ID) || this.level == null)
             {
-                return this.storedAnimal;
+                return Optional.ofNullable(this.storedAnimal);
             }
 
             EntityType.create(tag, this.level).map(entity -> (Animal) entity).
@@ -155,7 +153,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             this.storedAnimal = null;
         }
 
-        return this.storedAnimal;
+        return Optional.ofNullable(this.storedAnimal);
     }
 
 
@@ -180,14 +178,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        boolean updated = false;
-
-        Animal animal = this.getStoredAnimal();
-
-        if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
-        {
-            updated = true;
-        }
+        boolean updated = this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenTick(this)).
+            orElse(false);
 
         for (int i = 0; i < this.deathTicker.size(); i++)
         {
@@ -264,7 +257,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     return true;
                 }
 
-                Animal animal = this.getStoredAnimal();
+                Animal animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null)
                 {
@@ -298,7 +291,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             }
             else
             {
-                Animal animal = this.getStoredAnimal();
+                Animal animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null ||
                     !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).
@@ -380,7 +373,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return true;
         }
 
-        Animal animal = this.getStoredAnimal();
+        Animal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -422,7 +415,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Animal animal = this.getStoredAnimal();
+        Animal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -483,12 +476,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public int getRedStoneSignal()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return 0;
-        }
-
-        return ((AnimalPenInterface) this.storedAnimal).getRedStoneSignal();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).getRedStoneSignal()).
+            orElse(0);
     }
 
 
@@ -501,12 +491,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        Animal animal = this.getStoredAnimal();
-
-        if (animal != null)
-        {
-            animal.save(this.getItemStack().getOrCreateTag());
-        }
+        this.getStoredAnimal().ifPresent(
+            animal -> animal.save(this.getItemStack().getOrCreateTag()));
 
         this.level.sendBlockUpdated(this.getBlockPos(),
             this.getBlockState(),
@@ -550,12 +536,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public ListTag getEntityVariants()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return new ListTag();
-        }
-
-        return AnimalCageItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new);
+        return this.getStoredAnimal().
+            map(animal -> AnimalCageItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new)).
+            orElseGet(ListTag::new);
     }
 
 
@@ -593,33 +576,37 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public void updateAnimalVariant(CompoundTag animalVariant)
     {
-        if (this.getStoredAnimal() == null || animalVariant == null || animalVariant.isEmpty())
+        if (animalVariant == null || animalVariant.isEmpty())
         {
+            // Nothing to update
             return;
         }
 
-        // Save extra data
-        CompoundTag extraData = new CompoundTag();
-        ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(extraData);
-
-        // load new variant
-        this.storedAnimal.load(animalVariant);
-
-        // Apply data
-        ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
-        this.triggerUpdate();
-
-        if (this.level != null && !this.level.isClientSide())
+        this.getStoredAnimal().ifPresent(animal ->
         {
-            // Trigger update.
-            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(other ->
-                        other.distanceToSqr(this.getBlockPos().getX(),
-                            this.getBlockPos().getY(),
-                            this.getBlockPos().getZ()) < 50).
-                    toList(),
-                new UpdateVariantScreenData(this.getBlockPos()));
-        }
+            // Save extra data
+            CompoundTag extraData = new CompoundTag();
+            ((AnimalPenInterface) animal).animalPenSaveTag(extraData);
+
+            // load new variant
+            animal.load(animalVariant);
+
+            // Apply data
+            ((AnimalPenInterface) animal).animalPenLoadTag(extraData);
+            this.triggerUpdate();
+
+            if (this.level != null && !this.level.isClientSide())
+            {
+                // Trigger update.
+                AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        filter(other ->
+                            other.distanceToSqr(this.getBlockPos().getX(),
+                                this.getBlockPos().getY(),
+                                this.getBlockPos().getZ()) < 50).
+                        toList(),
+                    new UpdateVariantScreenData(this.getBlockPos()));
+            }
+        });
     }
 
 
@@ -631,7 +618,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public void removeAnimalVariant(int index)
     {
-        if (this.getStoredAnimal() == null || this.getEntityVariants().size() <= index)
+        if (this.getStoredAnimal().isEmpty() || this.getEntityVariants().size() <= index)
         {
             return;
         }
@@ -661,8 +648,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public long getAnimalCount()
     {
-        return this.getStoredAnimal() == null ? 0 :
-            ((AnimalPenInterface) this.getStoredAnimal()).animalPenGetCount();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetCount()).
+            orElse(0L);
     }
 
 
@@ -681,12 +669,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText)
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return Collections.emptyList();
-        }
-
-        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter(), shortText);
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetLines(this.getTickCounter(), shortText)).
+            orElse(Collections.emptyList());
     }
 
 

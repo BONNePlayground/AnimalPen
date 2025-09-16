@@ -45,7 +45,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedLight,
         int combinedOverlay)
     {
-        WaterAnimal animal = tileEntity.getStoredAnimal();
+        WaterAnimal animal = tileEntity.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {

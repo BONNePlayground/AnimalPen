@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -139,7 +138,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
      * @return Animal instance stored in block entity.
      */
     @Override
-    public WaterAnimal getStoredAnimal()
+    public Optional<WaterAnimal> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -147,7 +146,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
             if (!tag.contains(AnimalContainerItem.TAG_ENTITY_ID) || this.level == null)
             {
-                return this.storedAnimal;
+                return Optional.ofNullable(this.storedAnimal);
             }
 
             EntityType.create(tag, this.level).map(entity -> (WaterAnimal) entity).
@@ -158,7 +157,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             this.storedAnimal = null;
         }
 
-        return this.storedAnimal;
+        return Optional.ofNullable(this.storedAnimal);
     }
 
 
@@ -183,14 +182,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return;
         }
 
-        boolean updated = false;
-
-        WaterAnimal animal = this.getStoredAnimal();
-
-        if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
-        {
-            updated = true;
-        }
+        boolean updated = this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenTick(this)).
+            orElse(false);
 
         for (int i = 0; i < this.deathTicker.size(); i++)
         {
@@ -267,7 +261,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     return true;
                 }
 
-                WaterAnimal animal = this.getStoredAnimal();
+                WaterAnimal animal = this.getStoredAnimal().orElse(null);
                 
                 if (animal == null)
                 {
@@ -301,7 +295,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             }
             else
             {
-                WaterAnimal animal = this.getStoredAnimal();
+                WaterAnimal animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null ||
                     !itemInHandTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
@@ -382,7 +376,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return true;
         }
 
-        WaterAnimal animal = this.getStoredAnimal();
+        WaterAnimal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -424,7 +418,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     {
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        WaterAnimal animal = this.getStoredAnimal();
+        WaterAnimal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -485,12 +479,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
      */
     public int getRedStoneSignal()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return 0;
-        }
-
-        return ((AnimalPenInterface) this.storedAnimal).getRedStoneSignal();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).getRedStoneSignal()).
+            orElse(0);
     }
 
 
@@ -503,12 +494,8 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return;
         }
 
-        WaterAnimal animal = this.getStoredAnimal();
-
-        if (animal != null)
-        {
-            animal.save(this.getItemStack().getOrCreateTag());
-        }
+        this.getStoredAnimal().ifPresent(
+            animal -> animal.save(this.getItemStack().getOrCreateTag()));
 
         BlockState oldState = this.getBlockState();
         BlockState newState = this.getBlockState();
@@ -559,12 +546,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public ListTag getEntityVariants()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return new ListTag();
-        }
-
-        return AnimalContainerItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new);
+        return this.getStoredAnimal().
+            map(animal -> AnimalContainerItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new)).
+            orElseGet(ListTag::new);
     }
 
 
@@ -599,32 +583,36 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public void updateAnimalVariant(CompoundTag animalVariant)
     {
-        if (this.getStoredAnimal() == null || animalVariant == null || animalVariant.isEmpty())
+        if (animalVariant == null || animalVariant.isEmpty())
         {
+            // Nothing to update
             return;
         }
 
-        // Save extra data
-        CompoundTag extraData = new CompoundTag();
-        ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(extraData);
-
-        // load new variant
-        this.storedAnimal.load(animalVariant);
-
-        // Apply data
-        ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(extraData);
-        this.triggerUpdate();
-
-        if (this.level != null && !this.level.isClientSide())
+        this.getStoredAnimal().ifPresent(animal ->
         {
-            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(other ->
-                        other.distanceToSqr(this.getBlockPos().getX(),
-                            this.getBlockPos().getY(),
-                            this.getBlockPos().getZ()) < 50).
-                    toList(),
-                new UpdateVariantScreenData(this.getBlockPos()));
-        }
+            // Save extra data
+            CompoundTag extraData = new CompoundTag();
+            ((AnimalPenInterface) animal).animalPenSaveTag(extraData);
+
+            // load new variant
+            animal.load(animalVariant);
+
+            // Apply data
+            ((AnimalPenInterface) animal).animalPenLoadTag(extraData);
+            this.triggerUpdate();
+
+            if (this.level != null && !this.level.isClientSide())
+            {
+                AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        filter(other ->
+                            other.distanceToSqr(this.getBlockPos().getX(),
+                                this.getBlockPos().getY(),
+                                this.getBlockPos().getZ()) < 50).
+                        toList(),
+                    new UpdateVariantScreenData(this.getBlockPos()));
+            }
+        });
     }
 
 
@@ -635,7 +623,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public void removeAnimalVariant(int index)
     {
-        if (this.getStoredAnimal() == null || this.getEntityVariants().size() <= index)
+        if (this.getStoredAnimal().isEmpty() || this.getEntityVariants().size() <= index)
         {
             return;
         }
@@ -663,7 +651,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public long getAnimalCount()
     {
-        return ((AnimalPenInterface) this.getStoredAnimal()).animalPenGetCount();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetCount()).
+            orElse(0L);
     }
 
 
@@ -682,12 +672,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText)
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return Collections.emptyList();
-        }
-
-        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter(), shortText);
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetLines(this.getTickCounter(), shortText)).
+            orElse(Collections.emptyList());
     }
 
     

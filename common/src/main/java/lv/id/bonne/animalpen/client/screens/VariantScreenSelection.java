@@ -170,7 +170,7 @@ public class VariantScreenSelection extends Screen
         // Create display entity.
 
         CompoundTag defaultAnimal = new CompoundTag();
-        this.blockEntityInterface.getStoredAnimal().save(defaultAnimal);
+        this.blockEntityInterface.getStoredAnimal().ifPresent(entity -> entity.save(defaultAnimal));
 
         EntityType.create(defaultAnimal, this.minecraft.level).
             map(entity -> (LivingEntity) entity).
@@ -227,7 +227,7 @@ public class VariantScreenSelection extends Screen
         }
 
         if (!(this.minecraft.level.getBlockEntity(this.position) instanceof AnimalPenBlockInterface<?>) ||
-            this.blockEntityInterface.getStoredAnimal() == null)
+            this.blockEntityInterface.getStoredAnimal().isEmpty())
         {
             // close screen
             this.minecraft.setScreen(null);
@@ -817,7 +817,7 @@ public class VariantScreenSelection extends Screen
         else
         {
             tag = new CompoundTag();
-            this.blockEntityInterface.getStoredAnimal().save(tag);
+            this.blockEntityInterface.getStoredAnimal().ifPresent(entity -> entity.save(tag));
         }
 
         this.displayEntity.load(tag);

@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.blocks.entities;
 
 import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,7 +30,7 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      *
      * @return Animal instance stored in block entity.
      */
-    T getStoredAnimal();
+    Optional<T> getStoredAnimal();
 
     /**
      * This method returns animal display size.
