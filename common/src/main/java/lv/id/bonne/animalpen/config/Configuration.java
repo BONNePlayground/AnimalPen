@@ -100,7 +100,7 @@ public class Configuration
 
         if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0 || init)
         {
-            this.maxStoredAnimalVariants = 10;
+            this.maxStoredAnimalVariants = 16;
         }
 
         if (init)
