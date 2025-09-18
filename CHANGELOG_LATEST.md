@@ -1,9 +1,12 @@
 # Animal Pens 1.5.1
 
 #### Features:
-- Adds #forge:knives to items that can attack animal pens/aquariums
-- Adds #forge:tools/knives to items that can attack animal pens/aquariums
-- Adds #c:knives to items that can attack animal pens/aquariums
-- Adds #c:swords to items that can attack animal pens/aquariums
-- Adds #c:axes to items that can attack animal pens/aquariums
-- Allow bees and sheeps to interact with #forge:shears and #c:shears
+- Added zh_cn translation
+- Fixes tamed animal detection (some animals are by default marked as tamed)
+- Fixes issue with chested animals were not pickable
+- Fixes game crash when spam-clicking cage into animal pen
+- Removed wrong tip that animals cannot be released
+- Added a tip that animals can be released
+- Added stored variant count
+- Changed default variant count to 16
+- Fixes fire-aspect not triggering correct loot-table

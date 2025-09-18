@@ -39,6 +39,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -430,6 +431,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return;
         }
 
+        int fireAspect = EnchantmentHelper.getFireAspect(player);
         weapon.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(InteractionHand.MAIN_HAND));
 
         this.deathTicker.add(0);
@@ -448,6 +450,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         Vec3 position = new Vec3(this.worldPosition.getX(),
             this.worldPosition.getY(),
             this.worldPosition.getZ());
+
+        // Set fire-ticks (use fire aspect, to get rid of any stored value before).
+        animal.setRemainingFireTicks(fireAspect);
 
         LootTable lootTable = level.getServer().getLootTables().get(animal.getLootTable());
 
