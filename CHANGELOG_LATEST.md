@@ -1,4 +1,4 @@
-# Animal Pens 1.5.1
+# Animal Pens 1.6.0
 
 #### Features:
 - Added zh_cn translation
@@ -11,3 +11,8 @@
 - Changed default variant count to 16
 - Fixed fire-aspect not triggering correct loot-table
 - Implemented Advancement and Statistics awarding (config option: by default false)
+- Fixed incorrect drops from crimson and wraped pens.
+- Implemented Configure Screen for Aquariums and Pens:
+  - Display size moved to this screen
+  - Ability to set protected amount of entities that cannot be killed or removed
+  - Ability to set owner of pen/aquarium (prevents other from interacting)

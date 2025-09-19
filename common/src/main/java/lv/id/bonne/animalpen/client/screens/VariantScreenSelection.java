@@ -15,7 +15,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
-import lv.id.bonne.animalpen.network.packets.UpdateAnimalSizeData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -137,35 +136,15 @@ public class VariantScreenSelection extends Screen
 
         this.applyButton.active = false;
 
-        // Create scroll button
-        long currentValue = this.blockEntityInterface.getAnimalDisplaySize();
-        long maxValue = this.blockEntityInterface.getAnimalCount();
-
-        // Ensure current value is within range
-        if (currentValue < 1)
-        {
-            currentValue = 1;
-        }
-
-        if (currentValue > maxValue)
-        {
-            currentValue = maxValue;
-        }
-
         this.sliderBarPos = this.leftPos + 89;
 
-        this.sliderButton = this.addRenderableWidget(new Button(this.sliderBarPos,
-            this.topPos + 112,
-            Math.max(6, (int) (this.sliderAreaWidth / maxValue)),
-            12,
-            new TextComponent(""),
-            button -> {}));
-        this.sliderButton.active = maxValue > 1;
-        this.sliderButton.visible = this.blockEntityInterface.canGrowEntity() && maxValue > 1;
-
-        // Calculate initial X position based on current value
-        int initialX = this.calculateSizeBarOffset(currentValue);
-        this.sliderButton.x = this.sliderBarPos + initialX;
+        // Apply variant button
+        this.configureButton = this.addWidget(new Button(this.leftPos + 160,
+            this.topPos + 5,
+            10,
+            10,
+            TextComponent.EMPTY,
+            this::handleConfigureButton));
 
         // Create display entity.
 
@@ -248,38 +227,6 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    /**
-     * This method calculates size scroll X value.
-     * @param value current size
-     * @return the offset of scroll bar.
-     */
-    private int calculateSizeBarOffset(long value)
-    {
-        if (this.blockEntityInterface.getAnimalCount() <= 1)
-        {
-            return 0;
-        }
-
-        float percentage = (float) (value - 1) / (this.blockEntityInterface.getAnimalCount() - 1);
-
-        return Math.round(percentage * (this.sliderAreaWidth - this.sliderButton.getWidth()));
-    }
-
-
-    /**
-     * This method calculates the current number of animals based on scroll button position.
-     * @param scrollX The scroll button position.
-     * @return The current animal size.
-     */
-    private long calculateSizeFromPosition(int scrollX)
-    {
-        float percentage = (float)(scrollX - this.sliderBarPos) /
-            (this.sliderAreaWidth - this.sliderButton.getWidth());
-        long maxValue = this.blockEntityInterface.getAnimalCount();
-        return 1 + Math.round(percentage * (maxValue - 1));
-    }
-
-
 // ---------------------------------------------------------------------
 // Section: Renderer
 // ---------------------------------------------------------------------
@@ -303,7 +250,7 @@ public class VariantScreenSelection extends Screen
         this.renderVariantButtons(poseStack, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(poseStack, mouseX, mouseY);
         this.renderScrollBar(poseStack, mouseX, mouseY);
-        this.renderSizeBar(poseStack, mouseX, mouseY, partialTicks);
+        this.renderTextBar(poseStack, mouseX, mouseY, partialTicks);
         this.renderEntity(poseStack, partialTicks);
         this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
 
@@ -402,6 +349,15 @@ public class VariantScreenSelection extends Screen
             51,
             12,
             12);
+
+        // Render configure icon.
+        this.blit(poseStack,
+            this.configureButton.x,
+            this.configureButton.y,
+            176,
+            63,
+            10,
+            10);
     }
 
 
@@ -449,23 +405,10 @@ public class VariantScreenSelection extends Screen
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderSizeBar(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    private void renderTextBar(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.sliderButton.render(poseStack, mouseX, mouseY, partialTicks);
-
-        Component text;
-
-        if (this.blockEntityInterface.canGrowEntity())
-        {
-            text = new TranslatableComponent(SIZE_TEXT,
-                this.blockEntityInterface.getAnimalDisplaySize(),
-                this.blockEntityInterface.getAnimalCount());
-        }
-        else
-        {
-            text = new TranslatableComponent(FIXED_TEXT,
-                this.blockEntityInterface.getAnimalCount());
-        }
+        Component text = new TranslatableComponent(FIXED_TEXT,
+            this.blockEntityInterface.getAnimalCount());
 
         poseStack.pushPose();
 
@@ -685,15 +628,14 @@ public class VariantScreenSelection extends Screen
             this.renderTooltip(poseStack, this.selectedButton != -1 ? DELETE : SELECT_TO_DELETE, mouseX, mouseY);
         }
 
-        if (this.sliderButton.isMouseOver(mouseX, mouseY))
-        {
-            List<Component> list = List.of(SLIDER, new TextComponent(""), SLIDER_HELPER_DRAG, SLIDER_HELPER_ARROW);
-            this.renderComponentTooltip(poseStack, list, mouseX, mouseY);
-        }
-
         if (this.cooldownButton.isMouseOver(mouseX, mouseY))
         {
             this.renderTooltip(poseStack, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
+        }
+
+        if (this.configureButton.isMouseOver(mouseX, mouseY))
+        {
+            this.renderTooltip(poseStack, CONFIGURE, mouseX, mouseY);
         }
     }
 
@@ -825,6 +767,16 @@ public class VariantScreenSelection extends Screen
     }
 
 
+    /**
+     * This method handles the configure button that opens new menu.
+     * @param button The configure button.
+     */
+    private void handleConfigureButton(Button button)
+    {
+        this.minecraft.setScreen(new VariantsConfigScreen(this));
+    }
+
+
     private void handleCooldownButton(Button button)
     {
         this.isCooldownOpened = !this.isCooldownOpened;
@@ -873,18 +825,6 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    /**
-     * Indicate if player clicks on size scroll bar button
-     * @param mouseX cursor x location
-     * @param mouseY cursor y location
-     * @return {@code true} if size scroll bar button is clicked, {@code false} otherwise.
-     */
-    private boolean sizeBarClicked(double mouseX, double mouseY)
-    {
-        return this.sliderButton.isMouseOver(mouseX, mouseY);
-    }
-
-
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
         if (this.scrollBarClicked(mouseX, mouseY))
@@ -899,11 +839,6 @@ public class VariantScreenSelection extends Screen
             this.isSelectingEntity = true;
             return true;
         }
-        else if (this.sizeBarClicked(mouseX, mouseY))
-        {
-            this.isSelectingSizeBar = true;
-            return true;
-        }
         else
         {
             return super.mouseClicked(mouseX, mouseY, button);
@@ -915,7 +850,6 @@ public class VariantScreenSelection extends Screen
     {
         this.isSelectingEntity = false;
         this.isScrollingVariants = false;
-        this.isSelectingSizeBar = false;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -963,26 +897,6 @@ public class VariantScreenSelection extends Screen
             this.currentXOnEntity = (int) mouseX;
             return true;
         }
-        else if (this.isSelectingSizeBar &&
-            this.sliderButton.isActive() &&
-            this.blockEntityInterface.canGrowEntity())
-        {
-            int newX = (int) Mth.clamp(mouseX, this.sliderBarPos,
-                this.sliderBarPos + this.sliderAreaWidth - this.sliderButton.getWidth());
-
-            // Update value
-            long newValue = this.calculateSizeFromPosition(newX);
-            this.blockEntityInterface.setAnimalDisplaySize(newValue);
-
-            NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
-                UpdateAnimalSizeData.encode(this.position, newValue));
-
-            // Snap to correct position
-            int snapPoint = this.calculateSizeBarOffset(newValue);
-            this.sliderButton.x = this.sliderBarPos + snapPoint;
-
-            return true;
-        }
         else
         {
             return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -993,39 +907,7 @@ public class VariantScreenSelection extends Screen
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if ((keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) &&
-            this.sliderButton.isActive() && this.blockEntityInterface.canGrowEntity())
-        {
-            // Get current value
-            long currentValue = this.blockEntityInterface.getAnimalDisplaySize();
-            long maxValue = this.blockEntityInterface.getAnimalCount();
-
-            // Calculate new value based on key pressed
-            long newValue;
-
-            if (keyCode == GLFW.GLFW_KEY_LEFT)
-            {
-                newValue = Math.max(1, currentValue - 1);
-            }
-            else
-            {
-                newValue = Math.min(maxValue, currentValue + 1);
-            }
-
-            // Update only if value changed
-            if (newValue != currentValue)
-            {
-                // Update scroll button position
-                this.sliderButton.x = this.sliderBarPos + this.calculateSizeBarOffset(newValue);
-                this.blockEntityInterface.setAnimalDisplaySize(newValue);
-
-                NetworkManager.sendToServer(UpdateAnimalSizeData.ID,
-                    UpdateAnimalSizeData.encode(this.position, newValue));
-
-                return true;
-            }
-        }
-        else if ((keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) &&
+        if ((keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) &&
             this.buttons.size() > 1)
         {
             int button;
@@ -1175,7 +1057,7 @@ public class VariantScreenSelection extends Screen
     /**
      * This variable stores current animal pen.
      */
-    private AnimalPenBlockInterface<?> blockEntityInterface;
+    protected AnimalPenBlockInterface<?> blockEntityInterface;
 
     /**
      * The left position of the menu.
@@ -1228,9 +1110,9 @@ public class VariantScreenSelection extends Screen
     private Button applyButton;
 
     /**
-     * The slider of animal size element;
+     * Button that allows to configure current pen.
      */
-    private Button sliderButton;
+    private Button configureButton;
 
     /**
      * Button that indicates that player wants to cooldown menu.
@@ -1266,11 +1148,6 @@ public class VariantScreenSelection extends Screen
      * This boolean indicates if player is selecting entity
      */
     private boolean isSelectingEntity;
-
-    /**
-     * This boolean indicates if player is holding slider button
-     */
-    private boolean isSelectingSizeBar;
 
     /**
      * This boolean indicates if player screen requires update.
@@ -1314,24 +1191,15 @@ public class VariantScreenSelection extends Screen
         new TranslatableComponent("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
 
     /**
-     * The SLIDER of button tooltip
+     * The configure button tooltip
      */
-    private static final Component SLIDER =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip");
-    private static final Component SLIDER_HELPER_DRAG =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip_drag");
-    private static final Component SLIDER_HELPER_ARROW =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.slider_tooltip_arrow");
+    private static final Component CONFIGURE =
+        new TranslatableComponent("gui.animal_pen.variant_selection_screen.configure_tooltip");
 
     /**
      * The button text location
      */
     private static final String BUTTON_TEXT = "gui.animal_pen.variant_selection_screen.select_variant";
-
-    /**
-     * The size text location
-     */
-    private static final String SIZE_TEXT = "gui.animal_pen.variant_selection_screen.entity_size";
 
     /**
      * The fixed size text location

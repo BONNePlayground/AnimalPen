@@ -69,8 +69,8 @@ public final class AnimalPen
 
         NetworkManager.registerReceiver(
             NetworkManager.Side.C2S,
-            UpdateAnimalSizeData.ID,
-            UpdateAnimalSizeData::handle);
+            UpdateConfigurationData.ID,
+            UpdateConfigurationData::handle);
 
         // Register into separate channel, as S2C crashes on fabric servers.
         CHANNEL.register(AnimalFoodRegistryData.class,
