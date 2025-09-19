@@ -67,7 +67,10 @@ public class VariantsConfigScreen extends Screen
         this.minimalAnimalCountField.setEditable(canEdit);
 
         // Protection Checkbox
-        this.protectionCheckbox = new Checkbox(centerX - 100, startY + 80, 200, 20, PROTECTION, this.enableProtection);
+        this.protectionCheckbox = Checkbox.builder(PROTECTION, this.font).
+            pos(centerX - 100, startY + 80).
+            selected(this.enableProtection).
+            build();
         this.addRenderableWidget(this.protectionCheckbox);
 
         this.protectionCheckbox.active = canEdit;
