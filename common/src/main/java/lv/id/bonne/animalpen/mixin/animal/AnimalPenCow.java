@@ -123,7 +123,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$milkCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
@@ -155,7 +155,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$milkCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
@@ -174,7 +174,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) == 0)

@@ -103,7 +103,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 1.0F,
                 1.0F);
 
-            if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+            if (AnimalPen.config().isTriggerAdvancements())
             {
                 // Trigger bucket filling
                 CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);

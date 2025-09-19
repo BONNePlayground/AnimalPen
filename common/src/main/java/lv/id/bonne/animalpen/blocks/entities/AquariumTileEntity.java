@@ -475,7 +475,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         int fireAspect = EnchantmentHelper.getFireAspect(player);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        if (AnimalPen.config().isIncreaseStatistics())
         {
             player.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
         }
@@ -522,14 +522,14 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         int reward = ((WaterAnimalInvoker) animal).invokeGetExperienceReward(player);
         ExperienceOrb.award((ServerLevel)this.level, position.add(0.5, 1.5, 0.5), reward);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+        if (AnimalPen.config().isTriggerAdvancements())
         {
             CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
                 animal,
                 DamageSource.playerAttack(player));
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        if (AnimalPen.config().isIncreaseStatistics())
         {
             player.awardStat(Stats.MOB_KILLS);
             player.awardStat(Stats.ENTITY_KILLED.get(animal.getType()));
@@ -728,7 +728,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     @Override
     public boolean canGrowEntity()
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals();
+        return AnimalPen.config().isGrowWaterAnimals();
     }
 
 

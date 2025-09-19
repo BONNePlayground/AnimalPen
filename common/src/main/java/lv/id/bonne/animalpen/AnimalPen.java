@@ -14,6 +14,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
+import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
@@ -90,6 +91,12 @@ public final class AnimalPen
 
         PlayerEvent.PLAYER_JOIN.register(player ->
             CHANNEL.sendToPlayer(player, AnimalFoodRegistryData.serverData()));
+    }
+
+
+    public static Configuration config()
+    {
+        return CONFIG_MANAGER.getConfiguration();
     }
 
 

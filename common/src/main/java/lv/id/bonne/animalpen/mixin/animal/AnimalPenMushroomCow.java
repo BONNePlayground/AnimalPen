@@ -169,7 +169,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$supCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
@@ -298,7 +298,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$supCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
@@ -317,7 +317,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount) == 0)

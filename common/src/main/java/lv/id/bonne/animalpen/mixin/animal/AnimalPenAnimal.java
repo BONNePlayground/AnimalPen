@@ -79,7 +79,7 @@ public abstract class AnimalPenAnimal extends Mob
             return false;
         }
 
-        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
         if (maxCount > 0 && this.animalPen$animalCount + change > maxCount)
         {
@@ -143,7 +143,7 @@ public abstract class AnimalPenAnimal extends Mob
             return false;
         }
 
-        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
         if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
         {
@@ -217,12 +217,12 @@ public abstract class AnimalPenAnimal extends Mob
                 1.0F);
         }
 
-        this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+        this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
             this.getType(),
             Items.APPLE,
             stackSize);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+        if (AnimalPen.config().isTriggerAdvancements())
         {
             // Trigger event and statistics for breeding.
             for (int i = 0; i < amount; i++)
@@ -234,7 +234,7 @@ public abstract class AnimalPenAnimal extends Mob
             }
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        if (AnimalPen.config().isIncreaseStatistics())
         {
             player.awardStat(Stats.ANIMALS_BRED, amount);
         }
@@ -257,7 +257,7 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            shortLine && AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            shortLine && AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)

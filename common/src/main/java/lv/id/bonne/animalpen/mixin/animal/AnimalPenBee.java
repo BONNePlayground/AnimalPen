@@ -65,7 +65,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
             if (this.animalPen$pollenCount != 5)
             {
-                this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                     this.getType(),
                     Items.HONEY_BLOCK,
                     this.animalPen$animalCount);
@@ -139,7 +139,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
@@ -174,7 +174,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
@@ -214,7 +214,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
@@ -233,7 +233,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
@@ -252,7 +252,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount) == 0)

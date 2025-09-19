@@ -132,7 +132,7 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isBlocked(livingEntity.getType()))
+        if (AnimalPen.config().isBlocked(livingEntity.getType()))
         {
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.blocked").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -181,7 +181,7 @@ public class AnimalContainerItem extends Item
 
         if (itemTag.contains(TAG_AMOUNT))
         {
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && itemTag.getLong(TAG_AMOUNT) + 1 > maxCount)
             {
@@ -199,7 +199,7 @@ public class AnimalContainerItem extends Item
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        if (AnimalPen.config().isIncreaseStatistics())
         {
             player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
         }
@@ -348,7 +348,7 @@ public class AnimalContainerItem extends Item
      */
     public static boolean storeAnimalVariant(ItemStack itemStack, LivingEntity animal, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return false;
         }
@@ -362,7 +362,7 @@ public class AnimalContainerItem extends Item
 
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
 
-        if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -394,7 +394,7 @@ public class AnimalContainerItem extends Item
      */
     public static boolean canMergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return true;
         }
@@ -410,7 +410,7 @@ public class AnimalContainerItem extends Item
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
         ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
 
-        if (variantList.size() + redundantList.size() > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        if (variantList.size() + redundantList.size() > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -434,7 +434,7 @@ public class AnimalContainerItem extends Item
      */
     public static void mergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return;
         }
@@ -452,7 +452,7 @@ public class AnimalContainerItem extends Item
 
         for (Tag tag : redundantList)
         {
-            if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+            if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
             {
                 if (player != null)
                 {

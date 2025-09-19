@@ -98,7 +98,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 return false;
             }
 
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
@@ -149,7 +149,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                     1.0F);
             }
 
-            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 stackSize);
@@ -186,7 +186,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+            if (AnimalPen.config().isTriggerAdvancements())
             {
                 // Trigger bucket filling
                 CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
@@ -239,7 +239,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)

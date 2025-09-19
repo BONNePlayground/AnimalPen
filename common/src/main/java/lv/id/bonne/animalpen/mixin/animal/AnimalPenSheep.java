@@ -145,7 +145,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             int woolCount = 1;
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.WHITE_WOOL);
 
             if (dropLimits <= 0)
             {
@@ -182,7 +182,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$woolCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount);
@@ -243,7 +243,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             int woolCount = 1;
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.WHITE_WOOL);
 
             if (dropLimits <= 0)
             {
@@ -280,7 +280,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$woolCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount);
@@ -299,7 +299,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount) == 0)

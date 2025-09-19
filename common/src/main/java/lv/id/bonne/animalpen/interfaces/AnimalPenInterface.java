@@ -124,14 +124,14 @@ public interface AnimalPenInterface
      */
     static void triggerItemUse(Entity entity, ServerPlayer player, ItemStack itemStack, int amount)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+        if (AnimalPen.config().isTriggerAdvancements())
         {
             CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(player,
                 itemStack,
                 entity);
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        if (AnimalPen.config().isIncreaseStatistics())
         {
             player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()), amount);
         }

@@ -102,7 +102,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 return true;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.EGG);
 
             if (dropLimits <= 0)
             {
@@ -136,7 +136,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
@@ -159,7 +159,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
 
         if (itemStack.is(Items.BUCKET))
         {
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.EGG);
 
             if (dropLimits <= 0)
             {
@@ -193,7 +193,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
@@ -212,7 +212,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) == 0)

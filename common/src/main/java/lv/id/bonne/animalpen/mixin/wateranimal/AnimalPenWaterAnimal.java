@@ -74,7 +74,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
             return false;
         }
 
-        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
         if (maxCount > 0 && this.animalPen$animalCount + change > maxCount)
         {
@@ -135,7 +135,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
                 return false;
             }
 
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
@@ -208,7 +208,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
                     1.0F);
             }
 
-            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 stackSize);
@@ -233,7 +233,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
         List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)
