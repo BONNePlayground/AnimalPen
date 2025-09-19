@@ -69,10 +69,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$frogLightCooldown > 0)
-        {
-            tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
-        }
+        tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
     }
 
 
@@ -81,10 +78,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("frog_light_cooldown"))
-        {
-            this.animalPen$frogLightCooldown = tag.getInt("frog_light_cooldown");
-        }
+        this.animalPen$frogLightCooldown = tag.getInt("frog_light_cooldown");
     }
 
 
