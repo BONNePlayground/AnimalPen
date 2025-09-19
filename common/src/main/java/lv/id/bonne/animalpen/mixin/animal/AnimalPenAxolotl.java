@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.*;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +24,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -166,6 +169,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 return false;
             }
 
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
+
             ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
             this.saveToBucketTag(bucket);
 
@@ -180,6 +185,12 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
+
+            if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+            {
+                // Trigger bucket filling
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
+            }
 
             return true;
         }
@@ -286,4 +297,5 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
     @Unique
     private int animalPen$storedFood = 0;
-}
+
+    }

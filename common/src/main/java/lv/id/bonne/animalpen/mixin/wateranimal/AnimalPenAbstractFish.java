@@ -15,13 +15,17 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -87,6 +91,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             this.animalPen$animalCount--;
 
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
+
             player.setItemInHand(hand,
                 ItemUtils.createFilledResult(itemStack, player, bucket, false));
 
@@ -96,6 +102,12 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
+
+            if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+            {
+                // Trigger bucket filling
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
+            }
 
             return true;
         }

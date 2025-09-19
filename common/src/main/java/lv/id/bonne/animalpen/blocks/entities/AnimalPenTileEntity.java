@@ -19,6 +19,7 @@ import lv.id.bonne.animalpen.mixin.accessors.AnimalInvoker;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -27,6 +28,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -429,6 +433,12 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         }
 
         int fireAspect = EnchantmentHelper.getFireAspect(player);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
+        }
+
         weapon.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(InteractionHand.MAIN_HAND));
 
         this.deathTicker.add(0);
@@ -468,6 +478,19 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+        {
+            CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
+                animal,
+                DamageSource.playerAttack(player));
+        }
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.MOB_KILLS);
+            player.awardStat(Stats.ENTITY_KILLED.get(animal.getType()));
+        }
     }
 
 

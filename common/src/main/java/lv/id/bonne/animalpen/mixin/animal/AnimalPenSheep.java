@@ -15,12 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -136,6 +138,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             this.setSheared(true);
 
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
 
             ItemLike itemLike = ITEM_BY_DYE.get(this.getColor());

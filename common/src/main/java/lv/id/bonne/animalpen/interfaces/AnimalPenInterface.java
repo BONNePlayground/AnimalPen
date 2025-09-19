@@ -8,13 +8,19 @@ package lv.id.bonne.animalpen.interfaces;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 
+import lv.id.bonne.animalpen.AnimalPen;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -107,4 +113,27 @@ public interface AnimalPenInterface
      *    and other values combined using `|`
      */
     int getRedStoneSignal();
+
+
+    /**
+     * This method triggers item usage for statistic and advancement.
+     * @param entity The entity that is targeted.
+     * @param player The player object.
+     * @param itemStack The used item stack.
+     * @param amount The amount of used items.
+     */
+    static void triggerItemUse(Entity entity, ServerPlayer player, ItemStack itemStack, int amount)
+    {
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isTriggerAdvancements())
+        {
+            CriteriaTriggers.PLAYER_INTERACTED_WITH_ENTITY.trigger(player,
+                itemStack,
+                entity);
+        }
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()), amount);
+        }
+    }
 }

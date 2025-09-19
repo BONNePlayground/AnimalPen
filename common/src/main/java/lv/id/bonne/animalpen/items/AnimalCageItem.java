@@ -18,6 +18,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -197,6 +198,11 @@ public class AnimalCageItem extends Item
 
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
+
+        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
+        }
 
         return InteractionResult.SUCCESS;
     }

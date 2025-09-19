@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -129,6 +131,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 return true;
             }
 
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
+
             ItemStack bowlStack;
             boolean suspicious = this.effect != null;
 
@@ -220,6 +224,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 this.effect = pair.getLeft();
                 this.effectDuration = pair.getRight();
+
+                AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
                 if (!player.getAbilities().instabuild)
                 {

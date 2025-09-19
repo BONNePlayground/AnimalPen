@@ -9,4 +9,5 @@
 - Added a tip that animals can be released
 - Added stored variant count
 - Changed default variant count to 16
-- Fixes fire-aspect not triggering correct loot-table
+- Fixed fire-aspect not triggering correct loot-table
+- Implemented Advancement and Statistics awarding (config option: by default false)

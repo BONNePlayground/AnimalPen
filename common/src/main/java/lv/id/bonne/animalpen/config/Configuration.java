@@ -52,6 +52,8 @@ public class Configuration
             this.attackCooldown == null ||
             this.attackCooldown < 0 ||
             this.maxStoredAnimalVariants == null ||
+            this.triggerAdvancements == null ||
+            this.increaseStatistics == null ||
             this.maxStoredAnimalVariants < 0;
     }
 
@@ -101,6 +103,16 @@ public class Configuration
         if (this.maxStoredAnimalVariants == null || this.maxStoredAnimalVariants < 0 || init)
         {
             this.maxStoredAnimalVariants = 16;
+        }
+
+        if (this.increaseStatistics == null || init)
+        {
+            this.increaseStatistics = false;
+        }
+
+        if (this.triggerAdvancements == null || init)
+        {
+            this.triggerAdvancements = false;
         }
 
         if (init)
@@ -345,6 +357,28 @@ public class Configuration
     }
 
 
+    /**
+     * Gets trigger advancements.
+     *
+     * @return the trigger advancements
+     */
+    public boolean isTriggerAdvancements()
+    {
+        return this.triggerAdvancements;
+    }
+
+
+    /**
+     * Gets increase statistics.
+     *
+     * @return the increase statistics
+     */
+    public boolean isIncreaseStatistics()
+    {
+        return this.increaseStatistics;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -495,10 +529,24 @@ public class Configuration
     @JsonComment("Allows to set how many different animal variants can be stored per item.")
     @JsonComment("Players will not be able to store more different variants than this value.")
     @JsonComment("Be aware, this increases NBT data size, so not recommended to put infinite amount.")
-    @JsonComment("Default value = 10")
+    @JsonComment("Default value = 16")
     @Expose
     @SerializedName("max_stored_animal_variants")
     private Integer maxStoredAnimalVariants;
+
+    @JsonComment("Allows to set if interactions with animal pens/aquariums should trigger advancements.")
+    @JsonComment("Triggered Criteria: player_interacted_with_entity, bred_animals, filled_bucket, player_killed_entity")
+    @JsonComment("Default value = false")
+    @Expose
+    @SerializedName("trigger_advancements")
+    private Boolean triggerAdvancements;
+
+    @JsonComment("Allows to set if interactions with animal pens/aquariums should increase statistics.")
+    @JsonComment("Increased Statistics: Animals Bred, Mob Kills, Use Item <item>, Kill Entity <entity>")
+    @JsonComment("Default value = false")
+    @Expose
+    @SerializedName("increase_statistics")
+    private Boolean increaseStatistics;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose

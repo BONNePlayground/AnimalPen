@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +24,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -106,6 +108,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
                 player,
