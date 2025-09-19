@@ -75,7 +75,7 @@ public final class AnimalPen
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S,
             UpdateConfigurationData.ID,
-            UpdateAnimalSizeData.STREAM_CODEC,
+            UpdateConfigurationData.STREAM_CODEC,
             UpdateConfigurationData::handle);
 
         // register the listener

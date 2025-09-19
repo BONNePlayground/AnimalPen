@@ -79,7 +79,10 @@ public class AnimalContainerItem extends Item
             list.add(Component.translatable("item.animal_pen.water_animal_container.variants",
                     tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
                 withStyle(ChatFormatting.GRAY));
-            
+
+            list.add(Component.empty());
+            list.add(Component.translatable("item.animal_pen.water_animal_container.release").
+                withStyle(ChatFormatting.GRAY));
         }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))

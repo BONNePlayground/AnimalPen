@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -89,6 +90,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         this.inventory.clearContent();
         this.deathTicker.clear();
         this.storedAnimal = null;
+        this.ownerUUID = null;
 
         if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
         {
@@ -163,7 +165,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
             if (customData == null)
             {
-                return this.storedAnimal;
+                return Optional.ofNullable(this.storedAnimal);
             }
 
             CompoundTag tag = customData.copyTag();

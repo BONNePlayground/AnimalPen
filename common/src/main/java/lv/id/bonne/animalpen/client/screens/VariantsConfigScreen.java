@@ -1,6 +1,8 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
+import java.util.Optional;
+
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.network.packets.UpdateConfigurationData;
 import net.minecraft.client.gui.GuiGraphics;
@@ -93,6 +95,7 @@ public class VariantsConfigScreen extends Screen
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
     {
         this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         // Draw title
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
@@ -111,8 +114,6 @@ public class VariantsConfigScreen extends Screen
 
         graphics.drawString(this.font, MINIMAL_ANIMAL_COUNT,
             centerX - 100, startY + 28, 0xFFFFFF);
-
-        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
 
@@ -166,12 +167,10 @@ public class VariantsConfigScreen extends Screen
 
     private void saveConfiguration()
     {
-        NetworkManager.sendToServer(UpdateConfigurationData.ID,
-            UpdateConfigurationData.encode(this.parent.getPosition(),
-                this.displayAnimalAmount,
-                this.minimalAnimalCount,
-                this.enableProtection ? this.minecraft.player.getUUID() : null));
-
+        NetworkManager.sendToServer(new UpdateConfigurationData(this.parent.getPosition(),
+            this.displayAnimalAmount,
+            this.minimalAnimalCount,
+            Optional.ofNullable(this.enableProtection ? this.minecraft.player.getUUID() : null)));
     }
 
 

@@ -28,9 +28,10 @@
 
   "category.animal_pen.animal_pen": "动物围栏物品",
 
-  "tags.items.animal_pen.animal_pens": "动物围栏",
-  "tags.items.animal_pen.can_attack_aquarium": "可攻击水族箱的物品",
-  "tags.items.animal_pen.can_attack_pen": "可攻击动物围栏的物品",
+  "tag.item.animal_pen.animal_pens": "动物围栏",
+  "tag.item.animal_pen.can_attack_aquarium": "可攻击水族箱的物品",
+  "tag.item.animal_pen.can_attack_pen": "可攻击动物围栏的物品",
+  "tag.block.animal_pen.animal_pens": "Animal Pens",
 
   "block.animal_pen.animal_pen_acacia": "金合欢木动物围栏",
   "block.animal_pen.animal_pen_bamboo": "竹子动物围栏",
@@ -59,6 +60,7 @@
   "display.animal_pen.egg_cooldown": "%2$s §e产蛋: %3$s后",
   "display.animal_pen.sniff_cooldown": "%2$s §e种子: %3$s后",
   "display.animal_pen.frog_light_cooldown": "%1$s §e蛙明灯: %3$s后",
+  "display.animal_pen.brush_cooldown": "%1$s §eBrushing in %3$s",
   "display.animal_pen.food_ready": "%1$s §a现在可以喂食!",
   "display.animal_pen.full_ready": "§a使用 %1$s §a收集 %2$s",
 

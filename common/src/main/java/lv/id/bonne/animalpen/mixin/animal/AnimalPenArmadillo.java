@@ -15,14 +15,17 @@ import java.time.LocalTime;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -105,6 +108,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
         {
             if (this.animalPen$scuteCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$scuteCooldown);
                 return false;
             }
 
@@ -114,6 +118,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
                 return true;
             }
 
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
             itemStack.hurtAndBreak(16, player, getSlotForHand(hand));
             Block.popResource(player.level(), position.above(), new ItemStack(Items.ARMADILLO_SCUTE));
 
@@ -124,10 +129,12 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$scuteCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$scuteCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BRUSH,
                 this.animalPen$animalCount);
+            
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -159,7 +166,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$scuteCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$scuteCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BRUSH,
                 this.animalPen$animalCount);
@@ -178,7 +185,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BRUSH,
                 this.animalPen$animalCount) == 0)
