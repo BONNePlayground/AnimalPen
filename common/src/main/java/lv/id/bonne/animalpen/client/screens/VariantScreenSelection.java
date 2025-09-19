@@ -134,12 +134,11 @@ public class VariantScreenSelection extends Screen
         this.sliderBarPos = this.leftPos + 89;
 
         // Apply variant button
-        this.configureButton = this.addWidget(new Button(this.leftPos + 160,
-            this.topPos + 5,
-            10,
-            10,
-            Component.empty(),
-            this::handleConfigureButton));
+        this.configureButton = this.addWidget(Button.builder(Component.empty(),
+            this::handleConfigureButton).
+            pos(this.leftPos + 160, this.topPos + 5).
+            size(10, 10).
+            build());
 
         // Create display entity.
 
@@ -346,8 +345,8 @@ public class VariantScreenSelection extends Screen
 
         // Render configure icon.
         this.blit(poseStack,
-            this.configureButton.x,
-            this.configureButton.y,
+            this.configureButton.getX(),
+            this.configureButton.getY(),
             176,
             63,
             10,

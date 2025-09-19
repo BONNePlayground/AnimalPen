@@ -74,10 +74,16 @@ public class VariantsConfigScreen extends Screen
         this.protectionCheckbox.active = canEdit;
 
         // Save Button
-        this.addRenderableWidget(new Button(centerX - 102, startY + 120, 100, 20, SAVE, this::onSave));
+        this.addRenderableWidget(Button.builder(SAVE, this::onSave).
+            pos(centerX - 102, startY + 120).
+            size(100, 20).
+            build());
 
         // Cancel Button
-        this.addRenderableWidget(new Button(centerX + 2, startY + 120, 100, 20, CANCEL, this::onCancel));
+        this.addRenderableWidget(Button.builder(CANCEL, this::onCancel).
+            pos(centerX + 2, startY + 120).
+            size(100, 20).
+            build());
     }
 
 
