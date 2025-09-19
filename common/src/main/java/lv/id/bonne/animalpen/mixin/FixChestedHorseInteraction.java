@@ -35,9 +35,10 @@ public class FixChestedHorseInteraction
         cancellable = true)
     private void addAnimalCageException(Player player,
         InteractionHand interactionHand,
-        CallbackInfoReturnable<InteractionResult> cir,
-        @Local ItemStack itemStack)
+        CallbackInfoReturnable<InteractionResult> cir)
     {
+        ItemStack itemStack = player.getItemInHand(interactionHand);
+
         if (itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get()))
         {
             cir.setReturnValue(InteractionResult.PASS);
