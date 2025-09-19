@@ -549,7 +549,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         {
             CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
                 animal,
-                DamageSource.playerAttack(player));
+                level.damageSources().playerAttack(player));
         }
 
         if (AnimalPen.config().isIncreaseStatistics())

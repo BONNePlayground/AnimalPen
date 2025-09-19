@@ -550,7 +550,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
                 animal,
-                DamageSource.playerAttack(player));
+                level.damageSources().playerAttack(player));
         }
 
         if (AnimalPen.config().isIncreaseStatistics())
