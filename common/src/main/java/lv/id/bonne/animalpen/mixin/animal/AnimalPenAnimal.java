@@ -33,6 +33,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
@@ -154,6 +155,22 @@ public abstract class AnimalPenAnimal extends Mob
         }
 
         int stackSize = itemStack.getCount();
+
+        if (itemStack.getMaxStackSize() == 1)
+        {
+            stackSize = 0;
+
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++)
+            {
+                ItemStack stack = player.getInventory().getItem(i);
+
+                if (ItemStack.isSame(stack, itemStack))
+                {
+                    stackSize++;
+                }
+            }
+        }
+
         stackSize = (int) Math.min(this.animalPen$animalCount, stackSize);
 
         if (stackSize < 2)
@@ -175,7 +192,23 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (!player.getAbilities().instabuild)
         {
-            if (stackSize % 2 == 1)
+            if (itemStack.getMaxStackSize() == 1)
+            {
+                int removed = stackSize - (stackSize % 2 == 1 ? 2 : 1);
+                player.setItemInHand(hand, custom$replacement(itemStack));
+
+                for (int i = 0; i < player.getInventory().getContainerSize() && removed > 0; i++)
+                {
+                    ItemStack stack = player.getInventory().getItem(i);
+
+                    if (ItemStack.isSame(stack, itemStack))
+                    {
+                        player.getInventory().setItem(i, custom$replacement(stack));
+                        removed--;
+                    }
+                }
+            }
+            else if (stackSize % 2 == 1)
             {
                 itemStack.shrink(stackSize - 1);
                 player.setItemInHand(hand, itemStack);
@@ -338,6 +371,31 @@ public abstract class AnimalPenAnimal extends Mob
 
         // second bit value
         return value | 2;
+    }
+
+
+    @Unique
+    private static ItemStack custom$replacement(ItemStack itemStack)
+    {
+        if (itemStack.is(Items.AXOLOTL_BUCKET) ||
+            itemStack.is(Items.COD_BUCKET) ||
+            itemStack.is(Items.SALMON_BUCKET) ||
+            itemStack.is(Items.TROPICAL_FISH_BUCKET) ||
+            itemStack.is(Items.PUFFERFISH_BUCKET))
+        {
+            return new ItemStack(Items.WATER_BUCKET);
+        }
+        else if (itemStack.is(Items.MILK_BUCKET) ||
+            itemStack.is(Items.LAVA_BUCKET) ||
+            itemStack.is(Items.WATER_BUCKET) ||
+            itemStack.is(Items.POWDER_SNOW_BUCKET))
+        {
+            return new ItemStack(Items.BUCKET);
+        }
+        else
+        {
+            return ItemStack.EMPTY;
+        }
     }
 
 

@@ -76,87 +76,14 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     @Override
     public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
     {
-        ItemStack itemStack = player.getItemInHand(hand);
-
-        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
+        if (super.animalPen$animalPenInteract(player, hand, position))
         {
-            if (player.getLevel().isClientSide())
-            {
-                // Next is processed only for server side.
-                return true;
-            }
-
-            this.animalPen$storedFood++;
-
-            if (!player.getAbilities().instabuild)
-            {
-                player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
-            }
-
-            if (this.animalPen$foodCooldown > 0 || this.animalPen$storedFood < 2)
-            {
-                return false;
-            }
-
-            long maxCount = AnimalPen.config().getMaximalAnimalCount();
-
-            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
-            {
-                return false;
-            }
-
-            int stackSize = (int) Math.min(this.animalPen$animalCount, this.animalPen$storedFood);
-
-            if (stackSize < 2)
-            {
-                // Cannot feed 1 animal only for breeding.
-                return false;
-            }
-
-            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
-
-            this.animalPen$animalCount += stackSize / 2;
-            this.animalPen$storedFood -= stackSize;
-
-            if (player.getLevel() instanceof ServerLevel serverLevel)
-            {
-                serverLevel.sendParticles(
-                    ParticleTypes.HEART,
-                    position.getX() + 0.5f,
-                    position.getY() + 1.5,
-                    position.getZ() + 0.5f,
-                    5,
-                    0.2, 0.2, 0.2,
-                    0.05);
-            }
-
-            player.getLevel().playSound(null,
-                position,
-                this.getEatingSound(itemStack),
-                SoundSource.NEUTRAL,
-                1.0F,
-                Mth.randomBetween(player.getLevel().random, 0.8F, 1.2F));
-
-            SoundEvent soundEvent = this.getAmbientSound();
-
-            if (soundEvent != null)
-            {
-                player.getLevel().playSound(null,
-                    position,
-                    soundEvent,
-                    SoundSource.NEUTRAL,
-                    1.0F,
-                    1.0F);
-            }
-
-            this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                stackSize);
-
             return true;
         }
-        else if (itemStack.is(Items.WATER_BUCKET))
+
+        ItemStack itemStack = player.getItemInHand(hand);
+
+        if (itemStack.is(Items.WATER_BUCKET))
         {
             if (player.getLevel().isClientSide())
             {
@@ -210,6 +137,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         {
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 axolotls in pen");
                 return ItemStack.EMPTY;
             }
 
@@ -226,6 +154,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$animalCount--;
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return bucket;
         }
@@ -251,32 +181,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component =
-            new TranslatableComponent("display.animal_pen.stored_food",
-                new TextComponent("\uE000"),
-                this.animalPen$storedFood);
-
-        ItemStack[] food = this.animalPen$getFood();
-
-        if (food != null && food.length != 0)
-        {
-            ItemStack foodItem;
-
-            if (food.length == 1)
-            {
-                foodItem = food[0];
-            }
-            else
-            {
-                int size = food.length;
-                int index = (tick / 100) % size;
-
-                foodItem = food[index];
-            }
-
-            lines.add(Pair.of(new ItemStack[]{foodItem}, component));
-        }
-
+        MutableComponent component;
 
         if (!shortLine && this.animalPen$animalCount > 1)
         {
@@ -300,5 +205,4 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
     @Unique
     private int animalPen$storedFood = 0;
-
-    }
+}

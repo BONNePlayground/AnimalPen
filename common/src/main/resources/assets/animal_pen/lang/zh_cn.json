@@ -46,7 +46,6 @@
   "display.animal_pen.cooldown": "%2$s 冷却: %3$s",
   "display.animal_pen.ready": "%1$s §2已就绪!",
 
-  "display.animal_pen.stored_food": "§3储存食物: %2$d x %1$s",
   "display.animal_pen.pollen_level": "%1$s §e花粉: %2$d / §25",
   "display.animal_pen.pollen_level_max": "%1$s §2最大花粉: %2$d",
   "display.animal_pen.pollen_cooldown": "%1$s §e花粉采集: %3$s后",

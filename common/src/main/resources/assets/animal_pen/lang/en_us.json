@@ -45,7 +45,6 @@
   "display.animal_pen.cooldown": "%2$s Cooldown: %3$s",
   "display.animal_pen.ready": "%1$s §2Ready!",
 
-  "display.animal_pen.stored_food": "§3Stored food: %2$d x %1$s",
   "display.animal_pen.pollen_level": "%1$s §ePollen: %2$d / §25",
   "display.animal_pen.pollen_level_max": "%1$s §2Max pollen: %2$d",
   "display.animal_pen.pollen_cooldown": "%1$s §ePollen harvest in %3$s",
