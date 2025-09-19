@@ -16,14 +16,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,19 +57,35 @@ public class AnimalContainerItem extends Item
             list.add(Component.empty());
         }
 
-        if (itemStack.hasTag() &&
-            itemStack.getTag().contains(TAG_ENTITY_ID))
+        if (itemStack.hasTag())
         {
-            list.add(Component.translatable("item.animal_pen.water_animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
-                withStyle(ChatFormatting.GRAY));
-        }
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(Component.translatable("item.animal_pen.water_animal_container.entity",
+                    AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                    withStyle(ChatFormatting.GRAY));
+            }
 
-        if (itemStack.hasTag() && itemStack.getTag().contains(TAG_AMOUNT))
-        {
-            list.add(Component.translatable("item.animal_pen.water_animal_container.amount",
-                itemStack.getTag().getLong(TAG_AMOUNT)).
-                withStyle(ChatFormatting.GRAY));
+            if (itemStack.getTag().contains(TAG_AMOUNT))
+            {
+                list.add(Component.translatable("item.animal_pen.water_animal_container.amount",
+                    itemStack.getTag().getLong(TAG_AMOUNT)).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_VARIANTS))
+            {
+                list.add(Component.translatable("item.animal_pen.water_animal_container.variants",
+                    itemStack.getTag().getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    withStyle(ChatFormatting.GRAY));
+            }
+
+            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            {
+                list.add(Component.empty());
+                list.add(Component.translatable("item.animal_pen.water_animal_container.release").
+                    withStyle(ChatFormatting.GRAY));
+            }
         }
 
         if (!itemStack.hasTag() ||
@@ -79,9 +94,6 @@ public class AnimalContainerItem extends Item
             list.add(Component.translatable("item.animal_pen.water_animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
         }
-
-        list.add(Component.translatable("item.animal_pen.water_animal_container.warning").
-            withStyle(ChatFormatting.GRAY));
     }
 
 
@@ -118,7 +130,7 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isBlocked(livingEntity.getType()))
+        if (AnimalPen.config().isBlocked(livingEntity.getType()))
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.blocked").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -142,6 +154,14 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
+        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null)
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
         if (!this.matchEntity(itemStack, livingEntity))
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.wrong").
@@ -159,7 +179,7 @@ public class AnimalContainerItem extends Item
 
         if (itemTag.contains(TAG_AMOUNT))
         {
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && itemTag.getLong(TAG_AMOUNT) + 1 > maxCount)
             {
@@ -176,6 +196,11 @@ public class AnimalContainerItem extends Item
 
         player.setItemInHand(interactionHand, itemStack);
         livingEntity.remove(Entity.RemovalReason.DISCARDED);
+
+        if (AnimalPen.config().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
+        }
 
         return InteractionResult.SUCCESS;
     }
@@ -321,7 +346,7 @@ public class AnimalContainerItem extends Item
      */
     public static boolean storeAnimalVariant(ItemStack itemStack, LivingEntity animal, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return false;
         }
@@ -335,7 +360,7 @@ public class AnimalContainerItem extends Item
 
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
 
-        if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -367,7 +392,7 @@ public class AnimalContainerItem extends Item
      */
     public static boolean canMergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return true;
         }
@@ -383,7 +408,7 @@ public class AnimalContainerItem extends Item
         ListTag variantList = itemTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
         ListTag redundantList = redundantTag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND);
 
-        if (variantList.size() + redundantList.size() > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+        if (variantList.size() + redundantList.size() > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -407,7 +432,7 @@ public class AnimalContainerItem extends Item
      */
     public static void mergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, @Nullable Player player)
     {
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants() <= 0)
+        if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
             return;
         }
@@ -425,7 +450,7 @@ public class AnimalContainerItem extends Item
 
         for (Tag tag : redundantList)
         {
-            if (variantList.size() + 1 > AnimalPen.CONFIG_MANAGER.getConfiguration().getMaxStoredVariants())
+            if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
             {
                 if (player != null)
                 {

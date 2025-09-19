@@ -94,6 +94,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
 
         if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
+            AnimalPen.sendDebug("Blocked by external forces");
             return InteractionResult.SUCCESS;
         }
 
@@ -158,7 +159,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
                 return;
             }
 
-            int cooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getAttackCooldown();
+            int cooldown = AnimalPen.config().getAttackCooldown();
 
             if (cooldown > 0)
             {

@@ -32,6 +32,8 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     • Picking up an animal **saves its variant** inside the cage.  
     • Right-click an empty-handed pen to **view stored variants**.  
     • If _visual animal growing_ is enabled, you can adjust the display size of the animals.
+    • You can adjust the minimal amount of animals that should be protected from killing.
+    • You can toggle if animal pen/aquarium should be interactable only by you.
 
 ✔️ **Releasing animals** by crouch clicking on ground.  
 ✔️ Animal Pens and Aquariums can send **Redstone** signal with comparator.  
@@ -39,7 +41,7 @@ No more overcrowded barns - keep your animals neatly contained while still breed
 
 (1) Features not added:  
      Any animal transformation  
-     Any animal interaction with other entites
+     Any animal interaction with other entities
 
 ***
 
