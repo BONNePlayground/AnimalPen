@@ -40,6 +40,7 @@
   "block.animal_pen.animal_pen_oak": "橡木动物围栏",
   "block.animal_pen.animal_pen_spruce": "云杉木动物围栏",
   "block.animal_pen.animal_pen_warped": "诡异木动物围栏",
+  "block.animal_pen.animal_pen_mangrove": "红树木动物围栏",
   "block.animal_pen.aquarium_block": "水族箱",
 
   "display.animal_pen.count": "%d",
@@ -54,6 +55,7 @@
   "display.animal_pen.soup_cooldown": "%1$s §e蘑菇汤: %3$s后",
   "display.animal_pen.wool_cooldown": "%1$s §e剪羊毛: %3$s后",
   "display.animal_pen.egg_cooldown": "%2$s §e产蛋: %3$s后",
+  "display.animal_pen.frog_light_cooldown": "%1$s §e蛙明灯: %3$s后",
   "display.animal_pen.food_ready": "%1$s §a现在可以喂食!",
   "display.animal_pen.full_ready": "§a使用 %1$s §a收集 %2$s",
 
@@ -65,6 +67,7 @@
   "gui.animal_pen.variant_selection_screen.select_to_delete_tooltip": "选择要删除的变种",
   "gui.animal_pen.variant_selection_screen.cooldown_open_tooltip": "点击查看冷却时间",
   "gui.animal_pen.variant_selection_screen.cooldown_close_tooltip": "点击隐藏冷却时间",
+  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
 
   "gui.animal_pen.variant_selection_screen.configure.title": "Configure",
   "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count": "Minimal animal count in block:",

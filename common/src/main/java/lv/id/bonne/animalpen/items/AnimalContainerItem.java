@@ -156,7 +156,7 @@ public class AnimalContainerItem extends Item
 
         if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null)
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.tame").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;

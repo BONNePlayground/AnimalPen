@@ -19,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -102,6 +103,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
         {
             if (this.animalPen$frogLightCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$frogLightCooldown);
                 return false;
             }
 
@@ -167,6 +169,8 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                 this.getType(),
                 Items.MAGMA_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }

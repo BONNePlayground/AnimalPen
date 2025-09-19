@@ -10,8 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 
 public class VariantsConfigScreen extends Screen
@@ -94,7 +93,7 @@ public class VariantsConfigScreen extends Screen
         int centerX = this.width / 2;
         int startY = this.height / 2 - 60;
 
-        TranslatableComponent size = new TranslatableComponent(
+        Component size = Component.translatable(
             "gui.animal_pen.variant_selection_screen.configure.entity_size",
             this.displayAnimalAmountSlider.getIntValue(),
             this.maxAnimalAmount);
@@ -207,7 +206,7 @@ public class VariantsConfigScreen extends Screen
     {
         public DisplayAnimalAmountSlider(int x, int y, int width, int height, int initialValue, int maxValue)
         {
-            super(x, y, width, height, TextComponent.EMPTY,
+            super(x, y, width, height, Component.empty(),
                 (double) (initialValue - 1) / Math.max(1, maxValue - 1));
             this.maxValue = maxValue;
             this.updateMessage();
@@ -217,7 +216,7 @@ public class VariantsConfigScreen extends Screen
         @Override
         protected void updateMessage()
         {
-            this.setMessage(new TextComponent(String.valueOf(getIntValue())));
+            this.setMessage(Component.literal(String.valueOf(getIntValue())));
         }
 
 
@@ -258,18 +257,18 @@ public class VariantsConfigScreen extends Screen
 
     private Checkbox protectionCheckbox;
 
-    public static final TranslatableComponent TITLE = new TranslatableComponent(
+    public static final Component TITLE = Component.translatable(
         "gui.animal_pen.variant_selection_screen.configure.title");
 
-    public static final TranslatableComponent MINIMAL_ANIMAL_COUNT = new TranslatableComponent(
+    public static final Component MINIMAL_ANIMAL_COUNT = Component.translatable(
         "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count");
 
-    public static final TranslatableComponent PROTECTION = new TranslatableComponent(
+    public static final Component PROTECTION = Component.translatable(
         "gui.animal_pen.variant_selection_screen.configure.enable_protection");
 
-    public static final TranslatableComponent SAVE = new TranslatableComponent(
+    public static final Component SAVE = Component.translatable(
         "gui.animal_pen.variant_selection_screen.configure.save");
 
-    public static final TranslatableComponent CANCEL = new TranslatableComponent(
+    public static final Component CANCEL = Component.translatable(
         "gui.animal_pen.variant_selection_screen.configure.cancel");
 }

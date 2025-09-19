@@ -141,7 +141,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + 5,
             10,
             10,
-            TextComponent.EMPTY,
+            Component.empty(),
             this::handleConfigureButton));
 
         // Create display entity.
@@ -405,7 +405,7 @@ public class VariantScreenSelection extends Screen
      */
     private void renderTextBar(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
-        Component text = new TranslatableComponent(FIXED_TEXT,
+        Component text = Component.translatable(FIXED_TEXT,
             this.blockEntityInterface.getAnimalCount());
 
         poseStack.pushPose();
