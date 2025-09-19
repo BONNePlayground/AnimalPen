@@ -135,11 +135,13 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (!AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
+            AnimalPen.sendDebug("Not a food item for " + this.getType().arch$registryName().toString());
             return false;
         }
 
         if (this.animalPen$foodCooldown > 0)
         {
+            AnimalPen.sendDebug("Under cooldown for " + this.animalPen$foodCooldown);
             return false;
         }
 
@@ -147,6 +149,7 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
         {
+            AnimalPen.sendDebug("Max amount reached " + this.getType().arch$registryName().toString());
             return false;
         }
 
@@ -155,6 +158,7 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (stackSize < 2)
         {
+            AnimalPen.sendDebug("Need at least 2 items in stack");
             // Cannot feed 1 animal only for breeding.
             return false;
         }
@@ -238,6 +242,8 @@ public abstract class AnimalPenAnimal extends Mob
         {
             player.awardStat(Stats.ANIMALS_BRED, amount);
         }
+
+        AnimalPen.sendDebug("Succeeded at feeding");
 
         return true;
     }

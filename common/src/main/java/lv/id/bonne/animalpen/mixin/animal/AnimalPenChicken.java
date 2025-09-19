@@ -93,6 +93,8 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         {
             if (this.animalPen$eggCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
                 return false;
             }
 
@@ -141,6 +143,8 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -154,6 +158,8 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         if (this.animalPen$eggCooldown > 0)
         {
+            AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
             return ItemStack.EMPTY;
         }
 
@@ -197,6 +203,8 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }

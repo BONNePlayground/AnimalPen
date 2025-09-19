@@ -122,6 +122,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.animalPen$supCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$supCooldown);
+
                 return false;
             }
 
@@ -174,6 +176,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 Items.BOWL,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
         else if (itemStack.is(ItemTags.SMALL_FLOWERS) &&
@@ -191,6 +195,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                         2,
                         0.2, 0.2, 0.2,
                         0.05);
+
+                    AnimalPen.sendDebug("Effect already applied");
                 }
             }
             else
@@ -199,6 +205,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 if (optional.isEmpty())
                 {
+                    AnimalPen.sendDebug("No effect from flower");
+
                     return false;
                 }
 
@@ -243,6 +251,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                         1.0F);
                 }
 
+                AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
                 return true;
             }
         }
@@ -259,6 +269,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.animalPen$supCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$supCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -302,6 +314,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return bowlStack;
         }

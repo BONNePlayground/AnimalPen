@@ -100,6 +100,15 @@ public final class AnimalPen
     }
 
 
+    public static void sendDebug(String message)
+    {
+        if (AnimalPen.config().isDebug())
+        {
+            AnimalPen.LOGGER.debug(message);
+        }
+    }
+
+
     public static final String MOD_ID = "animal_pen";
 
     public static final Logger LOGGER = LogUtils.getLogger();

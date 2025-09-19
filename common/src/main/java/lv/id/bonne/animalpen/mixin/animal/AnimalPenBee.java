@@ -117,6 +117,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         {
             if (this.animalPen$pollenCount < 5)
             {
+                AnimalPen.sendDebug("Less than 5 pollen");
+
                 return false;
             }
 
@@ -144,12 +146,16 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
         else if (itemStack.is(Items.GLASS_BOTTLE))
         {
             if (this.animalPen$pollenCount < 5)
             {
+                AnimalPen.sendDebug("Less than 5 pollen");
+
                 return false;
             }
 
@@ -179,6 +185,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -192,6 +200,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         if (this.animalPen$pollenCount < 5)
         {
+            AnimalPen.sendDebug("Less than 5 pollen");
+
             return ItemStack.EMPTY;
         }
 
@@ -219,6 +229,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return ItemStack.EMPTY;
         }
         else if (itemStack.is(Items.GLASS_BOTTLE))
@@ -237,6 +249,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return new ItemStack(Items.HONEY_BOTTLE);
         }

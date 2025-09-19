@@ -223,6 +223,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
         {
+            AnimalPen.sendDebug("Protection is enabled");
             // Not an owner. Cannot interact.
             return false;
         }
@@ -253,6 +254,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                                 toList(),
                             new UpdateVariantScreenData(this.getBlockPos()));
                     }
+
+                    AnimalPen.sendDebug("Deposit animal cage into pen");
                 }
 
                 return true;
@@ -289,6 +292,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
                 if (currentCount < 2)
                 {
+                    AnimalPen.sendDebug("Cannot split 1");
                     // Cannot split 1 or 0
                     return false;
                 }
@@ -297,12 +301,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
                 if (newCount <= 0)
                 {
+                    AnimalPen.sendDebug("Protected amount prevents from splitting");
                     // Only positive numbers allowed
                     return false;
                 }
 
                 if (!((AnimalPenInterface) animal).animalPenUpdateCount(-newCount))
                 {
+                    AnimalPen.sendDebug("Fail to reduce animal count");
                     return false;
                 }
 
@@ -312,6 +318,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
+                AnimalPen.sendDebug("Half the amount of animals in pen");
                 // Remove half of animals.
                 return true;
             }
@@ -323,6 +330,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).
                         equals(animal.getType().arch$registryName().toString()))
                 {
+                    AnimalPen.sendDebug("Different animals");
+
                     // Cannot do with different animal types.
                     return false;
                 }
@@ -337,6 +346,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
                 if (newCount <= 0 || !((AnimalPenInterface) animal).animalPenUpdateCount(newCount))
                 {
+                    AnimalPen.sendDebug("Failed to deposit animal");
                     return false;
                 }
 
@@ -344,6 +354,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 if (newCount > 1 &&
                     !AnimalCageItem.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
                 {
+                    AnimalPen.sendDebug("Variants could not be merged");
+
                     ((AnimalPenInterface) animal).animalPenUpdateCount(-1);
                     itemInHandTag.putLong(AnimalCageItem.TAG_AMOUNT, 1);
                     itemInHand.setTag(itemInHandTag);
@@ -369,6 +381,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
+                AnimalPen.sendDebug("Cage merged into pen");
+
                 return true;
             }
         }
@@ -376,7 +390,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
 
     /**
-     * This method processes player interaction with pen tile entity with any item in mian hand.
+     * This method processes player interaction with pen tile entity with any item in main hand.
      *
      * @param player the player
      * @param interactionHand the interaction hand
@@ -386,6 +400,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
         {
+            AnimalPen.sendDebug("Protection is enabled");
+
             // Not an owner. Cannot interact.
             return false;
         }
@@ -400,6 +416,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 this.inventory.setChanged();
+
+                AnimalPen.sendDebug("Taking out animal cage");
             }
 
             return true;
@@ -409,11 +427,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         if (animal == null)
         {
+            AnimalPen.sendDebug("Animal is not set");
             return false;
         }
 
         if (((AnimalPenInterface) animal).animalPenInteract(player, interactionHand, this.getBlockPos()))
         {
+            AnimalPen.sendDebug("Animal Interaction finished");
+
             ItemStack item = this.getItemStack();
 
             Optional<ListTag> optionalVariants = AnimalCageItem.getAnimalVariants(item);
@@ -447,6 +468,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
         {
+            AnimalPen.sendDebug("Protection is enabled");
             // Not an owner. Cannot interact.
             return;
         }
@@ -457,6 +479,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         if (animal == null)
         {
+            AnimalPen.sendDebug("Animal Pen is empty");
             return;
         }
 
@@ -464,12 +487,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         if (amount <= this.protectedAmount)
         {
+            AnimalPen.sendDebug("Protected amount reached");
             // Cannot attack anymore
             return;
         }
 
         if (!((AnimalPenInterface) animal).animalPenUpdateCount(-1))
         {
+            AnimalPen.sendDebug("Failed to update animal count");
             return;
         }
 
@@ -491,6 +516,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
+            AnimalPen.sendDebug("Dropping empty cage");
         }
 
         this.triggerUpdate();
@@ -534,6 +560,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             player.awardStat(Stats.MOB_KILLS);
             player.awardStat(Stats.ENTITY_KILLED.get(animal.getType()));
         }
+
+        AnimalPen.sendDebug("Animal Kill process finished");
     }
 
 
@@ -655,6 +683,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         this.getStoredAnimal().ifPresent(animal ->
         {
+            AnimalPen.sendDebug("Animal Variant changed");
+
             // Save extra data
             CompoundTag extraData = new CompoundTag();
             ((AnimalPenInterface) animal).animalPenSaveTag(extraData);
@@ -707,6 +737,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                             this.getBlockPos().getZ()) < 50).
                     toList(),
                 new UpdateVariantScreenData(this.getBlockPos()));
+
+            AnimalPen.sendDebug("Animal variant removed");
         }
     }
 

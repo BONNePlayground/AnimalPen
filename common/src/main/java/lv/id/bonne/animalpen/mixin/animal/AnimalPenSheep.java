@@ -127,6 +127,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         {
             if (this.animalPen$woolCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$woolCooldown);
+
                 return false;
             }
 
@@ -187,6 +189,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 Items.SHEARS,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
         else if (itemStack.getItem() instanceof DyeItem dye)
@@ -212,6 +216,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -229,6 +235,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         {
             if (this.animalPen$woolCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$woolCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -284,6 +292,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }

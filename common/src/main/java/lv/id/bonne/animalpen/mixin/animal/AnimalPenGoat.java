@@ -100,6 +100,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
         {
             if (this.animalPen$milkCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$milkCooldown);
+
                 return false;
             }
 
@@ -129,6 +131,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -144,6 +148,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
         {
             if (this.animalPen$milkCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$milkCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -160,6 +166,8 @@ public abstract class AnimalPenGoat extends AnimalPenAnimal
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return Items.MILK_BUCKET.getDefaultInstance();
         }

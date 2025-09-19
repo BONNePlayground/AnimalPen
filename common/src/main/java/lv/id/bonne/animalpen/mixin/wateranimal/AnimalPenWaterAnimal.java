@@ -132,6 +132,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
         {
             if (this.animalPen$foodCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$foodCooldown);
+
                 return false;
             }
 
@@ -139,6 +141,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
             if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
+                AnimalPen.sendDebug("Max animals in aquarium reached");
                 return false;
             }
 
@@ -147,6 +150,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
             if (stackSize < 2)
             {
+                AnimalPen.sendDebug("Need at least 2 items in stack");
+
                 // Cannot feed 1 animal only for breeding.
                 return false;
             }
@@ -212,6 +217,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
                 this.getType(),
                 Items.APPLE,
                 stackSize);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }

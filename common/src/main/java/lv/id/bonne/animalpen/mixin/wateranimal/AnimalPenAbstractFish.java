@@ -79,6 +79,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need to have at least 2 fishes");
                 return false;
             }
 
@@ -86,6 +87,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             if (bucket == null)
             {
+                AnimalPen.sendDebug("Cannot figure out fish bucket");
                 return false;
             }
 
@@ -109,6 +111,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
             }
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -124,6 +128,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
         {
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 fishes");
+
                 return ItemStack.EMPTY;
             }
 
@@ -144,6 +150,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 1.0F);
 
             this.animalPen$animalCount--;
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return bucket;
         }

@@ -166,6 +166,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 axolotls in pen");
                 return false;
             }
 
@@ -191,6 +192,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 // Trigger bucket filling
                 CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
             }
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }

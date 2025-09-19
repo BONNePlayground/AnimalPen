@@ -54,7 +54,8 @@ public class Configuration
             this.maxStoredAnimalVariants == null ||
             this.triggerAdvancements == null ||
             this.increaseStatistics == null ||
-            this.maxStoredAnimalVariants < 0;
+            this.maxStoredAnimalVariants < 0 ||
+            this.debug == null;
     }
 
 
@@ -113,6 +114,11 @@ public class Configuration
         if (this.triggerAdvancements == null || init)
         {
             this.triggerAdvancements = false;
+        }
+
+        if (this.debug == null || init)
+        {
+            this.debug = false;
         }
 
         if (init)
@@ -379,6 +385,16 @@ public class Configuration
     }
 
 
+    /**
+     * Returns if debug is enabled.
+     * @return the debug value.
+     */
+    public boolean isDebug()
+    {
+        return this.debug;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -552,6 +568,11 @@ public class Configuration
     @Expose
     @SerializedName("blocked_animals")
     private Set<ResourceLocation> blockedAnimals = new HashSet<>();
+
+    @JsonComment("Debug code to indicate problems.")
+    @Expose
+    @SerializedName("debug")
+    private Boolean debug;
 
     @JsonComment("")
     @Expose(serialize = false, deserialize = false)

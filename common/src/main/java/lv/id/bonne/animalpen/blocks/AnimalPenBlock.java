@@ -69,6 +69,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
         if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
+            AnimalPen.sendDebug("Blocked by external forces");
             return InteractionResult.SUCCESS;
         }
 
