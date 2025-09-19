@@ -62,7 +62,7 @@ public class AnimalPenClient
                 return EventResult.pass();
             }
 
-            if (blockEntity.getStoredAnimal() == null)
+            if (blockEntity.getStoredAnimal().isEmpty())
             {
                 return EventResult.pass();
             }

@@ -110,6 +110,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);
                 return false;
             }
 
@@ -220,6 +221,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -235,6 +238,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);return ItemStack.EMPTY;
                 return ItemStack.EMPTY;
             }
 
@@ -333,6 +337,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
             return ItemStack.EMPTY;
         }
 

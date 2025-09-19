@@ -9,7 +9,10 @@ package lv.id.bonne.animalpen.blocks.entities;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,7 +32,7 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      *
      * @return Animal instance stored in block entity.
      */
-    T getStoredAnimal();
+    Optional<T> getStoredAnimal();
 
     /**
      * This method returns animal display size.
@@ -84,4 +87,32 @@ public interface AnimalPenBlockInterface<T extends LivingEntity>
      * This method triggers block to trigger save.
      */
     void triggerUpdate();
+
+
+    /**
+     * Returns amount of animals that are protected from killing/splitting.
+     * @return minimal amount of animals that must be left into animal pen/aquarium.
+     */
+    long getProtectedAmount();
+
+
+    /**
+     * Sets the protected amount of animals that should not be removed from pen.
+     * @param amount The value 0...infinity.
+     */
+    void setProtectedAmount(long amount);
+
+
+    /**
+     * Returns the owner of current block.
+     * @return The UUID of owner.
+     */
+    Optional<UUID> getOwner();
+
+
+    /**
+     * Allows to change owner of block
+     * @param owner The new owner (or null)
+     */
+    void setOwner(@Nullable UUID owner);
 }
