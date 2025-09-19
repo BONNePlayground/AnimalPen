@@ -29,7 +29,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -69,6 +68,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         tag.put(TAG_INVENTORY, this.inventory.createTag());
         tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
         tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
+
+        this.getOwner().ifPresent(owner -> tag.putUUID(TAG_OWNER_UUID, owner));
+        tag.putLong(TAG_KEEP_AMOUNT, this.protectedAmount);
     }
 
 
@@ -104,6 +106,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         {
             this.displaySize = -1;
         }
+
+        if (tag.contains(TAG_OWNER_UUID))
+        {
+            this.ownerUUID = tag.getUUID(TAG_OWNER_UUID);
+        }
+
+        this.protectedAmount = tag.getLong(TAG_KEEP_AMOUNT);
     }
 
 
@@ -212,6 +221,12 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public boolean processContainer(Player player, InteractionHand interactionHand)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            // Not an owner. Cannot interact.
+            return false;
+        }
+
         if (this.inventory.isEmpty())
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -278,7 +293,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     return false;
                 }
 
-                long newCount = currentCount / 2;
+                long newCount = Math.min(currentCount - this.protectedAmount, currentCount / 2);
+
+                if (newCount <= 0)
+                {
+                    // Only positive numbers allowed
+                    return false;
+                }
 
                 if (!((AnimalPenInterface) animal).animalPenUpdateCount(-newCount))
                 {
@@ -363,6 +384,12 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public boolean interactWithPen(Player player, InteractionHand interactionHand)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            // Not an owner. Cannot interact.
+            return false;
+        }
+
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
         if (itemInHand.isEmpty() && !this.inventory.isEmpty())
@@ -418,12 +445,26 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public void attackThePen(Player player, Level level)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            // Not an owner. Cannot interact.
+            return;
+        }
+
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
         Animal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
+            return;
+        }
+
+        long amount = ((AnimalPenInterface) animal).animalPenGetCount();
+
+        if (amount <= this.protectedAmount)
+        {
+            // Cannot attack anymore
             return;
         }
 
@@ -475,6 +516,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
             Block.popResource(level, this.getBlockPos().offset(0.5, 1, 0.5), itemStack));
+
+        animal.clearFire();
 
         int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
@@ -703,6 +746,36 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     }
 
 
+    @Override
+    public long getProtectedAmount()
+    {
+        return this.protectedAmount;
+    }
+
+
+    @Override
+    public void setProtectedAmount(long amount)
+    {
+        this.protectedAmount = amount;
+        this.triggerUpdate();
+    }
+
+
+    @Override
+    public Optional<UUID> getOwner()
+    {
+        return Optional.ofNullable(this.ownerUUID);
+    }
+
+
+    @Override
+    public void setOwner(@Nullable UUID owner)
+    {
+        this.ownerUUID = owner;
+        this.triggerUpdate();
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: Variables
 // ---------------------------------------------------------------------
@@ -733,6 +806,10 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     private long displaySize = -1;
 
+    private UUID ownerUUID;
+
+    private long protectedAmount = 0;
+
     private int tickCounter;
 
     private final List<Integer> deathTicker = new ArrayList<>();
@@ -742,4 +819,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     public static final String TAG_DEATH_TICKER = "death_ticker";
 
     public static final String TAG_DISPLAY_SIZE = "display_size";
+
+    public static final String TAG_OWNER_UUID = "owner_uuid";
+
+    public static final String TAG_KEEP_AMOUNT = "keep_amount";
 }
