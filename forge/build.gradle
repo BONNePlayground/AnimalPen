@@ -8,6 +8,18 @@ loom {
     forge {
         mixinConfig "animal_pen.mixins.json"
     }
+
+    runs {
+        devClient {
+            client()
+            programArg("--username=Dev")
+        }
+
+        dev2Client {
+            client()
+            programArg("--username=Dev2")
+        }
+    }
 }
 
 architectury {
