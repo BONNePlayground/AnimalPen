@@ -65,10 +65,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$sniffingCooldown > 0)
-        {
-            tag.putInt("sniff_cooldown", this.animalPen$sniffingCooldown);
-        }
+        tag.putInt("sniff_cooldown", this.animalPen$sniffingCooldown);
     }
 
 
@@ -78,10 +75,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("sniff_cooldown", Tag.TAG_INT))
-        {
-            this.animalPen$sniffingCooldown = tag.getInt("sniff_cooldown");
-        }
+        this.animalPen$sniffingCooldown = tag.getInt("sniff_cooldown");
     }
 
 
