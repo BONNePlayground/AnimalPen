@@ -15,11 +15,15 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -73,6 +77,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need to have at least 2 fishes");
                 return false;
             }
 
@@ -80,10 +85,13 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
 
             if (bucket == null)
             {
+                AnimalPen.sendDebug("Cannot figure out fish bucket");
                 return false;
             }
 
             this.animalPen$animalCount--;
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             player.setItemInHand(hand,
                 ItemUtils.createFilledResult(itemStack, player, bucket, false));
@@ -94,6 +102,14 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 SoundSource.NEUTRAL,
                 1.0F,
                 1.0F);
+
+            if (AnimalPen.config().isTriggerAdvancements())
+            {
+                // Trigger bucket filling
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
+            }
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -110,6 +126,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
         {
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 fishes");
+
                 return ItemStack.EMPTY;
             }
 
@@ -130,6 +148,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
                 1.0F);
 
             this.animalPen$animalCount--;
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return bucket;
         }

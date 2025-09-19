@@ -22,15 +22,21 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
@@ -74,7 +80,7 @@ public abstract class AnimalPenAnimal extends Mob
             return false;
         }
 
-        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
         if (maxCount > 0 && this.animalPen$animalCount + change > maxCount)
         {
@@ -128,93 +134,151 @@ public abstract class AnimalPenAnimal extends Mob
     {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
+        if (!AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
         {
-            if (this.animalPen$foodCooldown > 0)
+            AnimalPen.sendDebug("Not a food item for " + this.getType().arch$registryName().toString());
+            return false;
+        }
+
+        if (this.animalPen$foodCooldown > 0)
+        {
+            AnimalPen.sendDebug("Under cooldown for " + this.animalPen$foodCooldown);
+            return false;
+        }
+
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
+
+        if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
+        {
+            AnimalPen.sendDebug("Max amount reached " + this.getType().arch$registryName().toString());
+            return false;
+        }
+
+        int stackSize = itemStack.getCount();
+
+        if (itemStack.getMaxStackSize() == 1)
+        {
+            stackSize = 0;
+
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++)
             {
-                return false;
-            }
+                ItemStack stack = player.getInventory().getItem(i);
 
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
-
-            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
-            {
-                return false;
-            }
-
-            int stackSize = itemStack.getCount();
-            stackSize = (int) Math.min(this.animalPen$animalCount, stackSize);
-
-            if (stackSize < 2)
-            {
-                // Cannot feed 1 animal only for breeding.
-                return false;
-            }
-
-            if (player.getLevel().isClientSide())
-            {
-                // Next is processed only for server side.
-                return true;
-            }
-
-            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
-
-            if (!player.getAbilities().instabuild)
-            {
-                if (stackSize % 2 == 1)
+                if (ItemStack.isSame(stack, itemStack))
                 {
-                    itemStack.shrink(stackSize - 1);
-                    player.setItemInHand(hand, itemStack);
-                }
-                else
-                {
-                    itemStack.shrink(stackSize);
-                    player.setItemInHand(hand, itemStack);
+                    stackSize++;
                 }
             }
+        }
 
-            this.animalPen$animalCount += stackSize / 2;
+        stackSize = (int) Math.min(this.animalPen$animalCount, stackSize);
 
-            if (player.getLevel() instanceof ServerLevel serverLevel)
-            {
-                serverLevel.sendParticles(
-                    ParticleTypes.HEART,
-                    position.getX() + 0.5f,
-                    position.getY() + 1.5,
-                    position.getZ() + 0.5f,
-                    5,
-                    0.2, 0.2, 0.2,
-                    0.05);
-            }
+        if (stackSize < 2)
+        {
+            AnimalPen.sendDebug("Need at least 2 items in stack");
+            // Cannot feed 1 animal only for breeding.
+            return false;
+        }
 
-            player.getLevel().playSound(null,
-                position,
-                this.getEatingSound(itemStack),
-                SoundSource.NEUTRAL,
-                1.0F,
-                Mth.randomBetween(player.getLevel().random, 0.8F, 1.2F));
-
-            SoundEvent soundEvent = this.getAmbientSound();
-
-            if (soundEvent != null)
-            {
-                player.getLevel().playSound(null,
-                    position,
-                    soundEvent,
-                    SoundSource.NEUTRAL,
-                    1.0F,
-                    1.0F);
-            }
-
-            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                stackSize);
-
+        if (player.getLevel().isClientSide())
+        {
+            // Next is processed only for server side.
             return true;
         }
 
-        return false;
+        stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
+
+        AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, stackSize);
+
+        if (!player.getAbilities().instabuild)
+        {
+            if (itemStack.getMaxStackSize() == 1)
+            {
+                int removed = stackSize - (stackSize % 2 == 1 ? 2 : 1);
+                player.setItemInHand(hand, custom$replacement(itemStack));
+
+                for (int i = 0; i < player.getInventory().getContainerSize() && removed > 0; i++)
+                {
+                    ItemStack stack = player.getInventory().getItem(i);
+
+                    if (ItemStack.isSame(stack, itemStack))
+                    {
+                        player.getInventory().setItem(i, custom$replacement(stack));
+                        removed--;
+                    }
+                }
+            }
+            else if (stackSize % 2 == 1)
+            {
+                itemStack.shrink(stackSize - 1);
+                player.setItemInHand(hand, itemStack);
+            }
+            else
+            {
+                itemStack.shrink(stackSize);
+                player.setItemInHand(hand, itemStack);
+            }
+        }
+
+        int amount = stackSize / 2;
+        this.animalPen$animalCount += amount;
+
+        if (player.getLevel() instanceof ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(
+                ParticleTypes.HEART,
+                position.getX() + 0.5f,
+                position.getY() + 1.5,
+                position.getZ() + 0.5f,
+                5,
+                0.2, 0.2, 0.2,
+                0.05);
+        }
+
+        player.getLevel().playSound(null,
+            position,
+            this.getEatingSound(itemStack),
+            SoundSource.NEUTRAL,
+            1.0F,
+            Mth.randomBetween(player.getLevel().random, 0.8F, 1.2F));
+
+        SoundEvent soundEvent = this.getAmbientSound();
+
+        if (soundEvent != null)
+        {
+            player.getLevel().playSound(null,
+                position,
+                soundEvent,
+                SoundSource.NEUTRAL,
+                1.0F,
+                1.0F);
+        }
+
+        this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
+            this.getType(),
+            Items.APPLE,
+            stackSize);
+
+        if (AnimalPen.config().isTriggerAdvancements())
+        {
+            // Trigger event and statistics for breeding.
+            for (int i = 0; i < amount; i++)
+            {
+                CriteriaTriggers.BRED_ANIMALS.trigger((ServerPlayer) player,
+                    ((Animal) (Object) this),
+                    ((Animal) (Object) this),
+                    ((Animal) (Object) this));
+            }
+        }
+
+        if (AnimalPen.config().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ANIMALS_BRED, amount);
+        }
+
+        AnimalPen.sendDebug("Succeeded at feeding");
+
+        return true;
     }
 
 
@@ -232,7 +296,7 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            shortLine && AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            shortLine && AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)
@@ -307,6 +371,31 @@ public abstract class AnimalPenAnimal extends Mob
 
         // second bit value
         return value | 2;
+    }
+
+
+    @Unique
+    private static ItemStack custom$replacement(ItemStack itemStack)
+    {
+        if (itemStack.is(Items.AXOLOTL_BUCKET) ||
+            itemStack.is(Items.COD_BUCKET) ||
+            itemStack.is(Items.SALMON_BUCKET) ||
+            itemStack.is(Items.TROPICAL_FISH_BUCKET) ||
+            itemStack.is(Items.PUFFERFISH_BUCKET))
+        {
+            return new ItemStack(Items.WATER_BUCKET);
+        }
+        else if (itemStack.is(Items.MILK_BUCKET) ||
+            itemStack.is(Items.LAVA_BUCKET) ||
+            itemStack.is(Items.WATER_BUCKET) ||
+            itemStack.is(Items.POWDER_SNOW_BUCKET))
+        {
+            return new ItemStack(Items.BUCKET);
+        }
+        else
+        {
+            return ItemStack.EMPTY;
+        }
     }
 
 

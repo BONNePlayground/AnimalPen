@@ -1,6 +1,9 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.Nullable;
+import java.util.UUID;
+
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -14,20 +17,31 @@ import net.minecraft.world.level.Level;
 /**
  * This is a simple packet send from client to server to indicate that animal display size is changed.
  */
-public class UpdateAnimalSizeData
+public class UpdateConfigurationData
 {
     /**
      * The encoding of the packet.
      * @param position The block position that is affected.
-     * @param size The new size of entity.
+     * @param displaySize The new displaySize of entity.
      * @return packet buffer.
      */
-    public static FriendlyByteBuf encode(BlockPos position, long size)
+    public static FriendlyByteBuf encode(BlockPos position, long displaySize, long protectedAmount, @Nullable UUID owner)
     {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 
         buffer.writeBlockPos(position);
-        buffer.writeLong(size);
+        buffer.writeLong(displaySize);
+        buffer.writeLong(protectedAmount);
+
+        if (owner != null)
+        {
+            buffer.writeBoolean(true);
+            buffer.writeUUID(owner);
+        }
+        else
+        {
+            buffer.writeBoolean(false);
+        }
 
         return buffer;
     }
@@ -41,7 +55,10 @@ public class UpdateAnimalSizeData
     public static void handle(FriendlyByteBuf friendlyByteBuf, NetworkManager.PacketContext packetContext)
     {
         BlockPos blockPos = friendlyByteBuf.readBlockPos();
-        long size = friendlyByteBuf.readLong();
+        long displaySize = friendlyByteBuf.readLong();
+        long protectedAmount = friendlyByteBuf.readLong();
+        boolean hasUUID = friendlyByteBuf.readBoolean();
+        UUID owner = hasUUID ? friendlyByteBuf.readUUID() : null;
 
         packetContext.queue(() ->
         {
@@ -49,7 +66,9 @@ public class UpdateAnimalSizeData
 
             if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
             {
-                animalPen.setAnimalDisplaySize(size);
+                animalPen.setAnimalDisplaySize(displaySize);
+                animalPen.setProtectedAmount(protectedAmount);
+                animalPen.setOwner(owner);
             }
             else
             {
@@ -62,5 +81,5 @@ public class UpdateAnimalSizeData
     /**
      * The resource ID.
      */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_animal_size");
+    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_configuration");
 }

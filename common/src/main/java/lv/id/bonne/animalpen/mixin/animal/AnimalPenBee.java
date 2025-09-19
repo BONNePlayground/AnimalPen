@@ -15,11 +15,13 @@ import java.time.LocalTime;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -63,7 +65,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
             if (this.animalPen$pollenCount != 5)
             {
-                this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+                this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                     this.getType(),
                     Items.HONEY_BLOCK,
                     this.animalPen$animalCount);
@@ -115,6 +117,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         {
             if (this.animalPen$pollenCount < 5)
             {
+                AnimalPen.sendDebug("Less than 5 pollen");
+
                 return false;
             }
 
@@ -123,6 +127,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(hand));
             Block.popResource(player.getLevel(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
@@ -135,10 +141,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -146,6 +154,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         {
             if (this.animalPen$pollenCount < 5)
             {
+                AnimalPen.sendDebug("Less than 5 pollen");
+
                 return false;
             }
 
@@ -154,6 +164,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
                 player,
@@ -168,10 +180,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -186,6 +200,8 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
     {
         if (this.animalPen$pollenCount < 5)
         {
+            AnimalPen.sendDebug("Less than 5 pollen");
+
             return ItemStack.EMPTY;
         }
 
@@ -208,10 +224,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }
@@ -227,10 +245,12 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
                 1.0F);
 
             this.animalPen$pollenCount = 0;
-            this.animalPen$pollenCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$pollenCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return new ItemStack(Items.HONEY_BOTTLE);
         }
@@ -246,7 +266,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.HONEY_BLOCK,
                 this.animalPen$animalCount) == 0)
