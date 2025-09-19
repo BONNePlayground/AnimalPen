@@ -238,7 +238,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
-                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);return ItemStack.EMPTY;
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);
                 return ItemStack.EMPTY;
             }
 

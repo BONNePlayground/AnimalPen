@@ -343,7 +343,7 @@ public class VariantScreenSelection extends Screen
             12);
 
         // Render configure icon.
-        this.blit(poseStack,
+        graphics.blit(TEXTURE,
             this.configureButton.getX(),
             this.configureButton.getY(),
             176,
@@ -636,7 +636,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.configureButton.isMouseOver(mouseX, mouseY))
         {
-            this.renderTooltip(poseStack, CONFIGURE, mouseX, mouseY);
+            graphics.renderTooltip(this.font, CONFIGURE, mouseX, mouseY);
         }
     }
 

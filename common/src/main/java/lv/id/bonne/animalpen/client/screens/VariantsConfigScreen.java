@@ -1,10 +1,9 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.network.packets.UpdateConfigurationData;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -88,12 +87,12 @@ public class VariantsConfigScreen extends Screen
 
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick)
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
     {
-        this.renderBackground(poseStack);
+        this.renderBackground(graphics);
 
         // Draw title
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+        graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
 
         // Draw labels
         int centerX = this.width / 2;
@@ -104,13 +103,13 @@ public class VariantsConfigScreen extends Screen
             this.displayAnimalAmountSlider.getIntValue(),
             this.maxAnimalAmount);
 
-        drawString(poseStack, this.font, size,
+        graphics.drawString(this.font, size,
             centerX - 100, startY - 12, 0xFFFFFF);
 
-        drawString(poseStack, this.font, MINIMAL_ANIMAL_COUNT,
+        graphics.drawString(this.font, MINIMAL_ANIMAL_COUNT,
             centerX - 100, startY + 28, 0xFFFFFF);
 
-        super.render(poseStack, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
 

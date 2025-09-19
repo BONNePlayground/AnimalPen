@@ -164,7 +164,7 @@ public abstract class AnimalPenAnimal extends Mob
             {
                 ItemStack stack = player.getInventory().getItem(i);
 
-                if (ItemStack.isSame(stack, itemStack))
+                if (ItemStack.isSameItem(stack, itemStack))
                 {
                     stackSize++;
                 }
@@ -201,7 +201,7 @@ public abstract class AnimalPenAnimal extends Mob
                 {
                     ItemStack stack = player.getInventory().getItem(i);
 
-                    if (ItemStack.isSame(stack, itemStack))
+                    if (ItemStack.isSameItem(stack, itemStack))
                     {
                         player.getInventory().setItem(i, custom$replacement(stack));
                         removed--;
