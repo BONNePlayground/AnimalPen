@@ -73,10 +73,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenSaveTag(tag);
 
-        if (this.animalPen$frogLightCooldown > 0)
-        {
-            tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
-        }
+        tag.putInt("frog_light_cooldown", this.animalPen$frogLightCooldown);
     }
 
 
@@ -85,10 +82,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         super.animalPen$animalPenLoadTag(tag);
 
-        if (tag.contains("frog_light_cooldown"))
-        {
-            this.animalPen$frogLightCooldown = tag.getInt("frog_light_cooldown");
-        }
+        this.animalPen$frogLightCooldown = tag.getInt("frog_light_cooldown");
     }
 
 
@@ -106,6 +100,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
         {
             if (this.animalPen$frogLightCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$frogLightCooldown);
                 return false;
             }
 
@@ -171,6 +166,8 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                 this.getType(),
                 Items.MAGMA_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }

@@ -4,6 +4,20 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
+loom {
+    runs {
+        devClient {
+            client()
+            programArg("--username=Dev")
+        }
+
+        dev2Client {
+            client()
+            programArg("--username=Dev2")
+        }
+    }
+}
+
 architectury {
     platformSetupLoomIde()
     neoForge()

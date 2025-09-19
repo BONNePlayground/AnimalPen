@@ -15,6 +15,7 @@ import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
+import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
@@ -73,9 +74,9 @@ public final class AnimalPen
             RemoveDisplayAnimalData::handle);
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S,
-            UpdateAnimalSizeData.ID,
+            UpdateConfigurationData.ID,
             UpdateAnimalSizeData.STREAM_CODEC,
-            UpdateAnimalSizeData::handle);
+            UpdateConfigurationData::handle);
 
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
@@ -94,6 +95,21 @@ public final class AnimalPen
         PlayerEvent.PLAYER_JOIN.register(player ->
             NetworkManager.sendToPlayer(player,
                 new AnimalFoodRegistryData(AnimalPenFoodRegistry.getAll())));
+    }
+
+
+    public static Configuration config()
+    {
+        return CONFIG_MANAGER.getConfiguration();
+    }
+
+
+    public static void sendDebug(String message)
+    {
+        if (AnimalPen.config().isDebug())
+        {
+            AnimalPen.LOGGER.debug(message);
+        }
     }
 
 

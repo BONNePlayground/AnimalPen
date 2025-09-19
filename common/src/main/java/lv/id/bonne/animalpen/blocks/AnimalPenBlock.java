@@ -79,6 +79,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
 
         if (result == ItemInteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
+            AnimalPen.sendDebug("Blocked by external forces");
             return ItemInteractionResult.SUCCESS;
         }
 
@@ -143,7 +144,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
                 return;
             }
 
-            int cooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getAttackCooldown();
+            int cooldown = AnimalPen.config().getAttackCooldown();
 
             if (cooldown > 0)
             {

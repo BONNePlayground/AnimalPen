@@ -1,7 +1,9 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import java.util.UUID;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -18,7 +20,7 @@ import net.minecraft.world.level.Level;
 /**
  * This is a simple packet send from client to server to indicate that animal display size is changed.
  */
-public record UpdateAnimalSizeData(BlockPos position, long size) implements CustomPacketPayload
+public record UpdateAnimalSizeData(BlockPos position, long size, long protectedAmount, booleand hasUUID, UUID uuid) implements CustomPacketPayload
 {
     /**
      * This method handles incoming packet on server.
@@ -28,7 +30,10 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
     public static void handle(UpdateAnimalSizeData data, NetworkManager.PacketContext packetContext)
     {
         BlockPos blockPos = data.position();
-        long size = data.size();
+        long displaySize = friendlyByteBuf.readLong();
+        long protectedAmount = data.size();
+        boolean hasUUID = friendlyByteBuf.readBoolean();
+        UUID owner = hasUUID ? friendlyByteBuf.readUUID() : null;
 
         packetContext.queue(() ->
         {
@@ -36,7 +41,9 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
 
             if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
             {
-                animalPen.setAnimalDisplaySize(size);
+                animalPen.setAnimalDisplaySize(displaySize);
+                animalPen.setProtectedAmount(protectedAmount);
+                animalPen.setOwner(owner);
             }
             else
             {
@@ -55,7 +62,7 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
 
 
     public static final Type<UpdateAnimalSizeData> ID =
-        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_animal_size"));
+        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_configuration"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateAnimalSizeData> STREAM_CODEC = StreamCodec.composite(
