@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -120,6 +122,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.animalPen$supCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$supCooldown);
+
                 return false;
             }
 
@@ -128,6 +132,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             ItemStack bowlStack;
             boolean suspicious = this.effect != null;
@@ -165,10 +171,12 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$supCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -187,6 +195,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                         2,
                         0.2, 0.2, 0.2,
                         0.05);
+
+                    AnimalPen.sendDebug("Effect already applied");
                 }
             }
             else
@@ -195,6 +205,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 if (optional.isEmpty())
                 {
+                    AnimalPen.sendDebug("No effect from flower");
+
                     return false;
                 }
 
@@ -221,6 +233,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 this.effect = pair.getLeft();
                 this.effectDuration = pair.getRight();
 
+                AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
+
                 if (!player.getAbilities().instabuild)
                 {
                     itemStack.shrink(1);
@@ -236,6 +250,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                         2.0F,
                         1.0F);
                 }
+
+                AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
                 return true;
             }
@@ -253,6 +269,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         {
             if (this.animalPen$supCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$supCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -292,10 +310,12 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$supCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$supCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return bowlStack;
         }
@@ -311,7 +331,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount) == 0)

@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -71,7 +72,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
             return false;
         }
 
-        long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
         if (maxCount > 0 && this.animalPen$animalCount + change > maxCount)
         {
@@ -129,13 +130,16 @@ public abstract class AnimalPenWaterAnimal extends Mob
         {
             if (this.animalPen$foodCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$foodCooldown);
+
                 return false;
             }
 
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
+                AnimalPen.sendDebug("Max animals in aquarium reached");
                 return false;
             }
 
@@ -144,6 +148,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
 
             if (stackSize < 2)
             {
+                AnimalPen.sendDebug("Need at least 2 items in stack");
+
                 // Cannot feed 1 animal only for breeding.
                 return false;
             }
@@ -155,6 +161,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
             }
 
             stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, stackSize);
 
             if (!player.getAbilities().instabuild)
             {
@@ -203,10 +211,12 @@ public abstract class AnimalPenWaterAnimal extends Mob
                     1.0F);
             }
 
-            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$foodCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 stackSize);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -228,7 +238,7 @@ public abstract class AnimalPenWaterAnimal extends Mob
         List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)
