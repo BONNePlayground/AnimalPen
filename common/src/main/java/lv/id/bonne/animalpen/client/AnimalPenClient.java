@@ -68,7 +68,7 @@ public class AnimalPenClient
                 return InteractionResult.PASS;
             }
 
-            if (blockEntity.getStoredAnimal() == null)
+            if (blockEntity.getStoredAnimal().isEmpty())
             {
                 return InteractionResult.PASS;
             }
