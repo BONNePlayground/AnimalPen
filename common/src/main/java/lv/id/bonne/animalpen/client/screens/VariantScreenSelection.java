@@ -126,6 +126,10 @@ public class VariantScreenSelection extends Screen
             size(11, 14).
             build());
 
+        this.deleteButton.active = this.blockEntityInterface.getOwner().
+            map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+            orElse(true);
+
         // Apply variant button
         this.applyButton = this.addWidget(Button.builder(Component.empty(),
                 this::handleApplyButton).
@@ -326,29 +330,34 @@ public class VariantScreenSelection extends Screen
      */
     private void renderOtherButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
     {
-        // Render icon instead of delete button.
-        graphics.blit(RenderType::guiTextured,
-            TEXTURE,
-            this.deleteButton.getX() + 1,
-            this.deleteButton.getY() + 1,
-            176 + (this.selectedButton != -1 ? 0 : 9),
-            39,
-            9,
-            12,
+        if (this.blockEntityInterface.getOwner().
+            map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+            orElse(true))
+        {
+            // Render icon instead of delete button.
+            graphics.blit(RenderType::guiTextured,
+                TEXTURE,
+                this.deleteButton.getX() + 1,
+                this.deleteButton.getY() + 1,
+                176 + (this.selectedButton != -1 ? 0 : 9),
+                39,
+                9,
+                12,
             256,
             256);
 
-        // Render icon instead of apply button.
-        graphics.blit(RenderType::guiTextured,
-            TEXTURE,
-            this.applyButton.getX() + 1,
-            this.applyButton.getY() + 1,
-            176 + (this.selectedButton != -1 ? 0 : 12),
-            51,
-            12,
-            12,
+            // Render icon instead of apply button.
+            graphics.blit(RenderType::guiTextured,
+                TEXTURE,
+                this.applyButton.getX() + 1,
+                this.applyButton.getY() + 1,
+                176 + (this.selectedButton != -1 ? 0 : 12),
+                51,
+                12,
+                12,
             256,
             256);
+        }
 
         // Render configure icon.
         graphics.blit(RenderType::guiTextured,
@@ -738,7 +747,10 @@ public class VariantScreenSelection extends Screen
         else
         {
             this.selectedButton = index;
-            this.applyButton.active = !this.buttons.isEmpty();
+            this.applyButton.active = !this.buttons.isEmpty() &&
+                this.blockEntityInterface.getOwner().
+                    map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+                    orElse(true);
         }
 
         CompoundTag tag;
