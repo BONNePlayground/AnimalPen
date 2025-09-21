@@ -2,11 +2,14 @@ package lv.id.bonne.animalpen.network.packets;
 
 
 import org.jetbrains.annotations.NotNull;
+import java.util.Optional;
+import java.util.UUID;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +21,19 @@ import net.minecraft.world.level.Level;
 /**
  * This is a simple packet send from client to server to indicate that animal display size is changed.
  */
-public record UpdateAnimalSizeData(BlockPos position, long size) implements CustomPacketPayload
+public record UpdateConfigurationData(BlockPos position, long size, long protectedAmount, Optional<UUID> uuid) implements CustomPacketPayload
 {
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
      * @param packetContext The packet context.
      */
-    public static void handle(UpdateAnimalSizeData data, NetworkManager.PacketContext packetContext)
+    public static void handle(UpdateConfigurationData data, NetworkManager.PacketContext packetContext)
     {
         BlockPos blockPos = data.position();
-        long size = data.size();
+        long displaySize = data.size();
+        long protectedAmount = data.protectedAmount();
+        Optional<UUID> owner = data.uuid();
 
         packetContext.queue(() ->
         {
@@ -36,7 +41,9 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
 
             if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
             {
-                animalPen.setAnimalDisplaySize(size);
+                animalPen.setAnimalDisplaySize(displaySize);
+                animalPen.setProtectedAmount(protectedAmount);
+                animalPen.setOwner(owner.orElse(null));
             }
             else
             {
@@ -50,17 +57,19 @@ public record UpdateAnimalSizeData(BlockPos position, long size) implements Cust
     @NotNull
     public Type<? extends CustomPacketPayload> type()
     {
-        return UpdateAnimalSizeData.ID;
+        return UpdateConfigurationData.ID;
     }
 
 
-    public static final Type<UpdateAnimalSizeData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_animal_size"));
+    public static final Type<UpdateConfigurationData> ID =
+        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_configuration"));
 
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateAnimalSizeData> STREAM_CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC, UpdateAnimalSizeData::position,
-        ByteBufCodecs.VAR_LONG, UpdateAnimalSizeData::size,
-        UpdateAnimalSizeData::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateConfigurationData> STREAM_CODEC = StreamCodec.composite(
+        BlockPos.STREAM_CODEC, UpdateConfigurationData::position,
+        ByteBufCodecs.VAR_LONG, UpdateConfigurationData::size,
+        ByteBufCodecs.VAR_LONG, UpdateConfigurationData::protectedAmount,
+        ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC), UpdateConfigurationData::uuid,
+        UpdateConfigurationData::new
     );
 }

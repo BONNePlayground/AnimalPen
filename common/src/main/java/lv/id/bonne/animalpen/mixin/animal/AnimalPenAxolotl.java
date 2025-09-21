@@ -15,14 +15,17 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -74,87 +77,14 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     @Override
     public boolean animalPen$animalPenInteract(Player player, InteractionHand hand, BlockPos position)
     {
-        ItemStack itemStack = player.getItemInHand(hand);
-
-        if (AnimalPenFoodRegistry.isFood(this.getType().arch$registryName(), itemStack))
+        if (super.animalPen$animalPenInteract(player, hand, position))
         {
-            if (player.level().isClientSide())
-            {
-                // Next is processed only for server side.
-                return true;
-            }
-
-            this.animalPen$storedFood++;
-
-            if (!player.getAbilities().instabuild)
-            {
-                player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
-            }
-
-            if (this.animalPen$foodCooldown > 0 || this.animalPen$storedFood < 2)
-            {
-                return false;
-            }
-
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
-
-            if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
-            {
-                return false;
-            }
-
-            int stackSize = (int) Math.min(this.animalPen$animalCount, this.animalPen$storedFood);
-
-            if (stackSize < 2)
-            {
-                // Cannot feed 1 animal only for breeding.
-                return false;
-            }
-
-            stackSize = (int) Math.min((maxCount - this.animalPen$animalCount) * 2, stackSize);
-
-            this.animalPen$animalCount += stackSize / 2;
-            this.animalPen$storedFood -= stackSize;
-
-            if (player.level() instanceof ServerLevel serverLevel)
-            {
-                serverLevel.sendParticles(
-                    ParticleTypes.HEART,
-                    position.getX() + 0.5f,
-                    position.getY() + 1.5,
-                    position.getZ() + 0.5f,
-                    5,
-                    0.2, 0.2, 0.2,
-                    0.05);
-            }
-
-            player.level().playSound(null,
-                position,
-                this.getEatingSound(itemStack),
-                SoundSource.NEUTRAL,
-                1.0F,
-                Mth.randomBetween(player.level().random, 0.8F, 1.2F));
-
-            SoundEvent soundEvent = this.getAmbientSound();
-
-            if (soundEvent != null)
-            {
-                player.level().playSound(null,
-                    position,
-                    soundEvent,
-                    SoundSource.NEUTRAL,
-                    1.0F,
-                    1.0F);
-            }
-
-            this.animalPen$foodCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                stackSize);
-
             return true;
         }
-        else if (itemStack.is(Items.WATER_BUCKET))
+
+        ItemStack itemStack = player.getItemInHand(hand);
+
+        if (itemStack.is(Items.WATER_BUCKET))
         {
             if (player.level().isClientSide())
             {
@@ -164,8 +94,11 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 axolotls in pen");
                 return false;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
             this.saveToBucketTag(bucket);
@@ -182,6 +115,14 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
+            if (AnimalPen.config().isTriggerAdvancements())
+            {
+                // Trigger bucket filling
+                CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, bucket);
+            }
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -197,6 +138,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
         {
             if (this.animalPen$animalCount <= 1)
             {
+                AnimalPen.sendDebug("Need at least 2 axolotls in pen");
                 return ItemStack.EMPTY;
             }
 
@@ -214,6 +156,8 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
             this.animalPen$animalCount--;
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return bucket;
         }
 
@@ -229,7 +173,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,
                 this.animalPen$animalCount) == 0)
@@ -238,32 +182,7 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
             return lines;
         }
 
-        MutableComponent component =
-            Component.translatable("display.animal_pen.stored_food",
-                Component.literal("\uE000"),
-                this.animalPen$storedFood);
-
-        ItemStack[] food = this.animalPen$getFood();
-
-        if (food != null && food.length != 0)
-        {
-            ItemStack foodItem;
-
-            if (food.length == 1)
-            {
-                foodItem = food[0];
-            }
-            else
-            {
-                int size = food.length;
-                int index = (tick / 100) % size;
-
-                foodItem = food[index];
-            }
-
-            lines.add(Pair.of(new ItemStack[]{foodItem}, component));
-        }
-
+        MutableComponent component;
 
         if (!shortLine && this.animalPen$animalCount > 1)
         {

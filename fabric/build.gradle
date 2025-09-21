@@ -9,6 +9,20 @@ architectury {
     fabric()
 }
 
+loom {
+    runs {
+        devClient {
+            client()
+            programArg("--username=Dev")
+        }
+
+        dev2Client {
+            client()
+            programArg("--username=Dev2")
+        }
+    }
+}
+
 configurations {
     common {
         canBeResolved = true
