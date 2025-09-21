@@ -97,7 +97,7 @@ public class VariantsConfigScreen extends Screen
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Draw title
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+        graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
 
         // Draw labels
         int centerX = this.width / 2;
@@ -109,10 +109,10 @@ public class VariantsConfigScreen extends Screen
             this.maxAnimalAmount);
 
         graphics.drawString(this.font, size,
-            centerX - 100, startY - 12, 0xFFFFFF);
+            centerX - 100, startY - 12, -1);
 
         graphics.drawString(this.font, MINIMAL_ANIMAL_COUNT,
-            centerX - 100, startY + 28, 0xFFFFFF);
+            centerX - 100, startY + 28, -1);
     }
 
 
