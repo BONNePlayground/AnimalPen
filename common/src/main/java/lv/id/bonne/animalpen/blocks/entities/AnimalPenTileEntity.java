@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import com.mojang.serialization.DataResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,10 +25,12 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -82,7 +85,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
 
-        this.getOwner().ifPresent(owner -> tag.putUUID(TAG_OWNER_UUID, owner));
+        tag.storeNullable(TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
+
         tag.putLong(TAG_KEEP_AMOUNT, this.protectedAmount);
     }
 
@@ -108,7 +112,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         this.displaySize = tag.getLongOr(TAG_DISPLAY_SIZE, -1);
 
-        this.ownerUUID = tag.getUUIDOr(TAG_OWNER_UUID, null);
+        DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_OWNER_UUID));
+        parse.ifSuccess(uuid -> this.ownerUUID = uuid);
+
         this.displaySize = tag.getLongOr(TAG_KEEP_AMOUNT, 0);
 
     }

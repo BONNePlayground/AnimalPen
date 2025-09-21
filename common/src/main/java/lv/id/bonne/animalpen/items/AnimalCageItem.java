@@ -73,7 +73,7 @@ public class AnimalCageItem extends Item
             CompoundTag tag = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()).copyTag();
 
             list.accept(Component.translatable("item.animal_pen.animal_cage.variants",
-                    tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    tag.getListOrEmpty(TAG_VARIANTS).size()).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -148,8 +148,7 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null ||
-            livingEntity instanceof AbstractHorse horse && horse.getOwnerUUID() != null)
+        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerReference() != null)
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);

@@ -66,7 +66,7 @@ public class AnimalContainerItem extends Item
                 withStyle(ChatFormatting.GRAY));
 
             list.accept(Component.translatable("item.animal_pen.water_animal_container.amount",
-                    tag.getLongOr(TAG_AMOUNT, 0L).
+                    tag.getLongOr(TAG_AMOUNT, 0L)).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -75,7 +75,7 @@ public class AnimalContainerItem extends Item
             CompoundTag tag = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()).copyTag();
 
             list.accept(Component.translatable("item.animal_pen.water_animal_container.variants",
-                    tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    tag.getListOrEmpty(TAG_VARIANTS).size()).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -150,7 +150,7 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null)
+        if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerReference() != null)
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
                 withStyle(ChatFormatting.DARK_RED), true);
