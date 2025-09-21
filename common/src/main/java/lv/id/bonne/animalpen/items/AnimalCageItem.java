@@ -58,11 +58,12 @@ public class AnimalCageItem extends Item
 
             if (compoundTag.contains(AnimalCageItem.TAG_VARIANTS))
             {
-                ListTag variantList = compoundTag.getList(AnimalCageItem.TAG_VARIANTS, Tag.TAG_COMPOUND);
-                CompoundTag variants = new CompoundTag();
-                variants.put(AnimalCageItem.TAG_VARIANTS, variantList);
+                compoundTag.getList(AnimalCageItem.TAG_VARIANTS).ifPresent(variantList -> {
+                    CompoundTag variants = new CompoundTag();
+                    variants.put(AnimalCageItem.TAG_VARIANTS, variantList);
 
-                itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(variants));
+                    itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(variants));
+                });
             }
 
             compoundTag.remove(AnimalCageItem.TAG_VARIANTS);

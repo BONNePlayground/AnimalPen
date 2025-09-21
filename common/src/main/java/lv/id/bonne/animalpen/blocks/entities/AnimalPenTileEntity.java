@@ -86,11 +86,11 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             this.getInventory().getItems(), provider);
         tag.put(TAG_INVENTORY, inventory);
 
-
         if (!this.deathTicker.isEmpty())
         {
             tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
         }
+
         tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
 
         tag.storeNullable(TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
@@ -109,41 +109,34 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         this.storedAnimal = null;
         this.ownerUUID = null;
 
-        if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
+        tag.getList(TAG_INVENTORY).ifPresent(list ->
         {
             // This is old item storage format. Replace it with the new format.
-            ListTag list = tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND);
-
             for (int i = 0; i < list.size(); i++)
             {
-                CompoundTag itemWithTag = list.getCompound(i);
-                Dynamic<Tag> dynamic = new Dynamic<>(NbtOps.INSTANCE, itemWithTag);
-
-                dynamic = DataFixers.getDataFixer().update(References.ITEM_STACK,
-                    dynamic,
-                    3817,
-                    SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-
                 final int index = i;
 
-                ItemStack.parse(provider, dynamic.getValue()).ifPresent(item ->
-                {
-                    if (index < this.getInventory().getContainerSize())
+                list.getCompound(i).ifPresent(itemWithTag -> {
+                    Dynamic<Tag> dynamic = new Dynamic<>(NbtOps.INSTANCE, itemWithTag);
+
+                    dynamic = DataFixers.getDataFixer().update(References.ITEM_STACK,
+                        dynamic,
+                        3817,
+                        SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+
+                    ItemStack.parse(provider, dynamic.getValue()).ifPresent(item ->
                     {
-                        this.inventory.setItem(index, item);
-                    }
+                        if (index < this.getInventory().getContainerSize())
+                        {
+                            this.inventory.setItem(index, item);
+                        }
+                    });
                 });
             }
-        }
+        });
 
-        if (tag.contains(TAG_INVENTORY, Tag.TAG_COMPOUND))
-        {
-            ContainerHelper.loadAllItems(tag.getCompound(TAG_INVENTORY), this.inventory.getItems(), provider);
-        }
-
-        if (tag.contains(TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
-        {
-            int[] intArray = tag.getIntArray(TAG_DEATH_TICKER);
+        tag.getCompound(TAG_INVENTORY).ifPresent(inventoryTag ->
+            ContainerHelper.loadAllItems(inventoryTag, this.inventory.getItems(), provider));
 
         tag.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
@@ -158,7 +151,6 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         parse.ifSuccess(uuid -> this.ownerUUID = uuid);
 
         this.displaySize = tag.getLongOr(TAG_KEEP_AMOUNT, 0);
-
     }
 
 
