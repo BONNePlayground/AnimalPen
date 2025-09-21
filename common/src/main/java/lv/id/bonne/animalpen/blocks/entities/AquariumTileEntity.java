@@ -113,8 +113,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         this.displaySize = valueInput.getLongOr(TAG_DISPLAY_SIZE, -1);
 
-        DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, valueInput.get(TAG_OWNER_UUID));
-        parse.ifSuccess(uuid -> this.ownerUUID = uuid);
+        valueInput.read(TAG_OWNER_UUID, UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUUID = uuid);
 
         this.protectedAmount = valueInput.getLongOr(TAG_KEEP_AMOUNT, 0);
     }

@@ -9,6 +9,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -149,33 +150,35 @@ public class VariantScreenSelection extends Screen
 
         // Create display entity.
 
-        try (ProblemReporter.ScopedCollector scopedCollector =
-                 new ProblemReporter.ScopedCollector(this.blockEntityInterface.getStoredAnimal().problemPath(),
-                     AnimalPen.LOGGER))
-        {
-            TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector,
-                this.blockEntityInterface.getStoredAnimal().registryAccess());
+        this.blockEntityInterface.getStoredAnimal().ifPresent(storedAnimal -> {
+            try (ProblemReporter.ScopedCollector scopedCollector =
+                     new ProblemReporter.ScopedCollector(storedAnimal.problemPath(), AnimalPen.LOGGER))
+            {
+                TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector,
+                    storedAnimal.registryAccess());
 
-            this.blockEntityInterface.getStoredAnimal().ifPresent(entity -> entity.save(tagValueOutput));
+                storedAnimal.save(tagValueOutput);
 
-            ValueInput valueInput = TagValueInput.create(scopedCollector,
-                this.blockEntityInterface.getStoredAnimal().registryAccess(),
-                tagValueOutput.buildResult());
+                ValueInput valueInput = TagValueInput.create(scopedCollector,
+                    storedAnimal.registryAccess(),
+                    tagValueOutput.buildResult());
 
-            EntityType.create(valueInput, this.minecraft.level, EntitySpawnReason.TRIGGERED).
-                map(entity -> (LivingEntity) entity).
-                ifPresent(entity ->
-                {
-                    this.displayEntity = entity;
+                EntityType.create(valueInput, this.minecraft.level, EntitySpawnReason.TRIGGERED).
+                    map(entity -> (LivingEntity) entity).
+                    ifPresent(entity ->
+                    {
+                        this.displayEntity = entity;
 
-                    float width = this.displayEntity.getBbWidth();
-                    float height = this.displayEntity.getBbHeight();
+                        float width = this.displayEntity.getBbWidth();
+                        float height = this.displayEntity.getBbHeight();
 
-                    float entitySize = Math.max(1F, Math.max(width, height));
+                        float entitySize = Math.max(1F, Math.max(width, height));
 
-                    this.entityScale = 60F / entitySize * 0.8F;
-                });
-        }
+                        this.entityScale = 60F / entitySize * 0.8F;
+                    });
+            }
+        });
+
 
         // Create cooldown menu renderer
         this.cooldownButton = this.addWidget(Button.builder(Component.empty(),
@@ -370,7 +373,7 @@ public class VariantScreenSelection extends Screen
             256);
 
         // Render configure icon.
-        graphics.blit(RenderType::guiTextured,
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
             TEXTURE,
             this.configureButton.getX(),
             this.configureButton.getY(),
@@ -681,7 +684,7 @@ public class VariantScreenSelection extends Screen
 
         if (this.configureButton.isMouseOver(mouseX, mouseY))
         {
-            graphics.renderTooltip(this.font, CONFIGURE, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, CONFIGURE, mouseX, mouseY);
         }
     }
 
@@ -789,7 +792,7 @@ public class VariantScreenSelection extends Screen
             {
                 TagValueOutput valueOutput =
                     TagValueOutput.createWithContext(scopedCollector, this.displayEntity.registryAccess());
-                this.blockEntityInterface.getStoredAnimal().save(valueOutput);
+                this.blockEntityInterface.getStoredAnimal().ifPresent(entity -> entity.save(valueOutput));
                 tag = valueOutput.buildResult();
             }
         }
