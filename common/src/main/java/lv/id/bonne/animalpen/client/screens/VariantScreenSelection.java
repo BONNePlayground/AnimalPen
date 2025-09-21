@@ -123,6 +123,10 @@ public class VariantScreenSelection extends Screen
             size(11, 14).
             build());
 
+        this.deleteButton.active = this.blockEntityInterface.getOwner().
+            map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+            orElse(true);
+
         // Apply variant button
         this.applyButton = this.addWidget(Button.builder(Component.empty(),
                 this::handleApplyButton).
@@ -326,23 +330,28 @@ public class VariantScreenSelection extends Screen
     {
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        // Render icon instead of delete button.
-        blit(poseStack,
-            this.deleteButton.getX() + 1,
-            this.deleteButton.getY() + 1,
-            176 + (this.selectedButton != -1 ? 0 : 9),
-            39,
-            9,
-            12);
+        if (this.blockEntityInterface.getOwner().
+            map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+            orElse(true))
+        {
+            // Render icon instead of delete button.
+            blit(poseStack,
+                this.deleteButton.getX() + 1,
+                this.deleteButton.getY() + 1,
+                176 + (this.selectedButton != -1 ? 0 : 9),
+                39,
+                9,
+                12);
 
-        // Render icon instead of apply button.
-        blit(poseStack,
-            this.applyButton.getX() + 1,
-            this.applyButton.getY() + 1,
-            176 + (this.selectedButton != -1 ? 0 : 12),
-            51,
-            12,
-            12);
+            // Render icon instead of apply button.
+            blit(poseStack,
+                this.applyButton.getX() + 1,
+                this.applyButton.getY() + 1,
+                176 + (this.selectedButton != -1 ? 0 : 12),
+                51,
+                12,
+                12);
+        }
 
         // Render configure icon.
         this.blit(poseStack,
@@ -713,7 +722,10 @@ public class VariantScreenSelection extends Screen
         else
         {
             this.selectedButton = index;
-            this.applyButton.active = !this.buttons.isEmpty();
+            this.applyButton.active = !this.buttons.isEmpty() &&
+                this.blockEntityInterface.getOwner().
+                    map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
+                    orElse(true);
         }
 
         CompoundTag tag;
