@@ -51,6 +51,33 @@ public class AnimalCageItem extends Item
 
 
     @Override
+    public void verifyComponentsAfterLoad(ItemStack itemStack)
+    {
+        super.verifyComponentsAfterLoad(itemStack);
+
+        if (itemStack.has(DataComponents.CUSTOM_DATA))
+        {
+            CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+            CompoundTag compoundTag = customData.copyTag();
+
+            if (compoundTag.contains(AnimalCageItem.TAG_VARIANTS))
+            {
+                compoundTag.getList(AnimalCageItem.TAG_VARIANTS).ifPresent(variantList -> {
+                    CompoundTag variants = new CompoundTag();
+                    variants.put(AnimalCageItem.TAG_VARIANTS, variantList);
+
+                    itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(variants));
+                });
+            }
+
+            compoundTag.remove(AnimalCageItem.TAG_VARIANTS);
+            itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(compoundTag));
+            itemStack.remove(DataComponents.CUSTOM_DATA);
+        }
+    }
+
+
+    @Override
     public void appendHoverText(ItemStack itemStack,
         TooltipContext tooltipContext,
         TooltipDisplay tooltipDisplay,
