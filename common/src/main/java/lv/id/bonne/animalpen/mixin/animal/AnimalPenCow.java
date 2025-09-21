@@ -16,10 +16,12 @@ import java.time.LocalTime;
 import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -97,6 +99,8 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         {
             if (this.animalPen$milkCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$milkCooldown);
+
                 return false;
             }
 
@@ -105,6 +109,8 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 // Next is processed only for server side.
                 return true;
             }
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
             ItemStack remainingStack = ItemUtils.createFilledResult(itemStack,
                 player,
@@ -119,10 +125,12 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$milkCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -139,6 +147,8 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         {
             if (this.animalPen$milkCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$milkCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -151,10 +161,12 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$milkCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$milkCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return Items.MILK_BUCKET.getDefaultInstance();
         }
@@ -170,7 +182,7 @@ public abstract class AnimalPenCow extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) == 0)

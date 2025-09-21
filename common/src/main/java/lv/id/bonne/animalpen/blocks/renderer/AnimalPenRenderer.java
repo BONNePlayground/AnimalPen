@@ -56,7 +56,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         int combinedOverlay,
         Vec3 location)
     {
-        Animal animal = tileEntity.getStoredAnimal();
+        Animal animal = tileEntity.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -149,15 +149,15 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.pushPose();
         poseStack.translate(0, (4/16f), 0);
 
-        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getAnimalSize();
+        float animalSize = AnimalPen.config().getAnimalSize();
 
         poseStack.scale(animalSize, animalSize, animalSize);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals())
+        if (AnimalPen.config().isGrowAnimals())
         {
             float scale = 1 + animalSize *
                 tileEntity.getAnimalDisplaySize() *
-                AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
+                AnimalPen.config().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
@@ -459,14 +459,14 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     @Override
     public boolean shouldRenderOffScreen()
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+        return AnimalPen.config().isGrowAnimals();
     }
 
 
     @Override
     public boolean shouldRender(AnimalPenTileEntity blockEntity, Vec3 vec3)
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals() ||
+        return AnimalPen.config().isGrowAnimals() ||
             BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
     }
 

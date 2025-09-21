@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import com.mojang.serialization.DataResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,16 +22,21 @@ import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -41,6 +47,8 @@ import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -81,6 +89,10 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         }
 
         valueOutput.putLong(TAG_DISPLAY_SIZE, this.displaySize);
+
+        valueOutput.storeNullable(TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
+
+        valueOutput.putLong(TAG_KEEP_AMOUNT, this.protectedAmount);
     }
 
 
@@ -92,6 +104,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         this.inventory.clearContent();
         this.deathTicker.clear();
         this.storedAnimal = null;
+        this.ownerUUID = null;
 
         ContainerHelper.loadAllItems(valueInput, this.inventory.getItems());
 
@@ -103,6 +116,11 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         });
 
         this.displaySize = valueInput.getLongOr(TAG_DISPLAY_SIZE, -1);
+
+        DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, valueInput.get(TAG_OWNER_UUID));
+        parse.ifSuccess(uuid -> this.ownerUUID = uuid);
+
+        this.displaySize = valueInput.getLongOr(TAG_KEEP_AMOUNT, 0);
     }
 
 
@@ -138,7 +156,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      * @return Animal instance stored in block entity.
      */
     @Override
-    public Animal getStoredAnimal()
+    public Optional<Animal> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -146,14 +164,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
             if (customData == null)
             {
-                return this.storedAnimal;
+                return Optional.ofNullable(this.storedAnimal);
             }
 
             CompoundTag tag = customData.copyTag();
 
             if (!tag.contains(AnimalCageItem.TAG_ENTITY_ID) || this.level == null)
             {
-                return this.storedAnimal;
+                return Optional.ofNullable(this.storedAnimal);
             }
 
             try (ProblemReporter.ScopedCollector scopedCollector =
@@ -173,7 +191,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             this.storedAnimal = null;
         }
 
-        return this.storedAnimal;
+        return Optional.ofNullable(this.storedAnimal);
     }
 
 
@@ -198,14 +216,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        boolean updated = false;
-
-        Animal animal = this.getStoredAnimal();
-
-        if (animal != null && ((AnimalPenInterface) animal).animalPenTick(this))
-        {
-            updated = true;
-        }
+        boolean updated = this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenTick(this)).
+            orElse(false);
 
         for (int i = 0; i < this.deathTicker.size(); i++)
         {
@@ -232,6 +245,13 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public boolean processContainer(Player player, InteractionHand interactionHand)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            AnimalPen.sendDebug("Protection is enabled");
+            // Not an owner. Cannot interact.
+            return false;
+        }
+
         if (this.inventory.isEmpty())
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -258,6 +278,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                                 toList(),
                             new UpdateVariantScreenData(this.getBlockPos()));
                     }
+
+                    AnimalPen.sendDebug("Deposit animal cage into pen");
                 }
 
                 return true;
@@ -281,7 +303,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     return true;
                 }
 
-                Animal animal = this.getStoredAnimal();
+                Animal animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null)
                 {
@@ -293,14 +315,23 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
                 if (currentCount < 2)
                 {
+                    AnimalPen.sendDebug("Cannot split 1");
                     // Cannot split 1 or 0
                     return false;
                 }
 
-                long newCount = currentCount / 2;
+                long newCount = Math.min(currentCount - this.protectedAmount, currentCount / 2);
+
+                if (newCount <= 0)
+                {
+                    AnimalPen.sendDebug("Protected amount prevents from splitting");
+                    // Only positive numbers allowed
+                    return false;
+                }
 
                 if (!((AnimalPenInterface) animal).animalPenUpdateCount(-newCount))
                 {
+                    AnimalPen.sendDebug("Fail to reduce animal count");
                     return false;
                 }
 
@@ -322,18 +353,21 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
+                AnimalPen.sendDebug("Half the amount of animals in pen");
                 // Remove half of animals.
                 return true;
             }
             else
             {
-                Animal animal = this.getStoredAnimal();
+                Animal animal = this.getStoredAnimal().orElse(null);
                 CompoundTag itemInHandTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
                 if (animal == null ||
                     !itemInHandTag.getString(AnimalCageItem.TAG_ENTITY_ID).orElse("").
                         equals(animal.getType().arch$registryName().toString()))
                 {
+                    AnimalPen.sendDebug("Different animals");
+
                     // Cannot do with different animal types.
                     return false;
                 }
@@ -348,6 +382,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
                 if (newCount <= 0 || !((AnimalPenInterface) animal).animalPenUpdateCount(newCount))
                 {
+                    AnimalPen.sendDebug("Failed to deposit animal");
                     return false;
                 }
 
@@ -355,6 +390,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 if (newCount > 1 &&
                     !AnimalCageItem.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
                 {
+                    AnimalPen.sendDebug("Variants could not be merged");
+
                     ((AnimalPenInterface) animal).animalPenUpdateCount(-1);
                     itemInHandTag.putLong(AnimalCageItem.TAG_AMOUNT, 1);
                     itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(itemInHandTag));
@@ -381,6 +418,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
+                AnimalPen.sendDebug("Cage merged into pen");
+
                 return true;
             }
         }
@@ -388,7 +427,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
 
     /**
-     * This method processes player interaction with pen tile entity with any item in mian hand.
+     * This method processes player interaction with pen tile entity with any item in main hand.
      *
      * @param player the player
      * @param interactionHand the interaction hand
@@ -396,6 +435,14 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public boolean interactWithPen(Player player, InteractionHand interactionHand)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            AnimalPen.sendDebug("Protection is enabled");
+
+            // Not an owner. Cannot interact.
+            return false;
+        }
+
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
         if (itemInHand.isEmpty() && !this.inventory.isEmpty())
@@ -406,20 +453,25 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 player.setItemInHand(interactionHand, item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 this.inventory.setChanged();
+
+                AnimalPen.sendDebug("Taking out animal cage");
             }
 
             return true;
         }
 
-        Animal animal = this.getStoredAnimal();
+        Animal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
+            AnimalPen.sendDebug("Animal is not set");
             return false;
         }
 
         if (((AnimalPenInterface) animal).animalPenInteract(player, interactionHand, this.getBlockPos()))
         {
+            AnimalPen.sendDebug("Animal Interaction finished");
+
             ItemStack item = this.getItemStack();
 
             // Reset tag, as some animals may need it.
@@ -454,18 +506,46 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public void attackThePen(Player player, Level level)
     {
+        if (this.getOwner().isPresent() && !this.getOwner().get().equals(player.getUUID()))
+        {
+            AnimalPen.sendDebug("Protection is enabled");
+            // Not an owner. Cannot interact.
+            return;
+        }
+
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Animal animal = this.getStoredAnimal();
+        Animal animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
+            AnimalPen.sendDebug("Animal Pen is empty");
+            return;
+        }
+
+        long amount = ((AnimalPenInterface) animal).animalPenGetCount();
+
+        if (amount <= this.protectedAmount)
+        {
+            AnimalPen.sendDebug("Protected amount reached");
+            // Cannot attack anymore
             return;
         }
 
         if (!((AnimalPenInterface) animal).animalPenUpdateCount(-1))
         {
+            AnimalPen.sendDebug("Failed to update animal count");
             return;
+        }
+
+        EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level,
+            animal,
+            level.damageSources().playerAttack(player),
+            weapon);
+
+        if (AnimalPen.config().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
         }
 
         weapon.hurtAndBreak(1, player, getSlotForHand(InteractionHand.MAIN_HAND));
@@ -480,6 +560,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
+            AnimalPen.sendDebug("Dropping empty cage");
         }
 
         this.triggerUpdate();
@@ -502,8 +583,25 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
             forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
+        animal.clearFire();
+
         int reward = animal.getExperienceReward((ServerLevel) level, player);
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
+
+        if (AnimalPen.config().isTriggerAdvancements())
+        {
+            CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
+                animal,
+                level.damageSources().playerAttack(player));
+        }
+
+        if (AnimalPen.config().isIncreaseStatistics())
+        {
+            player.awardStat(Stats.MOB_KILLS);
+            player.awardStat(Stats.ENTITY_KILLED.get(animal.getType()));
+        }
+
+        AnimalPen.sendDebug("Animal Kill process finished");
     }
 
 
@@ -517,12 +615,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      */
     public int getRedStoneSignal()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return 0;
-        }
-
-        return ((AnimalPenInterface) this.storedAnimal).getRedStoneSignal();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).getRedStoneSignal()).
+            orElse(0);
     }
 
 
@@ -535,9 +630,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        Animal animal = this.getStoredAnimal();
-
-        if (animal != null)
+        this.getStoredAnimal().ifPresent(
+            animal ->
         {
             CompoundTag tag;
 
@@ -551,7 +645,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             }
 
             this.getItemStack().set(DataComponents.ENTITY_DATA, CustomData.of(tag));
-        }
+        });
 
         this.level.sendBlockUpdated(this.getBlockPos(),
             this.getBlockState(),
@@ -605,12 +699,9 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public ListTag getEntityVariants()
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return new ListTag();
-        }
-
-        return AnimalCageItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new);
+        return this.getStoredAnimal().
+            map(animal -> AnimalCageItem.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new)).
+            orElseGet(ListTag::new);
     }
 
 
@@ -648,46 +739,52 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public void updateAnimalVariant(ValueInput animalVariant)
     {
-        if (this.getStoredAnimal() == null || animalVariant == null)
+        if (this.getStoredAnimal().isEmpty() || animalVariant == null)
         {
+            // Nothing to update
             return;
         }
 
-        // Save extra data
-        CompoundTag extraData;
+        this.getStoredAnimal().ifPresent(animal ->
+        {
+            AnimalPen.sendDebug("Animal Variant changed");
+
+            // Save extra data
+            CompoundTag extraData;
 
         try (ProblemReporter.ScopedCollector scopedCollector =
                  new ProblemReporter.ScopedCollector(this.problemPath(), AnimalPen.LOGGER))
         {
             TagValueOutput valueOutput =
                 TagValueOutput.createWithContext(scopedCollector, this.level.registryAccess());
-            ((AnimalPenInterface) this.storedAnimal).animalPenSaveTag(valueOutput);
+            ((AnimalPenInterface) animal).animalPenSaveTag(valueOutput);
 
             extraData = valueOutput.buildResult();
 
             // load new variant
-            this.storedAnimal.load(animalVariant);
+            animal.load(animalVariant);
 
             ValueInput valueInput =
                 TagValueInput.create(scopedCollector, this.level.registryAccess(), extraData);
 
             // Apply data
-            ((AnimalPenInterface) this.storedAnimal).animalPenLoadTag(valueInput);
+            ((AnimalPenInterface) animal).animalPenLoadTag(valueInput);
         }
 
         this.triggerUpdate();
 
-        if (this.level != null && !this.level.isClientSide())
-        {
-            // Trigger update.
-            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(other ->
-                        other.distanceToSqr(this.getBlockPos().getX(),
-                            this.getBlockPos().getY(),
-                            this.getBlockPos().getZ()) < 50).
-                    toList(),
-                new UpdateVariantScreenData(this.getBlockPos()));
-        }
+            if (this.level != null && !this.level.isClientSide())
+            {
+                // Trigger update.
+                NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        filter(other ->
+                            other.distanceToSqr(this.getBlockPos().getX(),
+                                this.getBlockPos().getY(),
+                                this.getBlockPos().getZ()) < 50).
+                        toList(),
+                    new UpdateVariantScreenData(this.getBlockPos()));
+            }
+        });
     }
 
 
@@ -699,7 +796,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public void removeAnimalVariant(int index)
     {
-        if (this.getStoredAnimal() == null || this.getEntityVariants().size() <= index)
+        if (this.getStoredAnimal().isEmpty() || this.getEntityVariants().size() <= index)
         {
             return;
         }
@@ -728,6 +825,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                             this.getBlockPos().getZ()) < 50).
                     toList(),
                 new UpdateVariantScreenData(this.getBlockPos()));
+
+            AnimalPen.sendDebug("Animal variant removed");
         }
     }
 
@@ -740,15 +839,16 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public long getAnimalCount()
     {
-        return this.getStoredAnimal() == null ? 0 :
-            ((AnimalPenInterface) this.getStoredAnimal()).animalPenGetCount();
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetCount()).
+            orElse(0L);
     }
 
 
     @Override
     public boolean canGrowEntity()
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+        return AnimalPen.config().isGrowAnimals();
     }
 
 
@@ -760,12 +860,39 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     @Override
     public List<Pair<ItemStack[], Component>> getCooldownLines(boolean shortText)
     {
-        if (this.getStoredAnimal() == null)
-        {
-            return Collections.emptyList();
-        }
+        return this.getStoredAnimal().
+            map(animal -> ((AnimalPenInterface) animal).animalPenGetLines(this.getTickCounter(), shortText)).
+            orElse(Collections.emptyList());
+    }
 
-        return ((AnimalPenInterface) this.storedAnimal).animalPenGetLines(this.getTickCounter(), shortText);
+
+    @Override
+    public long getProtectedAmount()
+    {
+        return this.protectedAmount;
+    }
+
+
+    @Override
+    public void setProtectedAmount(long amount)
+    {
+        this.protectedAmount = amount;
+        this.triggerUpdate();
+    }
+
+
+    @Override
+    public Optional<UUID> getOwner()
+    {
+        return Optional.ofNullable(this.ownerUUID);
+    }
+
+
+    @Override
+    public void setOwner(@Nullable UUID owner)
+    {
+        this.ownerUUID = owner;
+        this.triggerUpdate();
     }
 
 
@@ -799,6 +926,10 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
     private long displaySize = -1;
 
+    private UUID ownerUUID;
+
+    private long protectedAmount = 0;
+
     private int tickCounter;
 
     private final List<Integer> deathTicker = new ArrayList<>();
@@ -808,4 +939,8 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     public static final String TAG_DEATH_TICKER = "death_ticker";
 
     public static final String TAG_DISPLAY_SIZE = "display_size";
+
+    public static final String TAG_OWNER_UUID = "owner_uuid";
+
+    public static final String TAG_KEEP_AMOUNT = "keep_amount";
 }

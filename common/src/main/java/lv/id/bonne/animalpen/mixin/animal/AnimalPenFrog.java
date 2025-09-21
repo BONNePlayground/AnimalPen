@@ -102,6 +102,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
         {
             if (this.animalPen$frogLightCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$frogLightCooldown);
                 return false;
             }
 
@@ -113,7 +114,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
 
             int froglightCount = (int) Math.min(this.animalPen$animalCount, itemStack.getCount());
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.PEARLESCENT_FROGLIGHT);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.PEARLESCENT_FROGLIGHT);
 
             if (dropLimits > 0)
             {
@@ -163,10 +164,12 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$frogLightCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$frogLightCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.MAGMA_BLOCK,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -182,7 +185,7 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.MAGMA_BLOCK,
                 this.animalPen$animalCount) == 0)

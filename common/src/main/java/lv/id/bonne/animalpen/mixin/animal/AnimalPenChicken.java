@@ -8,15 +8,20 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -25,7 +30,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.ChickenVariant;
+import net.minecraft.world.entity.animal.ChickenVariants;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -33,11 +41,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 
 @Mixin(Chicken.class)
 public abstract class AnimalPenChicken extends AnimalPenAnimal
 {
+    @Shadow
+    public abstract Holder<ChickenVariant> getVariant();
+
+
     protected AnimalPenChicken(EntityType<? extends Mob> entityType,
         Level level)
     {
@@ -96,41 +113,69 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         {
             if (this.animalPen$eggCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
                 return false;
             }
 
-            if (player.level().isClientSide())
+            if (!(player.level() instanceof ServerLevel serverLevel))
             {
                 // Next is processed only for server side.
                 return true;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+            LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.CHICKEN_LAY);
+            LootParams lootParams = new LootParams.Builder(serverLevel).
+                withParameter(LootContextParams.ORIGIN, position.getCenter()).
+                withParameter(LootContextParams.THIS_ENTITY, this).
+                create(LootContextParamSets.GIFT);
+
+            int dropLimits = AnimalPen.config().getDropLimits(Items.EGG);
 
             if (dropLimits <= 0)
             {
                 dropLimits = Integer.MAX_VALUE;
             }
 
+            List<ItemStack> itemStackList = new ArrayList<>();
+
             int eggCount = (int) Math.min(this.animalPen$animalCount, dropLimits);
 
             while (eggCount > 0)
             {
-                ItemStack eggStack = new ItemStack(Items.EGG);
+                List<ItemStack> randomItems = lootTable.getRandomItems(lootParams);
 
-                if (eggCount > 16)
+                if (randomItems.isEmpty())
                 {
-                    eggStack.setCount(16);
-                    eggCount -= 16;
-                }
-                else
-                {
-                    eggStack.setCount(eggCount);
-                    eggCount = 0;
+                    // Just a stop on infinite loop
+                    break;
                 }
 
-                Block.popResource(player.level(), position.above(), eggStack);
+                eggCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
+
+                randomItems.forEach(item -> {
+                    boolean added = false;
+
+                    for (ItemStack stack : itemStackList)
+                    {
+                        if (ItemStack.isSameItemSameComponents(item, stack) &&
+                            stack.getCount() < stack.getMaxStackSize())
+                        {
+                            stack.grow(item.getCount());
+                            added = true;
+                            break;
+                        }
+                    }
+
+                    if (!added)
+                    {
+                        itemStackList.add(item);
+                    }
+                });
             }
+
+            itemStackList.forEach(eggStack ->
+                Block.popResource(player.level(), position.above(), eggStack));
 
             player.level().playSound(null,
                 position,
@@ -139,10 +184,12 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -157,12 +204,14 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
     {
         if (this.animalPen$eggCooldown > 0)
         {
+            AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
             return ItemStack.EMPTY;
         }
 
         if (itemStack.is(Items.BUCKET))
         {
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.EGG);
 
             if (dropLimits <= 0)
             {
@@ -196,10 +245,12 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }
@@ -215,7 +266,7 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) == 0)
@@ -245,10 +296,38 @@ public abstract class AnimalPenChicken extends AnimalPenAnimal
         }
 
         lines.add(Pair.of(
-            new ItemStack[]{Items.BUCKET.getDefaultInstance(), Items.EGG.getDefaultInstance()},
+            new ItemStack[]{Items.BUCKET.getDefaultInstance(), pen$getEggItem().getDefaultInstance()},
             component));
 
         return lines;
+    }
+
+
+    /**
+     * This method returns egg based on chicken type.
+     * @return egg item.
+     */
+    @Unique
+    private Item pen$getEggItem()
+    {
+        Holder<ChickenVariant> variant = this.getVariant();
+
+        Item eggItem;
+
+        if (variant.is(ChickenVariants.WARM))
+        {
+            eggItem = Items.BROWN_EGG;
+        }
+        else if (variant.is(ChickenVariants.COLD))
+        {
+            eggItem = Items.BLUE_EGG;
+        }
+        else
+        {
+            eggItem = Items.EGG;
+        }
+
+        return eggItem;
     }
 
 
