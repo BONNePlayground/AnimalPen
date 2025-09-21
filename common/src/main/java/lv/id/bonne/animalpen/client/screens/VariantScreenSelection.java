@@ -352,6 +352,7 @@ public class VariantScreenSelection extends Screen
 
         // Render configure icon.
         graphics.blit(RenderType::guiTextured,
+            TEXTURE,
             this.configureButton.getX(),
             this.configureButton.getY(),
             176,

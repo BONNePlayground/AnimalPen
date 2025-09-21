@@ -39,7 +39,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
@@ -55,7 +54,7 @@ import net.minecraft.world.phys.Vec3;
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
 
-public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInterface<LivingEntity>
+public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInterface<PathfinderMob>
 {
     public AquariumTileEntity(
         BlockPos blockPos,
@@ -154,7 +153,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
      * @return Animal instance stored in block entity.
      */
     @Override
-    public Optional<Mob> getStoredAnimal()
+    public Optional<PathfinderMob> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -172,7 +171,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 return Optional.ofNullable(this.storedAnimal);
             }
 
-            EntityType.create(tag, this.getLevel(), EntitySpawnReason.TRIGGERED).map(entity -> (Mob) entity).
+            EntityType.create(tag, this.getLevel(), EntitySpawnReason.TRIGGERED).map(entity -> (PathfinderMob) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
         else if (this.storedAnimal != null && this.getItemStack().isEmpty())
@@ -292,7 +291,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     return true;
                 }
 
-                Mob animal = this.getStoredAnimal().orElse(null);
+                LivingEntity animal = this.getStoredAnimal().orElse(null);
                 
                 if (animal == null)
                 {
@@ -862,7 +861,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     };
 
 
-    private Mob storedAnimal;
+    private PathfinderMob storedAnimal;
 
     private long displaySize = -1;
 
