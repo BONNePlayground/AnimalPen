@@ -18,3 +18,4 @@
   - Ability to set owner of pen/aquarium (prevents other from interacting)
 - Added ability to receive debug messages (config option)
 - Rework axolotl food consumption method: do not store, and take all buckets of fish from inventory.
+- Fixed correct chicken egg drop.
