@@ -277,7 +277,7 @@ public class AnimalContainerItem extends Item
                 ValueInput valueInput = TagValueInput.create(scopedCollector, player.registryAccess(), itemTag);
 
                 EntityType.create(valueInput, level, EntitySpawnReason.SPAWN_ITEM_USE).
-                    map(entity -> (Animal) entity).
+                    map(entity -> (Mob) entity).
                     ifPresent(clone ->
                     {
                         level.addFreshEntity(clone);
