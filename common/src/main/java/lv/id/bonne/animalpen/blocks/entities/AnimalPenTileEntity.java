@@ -150,7 +150,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_OWNER_UUID));
         parse.ifSuccess(uuid -> this.ownerUUID = uuid);
 
-        this.displaySize = tag.getLongOr(TAG_KEEP_AMOUNT, 0);
+        this.protectedAmount = tag.getLongOr(TAG_KEEP_AMOUNT, 0);
     }
 
 
