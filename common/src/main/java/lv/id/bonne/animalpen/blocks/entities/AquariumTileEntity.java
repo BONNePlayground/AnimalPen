@@ -104,6 +104,25 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         ContainerHelper.loadAllItems(valueInput, this.inventory.getItems());
 
+        // Legacy code.
+        valueInput.childrenList(TAG_INVENTORY).ifPresent(list -> {
+            if (!list.isEmpty())
+            {
+                List<ValueInput> itemList = list.stream().toList();
+
+                for (int i = 0; i < itemList.size(); i++)
+                {
+                    final int index = i;
+
+                    if (index < this.inventory.getItems().size())
+                    {
+                        itemList.get(i).read(ItemStack.MAP_CODEC).ifPresent(item ->
+                            this.inventory.getItems().set(index, item));
+                    }
+                }
+            }
+        });
+
         valueInput.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
             {
@@ -299,7 +318,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 }
 
                 LivingEntity animal = this.getStoredAnimal().orElse(null);
-                
+
                 if (animal == null)
                 {
                     // Animal is not loaded.

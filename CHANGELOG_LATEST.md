@@ -19,3 +19,4 @@
 - Added ability to receive debug messages (config option)
 - Rework axolotl food consumption method: do not store, and take all buckets of fish from inventory.
 - Fixed correct chicken egg drop.
+- Fixed 1.21.5 to 1.21.6 upgrading voiding all animals in pen.

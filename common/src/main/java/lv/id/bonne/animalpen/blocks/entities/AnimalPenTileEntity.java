@@ -34,12 +34,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -107,6 +104,25 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         this.ownerUUID = null;
 
         ContainerHelper.loadAllItems(valueInput, this.inventory.getItems());
+
+        // Legacy code.
+        valueInput.childrenList(TAG_INVENTORY).ifPresent(list -> {
+            if (!list.isEmpty())
+            {
+                List<ValueInput> itemList = list.stream().toList();
+
+                for (int i = 0; i < itemList.size(); i++)
+                {
+                    final int index = i;
+
+                    if (index < this.inventory.getItems().size())
+                    {
+                        itemList.get(i).read(ItemStack.MAP_CODEC).ifPresent(item ->
+                            this.inventory.getItems().set(index, item));
+                    }
+                }
+            }
+        });
 
         valueInput.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
