@@ -109,6 +109,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);
                 return false;
             }
 
@@ -124,7 +125,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 withParameter(LootContextParams.THIS_ENTITY, this).
                 create(LootContextParamSets.GIFT);
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TORCHFLOWER_SEEDS);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.TORCHFLOWER_SEEDS);
 
             if (dropLimits <= 0)
             {
@@ -178,7 +179,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$sniffingCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$sniffingCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
@@ -198,7 +199,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 return true;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SNIFFER_EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.SNIFFER_EGG);
 
             if (dropLimits <= 0)
             {
@@ -232,10 +233,12 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -252,6 +255,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         {
             if (this.animalPen$sniffingCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$sniffingCooldown);
                 return ItemStack.EMPTY;
             }
 
@@ -261,7 +265,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 withParameter(LootContextParams.THIS_ENTITY, this).
                 create(LootContextParamSets.GIFT);
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TORCHFLOWER_SEEDS);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.TORCHFLOWER_SEEDS);
 
             if (dropLimits <= 0)
             {
@@ -315,7 +319,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$sniffingCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$sniffingCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount);
@@ -329,7 +333,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 return ItemStack.EMPTY;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.SNIFFER_EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.SNIFFER_EGG);
 
             if (dropLimits <= 0)
             {
@@ -363,11 +367,12 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
             return ItemStack.EMPTY;
         }
 
@@ -382,7 +387,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (!shortLine ||
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
                 this.animalPen$animalCount) != 0)
@@ -423,7 +428,7 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
         }
 
         if (!shortLine ||
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) != 0)

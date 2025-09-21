@@ -9,7 +9,6 @@ package lv.id.bonne.animalpen.blocks.behaviour;
 
 import org.jetbrains.annotations.NotNull;
 
-import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
@@ -61,8 +60,10 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 
             if (blockEntity instanceof AnimalPenBlockInterface<?> ani)
             {
-                ItemStack output =
-                    ((AnimalPenInterface) ani.getStoredAnimal()).animalPenInteract(level, itemStack, blockPos);
+                ItemStack output = ani.getStoredAnimal().
+                    map(animal ->
+                        ((AnimalPenInterface) animal).animalPenInteract(level, itemStack, blockPos)).
+                    orElse(ItemStack.EMPTY);
                 ani.triggerUpdate();
 
                 if (output.isEmpty())
