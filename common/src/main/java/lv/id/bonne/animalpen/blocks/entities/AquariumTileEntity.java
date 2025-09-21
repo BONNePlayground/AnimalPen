@@ -508,7 +508,10 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return;
         }
 
-        int fireAspect = EnchantmentHelper.getFireAspect(player);
+        EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level,
+            animal,
+            level.damageSources().playerAttack(player),
+            weapon);
 
         if (AnimalPen.config().isIncreaseStatistics())
         {
@@ -535,9 +538,6 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
         Vec3 position = new Vec3(this.worldPosition.getX(),
             this.worldPosition.getY(),
             this.worldPosition.getZ());
-
-        // Set fire-ticks (use fire aspect, to get rid of any stored value before).
-        animal.setRemainingFireTicks(fireAspect);
 
         LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
 

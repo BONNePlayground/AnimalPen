@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -509,7 +510,10 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return;
         }
 
-        int fireAspect = EnchantmentHelper.getFireAspect(player);
+        EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level,
+            animal,
+            level.damageSources().playerAttack(player),
+            weapon);
 
         if (AnimalPen.config().isIncreaseStatistics())
         {
@@ -536,9 +540,6 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         Vec3 position = new Vec3(this.worldPosition.getX(),
             this.worldPosition.getY(),
             this.worldPosition.getZ());
-
-        // Set fire-ticks (use fire aspect, to get rid of any stored value before).
-        animal.setRemainingFireTicks(fireAspect);
 
         LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
 
