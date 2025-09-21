@@ -60,32 +60,37 @@ public class AnimalCageItem extends Item
             list.add(Component.empty());
         }
 
-        DataComponentMap dataComponents = itemStack.getComponents();
-
         if (itemStack.has(DataComponents.ENTITY_DATA))
         {
             CompoundTag tag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
 
             list.add(Component.translatable("item.animal_pen.animal_cage.entity",
-                AnimalCageItem.getEntityTranslationName(tag.getString(TAG_ENTITY_ID))).
+                    AnimalCageItem.getEntityTranslationName(tag.getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
 
             list.add(Component.translatable("item.animal_pen.animal_cage.amount",
                     tag.getLong(TAG_AMOUNT)).
                 withStyle(ChatFormatting.GRAY));
+        }
+
+        if (itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
+        {
+            CompoundTag tag = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()).copyTag();
 
             list.add(Component.translatable("item.animal_pen.animal_cage.variants",
                     tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
-                withStyle(ChatFormatting.GRAY));
-
-            list.add(Component.empty());
-            list.add(Component.translatable("item.animal_pen.animal_cage.release").
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
             list.add(Component.translatable("item.animal_pen.animal_cage.tip").
+                withStyle(ChatFormatting.GRAY));
+        }
+        else
+        {
+            list.add(Component.empty());
+            list.add(Component.translatable("item.animal_pen.animal_cage.release").
                 withStyle(ChatFormatting.GRAY));
         }
     }
@@ -257,7 +262,7 @@ public class AnimalCageItem extends Item
 
             itemTag.put("Pos", pos);
             itemTag.remove("UUID");
-            itemTag.remove(TAG_VARIANTS);
+            itemTag.remove(TAG_VARIANTS); // not needed in theory
             itemTag.remove(TAG_AMOUNT);
 
             EntityType.create(itemTag, level).

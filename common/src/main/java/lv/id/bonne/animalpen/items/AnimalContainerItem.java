@@ -69,25 +69,32 @@ public class AnimalContainerItem extends Item
             CompoundTag tag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
 
             list.add(Component.translatable("item.animal_pen.water_animal_container.entity",
-                AnimalContainerItem.getEntityTranslationName(tag.getString(TAG_ENTITY_ID))).
+                    AnimalContainerItem.getEntityTranslationName(tag.getString(TAG_ENTITY_ID))).
                 withStyle(ChatFormatting.GRAY));
 
             list.add(Component.translatable("item.animal_pen.water_animal_container.amount",
                     tag.getLong(TAG_AMOUNT)).
                 withStyle(ChatFormatting.GRAY));
+        }
+
+        if (itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
+        {
+            CompoundTag tag = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()).copyTag();
 
             list.add(Component.translatable("item.animal_pen.water_animal_container.variants",
                     tag.getList(TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
-                withStyle(ChatFormatting.GRAY));
-
-            list.add(Component.empty());
-            list.add(Component.translatable("item.animal_pen.water_animal_container.release").
                 withStyle(ChatFormatting.GRAY));
         }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
             list.add(Component.translatable("item.animal_pen.water_animal_container.tip").
+                withStyle(ChatFormatting.GRAY));
+        }
+        else
+        {
+            list.add(Component.empty());
+            list.add(Component.translatable("item.animal_pen.water_animal_container.release").
                 withStyle(ChatFormatting.GRAY));
         }
     }

@@ -454,15 +454,9 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
             ItemStack item = this.getItemStack();
 
-            Optional<ListTag> optionalVariants = AnimalContainerItem.getAnimalVariants(item);
-
             // Reset tag, as some animals may need it.
             CompoundTag tag = new CompoundTag();
             animal.save(tag);
-
-            // Restore animal variants
-            optionalVariants.ifPresent(variants -> tag.put(AnimalContainerItem.TAG_VARIANTS, variants));
-
             item.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
 
             this.inventory.setChanged();
