@@ -26,7 +26,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.AgeableWaterCreature;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,6 +44,32 @@ public class AnimalContainerItem extends Item
     public AnimalContainerItem(Properties properties)
     {
         super(properties);
+    }
+
+
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack itemStack)
+    {
+        super.verifyComponentsAfterLoad(itemStack);
+
+        if (itemStack.has(DataComponents.CUSTOM_DATA))
+        {
+            CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+            CompoundTag compoundTag = customData.copyTag();
+
+            if (compoundTag.contains(AnimalContainerItem.TAG_VARIANTS))
+            {
+                ListTag variantList = compoundTag.getList(AnimalContainerItem.TAG_VARIANTS, Tag.TAG_COMPOUND);
+                CompoundTag variants = new CompoundTag();
+                variants.put(AnimalContainerItem.TAG_VARIANTS, variantList);
+
+                itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(variants));
+            }
+
+            compoundTag.remove(AnimalContainerItem.TAG_VARIANTS);
+            itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(compoundTag));
+            itemStack.remove(DataComponents.CUSTOM_DATA);
+        }
     }
 
 

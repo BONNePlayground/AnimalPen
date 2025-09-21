@@ -8,6 +8,7 @@ package lv.id.bonne.animalpen.blocks.entities;
 
 
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import net.minecraft.SharedConstants;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -31,11 +33,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -76,13 +82,15 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     {
         super.saveAdditional(tag, provider);
 
-        tag.put(TAG_INVENTORY, this.inventory.createTag(provider));
+        CompoundTag inventory = ContainerHelper.saveAllItems(new CompoundTag(),
+            this.getInventory().getItems(), provider);
+        tag.put(TAG_INVENTORY, inventory);
+
 
         if (!this.deathTicker.isEmpty())
         {
             tag.put(TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
         }
-
         tag.putLong(TAG_DISPLAY_SIZE, this.displaySize);
 
         tag.storeNullable(TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
@@ -101,7 +109,41 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
         this.storedAnimal = null;
         this.ownerUUID = null;
 
-        this.inventory.fromTag(tag.getListOrEmpty(TAG_INVENTORY), provider);
+        if (tag.contains(TAG_INVENTORY, Tag.TAG_LIST))
+        {
+            // This is old item storage format. Replace it with the new format.
+            ListTag list = tag.getList(TAG_INVENTORY, Tag.TAG_COMPOUND);
+
+            for (int i = 0; i < list.size(); i++)
+            {
+                CompoundTag itemWithTag = list.getCompound(i);
+                Dynamic<Tag> dynamic = new Dynamic<>(NbtOps.INSTANCE, itemWithTag);
+
+                dynamic = DataFixers.getDataFixer().update(References.ITEM_STACK,
+                    dynamic,
+                    3817,
+                    SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+
+                final int index = i;
+
+                ItemStack.parse(provider, dynamic.getValue()).ifPresent(item ->
+                {
+                    if (index < this.getInventory().getContainerSize())
+                    {
+                        this.inventory.setItem(index, item);
+                    }
+                });
+            }
+        }
+
+        if (tag.contains(TAG_INVENTORY, Tag.TAG_COMPOUND))
+        {
+            ContainerHelper.loadAllItems(tag.getCompound(TAG_INVENTORY), this.inventory.getItems(), provider);
+        }
+
+        if (tag.contains(TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
+        {
+            int[] intArray = tag.getIntArray(TAG_DEATH_TICKER);
 
         tag.getIntArray(TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
