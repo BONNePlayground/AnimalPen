@@ -46,7 +46,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         int combinedOverlay,
         Vec3 location)
     {
-        Mob animal = tileEntity.getStoredAnimal();
+        Mob animal = tileEntity.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -134,15 +134,15 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
         poseStack.translate(0.00, 12/16f, 0);
 
-        float animalSize = AnimalPen.CONFIG_MANAGER.getConfiguration().getWaterAnimalSize();
+        float animalSize = AnimalPen.config().getWaterAnimalSize();
 
         poseStack.scale(animalSize, animalSize, animalSize);
 
-        if (AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals())
+        if (AnimalPen.config().isGrowWaterAnimals())
         {
             float scale = 1 + animalSize *
                 tileEntity.getAnimalDisplaySize() *
-                AnimalPen.CONFIG_MANAGER.getConfiguration().getGrowthMultiplier();
+                AnimalPen.config().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
@@ -454,7 +454,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     @Override
     public boolean shouldRender(AquariumTileEntity blockEntity, Vec3 vec3)
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowWaterAnimals() ||
+        return AnimalPen.config().isGrowWaterAnimals() ||
             BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
     }
 

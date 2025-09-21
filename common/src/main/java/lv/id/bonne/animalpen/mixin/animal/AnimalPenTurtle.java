@@ -105,6 +105,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         {
             if (this.animalPen$eggCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
                 return false;
             }
 
@@ -114,7 +116,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 return true;
             }
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TURTLE_EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.TURTLE_EGG);
 
             if (dropLimits <= 0)
             {
@@ -148,10 +150,12 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -166,12 +170,14 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         if (this.animalPen$eggCooldown > 0)
         {
+            AnimalPen.sendDebug("Under cooldown for " + this.animalPen$eggCooldown);
+
             return ItemStack.EMPTY;
         }
 
         if (itemStack.is(Items.BUCKET))
         {
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TURTLE_EGG);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.TURTLE_EGG);
 
             if (dropLimits <= 0)
             {
@@ -205,10 +211,12 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$eggCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$eggCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }
@@ -232,14 +240,14 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
             return;
         }
 
-        boolean dropScuteAtStart = AnimalPen.CONFIG_MANAGER.getConfiguration().isDropScuteAtStart();
+        boolean dropScuteAtStart = AnimalPen.config().isDropScuteAtStart();
 
         if (!dropScuteAtStart && this.animalPen$foodCooldown != 0)
         {
             return;
         }
 
-        int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.TURTLE_SCUTE);
+        int dropLimits = AnimalPen.config().getDropLimits(Items.TURTLE_SCUTE);
 
         if (dropLimits <= 0)
         {
@@ -289,7 +297,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
                 return;
             }
 
-            long maxCount = AnimalPen.CONFIG_MANAGER.getConfiguration().getMaximalAnimalCount();
+            long maxCount = AnimalPen.config().getMaximalAnimalCount();
 
             if (maxCount > 0 && this.animalPen$animalCount >= maxCount)
             {
@@ -324,7 +332,7 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
                 this.animalPen$animalCount) == 0)

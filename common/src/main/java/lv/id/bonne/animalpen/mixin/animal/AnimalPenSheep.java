@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,6 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -127,6 +129,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         {
             if (this.animalPen$woolCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$woolCooldown);
+
                 return false;
             }
 
@@ -136,6 +140,9 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return true;
             }
 
+            this.setSheared(true);
+
+            AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
             itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
 
             LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.SHEAR_SHEEP);
@@ -145,7 +152,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 withParameter(LootContextParams.TOOL, itemStack).
                 create(LootContextParamSets.SHEARING);
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.WHITE_WOOL);
 
             if (dropLimits <= 0)
             {
@@ -202,10 +209,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$woolCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return true;
         }
@@ -232,6 +241,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
+
             return true;
         }
 
@@ -248,6 +259,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         {
             if (this.animalPen$woolCooldown > 0)
             {
+                AnimalPen.sendDebug("Under cooldown for " + this.animalPen$woolCooldown);
+
                 return ItemStack.EMPTY;
             }
 
@@ -257,7 +270,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
             ItemLike itemLike = this.pen$getWoolItem(this.getColor());
 
-            int dropLimits = AnimalPen.CONFIG_MANAGER.getConfiguration().getDropLimits(Items.WHITE_WOOL);
+            int dropLimits = AnimalPen.config().getDropLimits(Items.WHITE_WOOL);
 
             if (dropLimits <= 0)
             {
@@ -305,10 +318,12 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 1.0F,
                 1.0F);
 
-            this.animalPen$woolCooldown = AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            this.animalPen$woolCooldown = AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount);
+
+            AnimalPen.sendDebug("Succeeded at using " + itemStack.getItem().arch$registryName());
 
             return ItemStack.EMPTY;
         }
@@ -324,7 +339,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
         if (shortLine &&
-            AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
+            AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
                 this.animalPen$animalCount) == 0)
