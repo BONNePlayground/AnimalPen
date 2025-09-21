@@ -118,7 +118,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         valueInput.read(TAG_OWNER_UUID, UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUUID = uuid);
 
-        this.displaySize = valueInput.getLongOr(TAG_KEEP_AMOUNT, 0);
+        this.protectedAmount = valueInput.getLongOr(TAG_KEEP_AMOUNT, 0);
     }
 
 
