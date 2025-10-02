@@ -12,6 +12,9 @@
   "item.animal_pen.animal_cage.error.unknown": "捕捉动物失败",
   "item.animal_pen.animal_cage.error.not_animal": "只能捕捉动物",
   "item.animal_pen.animal_cage.error.too_many_variants": "变种存储已达上限",
+  "item.animal_pen.animal_cage.error.leashed": "Cannot pickup leashed animals",
+  "item.animal_pen.animal_cage.error.saddled": "Cannot pickup animals with saddle",
+  "item.animal_pen.animal_cage.error.chested": "Cannot pickup animals with chests equipped",
 
   "item.animal_pen.water_animal_container": "水生动物容器",
   "item.animal_pen.water_animal_container.entity": "实体: %s",
@@ -25,6 +28,10 @@
   "item.animal_pen.water_animal_container.error.unknown": "捕捉水生动物失败",
   "item.animal_pen.water_animal_container.error.not_water_animal": "只能捕捉水生动物",
   "item.animal_pen.water_animal_container.error.too_many_variants": "变种存储已达上限",
+  "item.animal_pen.water_animal_container.error.tame": "Cannot pickup tamed water animals",
+  "item.animal_pen.water_animal_container.error.leashed": "Cannot pickup leashed water animals",
+  "item.animal_pen.water_animal_container.error.saddled": "Cannot pickup water animals with saddle",
+  "item.animal_pen.water_animal_container.error.chested": "Cannot pickup animals with chests equipped",
 
   "itemGroup.animal_pen.animal_pen": "动物围栏物品",
 
@@ -71,5 +78,6 @@
   "gui.animal_pen.variant_selection_screen.configure.entity_size": "Display Size: %d / %d",
   "gui.animal_pen.variant_selection_screen.configure.enable_protection": "Toggle protection for block",
   "gui.animal_pen.variant_selection_screen.configure.save": "Save",
-  "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel"
+  "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel",
+  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen"
 }
