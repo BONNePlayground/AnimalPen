@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
-import lv.id.bonne.animalpen.mixin.MobAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
@@ -26,7 +25,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +32,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -195,7 +192,7 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (animal instanceof Saddleable saddleable && saddleable.isSaddled())
+        if (animal.isSaddled())
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.saddled").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -231,7 +228,7 @@ public class AnimalCageItem extends Item
             {
                 ItemStack itemBySlot = animal.getItemBySlot(slot);
 
-                if (animal.getRandom().nextFloat() < ((MobAccessor) animal).callGetEquipmentDropChance(slot))
+                if (animal.getRandom().nextFloat() < animal.getDropChances().byEquipment(slot))
                 {
                     Block.popResource(animal.level(), animal.blockPosition(), itemBySlot);
                 }

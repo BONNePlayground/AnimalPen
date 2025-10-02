@@ -9,7 +9,6 @@
     "AquariumBlockCollisionPrevention",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
-    "MobAccessor",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "animal.AnimalPenAnimal",

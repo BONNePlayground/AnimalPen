@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
-import lv.id.bonne.animalpen.mixin.MobAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
@@ -34,7 +33,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -197,7 +195,7 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (animal instanceof Saddleable saddleable && saddleable.isSaddled())
+        if (animal.isSaddled())
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.saddled").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -225,7 +223,7 @@ public class AnimalContainerItem extends Item
             {
                 ItemStack itemBySlot = animal.getItemBySlot(slot);
 
-                if (animal.getRandom().nextFloat() < ((MobAccessor) animal).callGetEquipmentDropChance(slot))
+                if (animal.getRandom().nextFloat() < animal.getDropChances().byEquipment(slot))
                 {
                     Block.popResource(animal.level(), animal.blockPosition(), itemBySlot);
                 }
