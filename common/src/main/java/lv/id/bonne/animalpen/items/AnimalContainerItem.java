@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.mixin.MobAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -20,15 +21,14 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -156,7 +156,23 @@ public class AnimalContainerItem extends Item
 
         if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerUUID() != null)
         {
-            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
+            player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.tame").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        if (animal.isLeashed())
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.water_animal_container.error.leashed").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        if (animal instanceof Saddleable saddleable && saddleable.isSaddled())
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.water_animal_container.error.saddled").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -171,6 +187,25 @@ public class AnimalContainerItem extends Item
         }
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
+
+        // Eject all passengers
+        animal.ejectPassengers();
+
+        // Drop equipment on entity.
+        for (EquipmentSlot slot : EquipmentSlot.values())
+        {
+            if (animal.hasItemInSlot(slot))
+            {
+                ItemStack itemBySlot = animal.getItemBySlot(slot);
+
+                if (animal.getRandom().nextFloat() < ((MobAccessor) animal).callGetEquipmentDropChance(slot))
+                {
+                    Block.popResource(animal.getLevel(), animal.blockPosition(), itemBySlot);
+                }
+
+                animal.setDropChance(slot, 0);
+            }
+        }
 
         if (!itemTag.contains(TAG_ENTITY_ID))
         {
@@ -255,6 +290,12 @@ public class AnimalContainerItem extends Item
                 map(entity -> (WaterAnimal) entity).
                 ifPresent(clone ->
                 {
+                    for (EquipmentSlot slot : EquipmentSlot.values())
+                    {
+                        // Remove all equipment from spawned entity.
+                        clone.setItemSlot(slot, ItemStack.EMPTY);
+                    }
+
                     level.addFreshEntity(clone);
 
                     long amount = itemInHand.getOrCreateTag().getLong(TAG_AMOUNT);
