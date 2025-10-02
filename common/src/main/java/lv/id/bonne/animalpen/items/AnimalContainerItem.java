@@ -35,6 +35,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -183,7 +184,25 @@ public class AnimalContainerItem extends Item
 
         if (livingEntity instanceof OwnableEntity ownableEntity && ownableEntity.getOwnerReference() != null)
         {
-            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.tame").
+            player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.tame").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        PathfinderMob animal = (PathfinderMob) livingEntity;
+
+        if (animal.isLeashed())
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.leashed").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        if (animal.isSaddled())
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.saddled").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -198,6 +217,25 @@ public class AnimalContainerItem extends Item
         }
 
         CompoundTag itemTag;
+
+        // Eject all passengers
+        animal.ejectPassengers();
+
+        // Drop equipment on entity.
+        for (EquipmentSlot slot : EquipmentSlot.values())
+        {
+            if (animal.hasItemInSlot(slot))
+            {
+                ItemStack itemBySlot = animal.getItemBySlot(slot);
+
+                if (animal.getRandom().nextFloat() < animal.getDropChances().byEquipment(slot))
+                {
+                    Block.popResource(animal.level(), animal.blockPosition(), itemBySlot);
+                }
+
+                animal.setDropChance(slot, 0);
+            }
+        }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
@@ -306,7 +344,13 @@ public class AnimalContainerItem extends Item
                     map(entity -> (Mob) entity).
                     ifPresent(clone ->
                     {
-                        level.addFreshEntity(clone);
+                        for (EquipmentSlot slot : EquipmentSlot.values())
+                    {
+                        // Remove all equipment from spawned entity.
+                        clone.setItemSlot(slot, ItemStack.EMPTY);
+                    }
+
+                    level.addFreshEntity(clone);
 
                         CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 

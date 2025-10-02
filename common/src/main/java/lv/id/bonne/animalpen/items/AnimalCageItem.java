@@ -25,7 +25,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +33,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -187,6 +188,30 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
+        if (animal.isLeashed())
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.leashed").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        if (animal.isSaddled())
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.saddled").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
+        if (animal instanceof AbstractChestedHorse chestedHorse && chestedHorse.hasChest())
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.chested").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // cannot add into jar tamed animals
+            return InteractionResult.FAIL;
+        }
+
         if (!this.matchEntity(itemStack, livingEntity))
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.wrong").
@@ -196,6 +221,25 @@ public class AnimalCageItem extends Item
         }
 
         CompoundTag itemTag;
+
+        // Eject all passengers
+        animal.ejectPassengers();
+
+        // Drop equipment on entity.
+        for (EquipmentSlot slot : EquipmentSlot.values())
+        {
+            if (animal.hasItemInSlot(slot))
+            {
+                ItemStack itemBySlot = animal.getItemBySlot(slot);
+
+                if (animal.getRandom().nextFloat() < animal.getDropChances().byEquipment(slot))
+                {
+                    Block.popResource(animal.level(), animal.blockPosition(), itemBySlot);
+                }
+
+                animal.setDropChance(slot, 0);
+            }
+        }
 
         if (!itemStack.has(DataComponents.ENTITY_DATA))
         {
@@ -304,7 +348,13 @@ public class AnimalCageItem extends Item
                     map(entity -> (Animal) entity).
                     ifPresent(clone ->
                     {
-                        level.addFreshEntity(clone);
+                        for (EquipmentSlot slot : EquipmentSlot.values())
+                    {
+                        // Remove all equipment from spawned entity.
+                        clone.setItemSlot(slot, ItemStack.EMPTY);
+                    }
+
+                    level.addFreshEntity(clone);
 
                         CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
 
