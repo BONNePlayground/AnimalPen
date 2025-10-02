@@ -167,7 +167,7 @@ public class AnimalCageItem extends Item
 
         if (animal.isLeashed())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.leashed").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.leashed").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -175,7 +175,7 @@ public class AnimalCageItem extends Item
 
         if (animal instanceof Saddleable saddleable && saddleable.isSaddled())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.saddled").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.saddled").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
@@ -183,7 +183,7 @@ public class AnimalCageItem extends Item
 
         if (animal instanceof AbstractChestedHorse chestedHorse && chestedHorse.hasChest())
         {
-            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.chested").
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.chested").
                 withStyle(ChatFormatting.DARK_RED), true);
             // cannot add into jar tamed animals
             return InteractionResult.FAIL;
