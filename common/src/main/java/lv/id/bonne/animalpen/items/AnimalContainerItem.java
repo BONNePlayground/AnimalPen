@@ -190,6 +190,8 @@ public class AnimalContainerItem extends Item
             return InteractionResult.FAIL;
         }
 
+        PathfinderMob animal = (PathfinderMob) livingEntity;
+
         if (animal.isLeashed())
         {
             player.displayClientMessage(Component.translatable("item.animal_pen.water_animal_container.error.leashed").
