@@ -583,6 +583,7 @@ public class Configuration
     private Boolean increaseStatistics;
 
     @JsonComment("Set of animals that are blocked from picking up.")
+    @JsonComment("Pickable animals in vanilla minecraft: https://minecraft.wiki/w/Animal#List_of_animals")
     @Expose
     @SerializedName("blocked_animals")
     private Set<ResourceLocation> blockedAnimals = new HashSet<>();
