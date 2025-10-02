@@ -211,7 +211,7 @@ public class AnimalCageItem extends Item
 
                 if (animal.getRandom().nextFloat() < ((MobAccessor) animal).callGetEquipmentDropChance(slot))
                 {
-                    Block.popResource(animal.getLevel(), animal.blockPosition(), itemBySlot);
+                    Block.popResource(animal.level(), animal.blockPosition(), itemBySlot);
                 }
 
                 animal.setDropChance(slot, 0);
