@@ -12,6 +12,9 @@
   "item.animal_pen.animal_cage.error.unknown": "Failed to catch animal",
   "item.animal_pen.animal_cage.error.not_animal": "Can catch only animals",
   "item.animal_pen.animal_cage.error.too_many_variants": "Variant cannot be stored. Memory is full",
+  "item.animal_pen.animal_cage.error.leashed": "Cannot pickup leashed animals",
+  "item.animal_pen.animal_cage.error.saddled": "Cannot pickup animals with saddle",
+  "item.animal_pen.animal_cage.error.chested": "Cannot pickup animals with chests equipped",
 
   "item.animal_pen.water_animal_container": "Water Animal Container",
   "item.animal_pen.water_animal_container.entity": "Entity: %s",
@@ -25,6 +28,10 @@
   "item.animal_pen.water_animal_container.error.unknown": "Failed to catch water animal",
   "item.animal_pen.water_animal_container.error.not_water_animal": "Can catch only water animals",
   "item.animal_pen.water_animal_container.error.too_many_variants": "Variant cannot be stored. Memory is full",
+  "item.animal_pen.water_animal_container.error.tame": "Cannot pickup tamed water animals",
+  "item.animal_pen.water_animal_container.error.leashed": "Cannot pickup leashed water animals",
+  "item.animal_pen.water_animal_container.error.saddled": "Cannot pickup water animals with saddle",
+  "item.animal_pen.water_animal_container.error.chested": "Cannot pickup animals with chests equipped",
 
   "category.animal_pen.animal_pen": "Animal Pen Items",
 
