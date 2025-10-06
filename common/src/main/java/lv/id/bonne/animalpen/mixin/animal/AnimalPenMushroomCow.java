@@ -373,43 +373,50 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
-        if (this.getMushroomType() == MushroomCow.MushroomType.BROWN && this.effect == null)
+        if (this.getMushroomType() != MushroomCow.MushroomType.BROWN || this.effect != null)
         {
-            Component text = new TranslatableComponent(
-                shortLine ? "display.animal_pen.ready" : "display.animal_pen.apply_ready",
-                new TextComponent("\uE000"),
-                new TextComponent("\uE001")).
-                withStyle(ChatFormatting.GREEN);
-
-            ItemStack flowerItem;
-
-            if (animal_pen$SMALL_FLOWERS.isEmpty())
-            {
-                // No flowers.
-                return lines;
-            }
-            else if (animal_pen$SMALL_FLOWERS.size() == 1)
-            {
-                flowerItem = animal_pen$SMALL_FLOWERS.get(0);
-            }
-            else
-            {
-                int size = animal_pen$SMALL_FLOWERS.size();
-                int index = (tick / 100) % size;
-
-                flowerItem = animal_pen$SMALL_FLOWERS.get(index);
-            }
-
-            ItemStack bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
-
-            this.getEffectFromItemStack(flowerItem).ifPresent(pair -> {
-                SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
-
-                lines.add(Pair.of(
-                    new ItemStack[]{flowerItem, bowlStack},
-                    text));
-            });
+            return lines;
         }
+
+        if (shortLine)
+        {
+            return lines;
+        }
+
+        Component text = new TranslatableComponent(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.apply_ready",
+            new TextComponent("\uE000"),
+            new TextComponent("\uE001")).
+            withStyle(ChatFormatting.GREEN);
+
+        ItemStack flowerItem;
+
+        if (animal_pen$SMALL_FLOWERS.isEmpty())
+        {
+            // No flowers.
+            return lines;
+        }
+        else if (animal_pen$SMALL_FLOWERS.size() == 1)
+        {
+            flowerItem = animal_pen$SMALL_FLOWERS.get(0);
+        }
+        else
+        {
+            int size = animal_pen$SMALL_FLOWERS.size();
+            int index = (tick / 100) % size;
+
+            flowerItem = animal_pen$SMALL_FLOWERS.get(index);
+        }
+
+        ItemStack bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
+
+        this.getEffectFromItemStack(flowerItem).ifPresent(pair -> {
+            SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
+
+            lines.add(Pair.of(
+                new ItemStack[]{flowerItem, bowlStack},
+                text));
+        });
 
         return lines;
     }
