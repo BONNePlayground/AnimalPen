@@ -130,7 +130,7 @@ public abstract class AnimalPenBee extends AnimalPenAnimal
 
             AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 
-            itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
+            itemStack.hurtAndBreak(1, player, hand);
             Block.popResource(player.level(), position.above(), new ItemStack(Items.HONEYCOMB, 3));
 
             player.level().playSound(null,

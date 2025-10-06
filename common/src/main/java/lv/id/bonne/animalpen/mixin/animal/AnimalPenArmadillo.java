@@ -112,7 +112,7 @@ public abstract class AnimalPenArmadillo extends AnimalPenAnimal
             }
 
             AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
-            itemStack.hurtAndBreak(16, player, getSlotForHand(hand));
+            itemStack.hurtAndBreak(16, player, hand);
             Block.popResource(player.level(), position.above(), new ItemStack(Items.ARMADILLO_SCUTE));
 
             player.level().playSound(null,

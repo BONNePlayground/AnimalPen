@@ -23,6 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SpellParticleOption;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -214,14 +215,17 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
                 if (player.level() instanceof ServerLevel serverLevel)
                 {
-                    serverLevel.sendParticles(
-                        ParticleTypes.EFFECT,
-                        position.getX() + 0.5f,
-                        position.getY() + 1.5,
-                        position.getZ() + 0.5f,
-                        4,
-                        0.2, 0.2, 0.2,
-                        0.05);
+                    SpellParticleOption spellParticleOption = SpellParticleOption.create(ParticleTypes.EFFECT, -1, 1.0F);
+
+                    for(int j = 0; j < 4; ++j)
+                    {
+                        serverLevel.addParticle(spellParticleOption,
+                            position.getX() + this.random.nextDouble() / 2.0D,
+                            position.getY() + 1.5D,
+                            position.getZ() + this.random.nextDouble() / 2.0D,
+                            0.0D, this.random.nextDouble() / 5.0D,
+                            0.0D);
+                    }
                 }
                 AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
 

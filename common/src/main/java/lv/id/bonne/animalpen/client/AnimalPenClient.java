@@ -32,9 +32,9 @@ public class AnimalPenClient
     public static void init()
     {
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.ANIMAL_PEN_TILE_ENTITY.get(),
-            context -> new AnimalPenRenderer());
+            AnimalPenRenderer::new);
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get(),
-            context -> new AquariumRenderer());
+            AquariumRenderer::new);
         RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AQUARIUM.get());
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);

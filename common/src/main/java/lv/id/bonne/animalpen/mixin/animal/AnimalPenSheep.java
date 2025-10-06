@@ -144,7 +144,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             this.setSheared(true);
 
             AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
-            itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
+            itemStack.hurtAndBreak(1, player, hand);
 
             LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.SHEAR_SHEEP);
             LootParams lootParams = new LootParams.Builder(serverLevel).

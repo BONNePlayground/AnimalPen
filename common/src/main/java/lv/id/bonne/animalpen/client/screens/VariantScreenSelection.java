@@ -21,6 +21,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -879,32 +881,34 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    @Override
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl)
     {
-        if (this.scrollBarClicked(mouseX, mouseY))
+        if (this.scrollBarClicked(mouseButtonEvent.x(), mouseButtonEvent.y()))
         {
             this.isScrollingVariants = true;
-            this.mouseDragged(mouseX, mouseY, button, 0, 0);
+            this.mouseDragged(mouseButtonEvent, 0, 0);
             return true;
         }
-        else if (this.entityAreaClicked(mouseX, mouseY))
+        else if (this.entityAreaClicked(mouseButtonEvent.x(), mouseButtonEvent.y()))
         {
-            this.currentXOnEntity = (int) mouseX;
+            this.currentXOnEntity = (int) mouseButtonEvent.x();
             this.isSelectingEntity = true;
             return true;
         }
         else
         {
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(mouseButtonEvent, bl);
         }
     }
 
 
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    @Override
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent)
     {
         this.isSelectingEntity = false;
         this.isScrollingVariants = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseButtonEvent);
     }
 
 
@@ -926,14 +930,15 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY)
+    @Override
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double dragX, double dragY)
     {
         if (this.isScrollingVariants && this.needsScrollBars())
         {
             int scrollBottom = this.bodyTopPos + this.buttonAreaHeight;
 
             // Calculate normalized scroll position (0.0 to 1.0)
-            this.currentVariantScroll = ((float) mouseY - (float) this.bodyTopPos) /
+            this.currentVariantScroll = ((float) mouseButtonEvent.y() - (float) this.bodyTopPos) /
                 ((float) (scrollBottom - this.bodyTopPos));
             this.currentVariantScroll = Mth.clamp(this.currentVariantScroll, 0.0F, 1.0F);
             this.updateButtonPositions();
@@ -941,32 +946,32 @@ public class VariantScreenSelection extends Screen
         }
         else if (this.isSelectingEntity)
         {
-            int deltaX = (int) mouseX - this.currentXOnEntity;
+            int deltaX = (int) mouseButtonEvent.x() - this.currentXOnEntity;
             this.entityRotation -= deltaX;
 
             // Keep rotation in 0-360 range
             while (this.entityRotation < 0) this.entityRotation += 360;
             while (this.entityRotation >= 360) this.entityRotation -= 360;
 
-            this.currentXOnEntity = (int) mouseX;
+            this.currentXOnEntity = (int) mouseButtonEvent.x();
             return true;
         }
         else
         {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return super.mouseDragged(mouseButtonEvent, dragX, dragY);
         }
     }
 
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyEvent keyEvent)
     {
-        if ((keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) &&
+        if ((keyEvent.key() == GLFW.GLFW_KEY_UP || keyEvent.key() == GLFW.GLFW_KEY_DOWN) &&
             this.buttons.size() > 1)
         {
             int button;
 
-            if (keyCode == GLFW.GLFW_KEY_DOWN)
+            if (keyEvent.key() == GLFW.GLFW_KEY_DOWN)
             {
                 button = Math.min(this.selectedButton + 1, this.buttons.size() - 1);
             }
@@ -983,7 +988,7 @@ public class VariantScreenSelection extends Screen
 
             return true;
         }
-        else if (keyCode == GLFW.GLFW_KEY_ENTER)
+        else if (keyEvent.key() == GLFW.GLFW_KEY_ENTER)
         {
             if (this.selectedButton >= 0 &&
                 this.selectedButton < this.buttons.size() &&
@@ -993,7 +998,7 @@ public class VariantScreenSelection extends Screen
                 return true;
             }
         }
-        else if (keyCode == GLFW.GLFW_KEY_DELETE)
+        else if (keyEvent.key() == GLFW.GLFW_KEY_DELETE)
         {
             if (this.selectedButton >= 0 && this.selectedButton < this.buttons.size())
             {
@@ -1003,14 +1008,14 @@ public class VariantScreenSelection extends Screen
         }
 
         // Handle other key presses with the parent implementation
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(keyEvent);
     }
 
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers)
+    public boolean keyReleased(KeyEvent keyEvent)
     {
-        return super.keyReleased(keyCode, scanCode, modifiers);
+        return super.keyReleased(keyEvent);
     }
 
 

@@ -11,25 +11,32 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.blocks.renderer.state.AnimalPenRenderState;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.TagValueInput;
@@ -38,62 +45,100 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 
 
-public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
+public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity, AnimalPenRenderState>
 {
-    @Override
-    public void render(AquariumTileEntity tileEntity,
-        float partialTicks,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay,
-        Vec3 location)
+    public AquariumRenderer(BlockEntityRendererProvider.Context context)
     {
-        Mob animal = tileEntity.getStoredAnimal().orElse(null);
+        this.entityRenderer = context.entityRenderer();
+        this.itemModelResolver = context.itemModelResolver();
+        this.font = context.font();
+    }
 
-        if (animal == null)
+
+    @Override
+    @NotNull
+    public AnimalPenRenderState createRenderState()
+    {
+        return new AnimalPenRenderState();
+    }
+
+
+    @Override
+    public void extractRenderState(AquariumTileEntity blockEntity,
+        AnimalPenRenderState renderState,
+        float partialTick,
+        Vec3 position,
+        @Nullable ModelFeatureRenderer.CrumblingOverlay crumblingOverlay)
+    {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, position, crumblingOverlay);
+        renderState.facing = blockEntity.getBlockState().getValue(AnimalPenBlock.FACING);
+        renderState.animalDisplaySize = blockEntity.getAnimalDisplaySize();
+        renderState.animalCount = blockEntity.getAnimalCount();
+        renderState.cooldownLines = blockEntity.getCooldownLines(true);
+        renderState.level = blockEntity.getLevel();
+
+        Mob animal = blockEntity.getStoredAnimal().orElse(null);
+
+        if (animal != null)
+        {
+            // Freeze entity rotation
+            animal.yBodyRot = 0.0f;
+            animal.setYRot(0.0f);
+            animal.yHeadRot = 0.0f;
+            animal.yHeadRotO = 0.0f;
+
+            animal.setPose(Pose.SWIMMING);
+            animal.setSwimming(true);
+            ((EntityAccessor) animal).setWasTouchingWater(true);
+
+            // Stop animations
+            animal.tickCount = blockEntity.getTickCounter();
+
+            renderState.displayEntity = this.entityRenderer.extractEntity(animal, partialTick);
+            renderState.displayEntity.lightCoords = renderState.lightCoords;
+
+            try (ProblemReporter.ScopedCollector reported = new ProblemReporter.ScopedCollector(animal.problemPath(),
+                AnimalPen.LOGGER))
+            {
+                TagValueOutput tagOutput = TagValueOutput.createWithContext(reported, animal.registryAccess());
+                animal.save(tagOutput);
+                ValueInput tagInput = TagValueInput.create(reported, animal.registryAccess(), tagOutput.buildResult());
+
+                // Summon entity per death on client and remove it once render state is created.
+                blockEntity.getDeathTicker().forEach(tick -> EntityType.create(animal.getType(),
+                    tagInput,
+                    animal.level(),
+                    EntitySpawnReason.TRIGGERED).ifPresent(entity ->
+                {
+                    LivingEntity death = (LivingEntity) entity;
+
+                    death.setPose(Pose.DYING);
+                    death.deathTime = tick;
+
+                    EntityRenderState entityRenderState = this.entityRenderer.extractEntity(death, partialTick);
+                    entityRenderState.lightCoords = renderState.lightCoords;
+
+                    renderState.dyingEntity.add(entityRenderState);
+                    death.remove(Entity.RemovalReason.DISCARDED);
+                }));
+            }
+        }
+    }
+
+
+    @Override
+    public void submit(AnimalPenRenderState renderState,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState cameraRenderState)
+    {
+        if (renderState.displayEntity == null)
         {
             // Not an entity.
             return;
         }
 
-        if (this.dyingAnimal == null || this.dyingAnimal.getType() != animal.getType())
-        {
-            // Set as null.
-            this.dyingAnimal = null;
-
-            try (ProblemReporter.ScopedCollector scopedCollector =
-                     new ProblemReporter.ScopedCollector(tileEntity.problemPath(), AnimalPen.LOGGER))
-            {
-                TagValueOutput valueOutput =
-                    TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
-                animal.save(valueOutput);
-
-                ValueInput valueInput = TagValueInput.create(scopedCollector,
-                    animal.registryAccess(),
-                    valueOutput.buildResult());
-
-                EntityType.create(valueInput, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
-                    map(entity -> (Mob) entity).
-                    ifPresent(clone ->
-                    {
-                        this.dyingAnimal = clone;
-                        this.dyingAnimal.setPose(Pose.DYING);
-
-                        // Freeze entity rotation
-                        this.dyingAnimal.yBodyRot = 0.0f;
-                        this.dyingAnimal.setYRot(0.0f);
-                        this.dyingAnimal.yHeadRot = 0.0f;
-                        this.dyingAnimal.yHeadRotO = 0.0f;
-
-                        // Stop animations
-                        this.dyingAnimal.tickCount = 0;
-                        this.dyingAnimal.deathTime = 0;
-                    });
-            }
-        }
-
-        Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
+        Direction facing = renderState.facing;
 
         poseStack.pushPose();
 
@@ -110,41 +155,25 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         // Optional: offset from the face of the block
         poseStack.translate(0, 0, 0);
 
-        this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
-        this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
+        this.renderAnimal(renderState, poseStack, submitNodeCollector, cameraRenderState);
+        this.renderCounter(renderState, poseStack, submitNodeCollector, cameraRenderState);
 
         if (this.minecraft.player != null && this.minecraft.player.isCrouching())
         {
-            this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
+            this.renderTextLines(renderState, poseStack, submitNodeCollector, cameraRenderState);
         }
 
         poseStack.popPose();
     }
 
 
-    private void renderAnimal(Mob animal,
-        AquariumTileEntity tileEntity,
-        float partialTicks,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay)
+    private void renderAnimal(AnimalPenRenderState renderState,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState cameraRenderState)
     {
-        // Freeze entity rotation
-        animal.yBodyRot = 0f;
-        animal.setYRot(0f);
-        animal.yHeadRot = 0f;
-        animal.yHeadRotO = 0f;
-
-        animal.setPose(Pose.SWIMMING);
-        animal.setSwimming(true);
-        ((EntityAccessor) animal).setWasTouchingWater(true);
-
-        // Stop animations
-        animal.tickCount = tileEntity.getTickCounter();
-
         poseStack.pushPose();
-        poseStack.translate(0.00, 12/16f, 0);
+        poseStack.translate(0.00, 12 / 16f, 0);
 
         float animalSize = AnimalPen.config().getWaterAnimalSize();
 
@@ -152,46 +181,46 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
         if (AnimalPen.config().isGrowWaterAnimals())
         {
-            float scale = 1 + animalSize *
-                tileEntity.getAnimalDisplaySize() *
-                AnimalPen.config().getGrowthMultiplier();
+            float scale = 1 + animalSize * renderState.animalDisplaySize * AnimalPen.config().getGrowthMultiplier();
             poseStack.scale(scale, scale, scale);
         }
 
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
-        this.minecraft.getEntityRenderDispatcher().
-            render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
+        this.entityRenderer.submit(renderState.displayEntity,
+            cameraRenderState,
+            0.0f,
+            0.0f,
+            0.0f,
+            poseStack,
+            submitNodeCollector);
 
-        tileEntity.getDeathTicker().forEach(tick ->
-        {
-            if (this.dyingAnimal != null)
-            {
-                this.dyingAnimal.deathTime = tick;
+        submitNodeCollector.order(5);
 
-                this.minecraft.getEntityRenderDispatcher().
-                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
-            }
-        });
+        renderState.dyingEntity.forEach(state ->
+            this.entityRenderer.submit(state,
+                cameraRenderState,
+                0.0f,
+                0.0f,
+                0.0f,
+                poseStack,
+                submitNodeCollector));
 
         poseStack.popPose();
     }
 
 
-    private void renderCounter(Mob animal,
-        AquariumTileEntity tileEntity,
-        float partialTicks,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay)
+    private void renderCounter(AnimalPenRenderState renderState,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState cameraRenderState)
     {
-        long count = tileEntity.getAnimalCount();
+        long count = renderState.animalCount;
 
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 2/16f, -0.51f);
+        poseStack.translate(0, 2 / 16f, -0.51f);
 
         // Create text
         Component text = Component.translatable("display.animal_pen.count", count);
@@ -204,44 +233,40 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.scale(-scale, -scale, 0F);
         poseStack.translate(-textWidth / 2D, -this.font.lineHeight / 2f, 0);
 
-        // Render text
-        this.font.drawInBatch(
-            text,                    // The text component
-            0, 0,                    // X, Y position in the matrix
-            -1,                      // Color (white)
-            false,                   // Drop shadow
-            poseStack.last().pose(), // Transformation matrix
-            buffer,                  // Buffer source from method parameters
-            Font.DisplayMode.NORMAL, // Display mode (NORMAL or SEE_THROUGH)
-            0,                       // Packed overlay
-            combinedLight            // Lighting conditions
-        );
+        submitNodeCollector.submitText(poseStack,
+            0F,
+            0F,
+            text.getVisualOrderText(),
+            false,
+            Font.DisplayMode.NORMAL,
+            renderState.lightCoords,
+            -1,
+            0,
+            0);
+
         poseStack.popPose();
     }
 
 
-    private void renderTextLines(Mob animal,
-        AquariumTileEntity tileEntity,
-        float partialTicks,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay)
+    private void renderTextLines(AnimalPenRenderState renderState,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState cameraRenderState)
     {
         // Get your list of components
-        List<Pair<ItemStack[], Component>> textList = tileEntity.getCooldownLines(true);
+        List<Pair<ItemStack[], Component>> textList = renderState.cooldownLines;
 
         if (textList.isEmpty())
         {
             return;
         }
 
-        BlockPos blockPos = tileEntity.getBlockPos();
-        Vec3 playerPos = this.minecraft.player.position();
+        BlockPos blockPos = renderState.blockPos;
+        Vec3 playerPos = cameraRenderState.pos;
 
         // Determine the player's relative position to the block
         Vec3 toPlayer = new Vec3(playerPos.x() - blockPos.getX(), 0, playerPos.z() - blockPos.getZ());
-        Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
+        Direction facing = renderState.facing;
 
         // Get the facing direction as a vector
         Vec3 facingVec = Vec3.atLowerCornerOf(facing.getUnitVec3i());
@@ -274,12 +299,129 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
 
             // apply offset
             poseStack.translate(maxWidth, 0, 0);
-            this.renderTextLine(textList.get(i), poseStack, buffer, combinedLight, combinedOverlay);
+            this.renderTextLine(textList.get(i), renderState, poseStack, submitNodeCollector, cameraRenderState);
 
             poseStack.popPose();
         }
 
         poseStack.popPose();
+    }
+
+
+    private void renderTextLine(Pair<ItemStack[], Component> componentPair,
+        AnimalPenRenderState renderState,
+        @NotNull PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState cameraRenderState)
+    {
+        Component text = componentPair.getRight();
+        ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
+        ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
+
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
+        int whiteSpace = this.font.width(" ");
+        boolean isFirst = true;
+
+        int leftOffset = 0;
+
+        // Process each text part
+        for (Component part : text.toFlatList(Style.EMPTY))
+        {
+            // apply offset
+            poseStack.translate(leftOffset, 0, 0);
+            String content = part.getString();
+
+            if (content.equals("\uE000"))
+            {
+                if (first == null)
+                {
+                    leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                // Render the first item
+                poseStack.pushPose();
+                // image is 20x smaller and flipped than text
+                poseStack.scale(-20f, -20f, 20f);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+
+                ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+
+                this.itemModelResolver.updateForTopItem(itemStackRenderState,
+                    first,
+                    ItemDisplayContext.GROUND,
+                    renderState.level,
+                    null,
+                    0);
+
+                itemStackRenderState.submit(poseStack,
+                    submitNodeCollector,
+                    renderState.lightCoords,
+                    OverlayTexture.NO_OVERLAY,
+                    0);
+
+                poseStack.popPose();
+
+                leftOffset = 8 - whiteSpace;
+            }
+            else if (content.equals("\uE001"))
+            {
+                if (second == null)
+                {
+                    leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
+                    continue;
+                }
+
+                // Render the second item
+                poseStack.pushPose();
+                // image is 20x smaller and flipped than text
+                poseStack.scale(-20f, -20f, 20f);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+
+                ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+
+                this.itemModelResolver.updateForTopItem(itemStackRenderState,
+                    second,
+                    ItemDisplayContext.GROUND,
+                    renderState.level,
+                    null,
+                    0);
+
+                itemStackRenderState.submit(poseStack,
+                    submitNodeCollector,
+                    renderState.lightCoords,
+                    OverlayTexture.NO_OVERLAY,
+                    0);
+
+                poseStack.popPose();
+
+                leftOffset = 8 - whiteSpace;
+            }
+            else
+            {
+                // Render regular text
+                poseStack.pushPose();
+
+                submitNodeCollector.submitText(poseStack,
+                    0F,
+                    -6,
+                    part.getVisualOrderText(),
+                    false,
+                    Font.DisplayMode.NORMAL,
+                    renderState.lightCoords,
+                    -1,
+                    0,
+                    0);
+
+                poseStack.popPose();
+
+                leftOffset = this.font.width(part);
+            }
+
+            isFirst = false;
+        }
     }
 
 
@@ -347,139 +489,44 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
     }
 
 
-    private void renderTextLine(Pair<ItemStack[], Component> componentPair,
-        @NotNull PoseStack poseStack,
-        @NotNull MultiBufferSource buffer,
-        int combinedLight,
-        int combinedOverlay)
+    @Override
+    public boolean shouldRenderOffScreen()
     {
-        Component text = componentPair.getRight();
-        ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
-        ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
-
-        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
-        int whiteSpace = this.font.width(" ");
-        boolean isFirst = true;
-
-        int leftOffset = 0;
-
-        // Process each text part
-        for (Component part : text.toFlatList(Style.EMPTY))
-        {
-            // apply offset
-            poseStack.translate(leftOffset, 0 , 0);
-            String content = part.getString();
-
-            if (content.equals("\uE000"))
-            {
-                if (first == null)
-                {
-                    leftOffset = isFirst ? 0 : -whiteSpace;
-                    // Skip rendering as icon is missing.
-                    continue;
-                }
-
-                // Render the first item
-                poseStack.pushPose();
-                // image is 20x smaller and flipped than text
-                poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                this.minecraft.getItemRenderer().renderStatic(
-                    first,
-                    ItemDisplayContext.GROUND,
-                    combinedLight,
-                    combinedOverlay,
-                    poseStack,
-                    buffer,
-                    Minecraft.getInstance().level,
-                    0
-                );
-                poseStack.popPose();
-
-                leftOffset = 8 - whiteSpace;
-            }
-            else if (content.equals("\uE001"))
-            {
-                if (second == null)
-                {
-                    leftOffset = isFirst ? 0 : -whiteSpace;
-                    // Skip rendering as icon is missing.
-                    continue;
-                }
-
-                // Render the second item
-                poseStack.pushPose();
-                // image is 20x smaller and flipped than text
-                poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                this.minecraft.getItemRenderer().renderStatic(
-                    second,
-                    ItemDisplayContext.GROUND,
-                    combinedLight,
-                    combinedOverlay,
-                    poseStack,
-                    buffer,
-                    Minecraft.getInstance().level,
-                    0
-                );
-                poseStack.popPose();
-
-                leftOffset = 8 - whiteSpace;
-            }
-            else
-            {
-                // Render regular text
-                poseStack.pushPose();
-
-                this.font.drawInBatch(
-                    part,  // The text component
-                    0, -6,                     // X, Y position in the matrix
-                    -1,                          // Color (white)
-                    false,                       // Drop shadow
-                    poseStack.last().pose(),     // Transformation matrix
-                    buffer,                      // Buffer source from method parameters
-                    Font.DisplayMode.NORMAL,     // Display mode (NORMAL or SEE_THROUGH)
-                    0,                           // Packed overlay
-                    combinedLight                // Lighting conditions
-                );
-
-                poseStack.popPose();
-
-                leftOffset = this.font.width(part);
-            }
-
-            isFirst = false;
-        }
+        return AnimalPen.config().isGrowWaterAnimals();
     }
 
 
     @Override
-    public boolean shouldRenderOffScreen()
+    public int getViewDistance()
     {
-        return AnimalPen.CONFIG_MANAGER.getConfiguration().isGrowAnimals();
+        return BlockEntityRenderer.super.getViewDistance();
     }
 
 
     @Override
     public boolean shouldRender(AquariumTileEntity blockEntity, Vec3 vec3)
     {
-        return AnimalPen.config().isGrowWaterAnimals() ||
-            BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
+        return AnimalPen.config().isGrowWaterAnimals() || BlockEntityRenderer.super.shouldRender(blockEntity, vec3);
     }
 
+
+    /**
+     * Instance of entity renderer
+     */
+    private final EntityRenderDispatcher entityRenderer;
+
+    /**
+     * Instance of item model  renderer
+     */
+    private final ItemModelResolver itemModelResolver;
+
+    /**
+     * The font instance.
+     */
+    private final Font font;
 
     /**
      * The minecraft instance.
      */
     private final Minecraft minecraft = Minecraft.getInstance();
-
-    /**
-     * The font instance.
-     */
-    private final Font font = this.minecraft.font;
-
-    /**
-     * Dying animal instance.
-     */
-    private Mob dyingAnimal;
 }

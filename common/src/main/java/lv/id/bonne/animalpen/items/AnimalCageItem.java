@@ -10,17 +10,16 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -32,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -52,33 +52,6 @@ public class AnimalCageItem extends Item
 
 
     @Override
-    public void verifyComponentsAfterLoad(ItemStack itemStack)
-    {
-        super.verifyComponentsAfterLoad(itemStack);
-
-        if (itemStack.has(DataComponents.CUSTOM_DATA))
-        {
-            CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
-            CompoundTag compoundTag = customData.copyTag();
-
-            if (compoundTag.contains(AnimalCageItem.TAG_VARIANTS))
-            {
-                compoundTag.getList(AnimalCageItem.TAG_VARIANTS).ifPresent(variantList -> {
-                    CompoundTag variants = new CompoundTag();
-                    variants.put(AnimalCageItem.TAG_VARIANTS, variantList);
-
-                    itemStack.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(variants));
-                });
-            }
-
-            compoundTag.remove(AnimalCageItem.TAG_VARIANTS);
-            itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(compoundTag));
-            itemStack.remove(DataComponents.CUSTOM_DATA);
-        }
-    }
-
-
-    @Override
     public void appendHoverText(ItemStack itemStack,
         TooltipContext tooltipContext,
         TooltipDisplay tooltipDisplay,
@@ -89,14 +62,14 @@ public class AnimalCageItem extends Item
 
         if (itemStack.has(DataComponents.ENTITY_DATA))
         {
-            CompoundTag tag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
+            TypedEntityData<EntityType<?>> tag = itemStack.get(DataComponents.ENTITY_DATA);
 
             list.accept(Component.translatable("item.animal_pen.animal_cage.entity",
-                    AnimalCageItem.getEntityTranslationName(tag.getStringOr(TAG_ENTITY_ID, ""))).
+                Component.translatable(tag.type().getDescriptionId())).
                 withStyle(ChatFormatting.GRAY));
 
             list.accept(Component.translatable("item.animal_pen.animal_cage.amount",
-                    tag.getLongOr(TAG_AMOUNT, 0L)).
+                    tag.copyTagWithoutId().getLongOr(TAG_AMOUNT, 0L)).
                 withStyle(ChatFormatting.GRAY));
         }
 
@@ -126,12 +99,12 @@ public class AnimalCageItem extends Item
     /**
      * This method attempts to merge entities into the itemStack if they match the required criteria.
      *
-     * @param itemStack       The {@link ItemStack} used for interaction.
-     * @param player          The {@link Player} performing the interaction.
-     * @param livingEntity    The {@link LivingEntity} being interacted with.
+     * @param itemStack The {@link ItemStack} used for interaction.
+     * @param player The {@link Player} performing the interaction.
+     * @param livingEntity The {@link LivingEntity} being interacted with.
      * @param interactionHand The {@link InteractionHand} used for the interaction.
      * @return {@link InteractionResult#SUCCESS} if the entity is successfully merged into the item,
-     *         {@link InteractionResult#FAIL} otherwise.
+     * {@link InteractionResult#FAIL} otherwise.
      */
     @Override
     @NotNull
@@ -246,14 +219,15 @@ public class AnimalCageItem extends Item
             try (ProblemReporter.ScopedCollector scopedCollector =
                      new ProblemReporter.ScopedCollector(animal.problemPath(), AnimalPen.LOGGER))
             {
-                TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
+                TagValueOutput tagValueOutput =
+                    TagValueOutput.createWithContext(scopedCollector, animal.registryAccess());
                 animal.save(tagValueOutput);
                 itemTag = tagValueOutput.buildResult();
             }
         }
         else
         {
-            itemTag = itemStack.get(DataComponents.ENTITY_DATA).copyTag();
+            itemTag = itemStack.get(DataComponents.ENTITY_DATA).copyTagWithoutId();
         }
 
         if (itemTag.contains(TAG_AMOUNT))
@@ -268,7 +242,7 @@ public class AnimalCageItem extends Item
             itemTag.putLong(TAG_AMOUNT, itemTag.getLongOr(TAG_AMOUNT, 0) + 1);
         }
 
-        itemStack.set(DataComponents.ENTITY_DATA, CustomData.of(itemTag));
+        itemStack.set(DataComponents.ENTITY_DATA, TypedEntityData.of(animal.getType(), itemTag));
 
         // Manage variants
         AnimalCageItem.storeAnimalVariant(itemStack, animal, player);
@@ -310,22 +284,13 @@ public class AnimalCageItem extends Item
             // Try to release animal.
             ItemStack itemInHand = useOnContext.getItemInHand();
 
-            CompoundTag itemTag;
-
             if (!itemInHand.has(DataComponents.ENTITY_DATA))
             {
                 return super.useOn(useOnContext);
             }
-            else
-            {
-                itemTag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
-            }
 
-            if (!itemTag.contains(TAG_ENTITY_ID))
-            {
-                // Empty
-                return super.useOn(useOnContext);
-            }
+            TypedEntityData<EntityType<?>> entityData = itemInHand.get(DataComponents.ENTITY_DATA);
+            CompoundTag itemTag = entityData.copyTagWithoutId();
 
             ServerLevel level = (ServerLevel) useOnContext.getLevel();
 
@@ -344,19 +309,19 @@ public class AnimalCageItem extends Item
             {
                 ValueInput valueInput = TagValueInput.create(scopedCollector, player.registryAccess(), itemTag);
 
-                EntityType.create(valueInput, level, EntitySpawnReason.SPAWN_ITEM_USE).
+                EntityType.create(entityData.type(), valueInput, level, EntitySpawnReason.SPAWN_ITEM_USE).
                     map(entity -> (Animal) entity).
                     ifPresent(clone ->
                     {
                         for (EquipmentSlot slot : EquipmentSlot.values())
-                    {
-                        // Remove all equipment from spawned entity.
-                        clone.setItemSlot(slot, ItemStack.EMPTY);
-                    }
+                        {
+                            // Remove all equipment from spawned entity.
+                            clone.setItemSlot(slot, ItemStack.EMPTY);
+                        }
 
-                    level.addFreshEntity(clone);
+                        level.addFreshEntity(clone);
 
-                        CompoundTag tag = itemInHand.get(DataComponents.ENTITY_DATA).copyTag();
+                        CompoundTag tag = entityData.copyTagWithoutId();
 
                         long amount = tag.getLongOr(TAG_AMOUNT, 0);
                         tag.putLong(TAG_AMOUNT, amount - 1);
@@ -369,7 +334,7 @@ public class AnimalCageItem extends Item
                         }
                         else
                         {
-                            itemInHand.set(DataComponents.ENTITY_DATA, CustomData.of(tag));
+                            itemInHand.set(DataComponents.ENTITY_DATA, TypedEntityData.of(clone.getType(), tag));
                         }
 
                         player.setItemInHand(useOnContext.getHand(), itemInHand);
@@ -383,8 +348,9 @@ public class AnimalCageItem extends Item
 
     /**
      * This method returns if given entity matches entity that is stored inside given item stack.
+     *
      * @param itemStack The {@link ItemStack} used for interaction.
-     * @param entity    The {@link LivingEntity} being interacted with.
+     * @param entity The {@link LivingEntity} being interacted with.
      * @return {@code true} if entity matches stored entity, {@code false} otherwise.
      */
     private boolean matchEntity(ItemStack itemStack, LivingEntity entity)
@@ -395,36 +361,13 @@ public class AnimalCageItem extends Item
             return true;
         }
 
-        return itemStack.get(DataComponents.ENTITY_DATA).copyTag().getString(TAG_ENTITY_ID).
-            map(entityType -> ResourceLocation.bySeparator(entityType, ':').equals(entity.getType().arch$registryName())).
-            orElse(false);
-    }
-
-
-    /**
-     * This method returns translated entity name.
-     * @param entityId Entity ID.
-     * @return Component that contains translated entity name.
-     */
-    private static Component getEntityTranslationName(String entityId)
-    {
-        EntityType<?> entityType = EntityType.byString(entityId).orElse(null);
-
-        if (entityType != null)
-        {
-            // Returns a translatable component
-            return entityType.getDescription();
-        }
-        else
-        {
-            // Fallback to raw ID if not found
-            return Component.translatable(entityId);
-        }
+        return itemStack.get(DataComponents.ENTITY_DATA).type().equals(entity.getType());
     }
 
 
     /**
      * This method returns Optional list-tag or animal variants in given item-stack
+     *
      * @param itemStack The item stack that need to be checked.
      * @return Optional list of tags for animal variants.
      */
@@ -449,6 +392,7 @@ public class AnimalCageItem extends Item
 
     /**
      * This method stores given animal as a variant in given item stack.
+     *
      * @param itemStack The storage place.
      * @param animal The animal that need to be stored
      * @param player Player that should receive message is it fails to add variant.
@@ -499,6 +443,7 @@ public class AnimalCageItem extends Item
 
     /**
      * This method returns if animal variants can be merged into main item variants.
+     *
      * @param mainItem The item stack that should contain all variants
      * @param redundantItem The item stack that donates their variants
      * @param player A player instance
@@ -544,6 +489,7 @@ public class AnimalCageItem extends Item
 
     /**
      * This method merges redundant item entity variants into main item stack.
+     *
      * @param mainItem The item stack that should contain all variants
      * @param redundantItem The item stack that donates their variants
      * @param player A player instance
@@ -591,8 +537,6 @@ public class AnimalCageItem extends Item
         mainItem.set(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get(), CustomData.of(itemTag));
     }
 
-
-    public static final String TAG_ENTITY_ID = "id";
 
     public static final String TAG_VARIANTS = "animal_variants";
 

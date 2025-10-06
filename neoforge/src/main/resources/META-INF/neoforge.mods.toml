@@ -23,14 +23,14 @@ side = "BOTH"
 [[dependencies.animal_pen]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.6,)"
+versionRange = "[1.21.9,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.animal_pen]]
 modId = "architectury"
 type = "required"
-versionRange = "[17.0.4,)"
+versionRange = "[18.0.3,)"
 ordering = "AFTER"
 side = "BOTH"
 
