@@ -296,10 +296,12 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            shortLine && AnimalPen.config().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                this.animalPen$animalCount) == 0)
+            !AnimalPen.config().isShowAllInteractions() &&
+                shortLine &&
+                AnimalPen.config().getEntityCooldown(
+                    this.getType(),
+                    Items.APPLE,
+                    this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;

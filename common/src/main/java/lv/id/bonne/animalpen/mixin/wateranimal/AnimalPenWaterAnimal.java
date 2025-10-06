@@ -239,7 +239,8 @@ public abstract class AnimalPenWaterAnimal extends Mob
     {
         List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,

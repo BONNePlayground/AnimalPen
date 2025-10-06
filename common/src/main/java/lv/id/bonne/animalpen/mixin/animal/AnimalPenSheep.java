@@ -311,7 +311,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
@@ -347,7 +348,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
             component));
 
-        if (shortLine)
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine)
         {
             return lines;
         }

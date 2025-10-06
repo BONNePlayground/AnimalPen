@@ -170,34 +170,23 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (this.animalPen$getFood() == null ||
-            this.animalPen$getFood().length == 0 ||
-            AnimalPen.config().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                this.animalPen$animalCount) == 0)
+        if (!AnimalPen.config().isShowAllInteractions() && shortLine || this.animalPen$animalCount <= 1)
         {
-            // Nothing to return.
             return lines;
         }
 
-        MutableComponent component;
+        MutableComponent component = new TranslatableComponent(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+            new TextComponent("\uE000"),
+            new TextComponent("\uE001")).
+            withStyle(ChatFormatting.GREEN);
 
-        if (!shortLine && this.animalPen$animalCount > 1)
-        {
-            component = new TranslatableComponent(
-                "display.animal_pen.full_ready",
-                new TextComponent("\uE000"),
-                new TextComponent("\uE001")).
-                withStyle(ChatFormatting.GREEN);
+        ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+        this.saveToBucketTag(bucket);
 
-            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
-            this.saveToBucketTag(bucket);
-
-            lines.add(Pair.of(
-                new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
-                component));
-        }
+        lines.add(Pair.of(
+            new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
+            component));
 
         return lines;
     }

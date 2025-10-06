@@ -328,7 +328,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
@@ -378,7 +379,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             return lines;
         }
 
-        if (shortLine)
+        if (!AnimalPen.config().isShowAllInteractions() && shortLine)
         {
             return lines;
         }

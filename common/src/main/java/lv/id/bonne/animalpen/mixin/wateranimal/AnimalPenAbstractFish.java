@@ -166,7 +166,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine)
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine)
         {
             // Nothing to return.
             return lines;
@@ -179,7 +180,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
             if (bucket != null)
             {
                 MutableComponent component = new TranslatableComponent(
-                    "display.animal_pen.full_ready",
+                    shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
                     new TextComponent("\uE000"),
                     new TextComponent("\uE001")).
                     withStyle(ChatFormatting.GREEN);

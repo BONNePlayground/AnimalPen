@@ -56,6 +56,7 @@ public class Configuration
             this.increaseStatistics == null ||
             this.maxStoredAnimalVariants < 0 ||
             this.debug == null ||
+            this.showAllInteractions == null ||
             this.showCooldownsOnCrouch == null;
     }
 
@@ -120,6 +121,11 @@ public class Configuration
         if (this.debug == null || init)
         {
             this.debug = false;
+        }
+
+        if (this.showAllInteractions == null || init)
+        {
+            this.showAllInteractions = false;
         }
 
         if (this.showCooldownsOnCrouch == null || init)
@@ -412,6 +418,17 @@ public class Configuration
     }
 
 
+    /**
+     * Is show all interactions.
+     *
+     * @return the boolean
+     */
+    public boolean isShowAllInteractions()
+    {
+        return this.showAllInteractions;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -587,6 +604,13 @@ public class Configuration
     @Expose
     @SerializedName("show_cooldowns_while_crouching")
     private Boolean showCooldownsOnCrouch;
+
+    @JsonComment("Allows to toggle if all interactions (even without cooldown) should be rendered")
+    @JsonComment("above animal pen or aquarium")
+    @JsonComment("Default value = false")
+    @Expose
+    @SerializedName("show_all_interactions_above")
+    private Boolean showAllInteractions;
 
     @JsonComment("Set of animals that are blocked from picking up.")
     @JsonComment("Pickable animals in vanilla minecraft: https://minecraft.wiki/w/Animal#List_of_animals")
