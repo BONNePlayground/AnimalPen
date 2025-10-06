@@ -19,6 +19,7 @@ import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
@@ -28,12 +29,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -344,6 +347,38 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
             component));
 
+        if (shortLine)
+        {
+            return lines;
+        }
+
+        Component text = new TranslatableComponent(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.color_ready",
+            new TextComponent("\uE000"),
+            new TextComponent("\uE001")).
+            withStyle(ChatFormatting.GREEN);
+
+        ItemStack dyeItem;
+
+        if (animal_pen$DYE.isEmpty())
+        {
+            return lines;
+        }
+        else if (animal_pen$DYE.size() == 1)
+        {
+            dyeItem = animal_pen$DYE.get(0);
+        }
+        else
+        {
+            int size = animal_pen$DYE.size();
+            int index = (tick / 100) % size;
+
+            dyeItem = animal_pen$DYE.get(index);
+        }
+
+        ItemStack woolItem = ITEM_BY_DYE.get(((DyeItem) dyeItem.getItem()).getDyeColor()).asItem().getDefaultInstance();
+        lines.add(Pair.of(new ItemStack[]{dyeItem, woolItem}, text));
+
         return lines;
     }
 
@@ -365,4 +400,15 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Unique
     private int animalPen$woolCooldown;
+
+    @Unique
+    private final static List<ItemStack> animal_pen$DYE;
+
+    static
+    {
+        animal_pen$DYE = Registry.ITEM.stream().
+            filter(item -> item instanceof DyeItem).
+            map(Item::getDefaultInstance).
+            toList();
+    }
 }
