@@ -61,6 +61,7 @@
   "display.animal_pen.wool_cooldown": "%1$s §eShearing in %3$s",
   "display.animal_pen.egg_cooldown": "%2$s §eEggs in %3$s",
   "display.animal_pen.food_ready": "%1$s §aFeeding available now!",
+  "display.animal_pen.apply_ready": "§aUse %1$s §ato apply %2$s effect",
   "display.animal_pen.full_ready": "§aUse %1$s §ato collect %2$s",
 
   "gui.animal_pen.variant_selection_screen": "§8Variant Selection",
