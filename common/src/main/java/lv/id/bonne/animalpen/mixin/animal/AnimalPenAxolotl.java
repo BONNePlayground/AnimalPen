@@ -16,20 +16,16 @@ import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
-import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -173,34 +169,23 @@ public abstract class AnimalPenAxolotl extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (this.animalPen$getFood() == null ||
-            this.animalPen$getFood().length == 0 ||
-            AnimalPen.config().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                this.animalPen$animalCount) == 0)
+        if (!AnimalPen.config().isShowAllInteractions() && shortLine || this.animalPen$animalCount <= 1)
         {
-            // Nothing to return.
             return lines;
         }
 
-        MutableComponent component;
+        MutableComponent component = Component.translatable(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
+            Component.literal("\uE000"),
+            Component.literal("\uE001")).
+            withStyle(ChatFormatting.GREEN);
 
-        if (!shortLine && this.animalPen$animalCount > 1)
-        {
-            component = Component.translatable(
-                "display.animal_pen.full_ready",
-                Component.literal("\uE000"),
-                Component.literal("\uE001")).
-                withStyle(ChatFormatting.GREEN);
+        ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
+        this.saveToBucketTag(bucket);
 
-            ItemStack bucket = new ItemStack(Items.AXOLOTL_BUCKET);
-            this.saveToBucketTag(bucket);
-
-            lines.add(Pair.of(
-                new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
-                component));
-        }
+        lines.add(Pair.of(
+            new ItemStack[]{Items.WATER_BUCKET.getDefaultInstance(), bucket},
+            component));
 
         return lines;
     }
