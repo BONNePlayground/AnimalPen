@@ -65,6 +65,8 @@
   "display.animal_pen.frog_light_cooldown": "%1$s §e蛙明灯: %3$s后",
   "display.animal_pen.food_ready": "%1$s §a现在可以喂食!",
   "display.animal_pen.full_ready": "§a使用 %1$s §a收集 %2$s",
+  "display.animal_pen.apply_ready": "§aUse %1$s §ato apply %2$s effect",
+  "display.animal_pen.color_ready": "§aUse %1$s §ato change into %2$s",
 
   "gui.animal_pen.variant_selection_screen": "§8变种选择",
   "gui.animal_pen.variant_selection_screen.select_variant": "姿态 %d",
@@ -81,6 +83,5 @@
   "gui.animal_pen.variant_selection_screen.configure.entity_size": "Display Size: %d / %d",
   "gui.animal_pen.variant_selection_screen.configure.enable_protection": "Toggle protection for block",
   "gui.animal_pen.variant_selection_screen.configure.save": "Save",
-  "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel",
-  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen"
+  "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel"
 }
