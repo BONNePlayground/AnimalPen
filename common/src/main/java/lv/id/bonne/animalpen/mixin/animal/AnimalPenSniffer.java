@@ -386,7 +386,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (!shortLine ||
+        if (AnimalPen.config().isShowAllInteractions() ||
+            !shortLine ||
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
@@ -427,7 +428,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 component));
         }
 
-        if (!shortLine ||
+        if (AnimalPen.config().isShowAllInteractions() ||
+            !shortLine ||
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,
