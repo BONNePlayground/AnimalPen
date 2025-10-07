@@ -2,8 +2,9 @@ package lv.id.bonne.animalpen.config.adapters;
 
 
 import com.google.gson.*;
-import net.minecraft.resources.ResourceLocation;
 import java.lang.reflect.Type;
+
+import net.minecraft.resources.ResourceLocation;
 
 public class ResourceLocationTypeAdapter implements JsonSerializer<ResourceLocation>, JsonDeserializer<ResourceLocation>
 {
