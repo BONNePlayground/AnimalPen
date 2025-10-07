@@ -33,13 +33,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 
 @Mixin(Sniffer.class)
@@ -387,7 +387,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (!shortLine ||
+        if (AnimalPen.config().isShowAllInteractions() ||
+            !shortLine ||
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
@@ -428,7 +429,8 @@ public abstract class AnimalPenSniffer extends AnimalPenAnimal
                 component));
         }
 
-        if (!shortLine ||
+        if (AnimalPen.config().isShowAllInteractions() ||
+            !shortLine ||
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,

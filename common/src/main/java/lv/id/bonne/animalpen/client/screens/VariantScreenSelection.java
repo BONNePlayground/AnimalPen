@@ -9,7 +9,6 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -25,6 +24,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.BlockPos;
