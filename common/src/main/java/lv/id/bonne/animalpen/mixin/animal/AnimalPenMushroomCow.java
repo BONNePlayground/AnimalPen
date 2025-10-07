@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -23,7 +24,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -384,10 +386,10 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             return lines;
         }
 
-        Component text = new TranslatableComponent(
+        Component text = Component.translatable(
             shortLine ? "display.animal_pen.ready" : "display.animal_pen.apply_ready",
-            new TextComponent("\uE000"),
-            new TextComponent("\uE001")).
+                Component.literal("\uE000"),
+                Component.literal("\uE001")).
             withStyle(ChatFormatting.GREEN);
 
         ItemStack flowerItem;

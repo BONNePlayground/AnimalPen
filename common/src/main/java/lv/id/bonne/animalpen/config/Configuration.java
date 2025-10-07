@@ -9,7 +9,6 @@ package lv.id.bonne.animalpen.config;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
 
 import lv.id.bonne.animalpen.config.annotations.JsonComment;
