@@ -22,6 +22,8 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -164,7 +166,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine)
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine)
         {
             // Nothing to return.
             return lines;
@@ -177,7 +180,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
             if (bucket != null)
             {
                 MutableComponent component = Component.translatable(
-                    "display.animal_pen.full_ready",
+                    shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
                     Component.literal("\uE000"),
                     Component.literal("\uE001")).
                     withStyle(ChatFormatting.GREEN);
