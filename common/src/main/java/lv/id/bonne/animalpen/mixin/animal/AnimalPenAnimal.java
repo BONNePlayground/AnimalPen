@@ -8,15 +8,14 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import java.time.LocalTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
@@ -26,17 +25,15 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
@@ -296,10 +293,12 @@ public abstract class AnimalPenAnimal extends Mob
 
         if (this.animalPen$getFood() == null ||
             this.animalPen$getFood().length == 0 ||
-            shortLine && AnimalPen.config().getEntityCooldown(
-                this.getType(),
-                Items.APPLE,
-                this.animalPen$animalCount) == 0)
+            !AnimalPen.config().isShowAllInteractions() &&
+                shortLine &&
+                AnimalPen.config().getEntityCooldown(
+                    this.getType(),
+                    Items.APPLE,
+                    this.animalPen$animalCount) == 0)
         {
             // Nothing to return.
             return lines;
