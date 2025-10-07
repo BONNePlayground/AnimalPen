@@ -22,8 +22,8 @@ import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -37,12 +37,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SuspiciousStewItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
+import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
@@ -318,7 +316,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BOWL,
@@ -363,6 +362,52 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
+        if (this.getVariant() != MushroomCow.MushroomType.BROWN ||
+            this.stewEffects != null && !this.stewEffects.isEmpty())
+        {
+            return lines;
+        }
+
+        if (!AnimalPen.config().isShowAllInteractions() && shortLine)
+        {
+            return lines;
+        }
+
+        Component text = Component.translatable(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.apply_ready",
+                Component.literal("\uE000"),
+                Component.literal("\uE001")).
+            withStyle(ChatFormatting.GREEN);
+
+        ItemStack flowerItem;
+
+        if (animal_pen$SMALL_FLOWERS.isEmpty())
+        {
+            // No flowers.
+            return lines;
+        }
+        else if (animal_pen$SMALL_FLOWERS.size() == 1)
+        {
+            flowerItem = animal_pen$SMALL_FLOWERS.get(0);
+        }
+        else
+        {
+            int size = animal_pen$SMALL_FLOWERS.size();
+            int index = (tick / 100) % size;
+
+            flowerItem = animal_pen$SMALL_FLOWERS.get(index);
+        }
+
+        ItemStack bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
+
+        this.getEffectsFromItemStack(flowerItem).ifPresent(effects ->
+        {
+            SuspiciousStewItem.saveMobEffects(bowlStack, effects);
+            lines.add(Pair.of(
+                new ItemStack[]{flowerItem, bowlStack},
+                text));
+        });
+
         return lines;
     }
 
@@ -384,4 +429,15 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     @Unique
     private int animalPen$supCooldown;
+
+    @Unique
+    private final static List<ItemStack> animal_pen$SMALL_FLOWERS;
+
+    static
+    {
+        animal_pen$SMALL_FLOWERS = BuiltInRegistries.ITEM.stream().
+            filter(item -> item instanceof BlockItem block && block.getBlock() instanceof FlowerBlock).
+            map(Item::getDefaultInstance).
+            toList();
+    }
 }

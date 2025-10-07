@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -164,7 +163,8 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine)
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine)
         {
             // Nothing to return.
             return lines;
@@ -177,7 +177,7 @@ public abstract class AnimalPenAbstractFish extends AnimalPenWaterAnimal
             if (bucket != null)
             {
                 MutableComponent component = Component.translatable(
-                    "display.animal_pen.full_ready",
+                    shortLine ? "display.animal_pen.ready" : "display.animal_pen.full_ready",
                     Component.literal("\uE000"),
                     Component.literal("\uE001")).
                     withStyle(ChatFormatting.GREEN);
