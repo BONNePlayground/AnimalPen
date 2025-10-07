@@ -1,8 +1,6 @@
 package lv.id.bonne.animalpen.registries;
 
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
