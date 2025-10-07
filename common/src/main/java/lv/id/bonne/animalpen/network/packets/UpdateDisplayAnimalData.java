@@ -4,12 +4,10 @@ package lv.id.bonne.animalpen.network.packets;
 import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
-import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

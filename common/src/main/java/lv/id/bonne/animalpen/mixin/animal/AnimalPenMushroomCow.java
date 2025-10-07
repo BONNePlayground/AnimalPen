@@ -38,12 +38,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -366,8 +363,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
-        if (this.getVariant() != MushroomCow.MushroomType.BROWN ||
-            this.stewEffects != null && !this.stewEffects.isEmpty())
+        if (this.getVariant() != MushroomCow.MushroomType.BROWN || this.stewEffects != null)
         {
             return lines;
         }
@@ -406,7 +402,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         this.getEffectsFromItemStack(flowerItem).ifPresent(effects ->
         {
-            SuspiciousStewItem.saveMobEffects(bowlStack, effects);
+            bowlStack.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, effects);
             lines.add(Pair.of(
                 new ItemStack[]{flowerItem, bowlStack},
                 text));
