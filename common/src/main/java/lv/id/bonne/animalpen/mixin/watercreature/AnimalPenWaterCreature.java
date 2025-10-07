@@ -240,7 +240,8 @@ public abstract class AnimalPenWaterCreature extends Mob
     {
         List<Pair<ItemStack[], Component>> lines = new LinkedList<>();
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.CONFIG_MANAGER.getConfiguration().getEntityCooldown(
                 this.getType(),
                 Items.APPLE,

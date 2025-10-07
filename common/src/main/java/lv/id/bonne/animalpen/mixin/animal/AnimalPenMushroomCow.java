@@ -363,7 +363,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
-        if (this.getVariant() != MushroomCow.MushroomType.BROWN || this.stewEffects != null)
+        if (this.getVariant() != MushroomCow.Variant.BROWN || this.stewEffects != null)
         {
             return lines;
         }

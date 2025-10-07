@@ -8,7 +8,10 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +23,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -404,8 +407,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             dyeItem = animal_pen$DYE.get(index);
         }
 
-        ItemStack woolItem = ITEM_BY_DYE.get(((DyeItem) dyeItem.getItem()).getDyeColor()).asItem().getDefaultInstance();
-        lines.add(Pair.of(new ItemStack[]{dyeItem, woolItem}, text));
+        Item woolItem = this.pen$getWoolItem(((DyeItem) dyeItem.getItem()).getDyeColor());
+        lines.add(Pair.of(new ItemStack[]{dyeItem, woolItem.getDefaultInstance()}, text));
 
         return lines;
     }
