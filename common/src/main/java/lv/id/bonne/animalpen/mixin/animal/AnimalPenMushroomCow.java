@@ -362,7 +362,8 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
-        if (this.getVariant() != MushroomCow.MushroomType.BROWN || this.effect != null)
+        if (this.getVariant() != MushroomCow.MushroomType.BROWN ||
+            this.stewEffects != null && !this.stewEffects.isEmpty())
         {
             return lines;
         }
@@ -399,9 +400,9 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
         ItemStack bowlStack = new ItemStack(Items.SUSPICIOUS_STEW);
 
-        this.getEffectFromItemStack(flowerItem).ifPresent(pair -> {
-            SuspiciousStewItem.saveMobEffect(bowlStack, this.effect, this.effectDuration);
-
+        this.getEffectsFromItemStack(flowerItem).ifPresent(effects ->
+        {
+            SuspiciousStewItem.saveMobEffects(bowlStack, effects);
             lines.add(Pair.of(
                 new ItemStack[]{flowerItem, bowlStack},
                 text));
