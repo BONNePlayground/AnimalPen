@@ -27,8 +27,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.frog.FrogVariant;
 import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.frog.FrogVariant;
 import net.minecraft.world.entity.animal.frog.FrogVariants;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -184,7 +184,8 @@ public abstract class AnimalPenFrog extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.MAGMA_BLOCK,

@@ -113,7 +113,8 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         this.renderCounter(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
 
-        if (this.minecraft.player != null && this.minecraft.player.isCrouching())
+        if (this.minecraft.player != null && this.minecraft.player.isCrouching() ||
+            !AnimalPen.config().isShowCooldownsOnCrouch())
         {
             this.renderTextLines(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
         }

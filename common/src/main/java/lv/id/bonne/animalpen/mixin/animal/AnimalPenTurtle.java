@@ -18,7 +18,8 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -332,7 +333,8 @@ public abstract class AnimalPenTurtle extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.BUCKET,

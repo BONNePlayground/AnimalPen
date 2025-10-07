@@ -8,8 +8,10 @@ package lv.id.bonne.animalpen.mixin.animal;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.spongepowered.asm.mixin.*;
-
+import org.spongepowered.asm.mixin.Intrinsic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +22,12 @@ import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -339,7 +342,8 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
     {
         List<Pair<ItemStack[], Component>> lines = super.animalPen$animalPenGetLines(tick, shortLine);
 
-        if (shortLine &&
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine &&
             AnimalPen.config().getEntityCooldown(
                 this.getType(),
                 Items.SHEARS,
@@ -375,6 +379,39 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
             new ItemStack[]{Items.SHEARS.getDefaultInstance(), itemLike.asItem().getDefaultInstance()},
             component));
 
+        if (!AnimalPen.config().isShowAllInteractions() &&
+            shortLine)
+        {
+            return lines;
+        }
+
+        Component text = Component.translatable(
+            shortLine ? "display.animal_pen.ready" : "display.animal_pen.color_ready",
+            Component.literal("\uE000"),
+            Component.literal("\uE001")).
+            withStyle(ChatFormatting.GREEN);
+
+        ItemStack dyeItem;
+
+        if (animal_pen$DYE.isEmpty())
+        {
+            return lines;
+        }
+        else if (animal_pen$DYE.size() == 1)
+        {
+            dyeItem = animal_pen$DYE.get(0);
+        }
+        else
+        {
+            int size = animal_pen$DYE.size();
+            int index = (tick / 100) % size;
+
+            dyeItem = animal_pen$DYE.get(index);
+        }
+
+        Item woolItem = this.pen$getWoolItem(((DyeItem) dyeItem.getItem()).getDyeColor());
+        lines.add(Pair.of(new ItemStack[]{dyeItem, woolItem.getDefaultInstance()}, text));
+
         return lines;
     }
 
@@ -405,4 +442,15 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     @Unique
     private int animalPen$woolCooldown;
+
+    @Unique
+    private final static List<ItemStack> animal_pen$DYE;
+
+    static
+    {
+        animal_pen$DYE = BuiltInRegistries.ITEM.stream().
+            filter(item -> item instanceof DyeItem).
+            map(Item::getDefaultInstance).
+            toList();
+    }
 }

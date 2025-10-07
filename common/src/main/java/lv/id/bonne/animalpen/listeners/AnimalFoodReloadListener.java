@@ -3,7 +3,8 @@ package lv.id.bonne.animalpen.listeners;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
