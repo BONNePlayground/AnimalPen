@@ -18,7 +18,7 @@ import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -406,7 +406,7 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
 
     static
     {
-        animal_pen$DYE = Registry.ITEM.stream().
+        animal_pen$DYE = BuiltInRegistries.ITEM.stream().
             filter(item -> item instanceof DyeItem).
             map(Item::getDefaultInstance).
             toList();

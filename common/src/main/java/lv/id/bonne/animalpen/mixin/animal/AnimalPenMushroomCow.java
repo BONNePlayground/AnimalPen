@@ -21,8 +21,8 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -376,7 +376,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
             new ItemStack[]{Items.BOWL.getDefaultInstance(), itemStack},
             component));
 
-        if (this.getMushroomType() != MushroomCow.MushroomType.BROWN || this.effect != null)
+        if (this.getVariant() != MushroomCow.MushroomType.BROWN || this.effect != null)
         {
             return lines;
         }
@@ -448,7 +448,7 @@ public abstract class AnimalPenMushroomCow extends AnimalPenAnimal
 
     static
     {
-        animal_pen$SMALL_FLOWERS = Registry.ITEM.stream().
+        animal_pen$SMALL_FLOWERS = BuiltInRegistries.ITEM.stream().
             filter(item -> item instanceof BlockItem block && block.getBlock() instanceof FlowerBlock).
             map(Item::getDefaultInstance).
             toList();
