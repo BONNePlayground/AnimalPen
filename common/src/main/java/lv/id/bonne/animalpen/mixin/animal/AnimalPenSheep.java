@@ -265,8 +265,6 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return ItemStack.EMPTY;
             }
 
-            this.setSheared(true);
-
             itemStack.hurtAndBreak(1, level, null, item -> {});
 
             ItemLike itemLike = this.pen$getWoolItem(this.getColor());
