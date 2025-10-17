@@ -142,8 +142,6 @@ public abstract class AnimalPenSheep extends AnimalPenAnimal
                 return true;
             }
 
-            this.setSheared(true);
-
             AnimalPenInterface.triggerItemUse(this, (ServerPlayer) player, itemStack, 1);
             itemStack.hurtAndBreak(1, player, getSlotForHand(hand));
 
