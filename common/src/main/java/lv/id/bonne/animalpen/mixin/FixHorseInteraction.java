@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -29,7 +29,7 @@ public class FixHorseInteraction
 {
     @Inject(method = "mobInteract",
         at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/animal/horse/Horse;isTamed()Z",
+            target = "Lnet/minecraft/world/entity/animal/equine/Horse;isTamed()Z",
             ordinal = 1),
         cancellable = true)
     private void addAnimalCageException(Player player,

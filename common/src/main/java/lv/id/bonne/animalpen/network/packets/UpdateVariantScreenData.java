@@ -18,7 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
 /**
@@ -74,7 +74,7 @@ public record UpdateVariantScreenData(BlockPos position) implements CustomPacket
 
 
     public static final Type<UpdateVariantScreenData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_variant_screen_data"));
+        new Type<>(Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_variant_screen_data"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateVariantScreenData> STREAM_CODEC = StreamCodec.composite(

@@ -18,7 +18,7 @@ import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -50,7 +50,7 @@ public class AnimalPenBlockRegistry
             new BlockItem(block.get(),
                 new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).
                     setId(ResourceKey.create(Registries.ITEM,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
+                        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
     }
 
 
@@ -82,7 +82,7 @@ public class AnimalPenBlockRegistry
                     noOcclusion().
                     requiredFeatures(flags).
                     setId(ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
+                        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
             ));
 
         ANIMAL_PENS.put(woodType, block);
@@ -104,7 +104,7 @@ public class AnimalPenBlockRegistry
                 sound(SoundType.GLASS).
                 noOcclusion().
                 setId(ResourceKey.create(Registries.BLOCK,
-                    ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "aquarium_block")))
+                    Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "aquarium_block")))
         )
     );
 

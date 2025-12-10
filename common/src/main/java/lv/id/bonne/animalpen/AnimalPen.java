@@ -20,7 +20,7 @@ import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -80,7 +80,7 @@ public final class AnimalPen
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalFoodReloadListener(),
-            ResourceLocation.tryBuild(MOD_ID, "animal_foods"));
+            Identifier.tryBuild(MOD_ID, "animal_foods"));
 
         EnvExecutor.runInEnv(Env.SERVER, () -> AnimalPen::initializeServer);
     }

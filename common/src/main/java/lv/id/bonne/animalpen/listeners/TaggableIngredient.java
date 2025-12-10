@@ -16,7 +16,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -97,11 +97,11 @@ public class TaggableIngredient implements Predicate<ItemStack>
             {
                 if (str.startsWith("#"))
                 {
-                    return new TagValue(TagKey.create(Registries.ITEM, ResourceLocation.parse(str.substring(1))));
+                    return new TagValue(TagKey.create(Registries.ITEM, Identifier.parse(str.substring(1))));
                 }
                 else
                 {
-                    return new ItemValue(RegistrarManager.get(AnimalPen.MOD_ID).get(Registries.ITEM).getHolder(ResourceLocation.parse(str)));
+                    return new ItemValue(RegistrarManager.get(AnimalPen.MOD_ID).get(Registries.ITEM).getHolder(Identifier.parse(str)));
                 }
             },
             value ->

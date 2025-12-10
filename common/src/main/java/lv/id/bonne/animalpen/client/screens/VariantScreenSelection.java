@@ -32,14 +32,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
@@ -503,7 +503,6 @@ public class VariantScreenSelection extends Screen
         EntityRenderer<? super LivingEntity, ?> renderer =
             Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(this.displayEntity);
         EntityRenderState renderState = renderer.createRenderState(this.displayEntity, 1.0F);
-        renderState.hitboxesRenderState = null;
 
         // Create vertical offset (Y axis)
         Vector3f offset = new Vector3f(0.0F,
@@ -1263,13 +1262,13 @@ public class VariantScreenSelection extends Screen
     /**
      * The texture of menu
      */
-    private static final ResourceLocation TEXTURE =
-        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/animal_selection.png");
+    private static final Identifier TEXTURE =
+        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/animal_selection.png");
 
     /**
      * The texture of cooldown
      */
-    private static final ResourceLocation COOLDOWN_TEXTURE =
-        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/cooldown_area.png");
+    private static final Identifier COOLDOWN_TEXTURE =
+        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/cooldown_area.png");
 }
 

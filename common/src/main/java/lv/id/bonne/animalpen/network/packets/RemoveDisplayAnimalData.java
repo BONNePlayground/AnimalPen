@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 
@@ -55,7 +55,7 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
 
 
     public static final Type<RemoveDisplayAnimalData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "remove_display_animal"));
+        new Type<>(Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "remove_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(

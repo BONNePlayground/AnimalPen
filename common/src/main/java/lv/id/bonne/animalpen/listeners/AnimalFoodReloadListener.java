@@ -10,7 +10,7 @@ import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -36,7 +36,7 @@ public class AnimalFoodReloadListener extends SimpleJsonResourceReloadListener<A
 
 
     @Override
-    protected void apply(Map<ResourceLocation, AnimalFoodEntry> objectMap, ResourceManager resourceManager, ProfilerFiller profiler)
+    protected void apply(Map<Identifier, AnimalFoodEntry> objectMap, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         // Clear the registry before reloading new data.
         AnimalPenFoodRegistry.clear();

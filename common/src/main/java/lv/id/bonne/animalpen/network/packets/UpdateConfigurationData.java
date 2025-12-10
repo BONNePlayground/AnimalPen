@@ -14,7 +14,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 
@@ -62,7 +62,7 @@ public record UpdateConfigurationData(BlockPos position, long size, long protect
 
 
     public static final Type<UpdateConfigurationData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_configuration"));
+        new Type<>(Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_configuration"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateConfigurationData> STREAM_CODEC = StreamCodec.composite(

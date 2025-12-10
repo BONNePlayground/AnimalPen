@@ -9,7 +9,7 @@ import java.util.Map;
 import lv.id.bonne.animalpen.listeners.TaggableIngredient;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 
@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public class AnimalPenFoodRegistry
 {
-    public static void setSyncedData(Map<ResourceLocation, AnimalFoodData> newData)
+    public static void setSyncedData(Map<Identifier, AnimalFoodData> newData)
     {
         DATA.clear();
         DATA.putAll(newData);
@@ -39,7 +39,7 @@ public class AnimalPenFoodRegistry
      * @param id the animal resource id
      * @param data the food data
      */
-    public static void register(ResourceLocation id, AnimalFoodData data)
+    public static void register(Identifier id, AnimalFoodData data)
     {
         DATA.put(id, data);
     }
@@ -51,7 +51,7 @@ public class AnimalPenFoodRegistry
      * @param id the animal resource id
      * @return the animal food data
      */
-    public static AnimalFoodData get(ResourceLocation id)
+    public static AnimalFoodData get(Identifier id)
     {
         return DATA.get(id);
     }
@@ -62,7 +62,7 @@ public class AnimalPenFoodRegistry
      *
      * @return the all registry data.
      */
-    public static Map<ResourceLocation, AnimalFoodData> getAll()
+    public static Map<Identifier, AnimalFoodData> getAll()
     {
         return Collections.unmodifiableMap(DATA);
     }
@@ -75,7 +75,7 @@ public class AnimalPenFoodRegistry
      * @param stack The item stack that need to be checked.
      * @return {@code true} if given stack is food item for given entity, {@code false} otherwise.
      */
-    public static boolean isFood(ResourceLocation entity, ItemStack stack)
+    public static boolean isFood(Identifier entity, ItemStack stack)
     {
         return DATA.containsKey(entity) && DATA.get(entity).matches(stack);
     }
@@ -88,7 +88,7 @@ public class AnimalPenFoodRegistry
      * @return Array of ItemStacks that are food for given entity.
      */
     @Nullable
-    public static ItemStack[] getFood(ResourceLocation entity)
+    public static ItemStack[] getFood(Identifier entity)
     {
         if (!DATA.containsKey(entity))
         {
@@ -127,5 +127,5 @@ public class AnimalPenFoodRegistry
     /**
      * The registry of animal foods.
      */
-    private static final Map<ResourceLocation, AnimalFoodData> DATA = new HashMap<>();
+    private static final Map<Identifier, AnimalFoodData> DATA = new HashMap<>();
 }

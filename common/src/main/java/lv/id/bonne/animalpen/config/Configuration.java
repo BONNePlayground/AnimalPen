@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.*;
 
 import lv.id.bonne.animalpen.config.annotations.JsonComment;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -469,7 +469,7 @@ public class Configuration
          * @param increment the increment
          * @param max the max
          */
-        public CooldownEntry(ResourceLocation entity, int base, int increment, int max)
+        public CooldownEntry(Identifier entity, int base, int increment, int max)
         {
             this.entity = entity;
             this.baseCooldown = base;
@@ -508,7 +508,7 @@ public class Configuration
         @JsonComment("The entity ID on which cooldown is applied.")
         @Expose
         @SerializedName("entity")
-        private ResourceLocation entity;
+        private Identifier entity;
 
         @JsonComment("The base cooldown value for action.")
         @JsonComment("0 means that there is no cooldown.")
@@ -542,7 +542,7 @@ public class Configuration
     @JsonComment("<item> : <cooldown>.")
     @Expose
     @SerializedName("cooldowns")
-    private Map<ResourceLocation, List<CooldownEntry>> cooldownList = new HashMap<>();
+    private Map<Identifier, List<CooldownEntry>> cooldownList = new HashMap<>();
 
     @JsonComment("A cooldown value in game ticks between attacks that players can perform on animal pens.")
     @JsonComment("Default value: 5 game tick")
@@ -554,7 +554,7 @@ public class Configuration
     @JsonComment("<item> : <drop_limit>.")
     @Expose
     @SerializedName("drop_limits")
-    private Map<ResourceLocation, Integer> dropLimitList = new HashMap<>();
+    private Map<Identifier, Integer> dropLimitList = new HashMap<>();
 
     @JsonComment("Allows to set maximal amount of animals in the pen.")
     @JsonComment("Setting 0 will remove any limit.")
@@ -638,7 +638,7 @@ public class Configuration
     @JsonComment("Pickable animals in vanilla minecraft: https://minecraft.wiki/w/Animal#List_of_animals")
     @Expose
     @SerializedName("blocked_animals")
-    private Set<ResourceLocation> blockedAnimals = new HashSet<>();
+    private Set<Identifier> blockedAnimals = new HashSet<>();
 
     @JsonComment("Debug code to indicate problems.")
     @Expose
@@ -647,5 +647,5 @@ public class Configuration
 
     @JsonComment("")
     @Expose(serialize = false, deserialize = false)
-    private final static ResourceLocation ANY = ResourceLocation.fromNamespaceAndPath("animal_pen", "any");
+    private final static Identifier ANY = Identifier.fromNamespaceAndPath("animal_pen", "any");
 }

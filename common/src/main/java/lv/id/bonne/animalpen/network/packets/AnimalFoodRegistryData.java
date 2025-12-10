@@ -17,10 +17,10 @@ import lv.id.bonne.animalpen.registries.AnimalPenFoodRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
-public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> data) implements CustomPacketPayload
+public record AnimalFoodRegistryData(Map<Identifier, AnimalPenFoodRegistry.AnimalFoodData> data) implements CustomPacketPayload
 {
     /**
      * This method handles incoming packet on server.
@@ -42,24 +42,24 @@ public record AnimalFoodRegistryData(Map<ResourceLocation, AnimalPenFoodRegistry
 
 
     public static final CustomPacketPayload.Type<AnimalFoodRegistryData> ID =
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_food_registry_sync"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_food_registry_sync"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AnimalFoodRegistryData> STREAM_CODEC =
         StreamCodec.of(
             (buf, registryData) -> {
-                Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> map = registryData.data();
+                Map<Identifier, AnimalPenFoodRegistry.AnimalFoodData> map = registryData.data();
                 buf.writeVarInt(map.size());
-                for (Map.Entry<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> entry : map.entrySet()) {
-                    ResourceLocation.STREAM_CODEC.encode(buf, entry.getKey());
+                for (Map.Entry<Identifier, AnimalPenFoodRegistry.AnimalFoodData> entry : map.entrySet()) {
+                    Identifier.STREAM_CODEC.encode(buf, entry.getKey());
                     AnimalPenFoodRegistry.AnimalFoodData.STREAM_CODEC.encode(buf, entry.getValue());
                 }
             },
             buf -> {
                 int size = buf.readVarInt();
-                Map<ResourceLocation, AnimalPenFoodRegistry.AnimalFoodData> map = new HashMap<>();
+                Map<Identifier, AnimalPenFoodRegistry.AnimalFoodData> map = new HashMap<>();
                 for (int i = 0; i < size; i++) {
-                    ResourceLocation key = ResourceLocation.STREAM_CODEC.decode(buf);
+                    Identifier key = Identifier.STREAM_CODEC.decode(buf);
                     AnimalPenFoodRegistry.AnimalFoodData value = AnimalPenFoodRegistry.AnimalFoodData.STREAM_CODEC.decode(buf);
                     map.put(key, value);
                 }
