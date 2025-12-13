@@ -15,6 +15,7 @@
   "item.animal_pen.animal_cage.error.leashed": "Cannot pickup leashed animals",
   "item.animal_pen.animal_cage.error.saddled": "Cannot pickup animals with saddle",
   "item.animal_pen.animal_cage.error.chested": "Cannot pickup animals with chests equipped",
+  "item.animal_pen.animal_cage.error.not_mob": "Only mobs can be picked up",
 
   "item.animal_pen.water_animal_container": "水生动物容器",
   "item.animal_pen.water_animal_container.entity": "实体: %s",
@@ -32,6 +33,7 @@
   "item.animal_pen.water_animal_container.error.leashed": "Cannot pickup leashed water animals",
   "item.animal_pen.water_animal_container.error.saddled": "Cannot pickup water animals with saddle",
   "item.animal_pen.water_animal_container.error.chested": "Cannot pickup animals with chests equipped",
+  "item.animal_pen.water_animal_container.error.not_mob": "Only mobs can be picked up",
 
   "itemGroup.animal_pen.animal_pen": "动物围栏物品",
 
@@ -63,6 +65,8 @@
   "display.animal_pen.egg_cooldown": "%2$s §e产蛋: %3$s后",
   "display.animal_pen.food_ready": "%1$s §a现在可以喂食!",
   "display.animal_pen.full_ready": "§a使用 %1$s §a收集 %2$s",
+  "display.animal_pen.apply_ready": "§aUse %1$s §ato apply %2$s effect",
+  "display.animal_pen.color_ready": "§aUse %1$s §ato change into %2$s",
 
   "gui.animal_pen.variant_selection_screen": "§8变种选择",
   "gui.animal_pen.variant_selection_screen.select_variant": "姿态 %d",
