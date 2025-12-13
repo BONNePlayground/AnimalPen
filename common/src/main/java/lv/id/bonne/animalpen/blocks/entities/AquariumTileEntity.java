@@ -36,7 +36,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -51,7 +51,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 
-public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInterface<WaterAnimal>
+public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInterface<Mob>
 {
     public AquariumTileEntity(
         BlockPos blockPos,
@@ -149,7 +149,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
      * @return Animal instance stored in block entity.
      */
     @Override
-    public Optional<WaterAnimal> getStoredAnimal()
+    public Optional<Mob> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -161,7 +161,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                 return Optional.ofNullable(this.storedAnimal);
             }
 
-            EntityType.create(tag, this.level).map(entity -> (WaterAnimal) entity).
+            EntityType.create(tag, this.level).map(entity -> (Mob) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
         else if (this.storedAnimal != null && this.getItemStack().isEmpty())
@@ -286,7 +286,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
                     return true;
                 }
 
-                WaterAnimal animal = this.getStoredAnimal().orElse(null);
+                Mob animal = this.getStoredAnimal().orElse(null);
                 
                 if (animal == null)
                 {
@@ -334,7 +334,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             }
             else
             {
-                WaterAnimal animal = this.getStoredAnimal().orElse(null);
+                Mob animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null ||
                     !animalTag.getString(AnimalContainerItem.TAG_ENTITY_ID).
@@ -433,7 +433,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
             return true;
         }
 
-        WaterAnimal animal = this.getStoredAnimal().orElse(null);
+        Mob animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -485,7 +485,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
 
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        WaterAnimal animal = this.getStoredAnimal().orElse(null);
+        Mob animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -852,7 +852,7 @@ public class AquariumTileEntity extends BlockEntity implements AnimalPenBlockInt
     };
 
 
-    private WaterAnimal storedAnimal;
+    private Mob storedAnimal;
 
     private long displaySize = -1;
 

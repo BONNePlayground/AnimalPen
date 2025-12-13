@@ -8,6 +8,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.mixin.MobAccessor;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -24,7 +25,6 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
@@ -188,7 +188,15 @@ public class AnimalCageItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (!(livingEntity instanceof Animal animal))
+        if (!(livingEntity instanceof Mob animal))
+        {
+            player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.not_mob").
+                withStyle(ChatFormatting.DARK_RED), true);
+            // only living entities that are not babies
+            return InteractionResult.FAIL;
+        }
+
+        if (!livingEntity.getType().is(AnimalPenTags.ANIMAL_CAGE_PICKABLE))
         {
             player.displayClientMessage(new TranslatableComponent("item.animal_pen.animal_cage.error.not_animal").
                 withStyle(ChatFormatting.DARK_RED), true);
@@ -337,7 +345,7 @@ public class AnimalCageItem extends Item
             itemTag.remove("UUID");
 
             EntityType.create(itemTag, level).
-                map(entity -> (Animal) entity).
+                map(entity -> (Mob) entity).
                 ifPresent(clone ->
                 {
                     for (EquipmentSlot slot : EquipmentSlot.values())
@@ -443,7 +451,7 @@ public class AnimalCageItem extends Item
      * @param player Player that should receive message is it fails to add variant.
      * @return {@code true} if variant was added, {@code false} otherwise
      */
-    public static boolean storeAnimalVariant(ItemStack itemStack, Animal animal, @Nullable Player player)
+    public static boolean storeAnimalVariant(ItemStack itemStack, Mob animal, @Nullable Player player)
     {
         if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {

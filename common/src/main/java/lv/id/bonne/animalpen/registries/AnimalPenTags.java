@@ -11,6 +11,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
@@ -46,4 +47,16 @@ public class AnimalPenTags
      */
     public static final TagKey<Item> COMMON_SHEARS = TagKey.create(Registry.ITEM_REGISTRY,
         new ResourceLocation("c", "shears"));
+
+    /**
+     * Tag that stores entities pickable by animal cage.
+     */
+    public static final TagKey<EntityType<?>> ANIMAL_CAGE_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+        new ResourceLocation(AnimalPen.MOD_ID, "animal_cage_pickable"));
+
+    /**
+     * Tag that stores entities pickable by water mob container.
+     */
+    public static final TagKey<EntityType<?>> WATER_MOB_CONTAINER_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+        new ResourceLocation(AnimalPen.MOD_ID, "water_mob_container_pickable"));
 }

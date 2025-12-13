@@ -35,7 +35,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.animal.*;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -50,7 +50,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 
-public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockInterface<Animal>
+public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockInterface<Mob>
 {
     public AnimalPenTileEntity(
         BlockPos blockPos,
@@ -148,7 +148,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
      * @return Animal instance stored in block entity.
      */
     @Override
-    public Optional<Animal> getStoredAnimal()
+    public Optional<Mob> getStoredAnimal()
     {
         if (this.storedAnimal == null && !this.getItemStack().isEmpty())
         {
@@ -160,7 +160,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                 return Optional.ofNullable(this.storedAnimal);
             }
 
-            EntityType.create(tag, this.level).map(entity -> (Animal) entity).
+            EntityType.create(tag, this.level).map(entity -> (Mob) entity).
                 ifPresent(animal -> this.storedAnimal = animal);
         }
         else if (this.storedAnimal != null && this.getItemStack().isEmpty())
@@ -285,7 +285,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
                     return true;
                 }
 
-                Animal animal = this.getStoredAnimal().orElse(null);
+                Mob animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null)
                 {
@@ -333,7 +333,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             }
             else
             {
-                Animal animal = this.getStoredAnimal().orElse(null);
+                Mob animal = this.getStoredAnimal().orElse(null);
 
                 if (animal == null ||
                     !animalTag.getString(AnimalCageItem.TAG_ENTITY_ID).
@@ -434,7 +434,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
             return true;
         }
 
-        Animal animal = this.getStoredAnimal().orElse(null);
+        Mob animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -486,7 +486,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
 
         ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        Animal animal = this.getStoredAnimal().orElse(null);
+        Mob animal = this.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -852,7 +852,7 @@ public class AnimalPenTileEntity extends BlockEntity implements AnimalPenBlockIn
     };
 
 
-    private Animal storedAnimal;
+    private Mob storedAnimal;
 
     private long displaySize = -1;
 

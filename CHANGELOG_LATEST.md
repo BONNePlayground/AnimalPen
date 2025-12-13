@@ -1,11 +1,6 @@
-# Animal Pens 1.6.1
+# Animal Pens 2.0.0
 
 #### Features:
-- Removed option to pick up leashed animals.
-- Removed option to pick up animals with saddle.
-- Removed option to pick up animals with chests.
-- Fixed a bug when passengers were saved with animal.
-- Fixed a bug when picking up animal does not drop equipment.
-- Fixed a bug when released animals dropped equipment.
-- Added mooshroom flower feeding to the information screen.
-- Added config option that allows to toggle if cooldowns should be visible all time
+- Separate internal data storage.
+- Added `animal_cage_pickable` entity type tag that defines which entities can be pickable by `animal cage`
+- Added `water_mob_container_pickable` entity type that defines which entities can be pickable by `water mob container`

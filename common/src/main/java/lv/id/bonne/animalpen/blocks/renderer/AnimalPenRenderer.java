@@ -13,7 +13,6 @@ import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -22,7 +21,6 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
@@ -32,10 +30,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -54,7 +51,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         int combinedLight,
         int combinedOverlay)
     {
-        Animal animal = tileEntity.getStoredAnimal().orElse(null);
+        Mob animal = tileEntity.getStoredAnimal().orElse(null);
 
         if (animal == null)
         {
@@ -71,7 +68,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
             animal.save(cloneTag);
 
             EntityType.create(cloneTag, tileEntity.getLevel()).
-                map(entity -> (Animal) entity).
+                map(entity -> (Mob) entity).
                 ifPresent(clone ->
                 {
                     this.dyingAnimal = clone;
@@ -119,7 +116,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     }
 
 
-    private void renderAnimal(Animal animal,
+    private void renderAnimal(Mob animal,
         AnimalPenTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -176,7 +173,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     }
 
 
-    private void renderCounter(Animal animal,
+    private void renderCounter(Mob animal,
         AnimalPenTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -208,7 +205,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     }
 
 
-    private void renderTextLines(Animal animal,
+    private void renderTextLines(Mob animal,
         AnimalPenTileEntity tileEntity,
         float partialTicks,
         @NotNull PoseStack poseStack,
@@ -457,5 +454,5 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
     /**
      * Dying animal instance.
      */
-    private Animal dyingAnimal;
+    private Mob dyingAnimal;
 }
