@@ -19,6 +19,7 @@ import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
+import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
@@ -39,7 +40,7 @@ public class AnimalPenClient
 
         ItemPropertiesRegistry.registerGeneric(new ResourceLocation(AnimalPen.MOD_ID, "filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->
-                itemStack.getTag() != null && itemStack.getTag().contains("id") ? 1.0f : 0.0f));
+                itemStack.getTag() != null && itemStack.getTag().contains(AnimalCageItem.TAG_ANIMAL) ? 1.0f : 0.0f));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 

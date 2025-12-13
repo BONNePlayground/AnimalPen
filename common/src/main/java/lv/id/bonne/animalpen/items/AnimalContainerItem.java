@@ -8,6 +8,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.mixin.MobAccessor;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -46,6 +47,40 @@ public class AnimalContainerItem extends Item
 
 
     @Override
+    public void verifyTagAfterLoad(CompoundTag compoundTag)
+    {
+        super.verifyTagAfterLoad(compoundTag);
+
+        if (compoundTag.contains(TAG_ENTITY_ID))
+        {
+            Tag variants = compoundTag.get(TAG_VARIANTS);
+            long count = compoundTag.getLong(TAG_AMOUNT);
+            CompoundTag animalData = new CompoundTag();
+            animalData.putLong(TAG_AMOUNT, count);
+
+            compoundTag.remove(TAG_VARIANTS);
+            compoundTag.remove(TAG_AMOUNT);
+
+            CompoundTag animal = compoundTag.copy();
+
+            animal.getAllKeys().forEach(key ->
+            {
+                if (key.endsWith("_cooldown"))
+                {
+                    animalData.putLong(key, compoundTag.getLong(key));
+                }
+
+                compoundTag.remove(key);
+            });
+
+            compoundTag.put(TAG_VARIANTS, variants);
+            compoundTag.put(TAG_ANIMAL, animal);
+            compoundTag.put(TAG_ANIMAL_DATA, animalData);
+        }
+    }
+
+
+    @Override
     public void appendHoverText(ItemStack itemStack,
         @Nullable Level level,
         List<Component> list,
@@ -61,17 +96,20 @@ public class AnimalContainerItem extends Item
 
         if (itemStack.hasTag())
         {
-            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            CompoundTag animal = itemStack.getTag().getCompound(TAG_ANIMAL);
+            CompoundTag animalData = itemStack.getTag().getCompound(TAG_ANIMAL_DATA);
+
+            if (animal.contains(TAG_ENTITY_ID))
             {
                 list.add(new TranslatableComponent("item.animal_pen.water_animal_container.entity",
-                    AnimalContainerItem.getEntityTranslationName(itemStack.getTag().getString(TAG_ENTITY_ID))).
+                    AnimalContainerItem.getEntityTranslationName(animal.getString(TAG_ENTITY_ID))).
                     withStyle(ChatFormatting.GRAY));
             }
 
-            if (itemStack.getTag().contains(TAG_AMOUNT))
+            if (animalData.contains(TAG_AMOUNT))
             {
                 list.add(new TranslatableComponent("item.animal_pen.water_animal_container.amount",
-                    itemStack.getTag().getLong(TAG_AMOUNT)).
+                    animalData.getLong(TAG_AMOUNT)).
                     withStyle(ChatFormatting.GRAY));
             }
 
@@ -82,7 +120,7 @@ public class AnimalContainerItem extends Item
                     withStyle(ChatFormatting.GRAY));
             }
 
-            if (itemStack.getTag().contains(TAG_ENTITY_ID))
+            if (animal.contains(TAG_ENTITY_ID))
             {
                 list.add(TextComponent.EMPTY);
                 list.add(new TranslatableComponent("item.animal_pen.water_animal_container.release").
@@ -91,7 +129,7 @@ public class AnimalContainerItem extends Item
         }
 
         if (!itemStack.hasTag() ||
-            !itemStack.getTag().contains(TAG_ENTITY_ID))
+            !itemStack.getTag().getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             list.add(new TranslatableComponent("item.animal_pen.water_animal_container.tip").
                 withStyle(ChatFormatting.GRAY));
@@ -209,22 +247,23 @@ public class AnimalContainerItem extends Item
             }
         }
 
-        if (!itemTag.contains(TAG_ENTITY_ID))
+        if (!itemTag.contains(TAG_ANIMAL))
         {
-            animal.save(itemTag);
+            CompoundTag animalTag = new CompoundTag();
+            animal.save(animalTag);
+            itemTag.put(TAG_ANIMAL, animalTag);
         }
 
-        if (itemTag.contains(TAG_AMOUNT))
+        CompoundTag animalData = itemTag.getCompound(TAG_ANIMAL_DATA);
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
+
+        if (maxCount > 0 && animalData.getLong(TAG_AMOUNT) + 1 > maxCount)
         {
-            long maxCount = AnimalPen.config().getMaximalAnimalCount();
-
-            if (maxCount > 0 && itemTag.getLong(TAG_AMOUNT) + 1 > maxCount)
-            {
-                return InteractionResult.FAIL;
-            }
-
-            itemTag.putLong(TAG_AMOUNT, itemTag.getLong(TAG_AMOUNT) + 1);
+            return InteractionResult.FAIL;
         }
+
+        animalData.putLong(TAG_AMOUNT, animalData.getLong(TAG_AMOUNT) + 1);
+        itemTag.put(TAG_ANIMAL_DATA, animalData);
 
         itemStack.setTag(itemTag);
 
@@ -268,7 +307,7 @@ public class AnimalContainerItem extends Item
         {
             // Try to release animal.
             ItemStack itemInHand = useOnContext.getItemInHand();
-            CompoundTag itemTag = itemInHand.getOrCreateTag().copy();
+            CompoundTag itemTag = itemInHand.getOrCreateTag().getCompound(TAG_ANIMAL).copy();
 
             if (!itemTag.contains(TAG_ENTITY_ID))
             {
@@ -285,8 +324,6 @@ public class AnimalContainerItem extends Item
 
             itemTag.put("Pos", pos);
             itemTag.remove("UUID");
-            itemTag.remove(TAG_VARIANTS);
-            itemTag.remove(TAG_AMOUNT);
 
             EntityType.create(itemTag, level).
                 map(entity -> (WaterAnimal) entity).
@@ -300,13 +337,21 @@ public class AnimalContainerItem extends Item
 
                     level.addFreshEntity(clone);
 
-                    long amount = itemInHand.getOrCreateTag().getLong(TAG_AMOUNT);
-                    itemInHand.getOrCreateTag().putLong(TAG_AMOUNT, amount - 1);
+                    CompoundTag inHandTag = itemInHand.getOrCreateTag();
+                    CompoundTag animalData = inHandTag.getCompound(TAG_ANIMAL_DATA);
+
+                    long amount = animalData.getLong(TAG_AMOUNT);
+                    animalData.putLong(TAG_AMOUNT, amount - 1);
 
                     if (amount - 1 <= 0)
                     {
                         // Clear item tag.
                         itemInHand.setTag(new CompoundTag());
+                    }
+                    else
+                    {
+                        inHandTag.put(TAG_ANIMAL_DATA, animalData);
+                        itemInHand.setTag(inHandTag);
                     }
 
                     player.setItemInHand(useOnContext.getHand(), itemInHand);
@@ -327,13 +372,13 @@ public class AnimalContainerItem extends Item
     {
         CompoundTag itemTag = itemStack.getTag();
 
-        if (itemTag == null || !itemTag.contains(TAG_ENTITY_ID))
+        if (itemTag == null || !itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             // Empty cage.
             return true;
         }
 
-        String entityType = itemTag.getString(TAG_ENTITY_ID);
+        String entityType = itemTag.getCompound(TAG_ANIMAL).getString(TAG_ENTITY_ID);
 
         return new ResourceLocation(entityType).equals(entity.getType().arch$registryName());
     }
@@ -396,7 +441,7 @@ public class AnimalContainerItem extends Item
 
         CompoundTag itemTag = itemStack.getOrCreateTag();
 
-        if (!itemTag.contains(TAG_ENTITY_ID))
+        if (!itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             return false;
         }
@@ -443,7 +488,8 @@ public class AnimalContainerItem extends Item
         CompoundTag itemTag = mainItem.getOrCreateTag();
         CompoundTag redundantTag = redundantItem.getOrCreateTag();
 
-        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
+        if (!itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID) ||
+            !redundantTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             return false;
         }
@@ -483,7 +529,8 @@ public class AnimalContainerItem extends Item
         CompoundTag itemTag = mainItem.getOrCreateTag();
         CompoundTag redundantTag = redundantItem.getOrCreateTag();
 
-        if (!itemTag.contains(TAG_ENTITY_ID) || !redundantTag.contains(TAG_ENTITY_ID))
+        if (!itemTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID) ||
+            !redundantTag.getCompound(TAG_ANIMAL).contains(TAG_ENTITY_ID))
         {
             return;
         }
@@ -513,9 +560,63 @@ public class AnimalContainerItem extends Item
     }
 
 
+    public static long getAnimalCount(ItemStack itemStack)
+    {
+        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
+        {
+            // not animal cage
+            return 0L;
+        }
+
+        if (!itemStack.hasTag() || !itemStack.getTag().contains(TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
+        {
+            return 0L;
+        }
+
+        return itemStack.getTagElement(TAG_ANIMAL_DATA).getLong(TAG_AMOUNT);
+    }
+
+
+    public static boolean setAnimalCount(ItemStack itemStack, long change)
+    {
+        if (!itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
+        {
+            // not animal cage
+            return false;
+        }
+
+        if (!itemStack.hasTag() || !itemStack.getTag().contains(TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
+        {
+            return false;
+        }
+
+        long animalCount = itemStack.getTagElement(TAG_ANIMAL_DATA).getLong(TAG_AMOUNT);
+
+        if (change < 0 && animalCount + change < 0)
+        {
+            return false;
+        }
+
+        long maxCount = AnimalPen.config().getMaximalAnimalCount();
+
+        if (maxCount > 0 && animalCount + change > maxCount)
+        {
+            return false;
+        }
+
+        itemStack.getTagElement(TAG_ANIMAL_DATA).putLong(TAG_AMOUNT, animalCount + change);
+
+        return true;
+    }
+
+
     public static final String TAG_ENTITY_ID = "id";
 
     public static final String TAG_VARIANTS = "animal_variants";
 
     public static final String TAG_AMOUNT = "animal_count";
+
+    public static final String TAG_ANIMAL = "animal";
+
+    public static final String TAG_ANIMAL_DATA = "animal_data";
 }
