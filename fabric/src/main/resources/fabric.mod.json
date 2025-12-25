@@ -23,10 +23,10 @@
     "animal_pen-fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.18.2",
+    "fabricloader": ">=0.18.4",
     "minecraft": "~1.21.11",
     "java": ">=21"
-  ,"architectury": ">=18.0.3"
+  ,"architectury": ">=19.0.1"
   },
   "suggests": {
     "another-mod": "*"

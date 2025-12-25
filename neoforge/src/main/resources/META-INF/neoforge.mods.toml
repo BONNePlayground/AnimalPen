@@ -30,7 +30,7 @@ side = "BOTH"
 [[dependencies.animal_pen]]
 modId = "architectury"
 type = "required"
-versionRange = "[18.0.3,)"
+versionRange = "[19.0.1,)"
 ordering = "AFTER"
 side = "BOTH"
 
