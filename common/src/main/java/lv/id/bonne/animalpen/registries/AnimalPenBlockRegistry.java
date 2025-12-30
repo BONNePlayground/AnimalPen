@@ -35,12 +35,14 @@ public class AnimalPenBlockRegistry
         REGISTRY.register();
     }
 
+
     private static <T extends Block> RegistrySupplier<T> registerBlock(String name, Supplier<T> block)
     {
         RegistrySupplier<T> toReturn = REGISTRY.register(name, block);
         registerBlockItem(name, toReturn);
         return toReturn;
     }
+
 
     private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
     {
@@ -51,9 +53,13 @@ public class AnimalPenBlockRegistry
 
     /**
      * This method registers animal pen with specified wood type
+     *
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, Material material, MaterialColor materialColor, SoundType soundType)
+    public static void registerPen(WoodType woodType,
+        Material material,
+        MaterialColor materialColor,
+        SoundType soundType)
     {
         String woodName = woodType.name().toLowerCase();
 
@@ -91,7 +97,8 @@ public class AnimalPenBlockRegistry
                 noOcclusion())
     );
 
-    static {
+    static
+    {
         registerPen(WoodType.OAK, Material.WOOD, MaterialColor.WOOD, SoundType.WOOD);
         registerPen(WoodType.SPRUCE, Material.WOOD, MaterialColor.PODZOL, SoundType.WOOD);
         registerPen(WoodType.BIRCH, Material.WOOD, MaterialColor.SAND, SoundType.WOOD);

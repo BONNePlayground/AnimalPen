@@ -22,19 +22,25 @@ public class AnimalPenTags
      * Tags for animal pen blocks.
      */
     public static final TagKey<Block> ANIMAL_PEN_BLOCKS = TagKey.create(Registry.BLOCK_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_pens"));
+        AnimalPen.resourceOf("animal_pens"));
 
+    /**
+     * Tags for animal pen items.
+     */
+    public static final TagKey<Item> ANIMAL_PEN_ITEMS = TagKey.create(Registry.ITEM_REGISTRY,
+        AnimalPen.resourceOf( "animal_pens"));
+    
     /**
      * Tag that stores which tools can attack entity in animal pen
      */
     public static final TagKey<Item> ANIMAL_PEN_ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_pen"));
+        AnimalPen.resourceOf( "can_attack_pen"));
 
     /**
      * Tag that stores which tools can attack entity in aquarium
      */
     public static final TagKey<Item> AQUARIUM_ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "can_attack_aquarium"));
+        AnimalPen.resourceOf( "can_attack_aquarium"));
 
     /**
      * Tag that stores forge shears items.
@@ -52,11 +58,11 @@ public class AnimalPenTags
      * Tag that stores entities pickable by animal cage.
      */
     public static final TagKey<EntityType<?>> ANIMAL_CAGE_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_cage_pickable"));
+        AnimalPen.resourceOf( "animal_cage_pickable"));
 
     /**
      * Tag that stores entities pickable by water mob container.
      */
     public static final TagKey<EntityType<?>> WATER_MOB_CONTAINER_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
-        new ResourceLocation(AnimalPen.MOD_ID, "water_mob_container_pickable"));
+        AnimalPen.resourceOf( "water_mob_container_pickable"));
 }

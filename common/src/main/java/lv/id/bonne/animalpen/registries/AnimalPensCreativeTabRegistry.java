@@ -20,6 +20,7 @@ public class AnimalPensCreativeTabRegistry
     {
     }
 
+
     public static final CreativeModeTab ANIMAL_PEN_TAB = CreativeTabRegistry.create(
         new ResourceLocation(AnimalPen.MOD_ID, "animal_pen"),
         () -> new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get())
