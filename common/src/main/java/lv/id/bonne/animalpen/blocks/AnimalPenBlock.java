@@ -3,7 +3,6 @@ package lv.id.bonne.animalpen.blocks;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
@@ -97,7 +96,7 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
-                return InteractionResult.SUCCESS;
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
             else
             {
@@ -295,15 +294,6 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     }
 
 
-    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
-        BlockEntityType<A> type,
-        BlockEntityType<E> expectedType,
-        BlockEntityTicker<? super E> ticker)
-    {
-        return type == expectedType ? (BlockEntityTicker<A>) ticker : null;
-    }
-
-
     @Override
     @Nullable
     public <T extends BlockEntity> GameEventListener getListener(Level level, T blockEntity)
@@ -326,6 +316,16 @@ public class AnimalPenBlock extends HorizontalDirectionalBlock implements Entity
     {
         return false;
     }
+
+
+    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
+        BlockEntityType<A> type,
+        BlockEntityType<E> expectedType,
+        BlockEntityTicker<? super E> ticker)
+    {
+        return type == expectedType ? (BlockEntityTicker<A>) ticker : null;
+    }
+
 
     private final VoxelShape SHAPE = Shapes.or(
         Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),

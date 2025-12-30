@@ -55,17 +55,22 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
 
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos)
+    {
         return true;
     }
 
+
     @Override
-    public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+    public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
+    {
         return Shapes.empty();
     }
 
+
     @Override
-    public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos) {
+    public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos)
+    {
         return 1.0F;
     }
 
@@ -120,7 +125,7 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
-                return InteractionResult.SUCCESS;
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
             else
             {
@@ -319,15 +324,6 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     }
 
 
-    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
-        BlockEntityType<A> type,
-        BlockEntityType<E> expectedType,
-        BlockEntityTicker<? super E> ticker)
-    {
-        return type == expectedType ? (BlockEntityTicker<A>) ticker : null;
-    }
-
-
     @Override
     @Nullable
     public <T extends BlockEntity> GameEventListener getListener(Level level, T blockEntity)
@@ -350,6 +346,16 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
     {
         return false;
     }
+
+
+    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
+        BlockEntityType<A> type,
+        BlockEntityType<E> expectedType,
+        BlockEntityTicker<? super E> ticker)
+    {
+        return type == expectedType ? (BlockEntityTicker<A>) ticker : null;
+    }
+
 
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 

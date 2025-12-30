@@ -9,10 +9,8 @@ package lv.id.bonne.animalpen.blocks.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -134,7 +132,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         animal.tickCount = tileEntity.getTickCounter();
 
         poseStack.pushPose();
-        poseStack.translate(0, (4/16f), 0);
+        poseStack.translate(0, (4 / 16f), 0);
 
         float animalSize = AnimalPen.config().getAnimalSize();
 
@@ -186,7 +184,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 2/16f, -0.51f);
+        poseStack.translate(0, 2 / 16f, -0.51f);
 
         // Create text
         TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
@@ -352,7 +350,7 @@ public class AnimalPenRenderer implements BlockEntityRenderer<AnimalPenTileEntit
         for (Component part : text.toFlatList(Style.EMPTY))
         {
             // apply offset
-            poseStack.translate(leftOffset, 0 , 0);
+            poseStack.translate(leftOffset, 0, 0);
             String content = part.getString();
 
             if (content.equals("\uE000"))

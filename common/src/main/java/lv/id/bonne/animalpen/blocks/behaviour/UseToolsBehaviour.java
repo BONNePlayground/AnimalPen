@@ -9,8 +9,7 @@ package lv.id.bonne.animalpen.blocks.behaviour;
 
 import org.jetbrains.annotations.NotNull;
 
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
-import lv.id.bonne.animalpen.interfaces.AnimalPenInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.core.BlockPos;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 
@@ -33,6 +31,7 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 {
     /**
      * The default constructor
+     *
      * @param dispenseItemBehavior Original item behaviour.
      */
     public UseToolsBehaviour(DispenseItemBehavior dispenseItemBehavior)
@@ -49,10 +48,12 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 
         if (!level.isClientSide())
         {
-            BlockPos blockPos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
+            BlockPos blockPos =
+                blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
             BlockState blockState = level.getBlockState(blockPos);
 
-            if (!blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) && !blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()))
+            if (!blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) &&
+                !blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()))
             {
                 // If not animal pen/aquarium then return to original output
                 return this.originalBehaviour.dispense(blockSource, itemStack);
@@ -60,28 +61,17 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
 
-            if (blockEntity instanceof AnimalPenBlockInterface<?> ani)
+            if (blockEntity instanceof AbstractAnimalPenBlockEntity ani && level instanceof ServerLevel serverLevel)
             {
-                ItemStack output = ani.getStoredAnimal().
-                    map(animal ->
-                        ((AnimalPenInterface) animal).animalPenInteract((ServerLevel) level, itemStack, blockPos)).
-                    orElse(ItemStack.EMPTY);
-
+                AbstractAnimalPenBlockEntity.Result result = ani.interactWithPen(serverLevel, blockSource, itemStack);
                 ani.triggerUpdate();
 
-                if (output.isEmpty())
+                if (result.success())
                 {
-                    // if output is empty, do nothing
-                    return itemStack;
+                    return result.result();
                 }
 
-                if (!itemStack.isEmpty() && ((DispenserBlockEntity) blockSource.getEntity()).addItem(output.copy()) < 0)
-                {
-                    // If it failed to insert into dispenser, use default dispense behaviour
-                    this.defaultDispenseItemBehavior.dispense(blockSource, output.copy());
-                }
-
-                return itemStack.isEmpty() ? output : itemStack;
+                return itemStack;
             }
         }
 

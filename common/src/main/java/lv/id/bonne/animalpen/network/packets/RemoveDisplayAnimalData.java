@@ -4,7 +4,7 @@ package lv.id.bonne.animalpen.network.packets;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +18,7 @@ public class RemoveDisplayAnimalData
 {
     /**
      * The encoding of the packet.
+     *
      * @param position The block position that is affected.
      * @param index The removed variant index.
      * @return packet buffer.
@@ -35,6 +36,7 @@ public class RemoveDisplayAnimalData
 
     /**
      * This method handles incoming packet on server.
+     *
      * @param friendlyByteBuf The incoming packet.
      * @param packetContext The packet context.
      */
@@ -47,7 +49,7 @@ public class RemoveDisplayAnimalData
         {
             Level level = packetContext.getPlayer().getLevel();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.removeAnimalVariant(index);
             }

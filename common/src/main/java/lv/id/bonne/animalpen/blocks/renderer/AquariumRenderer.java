@@ -132,7 +132,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         animal.tickCount = tileEntity.getTickCounter();
 
         poseStack.pushPose();
-        poseStack.translate(0.00, 12/16f, 0);
+        poseStack.translate(0.00, 12 / 16f, 0);
 
         float animalSize = AnimalPen.config().getWaterAnimalSize();
 
@@ -184,7 +184,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         poseStack.pushPose();
 
         // Move to block face 7 at the end because 1/16 is a "sign" in front
-        poseStack.translate(0, 2/16f, -0.51f);
+        poseStack.translate(0, 2 / 16f, -0.51f);
 
         // Create text
         TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
@@ -350,7 +350,7 @@ public class AquariumRenderer implements BlockEntityRenderer<AquariumTileEntity>
         for (Component part : text.toFlatList(Style.EMPTY))
         {
             // apply offset
-            poseStack.translate(leftOffset, 0 , 0);
+            poseStack.translate(leftOffset, 0, 0);
             String content = part.getString();
 
             if (content.equals("\uE000"))

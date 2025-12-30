@@ -15,13 +15,13 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
-import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
+import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +40,8 @@ public class AnimalPenClient
 
         ItemPropertiesRegistry.registerGeneric(new ResourceLocation(AnimalPen.MOD_ID, "filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->
-                itemStack.getTag() != null && itemStack.getTag().contains(AnimalCageItem.TAG_ANIMAL) ? 1.0f : 0.0f));
+                itemStack.getTag() != null && itemStack.getTag().contains(AnimalPenCompoundTags.TAG_ANIMAL) ?
+                    1.0f : 0.0f));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 
@@ -53,7 +54,7 @@ public class AnimalPenClient
                 return EventResult.pass();
             }
 
-            if (!(player.getLevel().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
+            if (!(player.getLevel().getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity blockEntity))
             {
                 return EventResult.pass();
             }

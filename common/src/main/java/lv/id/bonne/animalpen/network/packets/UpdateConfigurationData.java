@@ -7,7 +7,7 @@ import java.util.UUID;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -21,11 +21,15 @@ public class UpdateConfigurationData
 {
     /**
      * The encoding of the packet.
+     *
      * @param position The block position that is affected.
      * @param displaySize The new displaySize of entity.
      * @return packet buffer.
      */
-    public static FriendlyByteBuf encode(BlockPos position, long displaySize, long protectedAmount, @Nullable UUID owner)
+    public static FriendlyByteBuf encode(BlockPos position,
+        long displaySize,
+        long protectedAmount,
+        @Nullable UUID owner)
     {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 
@@ -49,6 +53,7 @@ public class UpdateConfigurationData
 
     /**
      * This method handles incoming packet on server.
+     *
      * @param friendlyByteBuf The incoming packet.
      * @param packetContext The packet context.
      */
@@ -64,7 +69,7 @@ public class UpdateConfigurationData
         {
             Level level = packetContext.getPlayer().getLevel();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.setAnimalDisplaySize(displaySize);
                 animalPen.setProtectedAmount(protectedAmount);

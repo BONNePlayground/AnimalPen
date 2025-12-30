@@ -22,18 +22,6 @@ import net.minecraft.network.FriendlyByteBuf;
  */
 public record UpdateVariantScreenData(BlockPos position)
 {
-    public static void encode(UpdateVariantScreenData packet, FriendlyByteBuf buffer)
-    {
-        buffer.writeBlockPos(packet.position);
-    }
-
-
-    public static UpdateVariantScreenData decode(FriendlyByteBuf buffer)
-    {
-        return new UpdateVariantScreenData(buffer.readBlockPos());
-    }
-
-
     public void handle(Supplier<NetworkManager.PacketContext> context)
     {
         NetworkManager.PacketContext packetContext = context.get();
@@ -65,5 +53,17 @@ public record UpdateVariantScreenData(BlockPos position)
             // Trigger update on screen
             screenSelection.update();
         });
+    }
+
+
+    public static void encode(UpdateVariantScreenData packet, FriendlyByteBuf buffer)
+    {
+        buffer.writeBlockPos(packet.position);
+    }
+
+
+    public static UpdateVariantScreenData decode(FriendlyByteBuf buffer)
+    {
+        return new UpdateVariantScreenData(buffer.readBlockPos());
     }
 }
