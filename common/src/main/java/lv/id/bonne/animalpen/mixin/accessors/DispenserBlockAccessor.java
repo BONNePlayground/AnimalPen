@@ -9,11 +9,9 @@ package lv.id.bonne.animalpen.mixin.accessors;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-
 import java.util.Map;
 
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.DispenserBlock;
 
@@ -22,7 +20,8 @@ import net.minecraft.world.level.block.DispenserBlock;
 public interface DispenserBlockAccessor
 {
     @Accessor("DISPENSER_REGISTRY")
-    public static Map<Item, DispenseItemBehavior> getDispenserRegistry() {
+    static Map<Item, DispenseItemBehavior> getDispenserRegistry()
+    {
         throw new AssertionError();
     }
 }

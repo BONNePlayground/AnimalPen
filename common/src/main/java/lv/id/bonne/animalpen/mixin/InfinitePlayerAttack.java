@@ -14,8 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
-import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.client.Minecraft;
@@ -27,26 +25,13 @@ import net.minecraft.world.level.block.state.BlockState;
 
 
 /**
- * This mixin injects into method that controls player attacking on block.
- * In situation when it attacks to the animal pen or aquarium with attack tool it resets destroyBlockPos
- * to default state.
- * This will allow to hold mouse button and continuously trigger block attack method.
+ * This mixin injects into method that controls player attacking on block. In situation when it attacks to the animal
+ * pen or aquarium with attack tool it resets destroyBlockPos to default state. This will allow to hold mouse button and
+ * continuously trigger block attack method.
  */
 @Mixin(MultiPlayerGameMode.class)
 public class InfinitePlayerAttack
 {
-    @Shadow
-    private ItemStack destroyingItem;
-
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
-
-    @Shadow
-    private BlockPos destroyBlockPos;
-
-
     @Inject(method = "startDestroyBlock",
         at = @At(value = "INVOKE",
             shift = At.Shift.AFTER,
@@ -57,10 +42,23 @@ public class InfinitePlayerAttack
     {
         BlockState blockState = this.minecraft.level.getBlockState(this.destroyBlockPos);
 
-        if (blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) && this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
-            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) && this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
+        if (blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) &&
+            this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
+            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) &&
+                this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
         {
             this.destroyBlockPos = new BlockPos(-1, -1, -1);
         }
     }
+
+
+    @Shadow
+    private ItemStack destroyingItem;
+
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
+    @Shadow
+    private BlockPos destroyBlockPos;
 }

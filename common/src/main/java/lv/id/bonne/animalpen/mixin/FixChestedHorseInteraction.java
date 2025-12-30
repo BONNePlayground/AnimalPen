@@ -7,7 +7,6 @@
 package lv.id.bonne.animalpen.mixin;
 
 
-import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,8 +21,8 @@ import net.minecraft.world.item.ItemStack;
 
 
 /**
- * Either I rewrite everything to be an Interaction event, or just make that animal cage should not
- * trigger interaction with chested horses.
+ * Either I rewrite everything to be an Interaction event, or just make that animal cage should not trigger interaction
+ * with chested horses.
  */
 @Mixin(AbstractChestedHorse.class)
 public class FixChestedHorseInteraction
