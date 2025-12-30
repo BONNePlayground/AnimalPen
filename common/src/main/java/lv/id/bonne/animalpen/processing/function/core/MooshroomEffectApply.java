@@ -14,7 +14,6 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
-import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
