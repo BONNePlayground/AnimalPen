@@ -10,6 +10,17 @@ loom {
     }
 
     runs {
+        dataGen {
+            data()
+            programArg("--mod")
+            programArg("animal_pen")
+            programArg("--server")
+            programArg("--output")
+            programArg(file('src/main/generated/resources/').absolutePath)
+            programArg("--existing")
+            programArg(file('src/main/resources/').absolutePath)
+        }
+
         devClient {
             client()
             programArg("--username=Dev")
