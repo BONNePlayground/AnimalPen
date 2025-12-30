@@ -65,5 +65,5 @@ public class UpdateDisplayAnimalData
     /**
      * The resource ID.
      */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal");
+    public static final ResourceLocation ID = AnimalPen.resourceOf("update_display_animal");
 }

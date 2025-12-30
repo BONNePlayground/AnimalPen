@@ -1242,12 +1242,12 @@ public class VariantScreenSelection extends Screen
      * The texture of menu
      */
     private static final ResourceLocation TEXTURE =
-        new ResourceLocation(AnimalPen.MOD_ID, "textures/gui/animal_selection.png");
+        AnimalPen.resourceOf("textures/gui/animal_selection.png");
 
     /**
      * The texture of cooldown
      */
     private static final ResourceLocation COOLDOWN_TEXTURE =
-        new ResourceLocation(AnimalPen.MOD_ID, "textures/gui/cooldown_area.png");
+        AnimalPen.resourceOf("textures/gui/cooldown_area.png");
 }
 

@@ -96,7 +96,7 @@ public final class AnimalPen
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
             new AnimalInteractionReloadListener(),
-            new ResourceLocation(MOD_ID, "animal_interactions"));
+            AnimalPen.resourceOf("animal_interactions"));
 
         PlayerEvent.PLAYER_JOIN.register(player ->
         {
@@ -145,5 +145,5 @@ public final class AnimalPen
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
 
     public static final NetworkChannel CHANNEL =
-        NetworkChannel.create(new ResourceLocation(AnimalPen.MOD_ID, "network"));
+        NetworkChannel.create(AnimalPen.resourceOf("network"));
 }

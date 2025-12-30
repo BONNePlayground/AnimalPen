@@ -64,5 +64,5 @@ public class RemoveDisplayAnimalData
     /**
      * The resource ID.
      */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "remove_display_animal");
+    public static final ResourceLocation ID = AnimalPen.resourceOf("remove_display_animal");
 }

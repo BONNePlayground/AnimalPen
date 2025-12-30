@@ -86,5 +86,5 @@ public class UpdateConfigurationData
     /**
      * The resource ID.
      */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_configuration");
+    public static final ResourceLocation ID = AnimalPen.resourceOf("update_configuration");
 }
