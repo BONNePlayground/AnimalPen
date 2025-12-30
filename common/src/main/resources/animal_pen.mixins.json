@@ -9,22 +9,12 @@
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "FixChestedHorseInteraction",
-    "MobAccessor",
-    "accessors.AnimalInvoker",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
-    "accessors.WaterAnimalInvoker",
-    "animal.AnimalPenAnimal",
-    "animal.AnimalPenAxolotl",
-    "animal.AnimalPenBee",
-    "animal.AnimalPenChicken",
-    "animal.AnimalPenCow",
-    "animal.AnimalPenGoat",
-    "animal.AnimalPenMushroomCow",
-    "animal.AnimalPenSheep",
-    "animal.AnimalPenTurtle",
-    "wateranimal.AnimalPenAbstractFish",
-    "wateranimal.AnimalPenWaterAnimal"
+    "accessors.MobAccessor",
+    "accessors.MushroomCowAccessor",
+    "invokers.AnimalInvoker",
+    "invokers.WaterAnimalInvoker"
   ],
   "injectors": {
     "defaultRequire": 1
