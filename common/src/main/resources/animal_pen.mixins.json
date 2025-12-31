@@ -11,9 +11,9 @@
     "FixChestedHorseInteraction",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
-    "accessors.MobAccessor",
     "accessors.MushroomCowAccessor",
     "invokers.AnimalInvoker",
+    "invokers.MobInvoker",
     "invokers.WaterAnimalInvoker"
   ],
   "injectors": {

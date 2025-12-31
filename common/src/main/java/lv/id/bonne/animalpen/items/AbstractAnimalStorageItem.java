@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-import lv.id.bonne.animalpen.mixin.accessors.MobAccessor;
+import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
@@ -370,7 +370,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
             ItemStack stack = mob.getItemBySlot(slot);
 
-            if (mob.getRandom().nextFloat() < ((MobAccessor) mob).callGetEquipmentDropChance(slot))
+            if (mob.getRandom().nextFloat() < ((MobInvoker) mob).callGetEquipmentDropChance(slot))
             {
                 Block.popResource(mob.level, mob.blockPosition(), stack);
             }

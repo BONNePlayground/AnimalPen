@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin.accessors;
+package lv.id.bonne.animalpen.mixin.invokers;
 
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Mob;
 
 
 @Mixin(Mob.class)
-public interface MobAccessor
+public interface MobInvoker
 {
     @Invoker
     float callGetEquipmentDropChance(EquipmentSlot equipmentSlot);
