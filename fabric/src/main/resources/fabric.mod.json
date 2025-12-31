@@ -18,7 +18,7 @@
       "lv.id.bonne.animalpen.client.fabric.AnimalPenFabricClient"
     ],
     "fabric-datagen": [
-      "lv.id.bonne.animalpen.datagen.fabric.AnimalPenFabricDataGen"
+      "lv.id.bonne.animalpen.data.provider.fabric.AnimalPenFabricDataGen"
     ]
   },
   "mixins": [

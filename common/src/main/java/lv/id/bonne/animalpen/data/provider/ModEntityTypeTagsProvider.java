@@ -7,24 +7,21 @@
 package lv.id.bonne.animalpen.data.provider;
 
 
+import lv.id.bonne.animalpen.data.helper.SimpleTagAppender;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.EntityTypeTagsProvider;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
 
-public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider
+@FunctionalInterface
+public interface ModEntityTypeTagsProvider
 {
-    public ModEntityTypeTagsProvider(DataGenerator generator)
-    {
-        super(generator);
-    }
+    SimpleTagAppender<EntityType<?>> modTag(TagKey<EntityType<?>> tag);
 
 
-    @Override
-    protected void addTags()
+    default void addModTags()
     {
-        this.tag(AnimalPenTags.ANIMAL_CAGE_PICKABLE).
+        this.modTag(AnimalPenTags.ANIMAL_CAGE_PICKABLE).
             add(EntityType.BEE).
             add(EntityType.CAT).
             add(EntityType.CHICKEN).
@@ -49,7 +46,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider
             add(EntityType.TRADER_LLAMA).
             add(EntityType.WOLF).
             add(EntityType.ZOMBIE_HORSE);
-        this.tag(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE).
+        this.modTag(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE).
             add(EntityType.AXOLOTL).
             add(EntityType.COD).
             add(EntityType.PUFFERFISH).
@@ -59,12 +56,5 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider
             add(EntityType.SQUID).
             add(EntityType.GLOW_SQUID).
             add(EntityType.TURTLE);
-    }
-
-
-    @Override
-    public String getName()
-    {
-        return "Animal Pen EntityType Tags";
     }
 }

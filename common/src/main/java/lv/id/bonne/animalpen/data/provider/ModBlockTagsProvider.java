@@ -7,34 +7,28 @@
 package lv.id.bonne.animalpen.data.provider;
 
 
+import java.util.function.Supplier;
+
+import lv.id.bonne.animalpen.data.helper.SimpleTagAppender;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
 
-public class ModBlockTagsProvider extends BlockTagsProvider
+@FunctionalInterface
+public interface ModBlockTagsProvider
 {
-    public ModBlockTagsProvider(DataGenerator generator)
+    SimpleTagAppender<Block> modTag(TagKey<Block> tag);
+
+
+    default void addModTags()
     {
-        super(generator);
-    }
-
-
-    @Override
-    protected void addTags()
-    {
-        TagAppender<Block> tag = this.tag(AnimalPenTags.ANIMAL_PEN_BLOCKS);
-
-        AnimalPenBlockRegistry.ANIMAL_PENS.values().
-            forEach(blockSupplier -> tag.add(blockSupplier.get()));
-    }
-
-
-    @Override
-    public String getName()
-    {
-        return "Animal Pen Block Tags";
+        this.modTag(AnimalPenTags.ANIMAL_PEN_BLOCKS).add(
+            AnimalPenBlockRegistry.ANIMAL_PENS.values().
+                stream().
+                map(Supplier::get).
+                toArray(Block[]::new)
+        );
     }
 }
