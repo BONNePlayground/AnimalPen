@@ -2,43 +2,28 @@ package lv.id.bonne.animalpen.blocks;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
-import dev.architectury.hooks.level.entity.PlayerHooks;
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 
-public class AquariumBlock extends HorizontalDirectionalBlock implements EntityBlock
+public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEntity>
 {
     public AquariumBlock(Properties properties)
     {
@@ -46,6 +31,20 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         this.registerDefaultState(this.getStateDefinition().any().
             setValue(FACING, Direction.NORTH).
             setValue(FILLED, false));
+    }
+
+
+    @Override
+    protected TagKey<Item> getAttackToolTag()
+    {
+        return AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS;
+    }
+
+
+    @Override
+    protected BlockEntityType<AquariumTileEntity> getTileType()
+    {
+        return AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get();
     }
 
 
@@ -76,186 +75,8 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
 
 
 // ---------------------------------------------------------------------
-// Section: Interaction
-// ---------------------------------------------------------------------
-
-
-    @Override
-    @NotNull
-    public InteractionResult use(BlockState blockState,
-        Level level,
-        BlockPos blockPos,
-        Player player,
-        InteractionHand interactionHand,
-        BlockHitResult blockHitResult)
-    {
-        InteractionResult result = super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
-
-        if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
-        {
-            AnimalPen.sendDebug("Blocked by external forces");
-            return InteractionResult.SUCCESS;
-        }
-
-        ItemStack itemInHand = player.getItemInHand(interactionHand);
-
-        if (itemInHand.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()))
-        {
-            if (level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity &&
-                entity.processContainer(player, interactionHand))
-            {
-                return InteractionResult.SUCCESS;
-            }
-            else
-            {
-                return InteractionResult.FAIL;
-            }
-        }
-        else
-        {
-            if (!(level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity))
-            {
-                return InteractionResult.FAIL;
-            }
-
-            if (PlayerHooks.isFake(player) && itemInHand.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
-            {
-                this.attack(blockState, level, blockPos, player);
-                return InteractionResult.SUCCESS;
-            }
-            else if (entity.interactWithPen(player, interactionHand))
-            {
-                return InteractionResult.sidedSuccess(level.isClientSide());
-            }
-            else
-            {
-                return InteractionResult.FAIL;
-            }
-        }
-    }
-
-
-    @Override
-    public void attack(BlockState blockState, Level level, BlockPos blockPos, Player player)
-    {
-        ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
-
-        if (weapon.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS) &&
-            !level.isClientSide() &&
-            level.getBlockEntity(blockPos) instanceof AquariumTileEntity entity)
-        {
-            if (player.getCooldowns().isOnCooldown(weapon.getItem()))
-            {
-                // item is on cooldown. Prevent attack
-                return;
-            }
-
-            entity.attackThePen(player, level);
-
-            if (PlayerHooks.isFake(player))
-            {
-                // Fake players do not need cooldowns
-                return;
-            }
-
-            int cooldown = AnimalPen.config().getAttackCooldown();
-
-            if (cooldown > 0)
-            {
-                player.getCooldowns().addCooldown(weapon.getItem(), cooldown);
-            }
-
-            return;
-        }
-
-        super.attack(blockState, level, blockPos, player);
-    }
-
-
-    @Override
-    public float getDestroyProgress(BlockState blockState, Player player, BlockGetter blockGetter, BlockPos blockPos)
-    {
-        ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
-
-        if (weapon.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
-        {
-            // Do not damage break block with tools you kill entity.
-            return 0f;
-        }
-
-        return super.getDestroyProgress(blockState, player, blockGetter, blockPos);
-    }
-
-
-// ---------------------------------------------------------------------
-// Section: Redstone related
-// ---------------------------------------------------------------------
-
-
-    @Override
-    public boolean hasAnalogOutputSignal(BlockState state)
-    {
-        return true;
-    }
-
-
-    @Override
-    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos)
-    {
-        BlockEntity tile = world.getBlockEntity(pos);
-
-        if (tile instanceof AquariumTileEntity aquarium)
-        {
-            return aquarium.getRedStoneSignal();
-        }
-
-        return 0;
-    }
-
-
-// ---------------------------------------------------------------------
 // Section: Placement related
 // ---------------------------------------------------------------------
-
-
-    /**
-     * This method drops all items from container when block is broken.
-     *
-     * @param state The BlockState.
-     * @param level Level where block is broken.
-     * @param pos Position of broken block.
-     * @param newState New block state.
-     * @param isMoving Boolean if block is moving.
-     */
-    @Override
-    public void onRemove(BlockState state,
-        @NotNull Level level,
-        @NotNull BlockPos pos,
-        BlockState newState,
-        boolean isMoving)
-    {
-        if (!state.is(newState.getBlock()))
-        {
-            BlockEntity tile = level.getBlockEntity(pos);
-
-            if (tile instanceof AquariumTileEntity entity)
-            {
-                for (int i = 0; i < entity.getInventory().getContainerSize(); i++)
-                {
-                    Containers.dropItemStack(level,
-                        pos.getX(),
-                        pos.getY(),
-                        pos.getZ(),
-                        entity.getInventory().getItem(i));
-                }
-
-                entity.getInventory().clearContent();
-                level.updateNeighbourForOutputSignal(pos, this);
-            }
-        }
-
-        super.onRemove(state, level, pos, newState, isMoving);
-    }
 
 
     /**
@@ -302,58 +123,6 @@ public class AquariumBlock extends HorizontalDirectionalBlock implements EntityB
         @NotNull CollisionContext context)
     {
         return SHAPE;
-    }
-
-
-    @Override
-    @Nullable
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState)
-    {
-        return AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get().create(blockPos, blockState);
-    }
-
-
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level,
-        @NotNull BlockState state,
-        @NotNull BlockEntityType<T> type)
-    {
-        return createTickerHelper(type,
-            AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get(),
-            (world, pos, blockState, tileEntity) -> tileEntity.tick());
-    }
-
-
-    @Override
-    @Nullable
-    public <T extends BlockEntity> GameEventListener getListener(Level level, T blockEntity)
-    {
-        return EntityBlock.super.getListener(level, blockEntity);
-    }
-
-
-    /**
-     * This method indicates if entities can path find over this block.
-     *
-     * @param state The block state.
-     * @param level Level where block is located.
-     * @param pos Position of the block.
-     * @param type The path finder type.
-     * @return {@code false} always
-     */
-    @Override
-    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type)
-    {
-        return false;
-    }
-
-
-    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
-        BlockEntityType<A> type,
-        BlockEntityType<E> expectedType,
-        BlockEntityTicker<? super E> ticker)
-    {
-        return type == expectedType ? (BlockEntityTicker<A>) ticker : null;
     }
 
 
