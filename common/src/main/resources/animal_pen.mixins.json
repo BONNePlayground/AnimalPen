@@ -12,9 +12,7 @@
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor",
-    "invokers.AnimalInvoker",
     "invokers.MobInvoker",
-    "invokers.WaterAnimalInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

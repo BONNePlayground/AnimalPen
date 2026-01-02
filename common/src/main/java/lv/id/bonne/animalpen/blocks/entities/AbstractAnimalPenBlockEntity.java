@@ -15,14 +15,12 @@ import java.util.*;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
-import lv.id.bonne.animalpen.mixin.invokers.AnimalInvoker;
+import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.PlayerInteractionExecutor;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
-import lv.id.bonne.animalpen.processing.function.wrapper.EntityFunctionEntry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -617,7 +615,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         animal.clearFire();
 
-        int reward = ((AnimalInvoker) animal).invokeGetExperienceReward(player);
+        int reward = ((MobInvoker) animal).invokeGetExperienceReward(player);
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
 
         if (AnimalPen.config().isTriggerAdvancements())
