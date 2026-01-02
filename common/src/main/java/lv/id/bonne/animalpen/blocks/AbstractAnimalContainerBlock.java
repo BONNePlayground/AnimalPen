@@ -48,6 +48,9 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
     protected abstract TagKey<Item> getAttackToolTag();
 
 
+    protected abstract Item getContainerItem();
+
+
     protected abstract BlockEntityType<T> getTileType();
 
 
@@ -70,7 +73,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
-        if (itemInHand.is(this.getAttackToolTag()))
+        if (itemInHand.is(this.getContainerItem()))
         {
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity &&
                 entity.processContainer(player, interactionHand))

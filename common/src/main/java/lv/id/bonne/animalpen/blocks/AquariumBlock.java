@@ -7,6 +7,7 @@ import java.util.Objects;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
@@ -45,6 +46,13 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     protected BlockEntityType<AquariumTileEntity> getTileType()
     {
         return AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get();
+    }
+
+
+    @Override
+    public Item getContainerItem()
+    {
+        return AnimalPensItemRegistry.ANIMAL_CONTAINER.get();
     }
 
 

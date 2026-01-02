@@ -7,6 +7,7 @@ import java.util.Objects;
 import lv.id.bonne.animalpen.blocks.entities.AviaryTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
@@ -41,6 +42,13 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     protected BlockEntityType<AviaryTileEntity> getTileType()
     {
         return AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get();
+    }
+
+
+    @Override
+    public Item getContainerItem()
+    {
+        return AnimalPensItemRegistry.BIRD_CATCHER.get();
     }
 
 
