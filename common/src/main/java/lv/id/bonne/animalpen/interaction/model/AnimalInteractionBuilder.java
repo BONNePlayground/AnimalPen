@@ -199,7 +199,7 @@ public class AnimalInteractionBuilder
      */
     public AnimalInteractionBuilder finishFunctions(FunctionKey... endFunctions)
     {
-        this.runFunctions.addAll(Arrays.asList(endFunctions));
+        this.finishFunctions.addAll(Arrays.asList(endFunctions));
         return this;
     }
 
