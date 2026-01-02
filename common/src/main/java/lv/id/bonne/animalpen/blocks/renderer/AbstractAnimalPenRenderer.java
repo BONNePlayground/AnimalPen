@@ -29,6 +29,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -50,8 +51,6 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         {
             return;
         }
-
-        this.initializeDyingAnimal(animal, tileEntity);
 
         Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
 
@@ -126,6 +125,8 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         // Allow subclasses to set additional pose properties
         this.configureAnimalPose(animal, tileEntity);
 
+        boolean update = animal.tickCount != tileEntity.getTickCounter();
+
         // Stop animations
         animal.tickCount = tileEntity.getTickCounter();
 
@@ -151,11 +152,27 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             getRenderer(animal).
             render(animal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
 
+        if (!tileEntity.getDeathTicker().isEmpty())
+        {
+            this.initializeDyingAnimal(animal, tileEntity);
+        }
+
         tileEntity.getDeathTicker().forEach(tick ->
         {
             if (this.dyingAnimal != null)
             {
                 this.dyingAnimal.deathTime = tick;
+                this.dyingAnimal.tickCount = animal.tickCount;
+
+                if (update && animal instanceof Squid squid && this.dyingAnimal instanceof Squid dead)
+                {
+                    dead.tentacleMovement = squid.tentacleMovement;
+                    dead.oldTentacleMovement = squid.oldTentacleMovement;
+                    dead.xBodyRot = squid.xBodyRot;
+                    dead.xBodyRotO = squid.xBodyRotO;
+                    dead.oldTentacleAngle = squid.oldTentacleAngle;
+                    dead.tentacleAngle = squid.tentacleAngle;
+                }
 
                 this.minecraft.getEntityRenderDispatcher().
                     getRenderer(this.dyingAnimal).
