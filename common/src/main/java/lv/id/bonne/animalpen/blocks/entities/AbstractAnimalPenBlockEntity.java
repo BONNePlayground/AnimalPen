@@ -1384,13 +1384,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 AnimalPenInteractionRegistry.getInteractions(animal);
 
             CompoundTag tag = this.getItemStack().getOrCreateTag();
+            CompoundTag cooldowns = tag.
+                getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
+                getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
             int returnValue = 1;
 
             for (AnimalInteraction interaction : interactions)
             {
-                if (interaction.matchAllConditions(tag))
+                if (interaction.redstoneSignal() > 0 &&
+                    interaction.redstoneSignal() < 4 &&
+                    interaction.matchAllConditions(tag) &&
+                    !cooldowns.contains(interaction.id()))
                 {
-                    returnValue |= (2 ^ interaction.redstoneSignal());
+                    returnValue |= (1 << interaction.redstoneSignal());
                 }
             }
 
