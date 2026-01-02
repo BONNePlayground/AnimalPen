@@ -29,14 +29,14 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
     @Override
     protected float getAnimalSize()
     {
-        return AnimalPen.config().getWaterAnimalSize();
+        return AnimalPen.config().getAquariumMobSize();
     }
 
 
     @Override
     protected boolean shouldGrowAnimals()
     {
-        return AnimalPen.config().isGrowWaterAnimals();
+        return AnimalPen.config().isGrowAquariumMob();
     }
 
 
@@ -106,7 +106,7 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
     @Override
     public boolean shouldRender(AquariumTileEntity blockEntity, Vec3 vec3)
     {
-        return AnimalPen.config().isGrowWaterAnimals() ||
+        return AnimalPen.config().isGrowAquariumMob() ||
             super.shouldRender(blockEntity, vec3);
     }
 }

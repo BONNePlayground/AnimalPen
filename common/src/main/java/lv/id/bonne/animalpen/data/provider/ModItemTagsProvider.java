@@ -57,6 +57,23 @@ public interface ModItemTagsProvider
             add(Items.DIAMOND_AXE).
             add(Items.NETHERITE_AXE);
 
+        this.modTag(AnimalPenTags.AVIARY_ATTACK_TOOLS).
+            optionalTag(ResourceLocation.tryParse("forge:knives")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("c:axes")).
+            optionalTag(ResourceLocation.tryParse("c:swords")).
+            optionalTag(ResourceLocation.tryParse("c:knives")).
+            add(Items.WOODEN_SWORD).
+            add(Items.STONE_SWORD).
+            add(Items.IRON_SWORD).
+            add(Items.DIAMOND_SWORD).
+            add(Items.NETHERITE_SWORD).
+            add(Items.WOODEN_AXE).
+            add(Items.STONE_AXE).
+            add(Items.IRON_AXE).
+            add(Items.DIAMOND_AXE).
+            add(Items.NETHERITE_AXE);
+
         this.modTag(AnimalPenTags.ANIMAL_PEN_ITEMS).copy(AnimalPenTags.ANIMAL_PEN_BLOCKS);
     }
 }

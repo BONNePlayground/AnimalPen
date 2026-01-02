@@ -16,6 +16,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
+import lv.id.bonne.animalpen.blocks.AviaryBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -91,6 +92,14 @@ public class AnimalPenBlockRegistry
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
+            BlockBehaviour.Properties.copy(Blocks.GLASS).
+                strength(1.0f).
+                sound(SoundType.GLASS).
+                noOcclusion())
+    );
+
+    public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
+        () -> new AviaryBlock(
             BlockBehaviour.Properties.copy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.GLASS).

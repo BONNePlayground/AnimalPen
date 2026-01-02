@@ -43,6 +43,12 @@ public class AnimalPenTags
         AnimalPen.resourceOf( "can_attack_aquarium"));
 
     /**
+     * Tag that stores which tools can attack entity in bird cage
+     */
+    public static final TagKey<Item> AVIARY_ATTACK_TOOLS = TagKey.create(Registry.ITEM_REGISTRY,
+        AnimalPen.resourceOf( "can_attack_aviary"));
+
+    /**
      * Tag that stores forge shears items.
      */
     public static final TagKey<Item> FORGE_SHEARS = TagKey.create(Registry.ITEM_REGISTRY,
@@ -65,4 +71,10 @@ public class AnimalPenTags
      */
     public static final TagKey<EntityType<?>> WATER_MOB_CONTAINER_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
         AnimalPen.resourceOf( "water_mob_container_pickable"));
+
+    /**
+     * Tag that stores entities pickable by bird catcher.
+     */
+    public static final TagKey<EntityType<?>> BIRD_CATCHER_PICKABLE = TagKey.create(Registry.ENTITY_TYPE_REGISTRY,
+        AnimalPen.resourceOf( "bird_catcher_pickable"));
 }

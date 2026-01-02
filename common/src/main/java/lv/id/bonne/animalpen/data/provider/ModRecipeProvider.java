@@ -63,6 +63,26 @@ public interface ModRecipeProvider
             unlockedBy("has_water_animal_container",
                 this.hasItem(AnimalPensItemRegistry.ANIMAL_CONTAINER.get())).
             save(consumer);
+
+        ShapedRecipeBuilder.shaped(AnimalPensItemRegistry.BIRD_CATCHER.get()).
+            define('B', Items.STRING).
+            define('S', Items.STICK).
+            pattern(" BB").
+            pattern(" SB").
+            pattern("S  ").
+            unlockedBy("has_crafting_table",
+                this.hasItem(Items.CRAFTING_TABLE)).
+            save(consumer);
+
+        ShapedRecipeBuilder.shaped(AnimalPenBlockRegistry.AVIARY.get()).
+            define('G', Items.CHAIN).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("GGG").
+            pattern("G G").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
     }
 
 

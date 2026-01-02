@@ -16,28 +16,28 @@ import net.minecraft.world.level.block.state.BlockState;
 
 
 /**
- * Animal Pen tile entity for land animals
+ * Aquarium tile entity for flying animals
  */
-public class AnimalPenTileEntity extends AbstractAnimalPenBlockEntity
+public class AviaryTileEntity extends AbstractAnimalPenBlockEntity
 {
-    public AnimalPenTileEntity(
+    public AviaryTileEntity(
         BlockPos blockPos,
         BlockState blockState)
     {
-        super(AnimalPenTileEntityRegistry.ANIMAL_PEN_TILE_ENTITY.get(), blockPos, blockState);
+        super(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(), blockPos, blockState);
     }
 
 
     @Override
     public boolean canGrowEntity()
     {
-        return AnimalPen.config().isGrowAnimalPenMob();
+        return AnimalPen.config().isGrowAviaryMob();
     }
 
 
     @Override
     public boolean validateItemStack(ItemStack itemStack)
     {
-        return itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get());
+        return itemStack.is(AnimalPensItemRegistry.BIRD_CATCHER.get());
     }
 }

@@ -33,7 +33,7 @@ public class AquariumTileEntity extends AbstractAnimalPenBlockEntity
     @Override
     public boolean canGrowEntity()
     {
-        return AnimalPen.config().isGrowWaterAnimals();
+        return AnimalPen.config().isGrowAquariumMob();
     }
 
 

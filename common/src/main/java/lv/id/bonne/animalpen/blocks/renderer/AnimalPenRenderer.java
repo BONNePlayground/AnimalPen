@@ -24,14 +24,14 @@ public class AnimalPenRenderer extends AbstractAnimalPenRenderer<AnimalPenTileEn
     @Override
     protected float getAnimalSize()
     {
-        return AnimalPen.config().getAnimalSize();
+        return AnimalPen.config().getAnimalPenMobSize();
     }
 
 
     @Override
     protected boolean shouldGrowAnimals()
     {
-        return AnimalPen.config().isGrowAnimals();
+        return AnimalPen.config().isGrowAnimalPenMob();
     }
 
 
@@ -46,14 +46,14 @@ public class AnimalPenRenderer extends AbstractAnimalPenRenderer<AnimalPenTileEn
     public boolean shouldRenderOffScreen(AnimalPenTileEntity blockEntity)
     {
         return !blockEntity.getInventory().isEmpty() &&
-            AnimalPen.config().isGrowAnimals();
+            AnimalPen.config().isGrowAnimalPenMob();
     }
 
 
     @Override
     public boolean shouldRender(AnimalPenTileEntity blockEntity, Vec3 vec3)
     {
-        return AnimalPen.config().isGrowAnimals() ||
+        return AnimalPen.config().isGrowAnimalPenMob() ||
             super.shouldRender(blockEntity, vec3);
     }
 }

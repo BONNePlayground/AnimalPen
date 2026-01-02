@@ -18,13 +18,13 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
+import lv.id.bonne.animalpen.blocks.renderer.AviaryRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
 
@@ -36,7 +36,10 @@ public class AnimalPenClient
             context -> new AnimalPenRenderer());
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get(),
             context -> new AquariumRenderer());
+        BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
+            context -> new AviaryRenderer());
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
+        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AVIARY.get());
 
         ItemPropertiesRegistry.registerGeneric(AnimalPen.resourceOf("filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->

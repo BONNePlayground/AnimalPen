@@ -31,10 +31,10 @@ public class Configuration
     {
         return
             this.blockedAnimals == null ||
-            this.waterAnimalSize == null ||
-            this.waterAnimalSize <= 0 ||
-            this.animalSize == null ||
-            this.animalSize <= 0 ||
+            this.aquariumMobSize == null ||
+            this.aquariumMobSize <= 0 ||
+            this.animalPenMobSize == null ||
+            this.animalPenMobSize <= 0 ||
             this.growthMultiplier == null ||
             this.growthMultiplier < 0 ||
             this.attackCooldown == null ||
@@ -45,7 +45,10 @@ public class Configuration
             this.maxStoredAnimalVariants < 0 ||
             this.debug == null ||
             this.showAllInteractions == null ||
-            this.showCooldownsOnCrouch == null;
+            this.showCooldownsOnCrouch == null ||
+            this.growAviaryMob == null ||
+            this.aviaryMobSize == null ||
+            this.aviaryMobSize <= 0;
     }
 
 
@@ -57,16 +60,27 @@ public class Configuration
         if (this.blockedAnimals == null || init)
         {
             this.blockedAnimals = new HashSet<>();
+            this.blockedAnimals.add(ResourceLocation.tryParse("cobblemon:pokemon"));
         }
 
-        if (this.animalSize == null || this.animalSize <= 0 || init)
+        if (this.animalPenMobSize == null || this.animalPenMobSize <= 0 || init)
         {
-            this.animalSize = 0.33f;
+            this.animalPenMobSize = 0.33f;
         }
 
-        if (this.waterAnimalSize == null || this.waterAnimalSize <= 0 || init)
+        if (this.aquariumMobSize == null || this.aquariumMobSize <= 0 || init)
         {
-            this.waterAnimalSize = 0.33f;
+            this.aquariumMobSize = 0.33f;
+        }
+
+        if (this.aviaryMobSize == null || this.aviaryMobSize <= 0 || init)
+        {
+            this.aviaryMobSize = 0.33f;
+        }
+
+        if (this.growAviaryMob == null || init)
+        {
+            this.growAviaryMob = false;
         }
 
         if (this.growthMultiplier == null || this.growthMultiplier < 0 || init)
@@ -101,7 +115,7 @@ public class Configuration
 
         if (this.showAllInteractions == null || init)
         {
-            this.showAllInteractions = false;
+            this.showAllInteractions = true;
         }
 
         if (this.showCooldownsOnCrouch == null || init)
@@ -113,8 +127,8 @@ public class Configuration
         {
             this.maximalAnimalCount = Integer.MAX_VALUE;
 
-            this.growAnimals = false;
-            this.growWaterAnimals = false;
+            this.growAnimalPenMob = false;
+            this.growAquariumMob = false;
         }
     }
 
@@ -140,9 +154,9 @@ public class Configuration
      *
      * @return the boolean
      */
-    public boolean isGrowAnimals()
+    public boolean isGrowAnimalPenMob()
     {
-        return this.growAnimals;
+        return this.growAnimalPenMob;
     }
 
 
@@ -151,9 +165,9 @@ public class Configuration
      *
      * @return the animal size
      */
-    public float getAnimalSize()
+    public float getAnimalPenMobSize()
     {
-        return this.animalSize;
+        return this.animalPenMobSize;
     }
 
 
@@ -162,9 +176,9 @@ public class Configuration
      *
      * @return the boolean
      */
-    public boolean isGrowWaterAnimals()
+    public boolean isGrowAquariumMob()
     {
-        return this.growWaterAnimals;
+        return this.growAquariumMob;
     }
 
 
@@ -173,9 +187,31 @@ public class Configuration
      *
      * @return the water animal size
      */
-    public float getWaterAnimalSize()
+    public float getAquariumMobSize()
     {
-        return this.waterAnimalSize;
+        return this.aquariumMobSize;
+    }
+
+
+    /**
+     * Is grow aviary mob boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGrowAviaryMob()
+    {
+        return this.growAviaryMob;
+    }
+
+
+    /**
+     * Gets aviary mob size.
+     *
+     * @return the aviary mob size
+     */
+    public float getAviaryMobSize()
+    {
+        return this.aviaryMobSize;
     }
 
 
@@ -305,27 +341,38 @@ public class Configuration
     @SerializedName("animal_limit_in_pen")
     private long maximalAnimalCount = Integer.MAX_VALUE;
 
-    @JsonComment("Allows to enable animal growing in animal pen.")
+    @JsonComment("Allows to enable mob growing in animal pen.")
     @JsonComment("The more animals are inside it, the larger it will be.")
     @Expose
-    @SerializedName("animals_can_grow")
-    private boolean growAnimals = false;
+    @SerializedName(value = "animal_pen_mob_can_grow", alternate = "animals_can_grow")
+    private boolean growAnimalPenMob = false;
 
-    @JsonComment("Allows to change default animal size in pen.")
+    @JsonComment("Allows to change default mob size in pen.")
     @Expose
-    @SerializedName("animal_size")
-    private Float animalSize;
+    @SerializedName(value = "animal_pen_mob_size", alternate = "animal_size")
+    private Float animalPenMobSize;
 
-    @JsonComment("Allows to enable water animal growing in aquarium.")
+    @JsonComment("Allows to enable aquarium mob growing.")
     @JsonComment("The more animals are inside it, the larger it will be.")
     @Expose
-    @SerializedName("water_animals_can_grow")
-    private boolean growWaterAnimals = false;
+    @SerializedName(value = "aquarium_mob_can_grow", alternate = "water_animals_can_grow")
+    private boolean growAquariumMob = false;
 
-    @JsonComment("Allows to change default water animal size in aquarium.")
+    @JsonComment("Allows to change default mob size in aquarium.")
     @Expose
-    @SerializedName("water_animal_size")
-    private Float waterAnimalSize;
+    @SerializedName(value = "aquarium_mob_size", alternate = "water_animal_size")
+    private Float aquariumMobSize;
+
+    @JsonComment("Allows to enable aviary mobs growing.")
+    @JsonComment("The more mobs are inside it, the larger it will be.")
+    @Expose
+    @SerializedName("aviary_mob_can_grow")
+    private Boolean growAviaryMob = false;
+
+    @JsonComment("Allows to change default mob size in aviary.")
+    @Expose
+    @SerializedName("aviary_mob_size")
+    private Float aviaryMobSize;
 
     @JsonComment("Allows to set how fast animals grows in pen and aquarium.")
     @JsonComment("Each animal is multiplied by given value to get end size.")
@@ -366,13 +413,12 @@ public class Configuration
 
     @JsonComment("Allows to toggle if all interactions (evenNumber without cooldown) should be rendered")
     @JsonComment("above animal pen or aquarium")
-    @JsonComment("Default value = false")
+    @JsonComment("Default value = true")
     @Expose
     @SerializedName("show_all_interactions_above")
     private Boolean showAllInteractions;
 
     @JsonComment("Set of animals that are blocked from picking up.")
-    @JsonComment("Pickable animals in vanilla minecraft: https://minecraft.wiki/w/Animal#List_of_animals")
     @Expose
     @SerializedName("blocked_animals")
     private Set<ResourceLocation> blockedAnimals = new HashSet<>();

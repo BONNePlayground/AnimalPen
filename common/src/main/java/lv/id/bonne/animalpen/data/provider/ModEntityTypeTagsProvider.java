@@ -22,7 +22,6 @@ public interface ModEntityTypeTagsProvider
     default void addModTags()
     {
         this.modTag(AnimalPenTags.ANIMAL_CAGE_PICKABLE).
-            add(EntityType.BEE).
             add(EntityType.CAT).
             add(EntityType.CHICKEN).
             add(EntityType.COW).
@@ -36,7 +35,6 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.MULE).
             add(EntityType.OCELOT).
             add(EntityType.PANDA).
-            add(EntityType.PARROT).
             add(EntityType.PIG).
             add(EntityType.POLAR_BEAR).
             add(EntityType.RABBIT).
@@ -56,5 +54,9 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.SQUID).
             add(EntityType.GLOW_SQUID).
             add(EntityType.TURTLE);
+        this.modTag(AnimalPenTags.BIRD_CATCHER_PICKABLE).
+            add(EntityType.BEE).
+            add(EntityType.BAT).
+            add(EntityType.PARROT);
     }
 }
