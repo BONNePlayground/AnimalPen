@@ -68,6 +68,8 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
+
+    modImplementation "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
 }
 
 processResources {
@@ -99,6 +101,7 @@ modrinth {
     dependencies {
         required.project "architectury-api"
         optional.project "patchouli"
+        optional.project "cloth-config"
     }
     changelog = rootProject.file("CHANGELOG_LATEST.md").text
 
@@ -120,6 +123,7 @@ curseforge {
         relations {
             requiredDependency "architectury-api"
             optionalDependency "patchouli"
+            optionalDependency "cloth-config"
         }
         mainArtifact(remapJar) {
             displayName = "${rootProject.archives_name}-forge-${rootProject.minecraft_version}-${rootProject.mod_version}"

@@ -115,12 +115,12 @@ public class Configuration
 
         if (this.showAllInteractions == null || init)
         {
-            this.showAllInteractions = true;
+            this.showAllInteractions = false;
         }
 
         if (this.showCooldownsOnCrouch == null || init)
         {
-            this.showCooldownsOnCrouch = true;
+            this.showCooldownsOnCrouch = false;
         }
 
         if (init)
@@ -325,6 +325,176 @@ public class Configuration
 
 
 // ---------------------------------------------------------------------
+// Section: Setters
+// ---------------------------------------------------------------------
+
+
+    /**
+     * Sets grow animal pen mob.
+     *
+     * @param growAnimalPenMob the grow animal pen mob
+     */
+    public void setGrowAnimalPenMob(boolean growAnimalPenMob)
+    {
+        this.growAnimalPenMob = growAnimalPenMob;
+    }
+
+
+    /**
+     * Sets animal pen mob size.
+     *
+     * @param animalPenMobSize the animal pen mob size
+     */
+    public void setAnimalPenMobSize(float animalPenMobSize)
+    {
+        this.animalPenMobSize = animalPenMobSize;
+    }
+
+
+    /**
+     * Sets grow aquarium mob.
+     *
+     * @param growAquariumMob the grow aquarium mob
+     */
+    public void setGrowAquariumMob(boolean growAquariumMob)
+    {
+        this.growAquariumMob = growAquariumMob;
+    }
+
+
+    /**
+     * Sets aquarium mob size.
+     *
+     * @param aquariumMobSize the aquarium mob size
+     */
+    public void setAquariumMobSize(float aquariumMobSize)
+    {
+        this.aquariumMobSize = aquariumMobSize;
+    }
+
+
+    /**
+     * Sets grow aviary mob.
+     *
+     * @param growAviaryMob the grow aviary mob
+     */
+    public void setGrowAviaryMob(boolean growAviaryMob)
+    {
+        this.growAviaryMob = growAviaryMob;
+    }
+
+
+    /**
+     * Sets aviary mob size.
+     *
+     * @param aviaryMobSize the aviary mob size
+     */
+    public void setAviaryMobSize(float aviaryMobSize)
+    {
+        this.aviaryMobSize = aviaryMobSize;
+    }
+
+
+    /**
+     * Sets growth multiplier.
+     *
+     * @param growthMultiplier the growth multiplier
+     */
+    public void setGrowthMultiplier(float growthMultiplier)
+    {
+        this.growthMultiplier = growthMultiplier;
+    }
+
+
+    /**
+     * Sets show cooldowns on crouch.
+     *
+     * @param showCooldownsOnCrouch the show cooldowns on crouch
+     */
+    public void setShowCooldownsOnCrouch(boolean showCooldownsOnCrouch)
+    {
+        this.showCooldownsOnCrouch = showCooldownsOnCrouch;
+    }
+
+
+    /**
+     * Sets show all interactions.
+     *
+     * @param showAllInteractions the show all interactions
+     */
+    public void setShowAllInteractions(boolean showAllInteractions)
+    {
+        this.showAllInteractions = showAllInteractions;
+    }
+
+
+    /**
+     * Sets attack cooldown.
+     *
+     * @param attackCooldown the attack cooldown
+     */
+    public void setAttackCooldown(Integer attackCooldown)
+    {
+        this.attackCooldown = attackCooldown;
+    }
+
+
+    /**
+     * Sets maximal animal count.
+     *
+     * @param maximalAnimalCount the maximal animal count
+     */
+    public void setMaximalAnimalCount(long maximalAnimalCount)
+    {
+        this.maximalAnimalCount = maximalAnimalCount;
+    }
+
+
+    /**
+     * Sets max stored animal variants.
+     *
+     * @param maxStoredAnimalVariants the max stored animal variants
+     */
+    public void setMaxStoredAnimalVariants(Integer maxStoredAnimalVariants)
+    {
+        this.maxStoredAnimalVariants = maxStoredAnimalVariants;
+    }
+
+
+    /**
+     * Sets trigger advancements.
+     *
+     * @param triggerAdvancements the trigger advancements
+     */
+    public void setTriggerAdvancements(Boolean triggerAdvancements)
+    {
+        this.triggerAdvancements = triggerAdvancements;
+    }
+
+
+    /**
+     * Sets increase statistics.
+     *
+     * @param increaseStatistics the increase statistics
+     */
+    public void setIncreaseStatistics(Boolean increaseStatistics)
+    {
+        this.increaseStatistics = increaseStatistics;
+    }
+
+
+    /**
+     * Sets debug.
+     *
+     * @param debug the debug
+     */
+    public void setDebug(Boolean debug)
+    {
+        this.debug = debug;
+    }
+
+
+// ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
 
@@ -406,14 +576,14 @@ public class Configuration
 
     @JsonComment("Allows to toggle if cooldowns should be shown only while player is crouching (true).")
     @JsonComment("or be visible all the time (false).")
-    @JsonComment("Default value = true")
+    @JsonComment("Default value = false")
     @Expose
     @SerializedName("show_cooldowns_while_crouching")
     private Boolean showCooldownsOnCrouch;
 
     @JsonComment("Allows to toggle if all interactions (evenNumber without cooldown) should be rendered")
     @JsonComment("above animal pen or aquarium")
-    @JsonComment("Default value = true")
+    @JsonComment("Default value = false")
     @Expose
     @SerializedName("show_all_interactions_above")
     private Boolean showAllInteractions;
