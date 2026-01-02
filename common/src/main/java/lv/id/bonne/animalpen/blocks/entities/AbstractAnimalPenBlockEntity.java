@@ -1332,8 +1332,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 filter(animalInteraction -> !animalInteraction.textLines().isEmpty()).
                 filter(animalInteraction -> AnimalPen.config().isShowAllInteractions() ||
                     !shortText ||
-                    animalInteraction.cooldown() == null ||
-                    animalInteraction.cooldown().calculateCooldown(animalCount) != 0).
+                    animalInteraction.cooldown() != null &&
+                        animalInteraction.cooldown().calculateCooldown(animalCount) != 0).
                 forEach(animalInteraction ->
                     {
                         boolean matchConditions = animalInteraction.matchAllConditions(tag);
