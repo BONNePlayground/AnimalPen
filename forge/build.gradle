@@ -16,7 +16,7 @@ loom {
             programArg("animal_pen")
             programArg("--server")
             programArg("--output")
-            programArg(file('src/main/generated/resources/').absolutePath)
+            programArg(file('src/main/generated/').absolutePath)
             programArg("--existing")
             programArg(file('src/main/resources/').absolutePath)
         }
@@ -30,6 +30,12 @@ loom {
             client()
             programArg("--username=Dev2")
         }
+    }
+}
+
+sourceSets {
+    main {
+        resources.srcDir 'src/main/generated'
     }
 }
 
