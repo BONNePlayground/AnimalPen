@@ -362,7 +362,6 @@ public class AnimalInteractionProvider implements DataProvider
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
             consume(true).
             sound(ResourceLocation.tryParse("entity.cow.milk")).
-            redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // Soup pickup
@@ -372,7 +371,6 @@ public class AnimalInteractionProvider implements DataProvider
             consume(true).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
             sound(ResourceLocation.tryParse("entity.mooshroom.milk")).
-            redstoneBit(3).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("stew").
@@ -383,7 +381,6 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
             sound(ResourceLocation.tryParse("entity.mooshroom.suspicious_milk")).
-            redstoneBit(3).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         // Flowers
@@ -394,7 +391,6 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
             sound(ResourceLocation.tryParse("entity.mooshroom.eat")).
-            redstoneBit(4).
             textLines(TextEntry.ready("display.animal_pen.apply_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
@@ -403,7 +399,6 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
-            redstoneBit(4).
             build());
 
         JsonElement json = Codec.list(AnimalInteraction.CODEC).
@@ -428,7 +423,6 @@ public class AnimalInteractionProvider implements DataProvider
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
             consume(true).
             sound(ResourceLocation.tryParse("entity.goat.milk")).
-            redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
 
@@ -493,7 +487,6 @@ public class AnimalInteractionProvider implements DataProvider
                 Items.BLACK_DYE)).
             consume(true).
             sound(ResourceLocation.tryParse("item.dye.use")).
-            redstoneBit(3).
             dropLimit(320).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
