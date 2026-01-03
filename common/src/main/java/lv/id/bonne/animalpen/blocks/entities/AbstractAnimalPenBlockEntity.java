@@ -500,14 +500,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      * @param itemInHand the interaction item
      * @return modified item stack if interaction succeeded, or empty if failed.
      */
-    public Result interactWithPen(ServerLevel serverLevel, BlockSource source, ItemStack itemInHand)
+    public InteractionResult interactWithPen(ServerLevel serverLevel, BlockSource source, ItemStack itemInHand)
     {
         if (this.getOwner().isPresent())
         {
             AnimalPen.sendDebug("Protection is enabled");
 
             // Not an owner. Cannot interact.
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         Mob animal = this.getStoredAnimal().orElse(null);
@@ -515,13 +515,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (animal == null)
         {
             AnimalPen.sendDebug("Animal is not set");
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         if (!(source.getEntity() instanceof Container container))
         {
             AnimalPen.sendDebug("Interaction success through block without container.");
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         return this.performInteraction(new DispenserInteractionExecutor(serverLevel, container, this.getBlockPos()),
@@ -650,7 +650,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      * @param itemInHand The item that is used.
      * @return returns Result of interaction.
      */
-    private Result performInteraction(AnimalInteractionExecutor executor,
+    private InteractionResult performInteraction(AnimalInteractionExecutor executor,
         ServerLevel serverLevel,
         ItemStack itemInHand)
     {
@@ -659,7 +659,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (animal == null)
         {
             AnimalPen.sendDebug("Animal is not set");
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         CompoundTag mobNBT = this.getItemStack().getOrCreateTag();
@@ -670,7 +670,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (interactionOptional.isEmpty())
         {
             AnimalPen.sendDebug("Interaction with " + this.getBlockPos() + " cannot be success with " + itemInHand);
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         AnimalInteraction interaction = interactionOptional.get();
@@ -693,7 +693,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (consumedAmount == 0)
         {
             AnimalPen.sendDebug("Need at least 1 items in stack");
-            return Result.FAILED;
+            return InteractionResult.FAILED;
         }
 
         dataUpdate |= interaction.applyCooldown(mobNBT, animalCount);
@@ -760,10 +760,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             }
 
             // Trigger update.
-            return new Result(true, itemInHand);
+            return new InteractionResult(true, itemInHand);
         }
 
-        return Result.FAILED;
+        return InteractionResult.FAILED;
     }
 
 
@@ -1440,9 +1440,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 // ---------------------------------------------------------------------
 
 
-    public record Result(boolean success, ItemStack result)
+    public record InteractionResult(boolean success, ItemStack result)
     {
-        static Result FAILED = new Result(false, ItemStack.EMPTY);
+        static InteractionResult FAILED = new InteractionResult(false, ItemStack.EMPTY);
     }
 
 
@@ -1452,7 +1452,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
     private final List<Integer> deathTicker = new ArrayList<>();
 
-    private Mob storedAnimal;    private final SimpleContainer inventory = new SimpleContainer(1)
+    private Mob storedAnimal;
+
+    private final SimpleContainer inventory = new SimpleContainer(1)
     {
         @Override
         public boolean canPlaceItem(int slot, ItemStack stack)
@@ -1476,6 +1478,4 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     private long protectedAmount = 0;
 
     private int tickCounter;
-
-
 }
