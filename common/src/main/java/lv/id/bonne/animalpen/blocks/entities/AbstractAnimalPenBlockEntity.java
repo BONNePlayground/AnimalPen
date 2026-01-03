@@ -23,9 +23,11 @@ import lv.id.bonne.animalpen.processing.executor.PlayerInteractionExecutor;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
+import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -610,8 +612,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             withLuck(player.getLuck()).
             withRandom(level.random);
 
-        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(itemStack ->
-            Block.popResource(level, this.getBlockPos().offset(0.5, 1, 0.5), itemStack));
+        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(
+            itemStack -> this.insertOrDrop(level, itemStack));
 
         animal.clearFire();
 
@@ -707,8 +709,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
         else
         {
-            lootItems.forEach(itemStack ->
-                Block.popResource(serverLevel, this.getBlockPos(), itemStack));
+            lootItems.forEach(itemStack -> this.insertOrDrop(serverLevel, itemStack));
         }
 
         if (interaction.sound() != null)
@@ -852,7 +853,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 for (ItemStack stack : itemStackList)
                 {
                     if (ItemStack.isSameItemSameTags(item, stack) &&
-                        stack.getCount() < stack.getMaxStackSize())
+                        stack.getCount() + item.getCount() <= stack.getMaxStackSize())
                     {
                         stack.grow(item.getCount());
                         added = true;
@@ -993,6 +994,32 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     }
 
 
+    public void insertOrDrop(Level level, ItemStack stack)
+    {
+        if (level.isClientSide())
+        {
+            // Cannot insert
+            return;
+        }
+
+        BlockPos below = this.getBlockPos().below();
+
+        if (ItemTransferUtil.canInsert(level, below, Direction.UP, stack))
+        {
+            ItemStack remaining = ItemTransferUtil.insert(level, below, Direction.UP, stack);
+
+            if (!remaining.isEmpty())
+            {
+                Block.popResource(level, this.dropPosition(), remaining);
+            }
+        }
+        else
+        {
+            Block.popResource(level, this.dropPosition(), stack);
+        }
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: Entity Variant Handling
 // ---------------------------------------------------------------------
@@ -1095,6 +1122,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
     public abstract boolean canGrowEntity();
+
+
+    public abstract BlockPos dropPosition();
 
 
 // ---------------------------------------------------------------------

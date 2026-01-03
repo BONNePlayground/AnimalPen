@@ -40,4 +40,11 @@ public class AnimalPenTileEntity extends AbstractAnimalPenBlockEntity
     {
         return itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get());
     }
+
+
+    @Override
+    public BlockPos dropPosition()
+    {
+        return this.getBlockPos().above();
+    }
 }

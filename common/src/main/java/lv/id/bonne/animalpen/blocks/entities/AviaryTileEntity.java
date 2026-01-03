@@ -40,4 +40,11 @@ public class AviaryTileEntity extends AbstractAnimalPenBlockEntity
     {
         return itemStack.is(AnimalPensItemRegistry.BIRD_CATCHER.get());
     }
+
+
+    @Override
+    public BlockPos dropPosition()
+    {
+        return this.getBlockPos().above();
+    }
 }

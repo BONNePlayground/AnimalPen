@@ -69,4 +69,11 @@ public class AquariumTileEntity extends AbstractAnimalPenBlockEntity
             newState,
             Block.UPDATE_CLIENTS);
     }
+
+
+    @Override
+    public BlockPos dropPosition()
+    {
+        return this.getBlockPos().above(2);
+    }
 }
