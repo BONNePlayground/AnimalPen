@@ -4,7 +4,6 @@ package lv.id.bonne.animalpen.data.provider;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.data.listener.AnimalInteractionEntry;
 import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.condition.Operator;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
@@ -31,6 +31,9 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -66,40 +69,53 @@ public class AnimalInteractionProvider implements DataProvider
         this.generateTurtle(basePath, cache);
 
         // Fishes
-        this.generateFish(basePath, cache, "cod", Items.COD_BUCKET);
-        this.generateFish(basePath, cache, "pufferfish", Items.PUFFERFISH_BUCKET);
-        this.generateFish(basePath, cache, "salmon", Items.SALMON_BUCKET);
-        this.generateFish(basePath, cache, "tropical_fish", Items.TROPICAL_FISH_BUCKET);
+        this.generateFish(basePath, cache, EntityType.COD, Items.COD_BUCKET);
+        this.generateFish(basePath, cache, EntityType.PUFFERFISH, Items.PUFFERFISH_BUCKET);
+        this.generateFish(basePath, cache, EntityType.SALMON, Items.SALMON_BUCKET);
+        this.generateFish(basePath, cache, EntityType.TROPICAL_FISH, Items.TROPICAL_FISH_BUCKET);
 
         // Only food animals
-        this.generateWithFood(basePath, cache, "cat",
-            CustomIngredient.of(Items.COD, Items.SALMON));
-        this.generateWithFood(basePath, cache, "dolphin",
-            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")));
-        this.generateWithFood(basePath, cache, "fox",
-            CustomIngredient.of(AnimalPenItemHelper.itemTag("fox_food")));
-        this.generateWithFood(basePath, cache, "glow_squid",
-            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")));
-        this.generateWithFood(basePath, cache, "hoglin",
-            CustomIngredient.of(Items.CRIMSON_FUNGUS));
-        this.generateWithFood(basePath, cache, "llama",
-            CustomIngredient.of(Items.WHEAT, Items.HAY_BLOCK));
-        this.generateWithFood(basePath, cache, "ocelot",
-            CustomIngredient.of(Items.COD, Items.SALMON));
-        this.generateWithFood(basePath, cache, "panda",
-            CustomIngredient.of(Items.BAMBOO));
-        this.generateWithFood(basePath, cache, "pig",
-            CustomIngredient.of(Items.CARROT, Items.POTATO, Items.BEETROOT));
-        this.generateWithFood(basePath, cache, "rabbit",
-            CustomIngredient.of(Items.CARROT, Items.GOLDEN_CARROT, Items.DANDELION));
-        this.generateWithFood(basePath, cache, "squid",
-            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")));
-        this.generateWithFood(basePath, cache, "strider",
-            CustomIngredient.of(Items.WARPED_FUNGUS));
-        this.generateWithFood(basePath, cache, "trader_llama",
-            CustomIngredient.of(Items.WHEAT, Items.HAY_BLOCK));
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.CAT,
+            CustomIngredient.of(Items.COD, Items.SALMON),
+            SoundEvents.CAT_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.DOLPHIN,
+            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+            SoundEvents.DOLPHIN_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.FOX,
+            CustomIngredient.of(AnimalPenItemHelper.itemTag("fox_food")),
+            SoundEvents.FOX_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.GLOW_SQUID,
+            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+            SoundEvents.GLOW_SQUID_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.HOGLIN,
+            CustomIngredient.of(Items.CRIMSON_FUNGUS),
+            SoundEvents.HOGLIN_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.LLAMA,
+            CustomIngredient.of(Items.WHEAT, Items.HAY_BLOCK),
+            SoundEvents.LLAMA_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.OCELOT,
+            CustomIngredient.of(Items.COD, Items.SALMON),
+            SoundEvents.OCELOT_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.PANDA,
+            CustomIngredient.of(Items.BAMBOO),
+            SoundEvents.PANDA_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.PIG,
+            CustomIngredient.of(Items.CARROT, Items.POTATO, Items.BEETROOT),
+            SoundEvents.PIG_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.RABBIT,
+            CustomIngredient.of(Items.CARROT, Items.GOLDEN_CARROT, Items.DANDELION),
+            SoundEvents.RABBIT_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.SQUID,
+            CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+            SoundEvents.SQUID_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.STRIDER,
+            CustomIngredient.of(Items.WARPED_FUNGUS),
+            SoundEvents.STRIDER_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.TRADER_LLAMA,
+            CustomIngredient.of(Items.WHEAT, Items.HAY_BLOCK),
+            SoundEvents.LLAMA_AMBIENT);
 
-        this.generateWithFood(basePath, cache, "wolf",
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.WOLF,
             CustomIngredient.merge(CustomIngredient.of(AnimalPenItemHelper.itemTag("meat")),
                 CustomIngredient.of(Items.COD,
                     Items.COOKED_COD,
@@ -107,7 +123,8 @@ public class AnimalInteractionProvider implements DataProvider
                     Items.COOKED_SALMON,
                     Items.TROPICAL_FISH,
                     Items.PUFFERFISH,
-                    Items.RABBIT_STEW)));
+                    Items.RABBIT_STEW)),
+            SoundEvents.WOLF_AMBIENT);
 
         CustomIngredient horseFood = CustomIngredient.of(Items.WHEAT,
             Items.SUGAR,
@@ -116,11 +133,21 @@ public class AnimalInteractionProvider implements DataProvider
             Items.GOLDEN_CARROT,
             Items.GOLDEN_APPLE,
             Items.ENCHANTED_GOLDEN_APPLE);
-        this.generateWithFood(basePath, cache, "donkey", horseFood);
-        this.generateWithFood(basePath, cache, "horse", horseFood);
-        this.generateWithFood(basePath, cache, "mule", horseFood);
-        this.generateWithFood(basePath, cache, "skeleton_horse", horseFood);
-        this.generateWithFood(basePath, cache, "zombie_horse", horseFood);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.DONKEY, horseFood,
+            SoundEvents.DONKEY_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.HORSE, horseFood,
+            SoundEvents.HORSE_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.MULE, horseFood,
+            SoundEvents.MULE_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.SKELETON_HORSE, horseFood,
+            SoundEvents.SKELETON_HORSE_AMBIENT);
+        this.generateWithFoodAndAmbient(basePath, cache, EntityType.ZOMBIE_HORSE, horseFood,
+            SoundEvents.ZOMBIE_HORSE_AMBIENT);
+
+        // Entities with only ambient
+        this.generateAmbient(basePath, cache, EntityType.BAT, SoundEvents.BAT_AMBIENT);
+        this.generateAmbient(basePath, cache, EntityType.PARROT, SoundEvents.PARROT_AMBIENT);
+        this.generateAmbient(basePath, cache, EntityType.POLAR_BEAR, SoundEvents.POLAR_BEAR_AMBIENT);
     }
 
 
@@ -164,14 +191,45 @@ public class AnimalInteractionProvider implements DataProvider
     }
 
 
-    public void generateWithFood(Path basePath, HashCache cache, String animalName, CustomIngredient foodItem)
+    public AnimalInteraction generateAmbientSound(SoundEvent soundEvent)
+    {
+        return AnimalInteractionBuilder.create("ambient").
+            sound(soundEvent.getLocation()).
+            cooldown(new CooldownEntry.Randomized(1200, 6000)).
+            build();
+    }
+
+
+    public void generateAmbient(Path basePath,
+        HashCache cache,
+        EntityType<?> entityType,
+        SoundEvent soundEvent)
         throws IOException
     {
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, List.of(this.generateFood(foodItem))).
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType,
+                List.of(this.generateAmbientSound(soundEvent)))).
             getOrThrow(false, IllegalStateException::new);
 
-        Path file = basePath.resolve(animalName + ".json");
+        Path file = basePath.resolve(entityType.arch$registryName().getPath() + ".json");
+        Files.createDirectories(file.getParent());
+        DataProvider.save(GSON, cache, json, file);
+    }
+
+
+    public void generateWithFoodAndAmbient(Path basePath,
+        HashCache cache,
+        EntityType<?> entityType,
+        CustomIngredient foodItem,
+        SoundEvent soundEvent)
+        throws IOException
+    {
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType,
+                List.of(this.generateFood(foodItem), this.generateAmbientSound(soundEvent)))).
+            getOrThrow(false, IllegalStateException::new);
+
+        Path file = basePath.resolve(entityType.arch$registryName().getPath() + ".json");
         Files.createDirectories(file.getParent());
         DataProvider.save(GSON, cache, json, file);
     }
@@ -179,7 +237,7 @@ public class AnimalInteractionProvider implements DataProvider
 
     private void generateAxolotl(Path basePath, HashCache cache) throws IOException
     {
-        List<AnimalInteraction> interactions = new ArrayList<>(2);
+        List<AnimalInteraction> interactions = new ArrayList<>(3);
 
         // Food
         interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items"))));
@@ -190,9 +248,11 @@ public class AnimalInteractionProvider implements DataProvider
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.AXOLOTL_BUCKET))).
             build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.AXOLOTL_IDLE_WATER));
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.AXOLOTL, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("axolotl.json");
@@ -218,14 +278,17 @@ public class AnimalInteractionProvider implements DataProvider
             perEntity(true).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             dropLimit(90).
-            sound(ResourceLocation.tryParse("entity.chicken.egg")).
+            sound(SoundEvents.CHICKEN_EGG.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.EGG))).
             textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.EGG))).
             build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.CHICKEN_AMBIENT));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.CHICKEN, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("chicken.json");
@@ -255,7 +318,7 @@ public class AnimalInteractionProvider implements DataProvider
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
-            sound(ResourceLocation.tryParse("block.beehive.shear")).
+            sound(SoundEvents.BEEHIVE_SHEAR.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.HONEYCOMB))).
             textLines(new TextEntry("",
@@ -277,7 +340,7 @@ public class AnimalInteractionProvider implements DataProvider
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
-            sound(ResourceLocation.tryParse("item.bottle.fill")).
+            sound(SoundEvents.BOTTLE_FILL.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.HONEY_BOTTLE))).
             textLines(new TextEntry("",
@@ -289,6 +352,7 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         // Pollen collector
         interactions.add(AnimalInteractionBuilder.create("pollen").
+            sound(SoundEvents.BEEHIVE_WORK.getLocation()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
                 Operator.LT,
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
@@ -313,8 +377,11 @@ public class AnimalInteractionProvider implements DataProvider
                 "10")).
             build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.BEE_POLLINATE));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.BEE, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("bee.json");
@@ -334,14 +401,16 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
             consume(true).
-            sound(ResourceLocation.tryParse("entity.cow.milk")).
+            sound(SoundEvents.COW_MILK.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             textLines(TextEntry.cooldown("display.animal_pen.milk_cooldown", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.COW_AMBIENT));
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.COW, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("cow.json");
@@ -361,7 +430,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
             consume(true).
-            sound(ResourceLocation.tryParse("entity.cow.milk")).
+            sound(SoundEvents.COW_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // Soup pickup
@@ -370,7 +439,7 @@ public class AnimalInteractionProvider implements DataProvider
             lootTable(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew")).
             consume(true).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
-            sound(ResourceLocation.tryParse("entity.mooshroom.milk")).
+            sound(SoundEvents.MOOSHROOM_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("stew").
@@ -380,7 +449,7 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
-            sound(ResourceLocation.tryParse("entity.mooshroom.suspicious_milk")).
+            sound(SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         // Flowers
@@ -390,7 +459,7 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
-            sound(ResourceLocation.tryParse("entity.mooshroom.eat")).
+            sound(SoundEvents.MOOSHROOM_EAT.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.apply_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
@@ -400,9 +469,11 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
             build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.COW_AMBIENT));
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.MOOSHROOM, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("mooshroom.json");
@@ -422,12 +493,18 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
             consume(true).
-            sound(ResourceLocation.tryParse("entity.goat.milk")).
+            sound(SoundEvents.GOAT_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.GOAT_AMBIENT));
+        interactions.add(AnimalInteractionBuilder.create("ambient_screaming").
+            sound(SoundEvents.GOAT_SCREAMING_AMBIENT.getLocation()).
+            cooldown(new CooldownEntry.Randomized(12000, 36000)).
+            build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.GOAT, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("goat.json");
@@ -455,7 +532,7 @@ public class AnimalInteractionProvider implements DataProvider
                 perEntity(true).
                 damage(1).
                 cooldown(new CooldownEntry.Randomized(1200, 6000)).
-                sound(ResourceLocation.tryParse("entity.sheep.shear")).
+                sound(SoundEvents.SHEEP_SHEAR.getLocation()).
                 redstoneBit(2).
                 dropLimit(320).
                 runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, true)).
@@ -486,15 +563,18 @@ public class AnimalInteractionProvider implements DataProvider
                 Items.RED_DYE,
                 Items.BLACK_DYE)).
             consume(true).
-            sound(ResourceLocation.tryParse("item.dye.use")).
+            sound(SoundEvents.DYE_USE.getLocation()).
             dropLimit(320).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
                 CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.values().stream().map(ItemStack::new)))).
             build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.SHEEP_AMBIENT));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.SHEEP, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("sheep.json");
@@ -518,14 +598,17 @@ public class AnimalInteractionProvider implements DataProvider
             perEntity(true).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             dropLimit(90).
-            sound(ResourceLocation.tryParse("entity.turtle.lay_egg")).
+            sound(SoundEvents.TURTLE_LAY_EGG.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TURTLE_EGG))).
             textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.TURTLE_EGG))).
             build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.TURTLE_SWIM));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.TURTLE, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve("turtle.json");
@@ -534,7 +617,7 @@ public class AnimalInteractionProvider implements DataProvider
     }
 
 
-    private void generateFish(Path basePath, HashCache cache, String fish, Item resultItem) throws IOException
+    private void generateFish(Path basePath, HashCache cache, EntityType<?> entityType, Item resultItem) throws IOException
     {
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
@@ -548,11 +631,29 @@ public class AnimalInteractionProvider implements DataProvider
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(resultItem))).
             build());
 
-        JsonElement json = Codec.list(AnimalInteraction.CODEC).
-            encodeStart(JsonOps.INSTANCE, interactions).
+        // ambient
+        if (entityType == EntityType.COD)
+        {
+            interactions.add(this.generateAmbientSound(SoundEvents.COD_AMBIENT));
+        }
+        else if (entityType == EntityType.PUFFERFISH)
+        {
+            interactions.add(this.generateAmbientSound(SoundEvents.PUFFER_FISH_AMBIENT));
+        }
+        else if (entityType == EntityType.SALMON)
+        {
+            interactions.add(this.generateAmbientSound(SoundEvents.SALMON_AMBIENT));
+        }
+        else if (entityType == EntityType.TROPICAL_FISH)
+        {
+            interactions.add(this.generateAmbientSound(SoundEvents.TROPICAL_FISH_AMBIENT));
+        }
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
-        Path file = basePath.resolve(fish + ".json");
+        Path file = basePath.resolve(entityType.arch$registryName().getPath() + ".json");
         Files.createDirectories(file.getParent());
         DataProvider.save(GSON, cache, json, file);
     }
