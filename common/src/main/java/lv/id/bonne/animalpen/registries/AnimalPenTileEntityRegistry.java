@@ -14,6 +14,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
+import lv.id.bonne.animalpen.blocks.entities.AviaryTileEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -43,5 +44,11 @@ public class AnimalPenTileEntityRegistry
         REGISTRY.register("aquarium_tile_entity",
             () -> BlockEntityType.Builder.of(AquariumTileEntity::new,
                     AnimalPenBlockRegistry.AQUARIUM.get()).
+                build(null));
+
+    public static final RegistrySupplier<BlockEntityType<AviaryTileEntity>> AVIARY_TILE_ENTITY =
+        REGISTRY.register("aviary_tile_entity",
+            () -> BlockEntityType.Builder.of(AviaryTileEntity::new,
+                    AnimalPenBlockRegistry.AVIARY.get()).
                 build(null));
 }
