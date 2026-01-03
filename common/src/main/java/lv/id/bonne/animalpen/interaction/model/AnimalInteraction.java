@@ -212,8 +212,7 @@ public record AnimalInteraction(@NotNull String id,
                 .forGetter(a -> a.even),
             CooldownEntry.CODEC.optionalFieldOf("cooldown")
                 .forGetter(a -> Optional.ofNullable(a.cooldown)),
-            TextEntry.CODEC.listOf()
-                .optionalFieldOf("text_lines", List.of())
+            CustomCodec.strictOptionalListField("text_lines", TextEntry.CODEC)
                 .forGetter(a -> a.textLines),
             CustomCodec.strictOptionalListField("run_functions", FunctionKey.CODEC)
                 .forGetter(a -> a.runFunctions),

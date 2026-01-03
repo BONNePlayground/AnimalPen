@@ -3,6 +3,7 @@ package lv.id.bonne.animalpen.interaction.value;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 
 /**
@@ -13,7 +14,7 @@ public interface Value
     /**
      * @return instance value as integer
      */
-    default int getAsInt()
+    default int getAsInt() throws IllegalStateException, NumberFormatException
     {
         throw new IllegalStateException("Cannot convert object '" + this + "' to int");
     }
@@ -22,7 +23,7 @@ public interface Value
     /**
      * @return instance value as boolean
      */
-    default boolean getAsBoolean()
+    default boolean getAsBoolean() throws IllegalStateException
     {
         throw new IllegalStateException("Cannot convert object '" + this + "' to bool");
     }
@@ -31,7 +32,7 @@ public interface Value
     /**
      * @return instance value as string
      */
-    default String getAsString()
+    default String getAsString() throws IllegalStateException
     {
         throw new IllegalStateException("Cannot convert object '" + this + "' to string");
     }
@@ -39,26 +40,27 @@ public interface Value
 
     Codec<Value> CODEC =
         Codec.either(IntValue.CODEC, Codec.either(BoolValue.CODEC, StringValue.CODEC)).
-            xmap(either -> either.map(v -> v,
-                    e2 -> e2.map(v -> v, v -> (Value) v)),
+            flatXmap(
+                either -> DataResult.success(either.map(v -> v,
+                    e2 -> e2.map(v -> v, v -> (Value) v))),
                 value ->
                 {
                     if (value instanceof IntValue i)
                     {
-                        return Either.left(i);
+                        return DataResult.success(Either.left(i));
                     }
 
                     if (value instanceof BoolValue b)
                     {
-                        return Either.right(Either.left(b));
+                        return DataResult.success(Either.right(Either.left(b)));
                     }
 
                     if (value instanceof StringValue s)
                     {
-                        return Either.right(Either.right(s));
+                        return DataResult.success(Either.right(Either.right(s)));
                     }
 
-                    throw new IllegalStateException("Unknown Value: " + value);
+                    return DataResult.error("Unknown Value type: " + value);
                 }
             );
 }

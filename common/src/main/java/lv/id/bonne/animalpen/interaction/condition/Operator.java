@@ -8,7 +8,9 @@ package lv.id.bonne.animalpen.interaction.condition;
 
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import net.minecraft.nbt.CompoundTag;
 
@@ -108,55 +110,58 @@ public enum Operator
 
     int requireInt(Value value)
     {
-        if (value == null)
+        try
         {
-            throw new IllegalStateException("Expected int value, got null");
+            return value.getAsInt();
         }
-
-        return value.getAsInt();
+        catch (Exception e)
+        {
+            AnimalPen.LOGGER.error("Something went wrong with `" + this.token + "` operator requesting integer: " + e);
+            return 0;
+        }
     }
 
 
     boolean requireBool(Value value)
     {
-        if (value == null)
+        try
         {
-            throw new IllegalStateException("Expected boolean value, got null");
+            return value.getAsBoolean();
         }
-
-        return value.getAsBoolean();
+        catch (Exception e)
+        {
+            AnimalPen.LOGGER.error("Something went wrong with `" + this.token + "` operator requesting boolean: " + e);
+            return false;
+        }
     }
 
 
     String requireString(Value value)
     {
-        if (value == null)
+        try
         {
-            throw new IllegalStateException("Expected string value, got null");
+            return value.getAsString();
         }
-
-        return value.getAsString();
+        catch (Exception e)
+        {
+            AnimalPen.LOGGER.error("Something went wrong with `" + this.token + "` operator requesting text: " + e);
+            return "";
+        }
     }
 
-
-    public static Operator fromToken(String token)
-    {
-        for (Operator op : values())
-        {
-            if (op.token.equals(token))
-            {
-                return op;
-            }
-        }
-
-        throw new IllegalArgumentException("Unknown operator: " + token);
-    }
 
     private final String token;
 
     public static final Codec<Operator> CODEC =
-        Codec.STRING.xmap(
-            Operator::fromToken,
-            Operator::token
+        Codec.STRING.flatXmap(
+            token -> {
+                for (Operator op : values()) {
+                    if (op.token.equals(token)) {
+                        return DataResult.success(op);
+                    }
+                }
+                return DataResult.error("Unknown operator: " + token);
+            },
+            op -> DataResult.success(op.token)
         );
 }
