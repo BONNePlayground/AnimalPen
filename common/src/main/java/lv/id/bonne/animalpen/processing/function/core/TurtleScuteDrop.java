@@ -7,6 +7,10 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -19,6 +23,7 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 
 /**
@@ -55,12 +60,30 @@ public class TurtleScuteDrop implements EntityFunction.ProcessEntityFunction
             return false;
         }
 
-        ItemStack scutes = Items.SCUTE.getDefaultInstance();
-        scutes.setCount(count);
+        List<ItemStack> scuteList = new ArrayList<>();
 
-        Block.popResource(mob.getLevel(),
-            blockPos.above(),
-            scutes);
+        do
+        {
+            ItemStack stack = Items.SCUTE.getDefaultInstance();
+            stack.setCount(Math.min(count, stack.getMaxStackSize()));
+            scuteList.add(stack);
+            count -= stack.getCount();
+        }
+        while (count > 0);
+
+        BlockEntity blockEntity = serverLevel.getBlockEntity(blockPos);
+
+        if (blockEntity instanceof AbstractAnimalPenBlockEntity animalPenBlockEntity)
+        {
+            scuteList.forEach(stack ->
+                animalPenBlockEntity.insertOrDrop(serverLevel, stack));
+        }
+        else
+        {
+            // This should never happen
+            scuteList.forEach(stack ->
+                Block.popResource(mob.getLevel(), blockPos.above(), stack));
+        }
 
         return true;
     }
