@@ -35,6 +35,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -95,7 +96,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         this.inventory.clearContent();
         this.deathTicker.clear();
-        this.storedAnimal = null;
 
         if (tag.contains(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_LIST))
         {
@@ -127,6 +127,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
 
         this.protectedAmount = tag.getLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT);
+
+        if (this.getStoredAnimal().isEmpty())
+        {
+            this.storedAnimal = null;
+        }
+
         this.setChanged();
     }
 
@@ -168,12 +174,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         {
             return;
         }
-
-        this.getStoredAnimal().ifPresent(animal ->
-        {
-            CompoundTag animalTag = this.getItemStack().getTagElement(AnimalPenCompoundTags.TAG_ANIMAL);
-            animal.save(animalTag);
-        });
 
         this.level.sendBlockUpdated(this.getBlockPos(),
             this.getBlockState(),
@@ -751,9 +751,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             }
             else
             {
-                // Reset tag, as some animals may need it.
-                animal.save(tag);
-                mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, tag);
                 item.setTag(mobNBT);
                 AnimalPen.sendDebug("Updating cage tag");
                 this.inventory.setChanged();
@@ -1058,6 +1055,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // load new variant
             animal.load(animalVariant);
 
+            // Update animal variant in item stack.
+            ItemStack itemStack = this.getItemStack();
+            CompoundTag tag = itemStack.getOrCreateTag();
+            tag.put(AnimalPenCompoundTags.TAG_ANIMAL, animalVariant);
+            itemStack.setTag(tag);
+
             // Apply data
             this.triggerUpdate();
 
@@ -1319,6 +1322,21 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         else if (this.storedAnimal != null && this.getItemStack().isEmpty())
         {
             this.storedAnimal = null;
+        }
+        else if (this.storedAnimal != null)
+        {
+            CompoundTag tag = this.getItemStack().getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
+
+            if (new ResourceLocation(tag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
+                equals(this.storedAnimal.getType().arch$registryName()))
+            {
+                // Load data without removing entity.
+                this.storedAnimal.load(tag);
+            }
+            else
+            {
+                this.storedAnimal = null;
+            }
         }
 
         return Optional.ofNullable(this.storedAnimal);

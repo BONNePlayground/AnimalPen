@@ -9,6 +9,7 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
+import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -40,6 +41,11 @@ public class SheepChangeColor implements EntityFunction
         if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
         {
             sheep.setColor(dye.getDyeColor());
+
+            CompoundTag animalTag = new CompoundTag();
+            mob.save(animalTag);
+            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
             return true;
         }
 
@@ -61,6 +67,11 @@ public class SheepChangeColor implements EntityFunction
         if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
         {
             sheep.setColor(dye.getDyeColor());
+
+            CompoundTag animalTag = new CompoundTag();
+            mob.save(animalTag);
+            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
             return true;
         }
 

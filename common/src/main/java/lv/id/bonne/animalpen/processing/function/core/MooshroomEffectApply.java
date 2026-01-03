@@ -13,6 +13,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
+import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -64,6 +65,10 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
 
         mushroomCow.setEffect(effectFromItemStack.get().getLeft());
         mushroomCow.setEffectDuration(effectFromItemStack.get().getRight());
+
+        CompoundTag animalTag = new CompoundTag();
+        mob.save(animalTag);
+        mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
 
         return true;
     }
