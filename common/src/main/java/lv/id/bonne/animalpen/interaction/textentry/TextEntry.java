@@ -95,9 +95,15 @@ public record TextEntry(
                     variables[2 + i] = "";
                 }
             }
+            else if (format.equals(parameter))
+            {
+                // Text is same as format, assume not a placeholder.
+                variables[2 + i] = parameter;
+            }
             else
             {
-                variables[2 + i] = parameter;
+                // Empty line if parameter does not exist in data yet.
+                variables[2 + i] = "";
             }
         }
 
