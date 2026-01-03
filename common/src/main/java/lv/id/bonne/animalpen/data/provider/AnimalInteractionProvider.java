@@ -531,7 +531,7 @@ public class AnimalInteractionProvider implements DataProvider
                 conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.EQ, "Color", value.getId())).
                 perEntity(true).
                 damage(1).
-                cooldown(new CooldownEntry.Randomized(1200, 6000)).
+                cooldown(new CooldownEntry.Static(1200)).
                 sound(SoundEvents.SHEEP_SHEAR.getLocation()).
                 redstoneBit(2).
                 dropLimit(320).
