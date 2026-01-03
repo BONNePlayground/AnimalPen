@@ -359,6 +359,8 @@ public class AnimalInteractionProvider implements DataProvider
                 10)).
             finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL)).
+            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
+                AnimalPenCompoundTags.TAG_POLLEN_LEVEL, 0)).
             cooldown(new CooldownEntry.Linear(1200, -4, 4)).
             textLines(TextEntry.cooldown("display.animal_pen.pollen_cooldown",
                 CustomIngredient.of(Items.HONEY_BLOCK),
