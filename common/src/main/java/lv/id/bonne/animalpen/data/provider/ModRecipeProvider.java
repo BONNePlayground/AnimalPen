@@ -52,6 +52,7 @@ public interface ModRecipeProvider
         animalPen(WoodType.OAK, Items.OAK_FENCE, consumer);
         animalPen(WoodType.SPRUCE, Items.SPRUCE_FENCE, consumer);
         animalPen(WoodType.WARPED, Items.WARPED_FENCE, consumer);
+        animalPen(WoodType.MANGROVE, Items.MANGROVE_FENCE, consumer);
 
         ShapedRecipeBuilder.shaped(AnimalPenBlockRegistry.AQUARIUM.get()).
             define('G', Items.GLASS).

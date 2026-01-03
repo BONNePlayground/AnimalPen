@@ -15,10 +15,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
 
 
 /**
@@ -55,7 +55,7 @@ public class AnimalPenVariantHelper
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -125,7 +125,7 @@ public class AnimalPenVariantHelper
             if (player != null)
             {
                 player.displayClientMessage(
-                    new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                         withStyle(ChatFormatting.DARK_RED), true);
             }
 
@@ -169,7 +169,7 @@ public class AnimalPenVariantHelper
                 if (player != null)
                 {
                     player.displayClientMessage(
-                        new TranslatableComponent("item.animal_pen.animal_cage.error.too_many_variants").
+                        Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
                             withStyle(ChatFormatting.DARK_RED), true);
                 }
 

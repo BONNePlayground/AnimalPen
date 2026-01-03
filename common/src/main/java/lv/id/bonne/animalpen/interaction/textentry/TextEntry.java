@@ -11,15 +11,12 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
@@ -67,8 +64,8 @@ public record TextEntry(
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
 
         Object[] variables = new Object[2 + this.parameters.length];
-        variables[0] = new TextComponent("\uE000");
-        variables[1] = new TextComponent("\uE001");
+        variables[0] = Component.translatable("\uE000");
+        variables[1] = Component.translatable("\uE001");
 
         for (int i = 0; i < this.parameters.length; i++)
         {
@@ -102,7 +99,7 @@ public record TextEntry(
         }
 
         Component translatedComponent =
-            new TranslatableComponent(shortLine ? this.shortMessage() : this.longMessage(), variables).
+            Component.translatable(shortLine ? this.shortMessage() : this.longMessage(), variables).
                 withStyle(color);
 
         ItemStack[] resultPair = new ItemStack[2];

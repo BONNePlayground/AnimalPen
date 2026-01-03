@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 
-import dev.architectury.core.RegistryEntry;
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
@@ -24,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * This is wrapper for forge around EntityFunction interface.
  */
-public final class EntityFunctionEntry extends RegistryEntry<EntityFunctionEntry>
+public final class EntityFunctionEntry
 {
     public EntityFunctionEntry(EntityFunction function)
     {

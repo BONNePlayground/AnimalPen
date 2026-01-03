@@ -26,6 +26,7 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.CHICKEN).
             add(EntityType.COW).
             add(EntityType.DONKEY).
+            add(EntityType.FROG).
             add(EntityType.FOX).
             add(EntityType.GOAT).
             add(EntityType.HOGLIN).
@@ -47,12 +48,14 @@ public interface ModEntityTypeTagsProvider
         this.modTag(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE).
             add(EntityType.AXOLOTL).
             add(EntityType.COD).
+            add(EntityType.FROG).
             add(EntityType.PUFFERFISH).
             add(EntityType.SALMON).
             add(EntityType.TROPICAL_FISH).
             add(EntityType.DOLPHIN).
             add(EntityType.SQUID).
             add(EntityType.GLOW_SQUID).
+            add(EntityType.TADPOLE).
             add(EntityType.TURTLE);
         this.modTag(AnimalPenTags.BIRD_CATCHER_PICKABLE).
             add(EntityType.BEE).

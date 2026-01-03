@@ -15,8 +15,6 @@ import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -127,7 +125,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (!tooltip.isEmpty())
         {
-            tooltip.add(TextComponent.EMPTY);
+            tooltip.add(Component.empty());
         }
 
         if (stack.hasTag())
@@ -137,29 +135,29 @@ public abstract class AbstractAnimalStorageItem extends Item
 
             if (animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
             {
-                tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".entity",
+                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".entity",
                     getEntityTranslationName(animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID))).
                     withStyle(ChatFormatting.GRAY));
             }
 
             if (data.contains(AnimalPenCompoundTags.TAG_AMOUNT))
             {
-                tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".amount",
+                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".amount",
                     data.getLong(AnimalPenCompoundTags.TAG_AMOUNT)).
                     withStyle(ChatFormatting.GRAY));
             }
 
             if (stack.getTag().contains(AnimalPenCompoundTags.TAG_VARIANTS))
             {
-                tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".variants",
+                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".variants",
                     stack.getTag().getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
                     withStyle(ChatFormatting.GRAY));
             }
 
             if (animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
             {
-                tooltip.add(TextComponent.EMPTY);
-                tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".release").
+                tooltip.add(Component.empty());
+                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".release").
                     withStyle(ChatFormatting.GRAY));
             }
         }
@@ -168,7 +166,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             !stack.getTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL).
                 contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
         {
-            tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".tip").
+            tooltip.add(Component.translatable(this.tooltipKeyBase() + ".tip").
                 withStyle(ChatFormatting.GRAY));
         }
     }
@@ -405,7 +403,7 @@ public abstract class AbstractAnimalStorageItem extends Item
     private void error(Player player, String suffix)
     {
         player.displayClientMessage(
-            new TranslatableComponent(tooltipKeyBase() + suffix).
+            Component.translatable(tooltipKeyBase() + suffix).
                 withStyle(ChatFormatting.DARK_RED),
             true);
     }
@@ -422,6 +420,6 @@ public abstract class AbstractAnimalStorageItem extends Item
     {
         return EntityType.byString(entityId).
             map(EntityType::getDescription).
-            orElse(new TextComponent(entityId));
+            orElse(Component.literal(entityId));
     }
 }

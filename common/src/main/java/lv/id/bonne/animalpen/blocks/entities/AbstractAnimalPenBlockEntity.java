@@ -15,7 +15,6 @@ import java.util.*;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
-import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
@@ -617,7 +616,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         animal.clearFire();
 
-        int reward = ((MobInvoker) animal).invokeGetExperienceReward(player);
+        int reward = animal.getExperienceReward();
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
 
         if (AnimalPen.config().isTriggerAdvancements())

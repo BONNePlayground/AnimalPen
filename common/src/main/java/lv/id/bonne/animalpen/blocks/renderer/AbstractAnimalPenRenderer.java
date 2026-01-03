@@ -25,7 +25,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
@@ -198,7 +197,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
         poseStack.translate(0, 2 / 16f, -0.51f);
 
-        TranslatableComponent text = new TranslatableComponent("display.animal_pen.count", count);
+        Component text = Component.translatable("display.animal_pen.count", count);
         int textWidth = this.font.width(text);
 
         float maxWidth = 30f;

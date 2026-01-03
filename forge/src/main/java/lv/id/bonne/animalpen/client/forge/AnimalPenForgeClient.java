@@ -5,7 +5,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.AnimalPenClient;
 import lv.id.bonne.animalpen.config.screen.AnimalPenConfigScreen;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -27,8 +27,9 @@ public class AnimalPenForgeClient
         }
 
         ModLoadingContext.get().registerExtensionPoint(
-            ConfigGuiHandler.ConfigGuiFactory.class,
-            () -> new ConfigGuiHandler.ConfigGuiFactory(AnimalPenConfigScreen::createConfigScreen)
+            ConfigScreenHandler.ConfigScreenFactory.class,
+            () -> new ConfigScreenHandler.ConfigScreenFactory(
+                (minecraft, screen) -> AnimalPenConfigScreen.createConfigScreen(screen))
         );
     }
 

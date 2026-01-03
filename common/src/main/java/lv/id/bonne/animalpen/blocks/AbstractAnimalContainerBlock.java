@@ -9,6 +9,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -246,7 +247,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
     @Override
     @Nullable
-    public <E extends BlockEntity> GameEventListener getListener(Level level, E blockEntity)
+    public <E extends BlockEntity> GameEventListener getListener(ServerLevel level, E blockEntity)
     {
         return EntityBlock.super.getListener(level, blockEntity);
     }

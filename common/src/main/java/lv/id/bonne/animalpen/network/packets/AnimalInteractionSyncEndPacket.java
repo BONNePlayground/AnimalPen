@@ -2,7 +2,6 @@ package lv.id.bonne.animalpen.network.packets;
 
 
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import dev.architectury.networking.NetworkManager;
@@ -10,7 +9,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 
 /**
@@ -36,9 +35,8 @@ public record AnimalInteractionSyncEndPacket()
             if (!AnimalPenInteractionRegistry.containsAllEntities())
             {
                 AnimalPen.LOGGER.error("Entity count mismatch between server and client.");
-                Objects.requireNonNull(Minecraft.getInstance().player).sendMessage(
-                    new TranslatableComponent("network.animal_pen.missing_entities_form_server"),
-                    UUID.randomUUID());
+                Objects.requireNonNull(Minecraft.getInstance().player).sendSystemMessage(
+                    Component.translatable("network.animal_pen.missing_entities_form_server"));
             }
         });
     }

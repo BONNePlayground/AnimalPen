@@ -22,7 +22,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 
 public class AnimalPenConfigScreen
@@ -31,7 +30,7 @@ public class AnimalPenConfigScreen
     {
         ConfigBuilder builder = ConfigBuilder.create().
             setParentScreen(parent).
-            setTitle(new TranslatableComponent("title.animal_pen.config"));
+            setTitle(Component.translatable("title.animal_pen.config"));
 
         buildClientConfig(builder);
         buildServerConfig(builder);
@@ -54,12 +53,12 @@ public class AnimalPenConfigScreen
     private static void buildClientConfig(ConfigBuilder builder)
     {
         ConfigCategory general = builder.getOrCreateCategory(
-            new TranslatableComponent("category.animal_pen.general"));
+            Component.translatable("category.animal_pen.general"));
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         general.addEntry(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.show_cooldowns_while_crouching"),
+            startBooleanToggle(Component.translatable("option.animal_pen.show_cooldowns_while_crouching"),
                 AnimalPen.config().isShowCooldownsOnCrouch()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.show_cooldowns_while_crouching.tooltip")).
@@ -67,7 +66,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setShowCooldownsOnCrouch(newValue)).
             build());
         general.addEntry(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.show_all_interactions_above"),
+            startBooleanToggle(Component.translatable("option.animal_pen.show_all_interactions_above"),
                 AnimalPen.config().isShowAllInteractions()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.show_all_interactions_above.tooltip")).
@@ -75,7 +74,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setShowAllInteractions(newValue)).
             build());
         general.addEntry(entryBuilder.
-            startFloatField(new TranslatableComponent("option.animal_pen.growth_multiplier"),
+            startFloatField(Component.translatable("option.animal_pen.growth_multiplier"),
                 AnimalPen.config().getAnimalPenMobSize()).
             setDefaultValue(0.001f).
             setTooltip(tooltips("option.animal_pen.growth_multiplier.tooltip")).
@@ -84,9 +83,9 @@ public class AnimalPenConfigScreen
             build());
 
         SubCategoryBuilder animalPen =
-            entryBuilder.startSubCategory(new TranslatableComponent("category.animal_pen.animal_pen"));
+            entryBuilder.startSubCategory(Component.translatable("category.animal_pen.animal_pen"));
         animalPen.add(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.animal_pen_mob_can_grow"),
+            startBooleanToggle(Component.translatable("option.animal_pen.animal_pen_mob_can_grow"),
                 AnimalPen.config().isGrowAnimalPenMob()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.animal_pen_mob_can_grow.tooltip")).
@@ -94,7 +93,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setGrowAnimalPenMob(newValue)).
             build());
         animalPen.add(entryBuilder.
-            startFloatField(new TranslatableComponent("option.animal_pen.animal_pen_mob_size"),
+            startFloatField(Component.translatable("option.animal_pen.animal_pen_mob_size"),
                 AnimalPen.config().getAnimalPenMobSize()).
             setDefaultValue(0.33f).
             setTooltip(tooltips("option.animal_pen.animal_pen_mob_size.tooltip")).
@@ -104,9 +103,9 @@ public class AnimalPenConfigScreen
         general.addEntry(animalPen.build());
 
         SubCategoryBuilder aquarium = entryBuilder.startSubCategory(
-            new TranslatableComponent("category.animal_pen.aquarium"));
+            Component.translatable("category.animal_pen.aquarium"));
         aquarium.add(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.aquarium_mob_can_grow"),
+            startBooleanToggle(Component.translatable("option.animal_pen.aquarium_mob_can_grow"),
                 AnimalPen.config().isGrowAquariumMob()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.aquarium_mob_can_grow.tooltip")).
@@ -114,7 +113,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setGrowAquariumMob(newValue)).
             build());
         aquarium.add(entryBuilder.
-            startFloatField(new TranslatableComponent("option.animal_pen.aquarium_mob_size"),
+            startFloatField(Component.translatable("option.animal_pen.aquarium_mob_size"),
                 AnimalPen.config().getAquariumMobSize()).
             setDefaultValue(0.33f).
             setTooltip(tooltips("option.animal_pen.aquarium_mob_size.tooltip")).
@@ -124,9 +123,9 @@ public class AnimalPenConfigScreen
         general.addEntry(aquarium.build());
 
         SubCategoryBuilder aviary = entryBuilder.startSubCategory(
-            new TranslatableComponent("category.animal_pen.aviary"));
+            Component.translatable("category.animal_pen.aviary"));
         aviary.add(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.aviary_mob_can_grow"),
+            startBooleanToggle(Component.translatable("option.animal_pen.aviary_mob_can_grow"),
                 AnimalPen.config().isGrowAviaryMob()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.aviary_mob_can_grow.tooltip")).
@@ -134,7 +133,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setGrowAviaryMob(newValue)).
             build());
         aviary.add(entryBuilder.
-            startFloatField(new TranslatableComponent("option.animal_pen.aviary_mob_size"),
+            startFloatField(Component.translatable("option.animal_pen.aviary_mob_size"),
                 AnimalPen.config().getAviaryMobSize()).
             setDefaultValue(0.33f).
             setTooltip(tooltips("option.animal_pen.aviary_mob_size.tooltip")).
@@ -148,12 +147,12 @@ public class AnimalPenConfigScreen
     private static void buildServerConfig(ConfigBuilder builder)
     {
         ConfigCategory general = builder.getOrCreateCategory(
-            new TranslatableComponent("category.animal_pen.server"));
+            Component.translatable("category.animal_pen.server"));
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         general.addEntry(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.trigger_advancements"),
+            startBooleanToggle(Component.translatable("option.animal_pen.trigger_advancements"),
                 AnimalPen.config().isTriggerAdvancements()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.trigger_advancements.tooltip")).
@@ -162,7 +161,7 @@ public class AnimalPenConfigScreen
                 AnimalPen.config().setTriggerAdvancements(newValue)).
             build());
         general.addEntry(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.increase_statistics"),
+            startBooleanToggle(Component.translatable("option.animal_pen.increase_statistics"),
                 AnimalPen.config().isIncreaseStatistics()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.increase_statistics.tooltip")).
@@ -172,7 +171,7 @@ public class AnimalPenConfigScreen
             build());
 
         general.addEntry(entryBuilder.
-            startIntField(new TranslatableComponent("option.animal_pen.attack_cooldown"),
+            startIntField(Component.translatable("option.animal_pen.attack_cooldown"),
                 AnimalPen.config().getAttackCooldown()).
             setDefaultValue(5).
             setTooltip(tooltips("option.animal_pen.attack_cooldown.tooltip")).
@@ -182,7 +181,7 @@ public class AnimalPenConfigScreen
             build());
 
         general.addEntry(entryBuilder.
-            startLongField(new TranslatableComponent("option.animal_pen.animal_limit_in_pen"),
+            startLongField(Component.translatable("option.animal_pen.animal_limit_in_pen"),
                 AnimalPen.config().getMaximalAnimalCount()).
             setDefaultValue(Integer.MAX_VALUE).
             setTooltip(tooltips("option.animal_pen.animal_limit_in_pen.tooltip")).
@@ -192,7 +191,7 @@ public class AnimalPenConfigScreen
             build());
 
         general.addEntry(entryBuilder.
-            startIntField(new TranslatableComponent("option.animal_pen.max_stored_animal_variants"),
+            startIntField(Component.translatable("option.animal_pen.max_stored_animal_variants"),
                 AnimalPen.config().getMaxStoredVariants()).
             setDefaultValue(16).
             setTooltip(tooltips("option.animal_pen.max_stored_animal_variants.tooltip")).
@@ -202,7 +201,7 @@ public class AnimalPenConfigScreen
             build());
 
         general.addEntry(entryBuilder.
-            startBooleanToggle(new TranslatableComponent("option.animal_pen.debug"),
+            startBooleanToggle(Component.translatable("option.animal_pen.debug"),
                 AnimalPen.config().isDebug()).
             setDefaultValue(false).
             setTooltip(tooltips("option.animal_pen.debug.tooltip")).
@@ -239,7 +238,7 @@ public class AnimalPenConfigScreen
         if (I18n.exists(key))
         {
             
-            lines.add(new TranslatableComponent(key));
+            lines.add(Component.translatable(key));
         }
         
         for (int i = 0; i < 10; i++)
@@ -248,7 +247,7 @@ public class AnimalPenConfigScreen
             
             if (I18n.exists(subLine))
             {
-                lines.add(new TranslatableComponent(subLine));
+                lines.add(Component.translatable(subLine));
             }
         }
         
