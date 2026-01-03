@@ -4,15 +4,11 @@ package lv.id.bonne.animalpen.data.listener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import java.util.Map;
 
-import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -42,35 +38,12 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
         AnimalPenInteractionRegistry.clear();
 
         jsonMap.forEach((id, element) ->
-        {
-            if (!element.isJsonArray())
-            {
-                return;
-            }
-
-            Registry.ENTITY_TYPE.getOptional(id).ifPresent(entityType ->
-            {
-                for (JsonElement e : element.getAsJsonArray())
-                {
-                    JsonObject json = e.getAsJsonObject();
-
-                    if (json.has("required_mod"))
-                    {
-                        String modId = json.get("required_mod").getAsString();
-
-                        if (!Platform.isModLoaded(modId))
-                        {
-                            continue;
-                        }
-                    }
-
-                    AnimalInteraction.CODEC.parse(JsonOps.INSTANCE, json).
-                        resultOrPartial(msg -> AnimalPen.LOGGER.error("Error in {}: {}", id, msg)).
-                        ifPresent(interaction ->
-                            AnimalPenInteractionRegistry.register(entityType, interaction));
-                }
-            });
-        });
+            AnimalInteractionEntry.CODEC.parse(JsonOps.INSTANCE, element).result().
+                filter(AnimalInteractionEntry::isActive).
+                ifPresent(entry ->
+                    entry.interactions().forEach(interaction ->
+                        AnimalPenInteractionRegistry.register(entry.entityType().get(), interaction))
+                ));
 
         AnimalPen.LOGGER.info(
             "Loaded " + AnimalPenInteractionRegistry.getAll().size() + " animal interaction entries.");
