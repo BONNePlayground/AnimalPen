@@ -277,7 +277,7 @@ public class AnimalInteractionProvider implements DataProvider
             lootTable(AnimalPen.resourceOf("animal_interactions/bucket/egg")).
             perEntity(true).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(90).
+            dropLimit(80).
             sound(SoundEvents.CHICKEN_EGG.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.EGG))).
