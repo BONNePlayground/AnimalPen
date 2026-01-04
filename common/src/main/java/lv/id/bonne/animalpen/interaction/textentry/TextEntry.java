@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.ChatFormatting;

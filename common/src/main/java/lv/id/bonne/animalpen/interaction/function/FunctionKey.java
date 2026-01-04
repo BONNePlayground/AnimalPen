@@ -12,7 +12,6 @@ import lv.id.bonne.animalpen.interaction.value.IntValue;
 import lv.id.bonne.animalpen.interaction.value.StringValue;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.wrapper.EntityFunctionEntry;
-import net.minecraft.resources.ResourceLocation;
 
 
 /**

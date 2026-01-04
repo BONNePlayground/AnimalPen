@@ -14,6 +14,8 @@ import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
+import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
+import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
@@ -486,7 +488,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
 
         // Create executor for interactions.
-        return this.performInteraction(new PlayerInteractionExecutor(serverPlayer, interactionHand),
+        return this.performInteraction(new PlayerInteractionExecutor(serverPlayer, interactionHand, this),
             serverLevel,
             itemInHand).success();
     }
@@ -524,7 +526,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, container, this.getBlockPos()),
+        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, container, this),
             serverLevel,
             itemInHand);
     }
@@ -612,8 +614,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             withLuck(player.getLuck()).
             withRandom(level.random);
 
-        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).forEach(
-            itemStack -> this.insertOrDrop(level, itemStack));
+        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).
+            forEach(itemStack ->
+                ItemTransferUtil.insertBellowOrDrop(level,
+                    itemStack,
+                    this.getBlockPos(),
+                    this.dropPosition()));
 
         animal.clearFire();
 
@@ -682,13 +688,23 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         boolean dataUpdate = false;
 
         // Calculate consumption
-        ItemStack consumedItem = interaction.consume() ? itemInHand.copy() : ItemStack.EMPTY;
+        ConsumerEntry itemConsumer = interaction.consumer();
+        ItemStack consumedItem;
+        int consumedAmount;
 
-        int consumedAmount = interaction.consume() ? this.calculateConsumption(executor,
-            consumedItem,
-            animalCount,
-            interaction.perEntity(),
-            interaction.even()) : 1;
+        if (itemConsumer == null)
+        {
+            consumedItem = ItemStack.EMPTY;
+            consumedAmount = 1;
+        }
+        else
+        {
+            consumedItem = itemConsumer.getConsumedItem(itemInHand);
+            consumedAmount = itemConsumer.calculateConsumption(executor,
+                consumedItem,
+                animalCount,
+                interaction.even());
+        }
 
         if (consumedAmount == 0)
         {
@@ -698,18 +714,23 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         dataUpdate |= interaction.applyCooldown(mobNBT, animalCount);
 
-        List<ItemStack> lootItems = this.processLootTable(serverLevel, animal, interaction, animalCount);
+        List<ItemStack> lootItems = interaction.lootEntry() == null ?
+            Collections.emptyList() :
+            interaction.lootEntry().processLootTable(serverLevel, animal, this.getBlockPos(), animalCount);
 
         executor.triggerItemUse(animal, itemInHand, consumedAmount);
-        executor.damageItem(itemInHand, interaction.damage());
 
-        if (interaction.consume())
+        if (itemConsumer == null)
         {
-            itemInHand = this.consumeItems(executor, lootItems, itemInHand, consumedAmount);
+            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(serverLevel,
+                itemStack,
+                this.getBlockPos(),
+                this.dropPosition()));
         }
         else
         {
-            lootItems.forEach(itemStack -> this.insertOrDrop(serverLevel, itemStack));
+            itemInHand = itemConsumer.
+                consumeItems(executor, lootItems, itemInHand, consumedAmount);
         }
 
         if (interaction.sound() != null)
@@ -761,153 +782,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
 
         return InteractionResult.FAILED;
-    }
-
-
-    /**
-     * This method calculates how many items will be consumed by interaction.
-     *
-     * @param executor The executor of interaction
-     * @param itemStack The consumed item stack
-     * @param animalCount The amount of animals
-     * @param perEntity Indication if consumption is per mob or just once
-     * @param evenCount Indication if consumption affect only even number mobs
-     * @return amount of items consumed by interaction.
-     */
-    private int calculateConsumption(AnimalInteractionExecutor executor,
-        ItemStack itemStack,
-        int animalCount,
-        boolean perEntity,
-        boolean evenCount)
-    {
-        int consumedAmount;
-
-        if (perEntity)
-        {
-            consumedAmount = Math.min(animalCount, executor.countAvailable(itemStack));
-
-            if (evenCount && (consumedAmount & 1) == 1)
-            {
-                consumedAmount--;
-            }
-        }
-        else
-        {
-            consumedAmount = 1;
-        }
-
-        return consumedAmount;
-    }
-
-
-    /**
-     * This method creates list of items generated by loot-table in interaction.
-     *
-     * @param serverLevel The level where interaction happens
-     * @param animal The animal that are interacted with
-     * @param interaction The interaction that is happening
-     * @param animalCount The amount of animals interacted
-     * @return List of item stacks that are generated by loot table.
-     */
-    @NotNull
-    private List<ItemStack> processLootTable(ServerLevel serverLevel,
-        Mob animal,
-        AnimalInteraction interaction,
-        int animalCount)
-    {
-        if (interaction.lootTable() == null)
-        {
-            return Collections.emptyList();
-        }
-
-        int itemCount = interaction.dropLimit();
-
-        LootTable lootTable = serverLevel.getServer().getLootTables().get(interaction.lootTable());
-        LootContext context = new LootContext.Builder(serverLevel).
-            withParameter(LootContextParams.THIS_ENTITY, animal).
-            withParameter(LootContextParams.ORIGIN, animal.position()).
-            create(LootContextParamSets.GIFT);
-
-        List<ItemStack> itemStackList = new ArrayList<>();
-        int rollCount = interaction.perEntity() ? animalCount : 1;
-
-        while (itemCount > 0 && rollCount-- > 0)
-        {
-            List<ItemStack> randomItems = lootTable.getRandomItems(context);
-
-            if (randomItems.isEmpty())
-            {
-                // Just a stop on infinite loop
-                break;
-            }
-
-            itemCount -= randomItems.stream().mapToInt(ItemStack::getCount).sum();
-
-            randomItems.forEach(item ->
-            {
-                boolean added = false;
-
-                for (ItemStack stack : itemStackList)
-                {
-                    if (ItemStack.isSameItemSameTags(item, stack) &&
-                        stack.getCount() + item.getCount() <= stack.getMaxStackSize())
-                    {
-                        stack.grow(item.getCount());
-                        added = true;
-                        break;
-                    }
-                }
-
-                if (!added)
-                {
-                    itemStackList.add(item);
-                }
-            });
-        }
-
-        return itemStackList;
-    }
-
-
-    /**
-     * This method consumes items from inventory and give loot items if needed.
-     *
-     * @param executor The executor that processes item removal/insertion
-     * @param lootItems The list of loot items
-     * @param consumedItem The consumed item stack
-     * @param consumedAmount The amount of consumed item stack
-     */
-    private ItemStack consumeItems(AnimalInteractionExecutor executor,
-        List<ItemStack> lootItems,
-        ItemStack consumedItem,
-        int consumedAmount)
-    {
-        ItemStack returnItem;
-
-        if (!lootItems.isEmpty())
-        {
-            Iterator<ItemStack> iterator = lootItems.iterator();
-
-            // Replace first item with consumed item
-            returnItem = executor.giveFirst(consumedItem, iterator.next());
-            consumedAmount--;
-
-            // Remove all remining items from inventory
-            executor.consume(consumedItem, consumedAmount);
-
-            // Give all loot items
-            iterator.forEachRemaining(executor::drop);
-        }
-        else
-        {
-            // Remove all consumed items for inventory
-            executor.consume(consumedItem, consumedAmount);
-
-            // return item is consumed
-            returnItem = ItemStack.EMPTY;
-        }
-
-        return returnItem;
     }
 
 
@@ -988,32 +862,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
 
         return anyChanges;
-    }
-
-
-    public void insertOrDrop(Level level, ItemStack stack)
-    {
-        if (level.isClientSide())
-        {
-            // Cannot insert
-            return;
-        }
-
-        BlockPos below = this.getBlockPos().below();
-
-        if (ItemTransferUtil.canInsert(level, below, Direction.UP, stack))
-        {
-            ItemStack remaining = ItemTransferUtil.insert(level, below, Direction.UP, stack);
-
-            if (!remaining.isEmpty())
-            {
-                Block.popResource(level, this.dropPosition(), remaining);
-            }
-        }
-        else
-        {
-            Block.popResource(level, this.dropPosition(), stack);
-        }
     }
 
 

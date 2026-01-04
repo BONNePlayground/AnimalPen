@@ -4,9 +4,6 @@ package lv.id.bonne.animalpen.interaction.textentry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
-import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.interaction.condition.Operator;
-
 
 /**
  * This enum stores all visibility modes for Text Entry
