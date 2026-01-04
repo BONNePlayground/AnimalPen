@@ -160,7 +160,7 @@ public enum Operator
                         return DataResult.success(op);
                     }
                 }
-                return DataResult.error("Unknown operator: " + token);
+                return DataResult.error(() -> "Unknown operator: " + token);
             },
             op -> DataResult.success(op.token)
         );

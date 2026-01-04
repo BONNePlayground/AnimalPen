@@ -47,7 +47,7 @@ public class CustomCodec
                 DataResult<List<T>> result = elementCodec.listOf().parse(ops, value);
 
                 return result.error().isPresent() ?
-                    DataResult.error("Error in " + fieldName + ": " + result.error().get().message()) : result;
+                    DataResult.error(() -> "Error in " + fieldName + ": " + result.error().get().message()) : result;
             }
 
 

@@ -257,8 +257,8 @@ public interface ConsumerEntry
                 case "consume" -> Consume.CODEC;
                 case "replace" -> Replace.CODEC;
                 default -> Codec.EMPTY.codec().flatXmap(
-                    empty -> DataResult.error("Unknown cooldown type: " + type),
-                    entry -> DataResult.error("Unknown cooldown type: " + type)
+                    empty -> DataResult.error(() -> "Unknown cooldown type: " + type),
+                    entry -> DataResult.error(() -> "Unknown cooldown type: " + type)
                 );
             });
 }

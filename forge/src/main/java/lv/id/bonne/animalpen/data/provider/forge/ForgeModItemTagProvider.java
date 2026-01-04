@@ -27,7 +27,7 @@ public class ForgeModItemTagProvider extends ItemTagsProvider implements ModItem
         String modId,
         @Nullable ExistingFileHelper existingFileHelper)
     {
-        super(arg, completableFuture, arg2, modId, existingFileHelper);
+        super(arg, completableFuture, arg2.contentsGetter(), modId, existingFileHelper);
     }
 
 
@@ -60,6 +60,14 @@ public class ForgeModItemTagProvider extends ItemTagsProvider implements ModItem
             @Override
             public SimpleItemTagAppender optionalTag(ResourceLocation other) {
                 builder.addOptionalTag(other);
+                return this;
+            }
+
+
+            @Override
+            public SimpleItemTagAppender tag(TagKey<Item> itemTag)
+            {
+                builder.addTag(itemTag);
                 return this;
             }
         };

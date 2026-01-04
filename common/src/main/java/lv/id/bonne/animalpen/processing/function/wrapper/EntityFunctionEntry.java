@@ -96,12 +96,12 @@ public final class EntityFunctionEntry
         id ->
         {
             EntityFunctionEntry entry = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.get(id);
-            return entry != null ? DataResult.success(entry) : DataResult.error("Unknown entity_function: " + id);
+            return entry != null ? DataResult.success(entry) : DataResult.error(() -> "Unknown entity_function: " + id);
         },
         entry ->
         {
             ResourceLocation id = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.getId(entry);
-            return id != null ? DataResult.success(id) : DataResult.error("Unregistered entity_function: " + entry);
+            return id != null ? DataResult.success(id) : DataResult.error(() -> "Unregistered entity_function: " + entry);
         }
     );
 }

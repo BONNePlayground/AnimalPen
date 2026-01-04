@@ -101,7 +101,7 @@ public record AnimalInteractionEntry(Optional<ResourceKey<EntityType<?>>> entity
 
             if (value.entityType().isEmpty())
             {
-                return DataResult.error("Cannot encode given value as entity type is missing: " + prefix.toString());
+                return DataResult.error(() -> "Cannot encode given value as entity type is missing: " + prefix.toString());
             }
 
             if (!value.requiredMods().isEmpty())

@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.helper.SimpleTagAppender;
 import lv.id.bonne.animalpen.data.provider.ModBlockTagsProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;

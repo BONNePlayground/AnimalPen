@@ -4,7 +4,6 @@ package lv.id.bonne.animalpen.data.provider.fabric;
 import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.data.provider.ModRecipeProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.advancements.CriterionTriggerInstance;

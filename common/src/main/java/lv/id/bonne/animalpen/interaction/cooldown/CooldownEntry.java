@@ -127,8 +127,8 @@ public interface CooldownEntry
                 case "static" -> Static.CODEC;
                 case "random" -> Randomized.CODEC;
                 default -> Codec.EMPTY.codec().flatXmap(
-                    empty -> DataResult.error("Unknown cooldown type: " + type),
-                    entry -> DataResult.error("Unknown cooldown type: " + type)
+                    empty -> DataResult.error(() -> "Unknown cooldown type: " + type),
+                    entry -> DataResult.error(() -> "Unknown cooldown type: " + type)
                 );
             });
 }

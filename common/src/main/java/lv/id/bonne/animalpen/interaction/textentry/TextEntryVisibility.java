@@ -33,7 +33,7 @@ public enum TextEntryVisibility
                 try {
                     return DataResult.success(TextEntryVisibility.valueOf(str.toUpperCase()));
                 } catch (IllegalArgumentException e) {
-                    return DataResult.error("Unknown TextEntryVisibility: " + str);
+                    return DataResult.error(() -> "Unknown TextEntryVisibility: " + str);
                 }
             },
             vis -> vis.name().toLowerCase()

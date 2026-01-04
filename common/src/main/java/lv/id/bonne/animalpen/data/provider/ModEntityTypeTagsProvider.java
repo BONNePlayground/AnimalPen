@@ -42,6 +42,7 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.RABBIT).
             add(EntityType.SHEEP).
             add(EntityType.SKELETON_HORSE).
+            add(EntityType.SNIFFER).
             add(EntityType.STRIDER).
             add(EntityType.TRADER_LLAMA).
             add(EntityType.WOLF).

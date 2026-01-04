@@ -58,6 +58,14 @@ public class FabricModItemTagProvider extends FabricTagProvider.ItemTagProvider 
                 builder.addOptionalTag(other);
                 return this;
             }
+
+
+            @Override
+            public SimpleItemTagAppender tag(TagKey<Item> itemTag)
+            {
+                builder.addTag(itemTag);
+                return this;
+            }
         };
     }
 }

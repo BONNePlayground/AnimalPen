@@ -1,15 +1,10 @@
 package lv.id.bonne.animalpen.data.provider.fabric;
 
 
-import java.util.function.BiConsumer;
-
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.provider.ModBlockLootProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.LootTable;
 
 
 public class FabricBlockLootProvider extends FabricBlockLootTableProvider implements ModBlockLootProvider
@@ -31,12 +26,5 @@ public class FabricBlockLootProvider extends FabricBlockLootTableProvider implem
     public void generate()
     {
         this.addModLoot();
-    }
-
-
-    @Override
-    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer)
-    {
-        this.generate(consumer);
     }
 }

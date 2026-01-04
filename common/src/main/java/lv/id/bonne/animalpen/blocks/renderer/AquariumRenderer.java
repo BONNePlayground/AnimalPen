@@ -63,9 +63,6 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         }
 
         // The animation speed is required for some entities to display their swimming animation
-        animal.animationSpeedOld = animal.animationSpeed;
-        animal.animationSpeed += (0.6f - animal.animationSpeed) * 0.4F;
-        animal.animationPosition += animal.animationSpeed;
 
         // Squids have custom animation that depends on body rotation and tentacle angles/movement etc.
         if (animal instanceof Squid squid)
@@ -98,7 +95,7 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         // Frog animations are triggered by animation state.
         if (animal instanceof Frog frog)
         {
-            frog.swimAnimationState.startIfStopped(frog.tickCount);
+            frog.swimIdleAnimationState.startIfStopped(frog.tickCount);
         }
     }
 

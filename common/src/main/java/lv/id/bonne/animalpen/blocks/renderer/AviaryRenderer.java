@@ -74,9 +74,6 @@ public class AviaryRenderer extends AbstractAnimalPenRenderer<AviaryTileEntity>
         }
 
         // The animation speed is required for some entities to display their swimming animation
-        animal.animationSpeedOld = animal.animationSpeed;
-        animal.animationSpeed += (0.6f - animal.animationSpeed) * 0.4F;
-        animal.animationPosition += animal.animationSpeed;
 
         if (animal instanceof Parrot parrot)
         {

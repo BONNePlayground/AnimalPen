@@ -606,7 +606,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             withParameter(LootContextParams.KILLER_ENTITY, player).
             withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
-            withParameter(LootContextParams.DAMAGE_SOURCE, DamageSource.playerAttack(player)).
+            withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
             withLuck(player.getLuck()).
             withRandom(level.random);
 
@@ -626,7 +626,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         {
             CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger((ServerPlayer) player,
                 animal,
-                DamageSource.playerAttack(player));
+                level.damageSources().playerAttack(player));
         }
 
         if (AnimalPen.config().isIncreaseStatistics())

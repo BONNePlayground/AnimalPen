@@ -60,7 +60,7 @@ public interface Value
                         return DataResult.success(Either.right(Either.right(s)));
                     }
 
-                    return DataResult.error("Unknown Value type: " + value);
+                    return DataResult.error(() -> "Unknown Value type: " + value);
                 }
             );
 }

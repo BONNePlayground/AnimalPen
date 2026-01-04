@@ -68,6 +68,7 @@ public class AnimalInteractionProvider implements DataProvider
             featureList.add(this.generateSheep(cache));
             featureList.add(this.generateTurtle(cache));
             featureList.add(this.generateFrog(cache));
+            featureList.add(this.generateSniffer(cache));
 
             // Fishes
             featureList.add(this.generateFish(cache, EntityType.COD, Items.COD_BUCKET));
@@ -758,6 +759,37 @@ public class AnimalInteractionProvider implements DataProvider
             getOrThrow(false, IllegalStateException::new);
 
         Path file = this.pathProvider.json(EntityType.FROG.arch$registryName());
+
+        return DataProvider.saveStable(cache, json, file);
+    }
+
+
+    private CompletableFuture<?> generateSniffer(CachedOutput cache)
+    {
+        List<AnimalInteraction> interactions = new ArrayList<>(2);
+
+        // Food
+        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("sniffer_food"))));
+        // Milk Pickup
+        interactions.add(AnimalInteractionBuilder.create("sniff").
+            ingredient(CustomIngredient.of(Items.BOWL)).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/torchflower"), 320, true)).
+            cooldown(new CooldownEntry.Linear(6000, -20, 200)).
+            consume(new ConsumerEntry.Interact()).
+            sound(SoundEvents.SNIFFER_DIGGING.getLocation()).
+            redstoneBit(2).
+            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TORCHFLOWER_SEEDS))).
+            textLines(TextEntry.cooldown("display.animal_pen.sniff_cooldown", CustomIngredient.of(Items.TORCHFLOWER_SEEDS))).
+            build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.SNIFFER_IDLE));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE,
+                AnimalInteractionEntry.of(EntityType.SNIFFER.builtInRegistryHolder().key(), interactions)).
+            getOrThrow(false, IllegalStateException::new);
+
+        Path file = this.pathProvider.json(EntityType.SNIFFER.arch$registryName());
 
         return DataProvider.saveStable(cache, json, file);
     }

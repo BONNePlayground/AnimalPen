@@ -18,7 +18,6 @@ import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -356,12 +356,13 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 poseStack.scale(-20f, -20f, 20f);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
-                    first,
-                    ItemTransforms.TransformType.GROUND,
+                    second,
+                    ItemDisplayContext.GROUND,
                     combinedLight,
                     combinedOverlay,
                     poseStack,
                     buffer,
+                    Minecraft.getInstance().level,
                     0
                 );
                 poseStack.popPose();
@@ -381,11 +382,12 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
                     second,
-                    ItemTransforms.TransformType.GROUND,
+                    ItemDisplayContext.GROUND,
                     combinedLight,
                     combinedOverlay,
                     poseStack,
                     buffer,
+                    Minecraft.getInstance().level,
                     0
                 );
                 poseStack.popPose();
