@@ -11,7 +11,7 @@ authors = "BONNe1704"
 description = '''
 A simple mod aimed to reduce lag on servers by placing animals in single block.
 '''
-logoFile = "assets/animal_pen/icon.png"
+logoFile = "icon.png"
 
 [[dependencies.animal_pen]]
 modId = "forge"

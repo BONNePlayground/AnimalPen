@@ -20,7 +20,8 @@ import net.minecraft.world.level.block.DispenserBlock;
 public interface DispenserBlockAccessor
 {
     @Accessor("DISPENSER_REGISTRY")
-    public static Map<Item, DispenseItemBehavior> getDispenserRegistry() {
+    static Map<Item, DispenseItemBehavior> getDispenserRegistry()
+    {
         throw new AssertionError();
     }
 }

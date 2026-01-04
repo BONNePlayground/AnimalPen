@@ -12,6 +12,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.items.BirdCatcherItem;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 
@@ -42,5 +43,10 @@ public class AnimalPensItemRegistry
      */
     public static final RegistrySupplier<AnimalContainerItem> ANIMAL_CONTAINER =
         REGISTRY.register("water_animal_container", () -> new AnimalContainerItem(new Item.Properties().
+            tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1)));
+
+
+    public static final RegistrySupplier<BirdCatcherItem> BIRD_CATCHER =
+        REGISTRY.register("bird_catcher", () -> new BirdCatcherItem(new Item.Properties().
             tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1)));
 }
