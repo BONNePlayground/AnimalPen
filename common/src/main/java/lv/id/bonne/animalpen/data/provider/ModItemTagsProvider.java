@@ -26,6 +26,8 @@ public interface ModItemTagsProvider
         this.modTag(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS).
             optionalTag(ResourceLocation.tryParse("forge:knives")).
             optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/swords")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/axes")).
             optionalTag(ResourceLocation.tryParse("c:axes")).
             optionalTag(ResourceLocation.tryParse("c:swords")).
             optionalTag(ResourceLocation.tryParse("c:knives")).
@@ -43,6 +45,8 @@ public interface ModItemTagsProvider
         this.modTag(AnimalPenTags.AQUARIUM_ATTACK_TOOLS).
             optionalTag(ResourceLocation.tryParse("forge:knives")).
             optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/swords")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/axes")).
             optionalTag(ResourceLocation.tryParse("c:axes")).
             optionalTag(ResourceLocation.tryParse("c:swords")).
             optionalTag(ResourceLocation.tryParse("c:knives")).
@@ -60,6 +64,8 @@ public interface ModItemTagsProvider
         this.modTag(AnimalPenTags.AVIARY_ATTACK_TOOLS).
             optionalTag(ResourceLocation.tryParse("forge:knives")).
             optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/swords")).
+            optionalTag(ResourceLocation.tryParse("forge:tools/axes")).
             optionalTag(ResourceLocation.tryParse("c:axes")).
             optionalTag(ResourceLocation.tryParse("c:swords")).
             optionalTag(ResourceLocation.tryParse("c:knives")).
