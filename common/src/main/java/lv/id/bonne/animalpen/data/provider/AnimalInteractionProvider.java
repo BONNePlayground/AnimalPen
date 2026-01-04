@@ -671,13 +671,10 @@ public class AnimalInteractionProvider implements DataProvider
         // Froglight
         interactions.add(AnimalInteractionBuilder.create("froglight").
             ingredient(CustomIngredient.of(Items.MAGMA_BLOCK)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/magma_cube/" +
-                Items.OCHRE_FROGLIGHT.arch$registryName().getPath())).
-            perEntity(true).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/magma_cube/froglight"), Integer.MAX_VALUE, true)).
+            consume(new ConsumerEntry.Consume(false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "variant", "minecraft:temperate")).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(320).
             sound(SoundEvents.FROG_EAT.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
@@ -688,13 +685,10 @@ public class AnimalInteractionProvider implements DataProvider
 
         interactions.add(AnimalInteractionBuilder.create("froglight").
             ingredient(CustomIngredient.of(Items.MAGMA_BLOCK)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/magma_cube/" +
-                Items.PEARLESCENT_FROGLIGHT.arch$registryName().getPath())).
-            perEntity(true).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/magma_cube/froglight"), Integer.MAX_VALUE, true)).
+            consume(new ConsumerEntry.Consume(false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "variant", "minecraft:warm")).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(320).
             sound(SoundEvents.FROG_EAT.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
@@ -705,13 +699,10 @@ public class AnimalInteractionProvider implements DataProvider
 
         interactions.add(AnimalInteractionBuilder.create("froglight").
             ingredient(CustomIngredient.of(Items.MAGMA_BLOCK)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/magma_cube/" +
-                Items.VERDANT_FROGLIGHT.arch$registryName().getPath())).
-            perEntity(true).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/magma_cube/froglight"), Integer.MAX_VALUE, true)).
+            consume(new ConsumerEntry.Consume(false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "variant", "minecraft:cold")).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(320).
             sound(SoundEvents.FROG_EAT.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
