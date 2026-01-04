@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
@@ -37,7 +38,7 @@ public class AnimalPenItemHelper
             return Optional.empty();
         }
 
-        return Optional.of(Pair.of(flowerBlock.getSuspiciousStewEffect(), flowerBlock.getEffectDuration()));
+        return Optional.of(Pair.of(flowerBlock.getSuspiciousEffect(), flowerBlock.getEffectDuration()));
     }
 
 
@@ -73,7 +74,7 @@ public class AnimalPenItemHelper
      */
     public static TagKey<Item> itemTag(ResourceLocation value)
     {
-        return TagKey.create(Registry.ITEM_REGISTRY, value);
+        return TagKey.create(Registries.ITEM, value);
     }
 
 

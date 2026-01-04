@@ -13,7 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -97,12 +98,12 @@ public final class CustomIngredient implements Predicate<ItemStack>
             {
                 if (str.startsWith("#"))
                 {
-                    return new TagValue(TagKey.create(Registry.ITEM_REGISTRY,
+                    return new TagValue(TagKey.create(Registries.ITEM,
                         ResourceLocation.tryParse(str.substring(1))));
                 }
                 else
                 {
-                    return new ItemValue(Registry.ITEM.getOptional(ResourceLocation.tryParse(str)).
+                    return new ItemValue(BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(str)).
                         map(Item::getDefaultInstance).
                         orElse(ItemStack.EMPTY));
                 }
@@ -115,7 +116,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
                 }
                 else if (value instanceof ItemValue val)
                 {
-                    return Registry.ITEM.getKey(val.item.getItem()).toString();
+                    return BuiltInRegistries.ITEM.getKey(val.item.getItem()).toString();
                 }
 
                 throw new UnsupportedOperationException("Unknown value type");
@@ -209,7 +210,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
         {
             List<ItemStack> list = Lists.newArrayList();
 
-            for (Holder<Item> holder : Registry.ITEM.getTagOrEmpty(this.tag))
+            for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(this.tag))
             {
                 list.add(new ItemStack(holder));
             }

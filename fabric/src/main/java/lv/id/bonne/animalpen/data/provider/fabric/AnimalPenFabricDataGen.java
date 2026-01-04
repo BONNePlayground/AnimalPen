@@ -11,16 +11,18 @@ public class AnimalPenFabricDataGen implements DataGeneratorEntrypoint
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator)
     {
-        fabricDataGenerator.addProvider(AnimalInteractionProvider::new);
+        FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
+
+        pack.addProvider(AnimalInteractionProvider::new);
 
         FabricModBlockTagProvider blockTagProvider =
-            fabricDataGenerator.addProvider(FabricModBlockTagProvider::new);
-        fabricDataGenerator.addProvider((FabricDataGenerator dataGenerator) ->
-            new FabricModItemTagProvider(dataGenerator, blockTagProvider));
-        fabricDataGenerator.addProvider(FabricModEntityTypeTagProvider::new);
+            pack.addProvider(FabricModBlockTagProvider::new);
+        pack.addProvider((generator, feature) ->
+            new FabricModItemTagProvider(generator, feature, blockTagProvider));
+        pack.addProvider(FabricModEntityTypeTagProvider::new);
 
-        fabricDataGenerator.addProvider(FabricModRecipeProvider::new);
+        pack.addProvider(FabricModRecipeProvider::new);
 
-        fabricDataGenerator.addProvider(FabricBlockLootProvider::new);
+        pack.addProvider(FabricBlockLootProvider::new);
     }
 }

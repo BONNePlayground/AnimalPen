@@ -7,7 +7,7 @@ package lv.id.bonne.animalpen.blocks.renderer;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
@@ -59,9 +59,9 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         // Apply rotation based on facing direction
         switch (facing)
         {
-            case SOUTH -> poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Vector3f.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
         }
 
         this.renderAnimal(animal, tileEntity, partialTicks, poseStack, buffer, combinedLight, combinedOverlay);
@@ -145,7 +145,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             poseStack.scale(scale, scale, scale);
         }
 
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
@@ -236,7 +236,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
         if (toPlayer.dot(facingVec) < 0)
         {
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
         }
 
         double totalHeight = this.getTextStartHeight() + this.getTextLineSpacing() * (textList.size() - 1);
@@ -354,7 +354,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
                 poseStack.pushPose();
                 poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
                     first,
                     ItemTransforms.TransformType.GROUND,
@@ -378,7 +378,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
                 poseStack.pushPose();
                 poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
                     second,
                     ItemTransforms.TransformType.GROUND,

@@ -15,7 +15,6 @@ import java.util.*;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
-import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
@@ -28,8 +27,7 @@ import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
@@ -39,7 +37,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
@@ -734,17 +731,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (interaction.sound() != null)
         {
-            SoundEvent soundEvent = Registry.SOUND_EVENT.get(interaction.sound());
-
-            if (soundEvent != null)
-            {
-                serverLevel.playSound(null,
+            this.level.registryAccess().registry(Registries.SOUND_EVENT).
+                flatMap(registry -> registry.getOptional(interaction.sound())).
+                ifPresent(soundEvent -> level.playSound(null,
                     this.getBlockPos(),
                     soundEvent,
                     SoundSource.AMBIENT,
-                    1.0f,
-                    1.0f);
-            }
+                    1.0F,
+                    Mth.randomBetween(level.getRandom(), 0.8F, 1.2F)));
         }
 
         dataUpdate |= executor.triggerFunctions(interaction,
@@ -838,14 +832,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // TODO: think about dropping loot. Currently I do not have usage for it, so I have not implemented it.
 
             // Play sound
-            if (interaction.sound() != null && Registry.SOUND_EVENT.containsKey(interaction.sound()))
+            if (interaction.sound() != null)
             {
-                level.playSound(null,
-                    this.getBlockPos(),
-                    Registry.SOUND_EVENT.get(interaction.sound()),
-                    SoundSource.NEUTRAL,
-                    1.0F,
-                    Mth.randomBetween(level.getRandom(), 0.8F, 1.2F));
+                this.level.registryAccess().registry(Registries.SOUND_EVENT).
+                    flatMap(registry -> registry.getOptional(interaction.sound())).
+                    ifPresent(soundEvent -> level.playSound(null,
+                        this.getBlockPos(),
+                        soundEvent,
+                        SoundSource.AMBIENT,
+                        1.0F,
+                        Mth.randomBetween(level.getRandom(), 0.8F, 1.2F)));
             }
 
             // Trigger start functions

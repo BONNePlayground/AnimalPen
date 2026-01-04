@@ -1,10 +1,15 @@
 package lv.id.bonne.animalpen.data.provider.fabric;
 
 
+import org.jetbrains.annotations.Nullable;
+import java.util.concurrent.CompletableFuture;
+
 import lv.id.bonne.animalpen.data.helper.SimpleItemTagAppender;
 import lv.id.bonne.animalpen.data.provider.ModItemTagsProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -13,15 +18,16 @@ import net.minecraft.world.level.block.Block;
 
 public class FabricModItemTagProvider extends FabricTagProvider.ItemTagProvider implements ModItemTagsProvider
 {
-    public FabricModItemTagProvider(FabricDataGenerator dataGenerator,
-        FabricTagProvider.BlockTagProvider blockTagProvider)
+    public FabricModItemTagProvider(FabricDataOutput output,
+        CompletableFuture<HolderLookup.Provider> completableFuture,
+        @Nullable BlockTagProvider blockTagProvider)
     {
-        super(dataGenerator, blockTagProvider);
+        super(output, completableFuture, blockTagProvider);
     }
 
 
     @Override
-    protected void generateTags()
+    protected void addTags(HolderLookup.Provider provider)
     {
         this.addModTags();
     }
@@ -36,7 +42,8 @@ public class FabricModItemTagProvider extends FabricTagProvider.ItemTagProvider 
 
             @Override
             public SimpleItemTagAppender add(Item value) {
-                builder.add(value);
+                BuiltInRegistries.ITEM.getResourceKey(value).
+                    ifPresent(builder::add);
                 return this;
             }
 

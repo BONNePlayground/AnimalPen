@@ -8,13 +8,14 @@ import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 
 
 /**
@@ -23,11 +24,11 @@ import net.minecraft.resources.ResourceLocation;
  * @param entityId The id of entity.
  * @param interactions The list of interactions for entity.
  */
-public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<AnimalInteraction> interactions)
+public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entityId, List<AnimalInteraction> interactions)
 {
     public static void encode(AnimalInteractionSyncEntityPacket pkt, FriendlyByteBuf buf)
     {
-        buf.writeResourceLocation(pkt.entityId());
+        buf.writeResourceKey(pkt.entityId());
 
         Tag tag = AnimalInteraction.CODEC.
             listOf().
@@ -49,7 +50,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<
 
     public static AnimalInteractionSyncEntityPacket decode(FriendlyByteBuf buf)
     {
-        ResourceLocation entityId = buf.readResourceLocation();
+        ResourceKey<EntityType<?>> entityId = buf.readResourceKey(Registries.ENTITY_TYPE);
         CompoundTag tag = buf.readNbt();
         List<AnimalInteraction> interactions;
 
@@ -70,8 +71,6 @@ public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<
 
     public static void handle(AnimalInteractionSyncEntityPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
     {
-        ctx.get().queue(() ->
-            Registry.ENTITY_TYPE.getOptional(pkt.entityId()).ifPresent(
-                entityType -> AnimalPenInteractionRegistry.register(entityType, pkt.interactions())));
+        ctx.get().queue(() -> AnimalPenInteractionRegistry.register(pkt.entityId(), pkt.interactions()));
     }
 }

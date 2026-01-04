@@ -5,7 +5,9 @@ import java.util.*;
 
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +33,7 @@ public class AnimalPenInteractionRegistry
      * @param id the animal resource id
      * @param data the interaction data
      */
-    public static void register(EntityType<?> id, AnimalInteraction data)
+    public static void register(ResourceKey<EntityType<?>> id, AnimalInteraction data)
     {
         DATA.computeIfAbsent(id, loc -> new ArrayList<>(3)).add(data);
     }
@@ -43,7 +45,7 @@ public class AnimalPenInteractionRegistry
      * @param id the animal resource id
      * @param data the interaction data
      */
-    public static void register(EntityType<?> id, List<AnimalInteraction> data)
+    public static void register(ResourceKey<EntityType<?>> id, List<AnimalInteraction> data)
     {
         DATA.put(id, data);
     }
@@ -55,7 +57,7 @@ public class AnimalPenInteractionRegistry
      * @param id the animal resource id
      * @return the animal interaction data
      */
-    public static List<AnimalInteraction> get(EntityType<?> id)
+    public static List<AnimalInteraction> get(ResourceKey<EntityType<?>> id)
     {
         return DATA.get(id);
     }
@@ -66,7 +68,7 @@ public class AnimalPenInteractionRegistry
      *
      * @return the all registry data.
      */
-    public static Map<EntityType<?>, List<AnimalInteraction>> getAll()
+    public static Map<ResourceKey<EntityType<?>>, List<AnimalInteraction>> getAll()
     {
         return Collections.unmodifiableMap(DATA);
     }
@@ -82,7 +84,10 @@ public class AnimalPenInteractionRegistry
      */
     public static Optional<AnimalInteraction> matchInteraction(Mob mob, CompoundTag mobNBT, ItemStack itemInHand)
     {
-        if (!DATA.containsKey(mob.getType()))
+        ResourceKey<EntityType<?>> key =
+            BuiltInRegistries.ENTITY_TYPE.getResourceKey(mob.getType()).orElseThrow();
+        
+        if (!DATA.containsKey(key))
         {
             return Optional.empty();
         }
@@ -91,7 +96,7 @@ public class AnimalPenInteractionRegistry
             getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
             getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
 
-        List<AnimalInteraction> interactions = DATA.get(mob.getType());
+        List<AnimalInteraction> interactions = DATA.get(key);
 
         return interactions.stream().
             filter(interaction -> !cooldowns.contains(interaction.id())).
@@ -109,12 +114,15 @@ public class AnimalPenInteractionRegistry
      */
     public static Collection<AnimalInteraction> getInteractions(Mob mob)
     {
-        if (!DATA.containsKey(mob.getType()))
+        ResourceKey<EntityType<?>> key =
+            BuiltInRegistries.ENTITY_TYPE.getResourceKey(mob.getType()).orElseThrow();
+
+        if (!DATA.containsKey(key))
         {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableCollection(DATA.get(mob.getType()));
+        return Collections.unmodifiableCollection(DATA.get(key));
     }
 
 
@@ -143,5 +151,5 @@ public class AnimalPenInteractionRegistry
     /**
      * The registry of animal interactions.
      */
-    private static final Map<EntityType<?>, List<AnimalInteraction>> DATA = new HashMap<>();
+    private static final Map<ResourceKey<EntityType<?>>, List<AnimalInteraction>> DATA = new HashMap<>();
 }

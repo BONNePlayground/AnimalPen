@@ -8,7 +8,7 @@ package lv.id.bonne.animalpen.registries;
 
 
 import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.Registries;
+import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.processing.function.core.*;
@@ -37,8 +37,9 @@ public class AnimalPenFunctionRegistry
     /**
      * The actual registry of entity_functions.
      */
-    public static final Registrar<EntityFunctionEntry> ENTITY_FUNCTIONS = Registries.get(AnimalPen.MOD_ID).
+    public static final Registrar<EntityFunctionEntry> ENTITY_FUNCTIONS = RegistrarManager.get(AnimalPen.MOD_ID).
         builder(AnimalPen.resourceOf("entity_function"), new EntityFunctionEntry[0]).
+        saveToDisc().
         build();
 
 

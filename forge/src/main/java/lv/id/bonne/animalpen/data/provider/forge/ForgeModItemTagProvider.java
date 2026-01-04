@@ -1,13 +1,17 @@
 package lv.id.bonne.animalpen.data.provider.forge;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.helper.SimpleItemTagAppender;
 import lv.id.bonne.animalpen.data.provider.ModItemTagsProvider;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -17,17 +21,18 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class ForgeModItemTagProvider extends ItemTagsProvider implements ModItemTagsProvider
 {
-    public ForgeModItemTagProvider(DataGenerator arg,
-        BlockTagsProvider arg2,
+    public ForgeModItemTagProvider(PackOutput arg,
+        CompletableFuture<HolderLookup.Provider> completableFuture,
+        TagsProvider<Block> arg2,
         String modId,
         @Nullable ExistingFileHelper existingFileHelper)
     {
-        super(arg, arg2, modId, existingFileHelper);
+        super(arg, completableFuture, arg2, modId, existingFileHelper);
     }
 
 
     @Override
-    protected void addTags()
+    protected void addTags(@NotNull HolderLookup.Provider arg)
     {
         this.addModTags();
     }

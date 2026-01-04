@@ -22,6 +22,7 @@ public interface ModEntityTypeTagsProvider
     default void addModTags()
     {
         this.modTag(AnimalPenTags.ANIMAL_CAGE_PICKABLE).
+            add(EntityType.CAMEL).
             add(EntityType.CAT).
             add(EntityType.CHICKEN).
             add(EntityType.COW).

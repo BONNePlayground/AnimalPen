@@ -20,7 +20,7 @@ import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.*;
-import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.EntityType;
@@ -99,17 +99,15 @@ public final class AnimalPen
 
         PlayerEvent.PLAYER_JOIN.register(player ->
         {
-            Map<EntityType<?>, List<AnimalInteraction>> data = AnimalPenInteractionRegistry.getAll();
+            Map<ResourceKey<EntityType<?>>, List<AnimalInteraction>> data = AnimalPenInteractionRegistry.getAll();
 
             CHANNEL.sendToPlayer(player,
                 new AnimalInteractionSyncStartPacket(data.size()));
 
             for (var entry : data.entrySet())
             {
-                ResourceLocation entityId = Registry.ENTITY_TYPE.getKey(entry.getKey());
-
                 CHANNEL.sendToPlayer(player,
-                    new AnimalInteractionSyncEntityPacket(entityId, entry.getValue()));
+                    new AnimalInteractionSyncEntityPacket(entry.getKey(), entry.getValue()));
             }
 
             CHANNEL.sendToPlayer(player, new AnimalInteractionSyncEndPacket());

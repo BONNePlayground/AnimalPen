@@ -12,7 +12,8 @@ import java.util.Optional;
 
 import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 
 
@@ -22,7 +23,7 @@ import net.minecraft.world.entity.EntityType;
  * @param requiredMods - the list of required mods for these interactions to load.
  * @param interactions - the list of loaded interactions.
  */
-public record AnimalInteractionEntry(Optional<EntityType<?>> entityType,
+public record AnimalInteractionEntry(Optional<ResourceKey<EntityType<?>>> entityType,
                                      List<String> requiredMods,
                                      List<AnimalInteraction> interactions)
 {
@@ -32,7 +33,7 @@ public record AnimalInteractionEntry(Optional<EntityType<?>> entityType,
     }
 
 
-    public static AnimalInteractionEntry of(EntityType<?> entityType, List<AnimalInteraction> animalInteractions)
+    public static AnimalInteractionEntry of(ResourceKey<EntityType<?>> entityType, List<AnimalInteraction> animalInteractions)
     {
         return new AnimalInteractionEntry(Optional.of(entityType), Collections.emptyList(), animalInteractions);
     }
@@ -44,6 +45,10 @@ public record AnimalInteractionEntry(Optional<EntityType<?>> entityType,
     private final static AnimalInteractionEntry EMPTY = new AnimalInteractionEntry(Optional.empty(),
         Collections.emptyList(),
         Collections.emptyList());
+
+
+    public static final Codec<ResourceKey<EntityType<?>>> ENTITY_KEY_CODEC =
+        ResourceKey.codec(Registries.ENTITY_TYPE);
 
 
     /**
@@ -70,7 +75,8 @@ public record AnimalInteractionEntry(Optional<EntityType<?>> entityType,
                 }
 
                 // Now load everything
-                DataResult<EntityType<?>> entityResult = Registry.ENTITY_TYPE.byNameCodec().parse(ops, map.get("entity"));
+                DataResult<ResourceKey<EntityType<?>>> entityResult =
+                    ENTITY_KEY_CODEC.parse(ops, map.get("entity"));
 
                 DataResult<List<AnimalInteraction>> interactionsResult = map.get("interactions") != null ?
                     AnimalInteraction.CODEC.listOf().parse(ops, map.get("interactions")) :
@@ -103,7 +109,7 @@ public record AnimalInteractionEntry(Optional<EntityType<?>> entityType,
                 builder.add("required_mods", Codec.STRING.listOf().encodeStart(ops, value.requiredMods()));
             }
 
-            builder.add("entity", Registry.ENTITY_TYPE.byNameCodec().encodeStart(ops, value.entityType().get()));
+            builder.add("entity", ENTITY_KEY_CODEC.encodeStart(ops, value.entityType().get()));
             builder.add("interactions", AnimalInteraction.CODEC.listOf().encodeStart(ops, value.interactions()));
 
             return builder.build(prefix);
