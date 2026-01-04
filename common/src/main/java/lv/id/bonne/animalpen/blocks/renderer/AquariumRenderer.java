@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -92,6 +93,12 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
             squid.oldTentacleAngle = squid.tentacleAngle;
             squid.tentacleAngle = Mth.abs(Mth.sin(squid.tentacleMovement)) * (float)Math.PI * 0.25F;
             squid.xBodyRot = -45.0F + Mth.sin(squid.tickCount * 0.1F) * 2.0F;
+        }
+
+        // Frog animations are triggered by animation state.
+        if (animal instanceof Frog frog)
+        {
+            frog.swimAnimationState.startIfStopped(frog.tickCount);
         }
     }
 
