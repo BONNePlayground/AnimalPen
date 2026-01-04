@@ -16,6 +16,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
+import lv.id.bonne.animalpen.blocks.AviaryBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlags;
@@ -37,12 +38,14 @@ public class AnimalPenBlockRegistry
         REGISTRY.register();
     }
 
+
     private static <T extends Block> RegistrySupplier<T> registerBlock(String name, Supplier<T> block)
     {
         RegistrySupplier<T> toReturn = REGISTRY.register(name, block);
         registerBlockItem(name, toReturn);
         return toReturn;
     }
+
 
     private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
     {
@@ -53,9 +56,13 @@ public class AnimalPenBlockRegistry
 
     /**
      * This method registers animal pen with specified wood type
+     *
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, Material material, MaterialColor materialColor, SoundType soundType, FeatureFlag... flags)
+    public static void registerPen(WoodType woodType,
+        Material material,
+        MaterialColor materialColor,
+        SoundType soundType, FeatureFlag... flags)
     {
         String woodName = woodType.name().toLowerCase();
 
@@ -94,7 +101,16 @@ public class AnimalPenBlockRegistry
                 noOcclusion())
     );
 
-    static {
+    public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
+        () -> new AviaryBlock(
+            BlockBehaviour.Properties.copy(Blocks.GLASS).
+                strength(1.0f).
+                sound(SoundType.GLASS).
+                noOcclusion())
+    );
+
+    static
+    {
         registerPen(WoodType.OAK, Material.WOOD, MaterialColor.WOOD, SoundType.WOOD);
         registerPen(WoodType.SPRUCE, Material.WOOD, MaterialColor.PODZOL, SoundType.WOOD);
         registerPen(WoodType.BIRCH, Material.WOOD, MaterialColor.SAND, SoundType.WOOD);

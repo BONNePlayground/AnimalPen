@@ -9,7 +9,6 @@ package lv.id.bonne.animalpen.registries;
 
 import dev.architectury.registry.CreativeTabRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +19,8 @@ public class AnimalPensCreativeTabRegistry
     {
     }
 
+
     public static final CreativeTabRegistry.TabSupplier ANIMAL_PEN_TAB = CreativeTabRegistry.create(
-        new ResourceLocation(AnimalPen.MOD_ID, "animal_pen"),
+        AnimalPen.resourceOf("items"),
         () -> new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get()));
 }
