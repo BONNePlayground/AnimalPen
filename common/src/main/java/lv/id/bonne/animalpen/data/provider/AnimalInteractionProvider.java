@@ -471,7 +471,6 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
-            consume(new ConsumerEntry.Replace()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
@@ -534,7 +533,7 @@ public class AnimalInteractionProvider implements DataProvider
                 ingredient(CustomIngredient.merge(CustomIngredient.of(Items.SHEARS),
                     CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                     CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
-                lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/wool/" + value.getName()), 320, true)).
+                lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/wool"), 320, true)).
                 conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.EQ, "Color", value.getId())).
                 consume(new ConsumerEntry.Damage(1)).
                 cooldown(new CooldownEntry.Static(1200)).
