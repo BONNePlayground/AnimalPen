@@ -3,6 +3,7 @@ package lv.id.bonne.animalpen.data.provider.fabric;
 
 import java.util.function.BiConsumer;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.provider.ModBlockLootProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
@@ -34,8 +35,8 @@ public class FabricBlockLootProvider extends FabricBlockLootTableProvider implem
 
 
     @Override
-    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> resourceLocationBuilderBiConsumer)
+    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer)
     {
-
+        this.generate(consumer);
     }
 }
