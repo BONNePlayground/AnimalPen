@@ -19,9 +19,6 @@ public interface AnimalInteractionExecutor
     void consume(ItemStack item, int amount);
 
 
-    void give(ItemStack item);
-
-
     void drop(ItemStack item);
 
 

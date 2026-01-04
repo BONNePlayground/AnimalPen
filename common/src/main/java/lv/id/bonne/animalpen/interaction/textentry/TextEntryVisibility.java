@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.interaction.textentry;
 
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 
 /**
@@ -27,8 +28,14 @@ public enum TextEntryVisibility
     NOT_MATCH;
 
     public static final Codec<TextEntryVisibility> CODEC =
-        Codec.STRING.xmap(
-            str -> TextEntryVisibility.valueOf(str.toUpperCase()),
+        Codec.STRING.comapFlatMap(
+            str -> {
+                try {
+                    return DataResult.success(TextEntryVisibility.valueOf(str.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    return DataResult.error("Unknown TextEntryVisibility: " + str);
+                }
+            },
             vis -> vis.name().toLowerCase()
         );
 }

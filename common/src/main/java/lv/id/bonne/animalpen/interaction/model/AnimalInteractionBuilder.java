@@ -9,7 +9,9 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
+import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
+import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -44,27 +46,9 @@ public class AnimalInteractionBuilder
      * @param consume the consume
      * @return the animal interaction builder
      */
-    public AnimalInteractionBuilder consume(boolean consume)
+    public AnimalInteractionBuilder consume(ConsumerEntry consume)
     {
         this.consume = consume;
-        return this;
-    }
-
-
-    /**
-     * Damage animal interaction builder.
-     *
-     * @param damage the damage
-     * @return the animal interaction builder
-     */
-    public AnimalInteractionBuilder damage(int damage)
-    {
-        if (damage < 0)
-        {
-            AnimalPen.LOGGER.error("DAMAGE cannot be negative.");
-        }
-
-        this.damage = Math.max(0, damage);
         return this;
     }
 
@@ -96,45 +80,14 @@ public class AnimalInteractionBuilder
 
 
     /**
-     * Loot table animal interaction builder.
+     * Loot entry for animal interaction builder.
      *
-     * @param lootTable the loot table
+     * @param lootEntry the loot entry
      * @return the animal interaction builder
      */
-    public AnimalInteractionBuilder lootTable(ResourceLocation lootTable)
+    public AnimalInteractionBuilder lootEntry(LootEntry lootEntry)
     {
-        this.lootTable = lootTable;
-        return this;
-    }
-
-
-    /**
-     * Drop limit animal interaction builder.
-     *
-     * @param dropLimit the drop limit
-     * @return the animal interaction builder
-     */
-    public AnimalInteractionBuilder dropLimit(int dropLimit)
-    {
-        if (dropLimit < 0)
-        {
-            AnimalPen.LOGGER.error("DROP_LIMIT must be above 0.");
-        }
-
-        this.dropLimit = Math.max(0, dropLimit);
-        return this;
-    }
-
-
-    /**
-     * Per entity animal interaction builder.
-     *
-     * @param perEntity the per entity
-     * @return the animal interaction builder
-     */
-    public AnimalInteractionBuilder perEntity(boolean perEntity)
-    {
-        this.perEntity = perEntity;
+        this.lootEntry = lootEntry;
         return this;
     }
 
@@ -243,9 +196,11 @@ public class AnimalInteractionBuilder
     public AnimalInteraction build()
     {
         return new AnimalInteraction(
-            id, ingredient, consume, damage, conditions, lootTable, dropLimit,
-            perEntity, even, cooldown, textLines,
-            runFunctions, finishFunctions, sound, redstoneBit
+            id, ingredient,
+            conditions, even, consume, lootEntry,
+            cooldown, textLines,
+            runFunctions, finishFunctions,
+            sound, redstoneBit
         );
     }
 
@@ -297,27 +252,12 @@ public class AnimalInteractionBuilder
     /**
      * The indication if item should be consumed
      */
-    private boolean consume = false;
-
-    /**
-     * The damage the item will receive
-     */
-    private int damage = 0;
+    private ConsumerEntry consume = new ConsumerEntry.Interact();
 
     /**
      * The loot table id for dropping loot
      */
-    private ResourceLocation lootTable = null;
-
-    /**
-     * The drop limit for item from loot table
-     */
-    private int dropLimit = Integer.MAX_VALUE;
-
-    /**
-     * The indication if loot should be calculated per entity
-     */
-    private boolean perEntity = false;
+    private LootEntry lootEntry = null;
 
     /**
      * The indication if interaction should affect only even number of entities

@@ -1,8 +1,10 @@
 package lv.id.bonne.animalpen.processing.executor;
 
 
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -20,33 +22,30 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
 
     public DispenserInteractionExecutor(ServerLevel level,
         Container container,
-        BlockPos blockPos)
+        AbstractAnimalPenBlockEntity blockEntity)
     {
         this.level = level;
         this.container = container;
-        this.blockPos = blockPos;
+        this.blockEntity = blockEntity;
     }
 
 
     @Override
     public int countAvailable(ItemStack item)
     {
-        if (item.getMaxStackSize() == 1)
+        int count = 0;
+
+        for (int i = 0; i < this.container.getContainerSize(); i++)
         {
-            int count = 0;
+            ItemStack containerItem = this.container.getItem(i);
 
-            for (int i = 0; i < this.container.getContainerSize(); i++)
+            if (ItemStack.isSame(containerItem, item))
             {
-                if (ItemStack.isSame(this.container.getItem(i), item))
-                {
-                    count++;
-                }
+                count += containerItem.getCount();
             }
-
-            return count;
         }
 
-        return item.getCount();
+        return count;
     }
 
 
@@ -87,16 +86,12 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
 
 
     @Override
-    public void give(ItemStack item)
-    {
-        Block.popResource(this.level, this.blockPos, item);
-    }
-
-
-    @Override
     public void drop(ItemStack item)
     {
-        Block.popResource(this.level, this.blockPos, item);
+        ItemTransferUtil.insertBellowOrDrop(this.level,
+            item,
+            this.blockEntity.getBlockPos(),
+            this.blockEntity.dropPosition());
     }
 
 
@@ -173,5 +168,5 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
 
     private final Container container;
 
-    private final BlockPos blockPos;
+    private final AbstractAnimalPenBlockEntity blockEntity;
 }

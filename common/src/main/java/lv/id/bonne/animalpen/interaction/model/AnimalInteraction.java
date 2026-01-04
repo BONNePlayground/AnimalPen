@@ -12,6 +12,8 @@ import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
+import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
+import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.CustomCodec;
@@ -31,12 +33,8 @@ import net.minecraft.world.item.ItemStack;
  *
  * @param id - the ID of interaction. Used for detecting pending `cooldown`
  * @param ingredient - the ingredient that performs interaction
- * @param consume - indicates if item will be consumed by action
- * @param damage - indicates if item will be damaged by action
  * @param conditions - the list of conditions for this interaction to be possible to act
- * @param lootTable - the loot-table from which loot will be generated when interaction is performed
- * @param dropLimit - the limit of items that will be dropped from given loot-table
- * @param perEntity - the indication if loot-table will be generated per-entity or just once.
+ * @param lootEntry - the loot entry content
  * @param even - the indication if operation will be performed on even number of entities or all
  * @param cooldown - the cooldown options that will be added after interaction is performed.
  * @param textLines - the description text that will be added by this interaction
@@ -46,12 +44,15 @@ import net.minecraft.world.item.ItemStack;
  * @param redstoneSignal - the bit index of redstone signal that is affected by current interaction
  */
 public record AnimalInteraction(@NotNull String id,
-                                @Nullable CustomIngredient ingredient, boolean consume, int damage,
-                                @NotNull List<ConditionEntry> conditions, @Nullable ResourceLocation lootTable,
-                                int dropLimit,
-                                boolean perEntity, boolean even, @Nullable CooldownEntry cooldown,
+                                @NotNull CustomIngredient ingredient,
+                                @NotNull List<ConditionEntry> conditions,
+                                boolean even,
+                                @Nullable ConsumerEntry consumer,
+                                @Nullable LootEntry lootEntry,
+                                @Nullable CooldownEntry cooldown,
                                 @NotNull List<TextEntry> textLines,
-                                @NotNull List<FunctionKey> runFunctions, @NotNull List<FunctionKey> finishFunctions,
+                                @NotNull List<FunctionKey> runFunctions,
+                                @NotNull List<FunctionKey> finishFunctions,
                                 @Nullable ResourceLocation sound,
                                 int redstoneSignal)
 {
@@ -196,24 +197,17 @@ public record AnimalInteraction(@NotNull String id,
             Codec.STRING.fieldOf("id").forGetter(a -> a.id),
             CustomIngredient.CODEC.optionalFieldOf("items", CustomIngredient.EMPTY)
                 .forGetter(a -> a.ingredient),
-            Codec.BOOL.optionalFieldOf("consume", false)
-                .forGetter(a -> a.consume),
-            Codec.INT.optionalFieldOf("damage", 0)
-                .forGetter(a -> a.damage),
             CustomCodec.strictOptionalListField("conditions", ConditionEntry.CODEC)
                 .forGetter(a -> a.conditions),
-            ResourceLocation.CODEC.optionalFieldOf("loot_table")
-                .forGetter(a -> Optional.ofNullable(a.lootTable)),
-            Codec.INT.optionalFieldOf("drop_limit", Integer.MAX_VALUE)
-                .forGetter(a -> a.dropLimit),
-            Codec.BOOL.optionalFieldOf("per_entity", false)
-                .forGetter(a -> a.perEntity),
             Codec.BOOL.optionalFieldOf("even_entity_count", false)
                 .forGetter(a -> a.even),
+            ConsumerEntry.CODEC.optionalFieldOf("consumer", new ConsumerEntry.Interact())
+                .forGetter(a -> a.consumer),
+            LootEntry.CODEC.optionalFieldOf("loot")
+                .forGetter(a -> Optional.ofNullable(a.lootEntry)),
             CooldownEntry.CODEC.optionalFieldOf("cooldown")
                 .forGetter(a -> Optional.ofNullable(a.cooldown)),
-            TextEntry.CODEC.listOf()
-                .optionalFieldOf("text_lines", List.of())
+            CustomCodec.strictOptionalListField("text_lines", TextEntry.CODEC)
                 .forGetter(a -> a.textLines),
             CustomCodec.strictOptionalListField("run_functions", FunctionKey.CODEC)
                 .forGetter(a -> a.runFunctions),
@@ -223,26 +217,20 @@ public record AnimalInteraction(@NotNull String id,
                 .forGetter(a -> Optional.ofNullable(a.sound)),
             Codec.INT.optionalFieldOf("redstone_signal", 0)
                 .forGetter(a -> a.redstoneSignal)
-        ).apply(instance, (id, items, consume, damage, conditions,
-            loot, dropLimit, perEntity, even,
-            cooldown, textLines, startFunctions,
-            endFunctions, sound, redstone) ->
-            new AnimalInteraction(
+        ).apply(instance, (id, ingredient, conditions,
+            even, consumer, lootEntry,
+            cooldown, textLines, runFunctions, finishFunctions,
+            sound, redstoneSignal) -> new AnimalInteraction(
                 id,
-                items,
-                consume,
-                damage,
+                ingredient,
                 conditions,
-                loot.orElse(null),
-                dropLimit,
-                perEntity,
                 even,
+                consumer,
+                lootEntry.orElse(null),
                 cooldown.orElse(null),
                 textLines,
-                startFunctions,
-                endFunctions,
+                runFunctions,
+                finishFunctions,
                 sound.orElse(null),
-                redstone
-            )
-        ));
+                redstoneSignal)));
 }

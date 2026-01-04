@@ -2,8 +2,10 @@ package lv.id.bonne.animalpen.processing.executor;
 
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,32 +24,29 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
 {
 
     public PlayerInteractionExecutor(ServerPlayer player,
-        InteractionHand hand)
+        InteractionHand hand,
+        AbstractAnimalPenBlockEntity blockEntity)
     {
         this.player = player;
         this.hand = hand;
+        this.blockEntity = blockEntity;
     }
 
 
     @Override
     public int countAvailable(ItemStack item)
     {
-        if (item.getMaxStackSize() == 1)
+        int count = 0;
+
+        for (ItemStack containerItem : this.player.getInventory().items)
         {
-            int count = 0;
-
-            for (ItemStack stack : this.player.getInventory().items)
+            if (ItemStack.isSame(containerItem, item))
             {
-                if (ItemStack.isSame(stack, item))
-                {
-                    count++;
-                }
+                count += containerItem.getCount();
             }
-
-            return count;
         }
 
-        return item.getCount();
+        return count;
     }
 
 
@@ -119,16 +118,6 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
 
 
     @Override
-    public void give(ItemStack item)
-    {
-        if (!this.player.getInventory().add(item))
-        {
-            this.player.drop(item, false);
-        }
-    }
-
-
-    @Override
     public ItemStack giveFirst(ItemStack consumedItem, ItemStack lootItem)
     {
         ItemStack remainingStack = ItemUtils.createFilledResult(consumedItem,
@@ -142,7 +131,10 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     @Override
     public void drop(ItemStack item)
     {
-        player.drop(item, false);
+        ItemTransferUtil.insertBellowOrDrop(this.player.getLevel(),
+            item,
+            this.blockEntity.getBlockPos(),
+            this.blockEntity.dropPosition());
     }
 
 
@@ -192,4 +184,6 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     private final ServerPlayer player;
 
     private final InteractionHand hand;
+
+    private final AbstractAnimalPenBlockEntity blockEntity;
 }

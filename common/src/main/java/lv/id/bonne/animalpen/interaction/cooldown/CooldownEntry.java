@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.interaction.cooldown;
 
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 
@@ -106,21 +107,28 @@ public interface CooldownEntry
                 {
                     return "linear";
                 }
-                if (entry instanceof Static)
+                else if (entry instanceof Static)
                 {
                     return "static";
                 }
-                if (entry instanceof Randomized)
+                else if (entry instanceof Randomized)
                 {
                     return "random";
                 }
-                throw new IllegalStateException("Unknown cooldown type: " + entry);
+                else
+                {
+                    // This should never happen
+                    return entry.toString();
+                }
             },
             type -> switch (type)
             {
                 case "linear" -> Linear.CODEC;
                 case "static" -> Static.CODEC;
                 case "random" -> Randomized.CODEC;
-                default -> throw new IllegalArgumentException("Unknown cooldown type: " + type);
+                default -> Codec.EMPTY.codec().flatXmap(
+                    empty -> DataResult.error("Unknown cooldown type: " + type),
+                    entry -> DataResult.error("Unknown cooldown type: " + type)
+                );
             });
 }

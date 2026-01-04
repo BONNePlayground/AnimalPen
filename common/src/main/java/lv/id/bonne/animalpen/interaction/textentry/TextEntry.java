@@ -92,9 +92,15 @@ public record TextEntry(
                     variables[2 + i] = "";
                 }
             }
+            else if (format.equals(parameter))
+            {
+                // Text is same as format, assume not a placeholder.
+                variables[2 + i] = parameter;
+            }
             else
             {
-                variables[2 + i] = parameter;
+                // Empty line if parameter does not exist in data yet.
+                variables[2 + i] = "";
             }
         }
 
@@ -157,16 +163,19 @@ public record TextEntry(
     public static final Codec<TextEntry> CODEC =
         RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.STRING.optionalFieldOf("short_text", "").forGetter(TextEntry::shortMessage),
-                    Codec.STRING.optionalFieldOf("long_text", "").forGetter(TextEntry::longMessage),
-                    CustomIngredient.CODEC.optionalFieldOf("main_item", CustomIngredient.EMPTY)
-                        .forGetter(TextEntry::mainItem),
-                    CustomIngredient.CODEC.optionalFieldOf("result_item", CustomIngredient.EMPTY)
-                        .forGetter(TextEntry::resultItem),
-                    TextEntryVisibility.CODEC.fieldOf("visibility").forGetter(TextEntry::visibility),
-                    Codec.STRING.listOf().optionalFieldOf("parameters", Collections.emptyList()).
-                        xmap(list -> list.toArray(new String[0]), Arrays::asList).
-                        forGetter(TextEntry::parameters)).
+                Codec.STRING.optionalFieldOf("short_text", "").
+                    forGetter(TextEntry::shortMessage),
+                Codec.STRING.optionalFieldOf("long_text", "").
+                    forGetter(TextEntry::longMessage),
+                CustomIngredient.CODEC.optionalFieldOf("main_item", CustomIngredient.EMPTY).
+                    forGetter(TextEntry::mainItem),
+                CustomIngredient.CODEC.optionalFieldOf("result_item", CustomIngredient.EMPTY).
+                    forGetter(TextEntry::resultItem),
+                TextEntryVisibility.CODEC.fieldOf("visibility").
+                    forGetter(TextEntry::visibility),
+                Codec.STRING.listOf().optionalFieldOf("parameters", Collections.emptyList()).
+                    xmap(list -> list.toArray(new String[0]), Arrays::asList).
+                    forGetter(TextEntry::parameters)).
                 apply(instance, TextEntry::new));
 
 

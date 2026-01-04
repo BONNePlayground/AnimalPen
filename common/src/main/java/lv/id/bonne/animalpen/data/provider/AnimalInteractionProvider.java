@@ -16,7 +16,9 @@ import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.condition.Operator;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
+import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
+import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteractionBuilder;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
@@ -161,11 +163,16 @@ public class AnimalInteractionProvider implements DataProvider
 
     public AnimalInteraction generateFood(CustomIngredient food, FunctionKey... finishFunctions)
     {
+        return this.generateFood(food, true, finishFunctions);
+    }
+
+
+    public AnimalInteraction generateFood(CustomIngredient food, boolean stackLimit, FunctionKey... finishFunctions)
+    {
         return AnimalInteractionBuilder.create("feeding").
             ingredient(food).
-            consume(true).
-            perEntity(true).
             even(true).
+            consume(new ConsumerEntry.Consume(stackLimit)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
                 Operator.GTE,
                 AnimalPenCompoundTags.TAG_AMOUNT,
@@ -233,7 +240,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(3);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items"))));
+        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items")), false));
         // Water Pickup
         interactions.add(AnimalInteractionBuilder.create("water_bucket_pickup").
             ingredient(CustomIngredient.of(Items.WATER_BUCKET)).
@@ -267,10 +274,8 @@ public class AnimalInteractionProvider implements DataProvider
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bucket/egg")).
-            perEntity(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/egg"), 80, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(80).
             sound(SoundEvents.CHICKEN_EGG.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.EGG))).
@@ -302,8 +307,8 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.merge(CustomIngredient.of(Items.SHEARS),
                 CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                 CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
-            lootTable(AnimalPen.resourceOf("animal_interactions/shear/honeycomb")).
-            damage(1).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/honeycomb"))).
+            consume(new ConsumerEntry.Damage(1)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
                 Operator.GTE,
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
@@ -324,8 +329,8 @@ public class AnimalInteractionProvider implements DataProvider
         // glass bottle
         interactions.add(AnimalInteractionBuilder.create("glass_bottle").
             ingredient(CustomIngredient.of(Items.GLASS_BOTTLE)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/glass_bottle/honey_bottle")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/glass_bottle/honey_bottle"))).
+            consume(new ConsumerEntry.Replace()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
                 Operator.GTE,
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
@@ -352,6 +357,8 @@ public class AnimalInteractionProvider implements DataProvider
                 10)).
             finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL)).
+            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
+                AnimalPenCompoundTags.TAG_POLLEN_LEVEL, 0)).
             cooldown(new CooldownEntry.Linear(1200, -4, 4)).
             textLines(TextEntry.cooldown("display.animal_pen.pollen_cooldown",
                 CustomIngredient.of(Items.HONEY_BLOCK),
@@ -392,8 +399,8 @@ public class AnimalInteractionProvider implements DataProvider
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
+            consume(new ConsumerEntry.Replace()).
             sound(SoundEvents.COW_MILK.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
@@ -421,24 +428,24 @@ public class AnimalInteractionProvider implements DataProvider
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
+            consume(new ConsumerEntry.Replace()).
             sound(SoundEvents.COW_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // Soup pickup
         interactions.add(AnimalInteractionBuilder.create("stew").
             ingredient(CustomIngredient.of(Items.BOWL)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew"))).
+            consume(new ConsumerEntry.Replace()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
             sound(SoundEvents.MOOSHROOM_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("stew").
             ingredient(CustomIngredient.of(Items.BOWL)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bowl/suspicious_stew")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/suspicious_stew"))).
+            consume(new ConsumerEntry.Replace()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
@@ -448,7 +455,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Flowers
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
-            consume(true).
+            consume(new ConsumerEntry.Replace()).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
@@ -457,7 +464,6 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
-            consume(true).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
@@ -484,8 +490,8 @@ public class AnimalInteractionProvider implements DataProvider
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket")).
-            consume(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
+            consume(new ConsumerEntry.Replace()).
             sound(SoundEvents.GOAT_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
@@ -520,14 +526,12 @@ public class AnimalInteractionProvider implements DataProvider
                 ingredient(CustomIngredient.merge(CustomIngredient.of(Items.SHEARS),
                     CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                     CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
-                lootTable(AnimalPen.resourceOf("animal_interactions/shear/wool/" + value.getName())).
+                lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/wool"), 320, true)).
                 conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.EQ, "Color", value.getId())).
-                perEntity(true).
-                damage(1).
+                consume(new ConsumerEntry.Damage(1)).
                 cooldown(new CooldownEntry.Static(1200)).
                 sound(SoundEvents.SHEEP_SHEAR.getLocation()).
                 redstoneBit(2).
-                dropLimit(320).
                 runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, true)).
                 finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, false)).
                 textLines(TextEntry.ready("display.animal_pen.full_ready",
@@ -555,9 +559,8 @@ public class AnimalInteractionProvider implements DataProvider
                 Items.GREEN_DYE,
                 Items.RED_DYE,
                 Items.BLACK_DYE)).
-            consume(true).
+            consume(new ConsumerEntry.Replace()).
             sound(SoundEvents.DYE_USE.getLocation()).
-            dropLimit(320).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
                 CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.values().stream().map(ItemStack::new)))).
@@ -587,10 +590,8 @@ public class AnimalInteractionProvider implements DataProvider
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootTable(AnimalPen.resourceOf("animal_interactions/bucket/turtle_egg")).
-            perEntity(true).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/turtle_egg"), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            dropLimit(90).
             sound(SoundEvents.TURTLE_LAY_EGG.getLocation()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TURTLE_EGG))).

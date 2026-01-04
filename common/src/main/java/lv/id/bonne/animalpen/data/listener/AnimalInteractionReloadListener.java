@@ -4,6 +4,7 @@ package lv.id.bonne.animalpen.data.listener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import java.util.Map;
 
@@ -38,12 +39,23 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
         AnimalPenInteractionRegistry.clear();
 
         jsonMap.forEach((id, element) ->
-            AnimalInteractionEntry.CODEC.parse(JsonOps.INSTANCE, element).result().
-                filter(AnimalInteractionEntry::isActive).
-                ifPresent(entry ->
-                    entry.interactions().forEach(interaction ->
-                        AnimalPenInteractionRegistry.register(entry.entityType().get(), interaction))
-                ));
+        {
+            DataResult<AnimalInteractionEntry> result = AnimalInteractionEntry.CODEC.parse(JsonOps.INSTANCE, element);
+
+            result.get().
+                ifRight(partial ->
+                    AnimalPen.LOGGER.error("Failed to parse animal interaction entry from {}: {}",
+                        id,
+                        partial.message())).
+                ifLeft(entry ->
+                {
+                    if (entry.isActive())
+                    {
+                        entry.interactions().forEach(interaction ->
+                            AnimalPenInteractionRegistry.register(entry.entityType().get(), interaction));
+                    }
+                });
+        });
 
         AnimalPen.LOGGER.info(
             "Loaded " + AnimalPenInteractionRegistry.getAll().size() + " animal interaction entries.");
