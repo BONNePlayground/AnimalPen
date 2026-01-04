@@ -1,11 +1,12 @@
-# Animal Pens 1.6.1
+# Animal Pens 2.0.0
 
 #### Features:
-- Removed option to pick up leashed animals.
-- Removed option to pick up animals with saddle.
-- Removed option to pick up animals with chests.
-- Fixed a bug when passengers were saved with animal.
-- Fixed a bug when picking up animal does not drop equipment.
-- Fixed a bug when released animals dropped equipment.
-- Added mooshroom flower feeding to the information screen.
-- Added config option that allows to toggle if cooldowns should be visible all time
+- Added Aviary and Bird Catcher to handle flying animals.
+- Added `animal_cage_pickable` entity type tag that defines which entities can be pickable by `animal cage`
+- Added `water_mob_container_pickable` entity type that defines which entities can be pickable by `water mob container`
+- Added `bird_catcher_pickable` entity type that defines which entities can be pickable by `bird catcher container`
+- Added ability to edit configs via ingame menu using ClothConfig API.
+- Added ability to Containers picking up dropped loot from animal pen, aquarium and aviary that are above it.
+- Introduce new Animal Interaction data-driven loader that allows to change interactions with animals.
+- Remove Animal Foods data-driven loader as it is integrated into Animal Interactions.
+- A lot of clean-up works.

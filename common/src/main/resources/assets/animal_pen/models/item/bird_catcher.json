@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "animal_pen:item/bird_catcher"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "animal_pen:filled_cage": 1.0
+      },
+      "model": "animal_pen:item/bird_catcher_filled"
+    }
+  ]
+}

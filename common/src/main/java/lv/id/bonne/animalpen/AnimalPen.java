@@ -4,8 +4,8 @@ package lv.id.bonne.animalpen;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
+import java.util.Map;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -16,20 +16,17 @@ import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
-import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
+import lv.id.bonne.animalpen.data.listener.AnimalInteractionReloadListener;
+import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
-import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensCreativeTabRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import lv.id.bonne.animalpen.registries.*;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
-
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 
 public final class AnimalPen
@@ -41,6 +38,7 @@ public final class AnimalPen
         AnimalPenBlockRegistry.register();
         AnimalPensItemRegistry.register();
         AnimalPenTileEntityRegistry.register();
+        AnimalPenFunctionRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
 
@@ -77,10 +75,18 @@ public final class AnimalPen
             UpdateConfigurationData::handle);
 
         // Register into separate channel, as S2C crashes on fabric servers.
-        CHANNEL.register(AnimalFoodRegistryData.class,
-            AnimalFoodRegistryData::encode,
-            AnimalFoodRegistryData::decode,
-            AnimalFoodRegistryData::handle);
+        CHANNEL.register(AnimalInteractionSyncStartPacket.class,
+            AnimalInteractionSyncStartPacket::encode,
+            AnimalInteractionSyncStartPacket::decode,
+            AnimalInteractionSyncStartPacket::handle);
+        CHANNEL.register(AnimalInteractionSyncEntityPacket.class,
+            AnimalInteractionSyncEntityPacket::encode,
+            AnimalInteractionSyncEntityPacket::decode,
+            AnimalInteractionSyncEntityPacket::handle);
+        CHANNEL.register(AnimalInteractionSyncEndPacket.class,
+            AnimalInteractionSyncEndPacket::encode,
+            AnimalInteractionSyncEndPacket::decode,
+            AnimalInteractionSyncEndPacket::handle);
 
         CHANNEL.register(UpdateVariantScreenData.class,
             UpdateVariantScreenData::encode,
@@ -89,11 +95,24 @@ public final class AnimalPen
 
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
-            new AnimalFoodReloadListener(),
-            new ResourceLocation(MOD_ID, "animal_foods"));
+            new AnimalInteractionReloadListener(),
+            AnimalPen.resourceOf("animal_interactions"));
 
         PlayerEvent.PLAYER_JOIN.register(player ->
-            CHANNEL.sendToPlayer(player, AnimalFoodRegistryData.serverData()));
+        {
+            Map<ResourceKey<EntityType<?>>, List<AnimalInteraction>> data = AnimalPenInteractionRegistry.getAll();
+
+            CHANNEL.sendToPlayer(player,
+                new AnimalInteractionSyncStartPacket(data.size()));
+
+            for (var entry : data.entrySet())
+            {
+                CHANNEL.sendToPlayer(player,
+                    new AnimalInteractionSyncEntityPacket(entry.getKey(), entry.getValue()));
+            }
+
+            CHANNEL.sendToPlayer(player, new AnimalInteractionSyncEndPacket());
+        });
     }
 
 
@@ -112,6 +131,11 @@ public final class AnimalPen
     }
 
 
+    public static ResourceLocation resourceOf(String key)
+    {
+        return new ResourceLocation(AnimalPen.MOD_ID, key);
+    }
+
     public static final String MOD_ID = "animal_pen";
 
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -119,12 +143,5 @@ public final class AnimalPen
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
 
     public static final NetworkChannel CHANNEL =
-        NetworkChannel.create(new ResourceLocation(AnimalPen.MOD_ID, "network"));
-
-    public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
-        appendValue(MINUTE_OF_HOUR, 2).
-        optionalStart().
-        appendLiteral(':').
-        appendValue(SECOND_OF_MINUTE, 2).
-        toFormatter();
+        NetworkChannel.create(AnimalPen.resourceOf("network"));
 }
