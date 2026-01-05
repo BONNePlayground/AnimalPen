@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -35,7 +35,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
         {
             Level level = packetContext.getPlayer().level();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.updateAnimalVariant(animalVariant);
             }
@@ -56,7 +56,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
 
 
     public static final CustomPacketPayload.Type<UpdateDisplayAnimalData> ID =
-        new CustomPacketPayload.Type<>(new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal"));
+        new CustomPacketPayload.Type<>(AnimalPen.resourceOf("update_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(

@@ -8,7 +8,7 @@
   "contact": {
     "homepage": ""  },
   "license": "GPL-3.0",
-  "icon": "assets/animal_pen/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -16,6 +16,12 @@
     ],
     "client": [
       "lv.id.bonne.animalpen.client.fabric.AnimalPenFabricClient"
+    ],
+    "fabric-datagen": [
+      "lv.id.bonne.animalpen.data.provider.fabric.AnimalPenFabricDataGen"
+    ],
+    "modmenu": [
+      "lv.id.bonne.animalpen.client.fabric.AnimalPenModMenuIntegration"
     ]
   },
   "mixins": [

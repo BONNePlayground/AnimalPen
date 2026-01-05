@@ -3,8 +3,8 @@ package lv.id.bonne.animalpen;
 
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
+import java.util.Map;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -16,17 +16,17 @@ import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
-import lv.id.bonne.animalpen.listeners.AnimalFoodReloadListener;
+import lv.id.bonne.animalpen.data.listener.AnimalInteractionReloadListener;
+import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.*;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
-
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 
 public final class AnimalPen
@@ -39,6 +39,7 @@ public final class AnimalPen
         AnimalPenBlockRegistry.register();
         AnimalPensItemRegistry.register();
         AnimalPenTileEntityRegistry.register();
+        AnimalPenFunctionRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
 
@@ -79,8 +80,8 @@ public final class AnimalPen
 
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,
-            new AnimalFoodReloadListener(),
-            new ResourceLocation(MOD_ID, "animal_foods"));
+            new AnimalInteractionReloadListener(),
+            AnimalPen.resourceOf("animal_interactions"));
 
         EnvExecutor.runInEnv(Env.SERVER, () -> AnimalPen::initializeServer);
     }
@@ -88,12 +89,26 @@ public final class AnimalPen
 
     private static void initializeServer()
     {
-        NetworkManager.registerS2CPayloadType(AnimalFoodRegistryData.ID, AnimalFoodRegistryData.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(AnimalInteractionSyncStartPacket.ID, AnimalInteractionSyncStartPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(AnimalInteractionSyncEntityPacket.ID, AnimalInteractionSyncEntityPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(AnimalInteractionSyncEndPacket.ID, AnimalInteractionSyncEndPacket.STREAM_CODEC);
         NetworkManager.registerS2CPayloadType(UpdateVariantScreenData.ID, UpdateVariantScreenData.STREAM_CODEC);
 
         PlayerEvent.PLAYER_JOIN.register(player ->
+        {
+            Map<ResourceKey<EntityType<?>>, List<AnimalInteraction>> data = AnimalPenInteractionRegistry.getAll();
+
             NetworkManager.sendToPlayer(player,
-                new AnimalFoodRegistryData(AnimalPenFoodRegistry.getAll())));
+                new AnimalInteractionSyncStartPacket(data.size()));
+
+            for (var entry : data.entrySet())
+            {
+                NetworkManager.sendToPlayer(player,
+                    new AnimalInteractionSyncEntityPacket(entry.getKey(), entry.getValue()));
+            }
+
+            NetworkManager.sendToPlayer(player, new AnimalInteractionSyncEndPacket());
+        });
     }
 
 
@@ -112,16 +127,14 @@ public final class AnimalPen
     }
 
 
+    public static ResourceLocation resourceOf(String key)
+    {
+        return new ResourceLocation(AnimalPen.MOD_ID, key);
+    }
+
     public static final String MOD_ID = "animal_pen";
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ConfigurationManager CONFIG_MANAGER = new ConfigurationManager();
-
-    public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
-        appendValue(MINUTE_OF_HOUR, 2).
-        optionalStart().
-        appendLiteral(':').
-        appendValue(SECOND_OF_MINUTE, 2).
-        toFormatter();
 }

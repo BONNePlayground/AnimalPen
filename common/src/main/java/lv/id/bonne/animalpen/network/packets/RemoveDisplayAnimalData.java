@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -34,7 +34,7 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
         {
             Level level = packetContext.getPlayer().level();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.removeAnimalVariant(index);
             }
@@ -55,7 +55,7 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
 
 
     public static final Type<RemoveDisplayAnimalData> ID =
-        new Type<>(new ResourceLocation(AnimalPen.MOD_ID, "remove_display_animal"));
+        new Type<>(AnimalPen.resourceOf("remove_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
