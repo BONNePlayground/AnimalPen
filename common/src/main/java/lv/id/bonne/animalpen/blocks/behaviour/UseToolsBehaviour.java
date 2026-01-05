@@ -61,10 +61,10 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
 
-            if (blockEntity instanceof AbstractAnimalPenBlockEntity ani && level instanceof ServerLevel serverLevel)
+            if (blockEntity instanceof AbstractAnimalPenBlockEntity ani)
             {
                 AbstractAnimalPenBlockEntity.InteractionResult result =
-                    ani.interactWithPen(serverLevel, blockSource, itemStack);
+                    ani.interactWithPen(level, blockSource, itemStack);
                 ani.triggerUpdate();
 
                 if (result.success())

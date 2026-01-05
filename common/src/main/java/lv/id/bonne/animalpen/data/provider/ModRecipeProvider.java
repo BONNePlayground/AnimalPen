@@ -7,13 +7,12 @@
 package lv.id.bonne.animalpen.data.provider;
 
 
-import java.util.function.Consumer;
-
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -23,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 public interface ModRecipeProvider
 {
-    default void buildModRecipes(Consumer<FinishedRecipe> consumer)
+    default void buildModRecipes(RecipeOutput consumer)
     {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CAGE.get()).
             define('B', Items.IRON_BARS).
@@ -90,7 +89,7 @@ public interface ModRecipeProvider
     }
 
 
-    private void animalPen(WoodType woodType, Item fence, Consumer<FinishedRecipe> consumer)
+    private void animalPen(WoodType woodType, Item fence, RecipeOutput consumer)
     {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPenBlockRegistry.ANIMAL_PENS.get(woodType).get()).
             group("animal_pens").
@@ -105,5 +104,5 @@ public interface ModRecipeProvider
     }
 
 
-    CriterionTriggerInstance hasItem(ItemLike item);
+    Criterion<InventoryChangeTrigger.TriggerInstance> hasItem(ItemLike item);
 }

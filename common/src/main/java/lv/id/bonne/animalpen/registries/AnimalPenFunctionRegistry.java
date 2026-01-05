@@ -39,7 +39,6 @@ public class AnimalPenFunctionRegistry
      */
     public static final Registrar<EntityFunctionEntry> ENTITY_FUNCTIONS = RegistrarManager.get(AnimalPen.MOD_ID).
         builder(AnimalPen.resourceOf("entity_function"), new EntityFunctionEntry[0]).
-        saveToDisc().
         build();
 
 

@@ -1,13 +1,11 @@
 package lv.id.bonne.animalpen.data.provider.forge;
 
 
-import org.jetbrains.annotations.NotNull;
-import java.util.function.Consumer;
-
 import lv.id.bonne.animalpen.data.provider.ModRecipeProvider;
-import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.world.level.ItemLike;
 
@@ -21,15 +19,13 @@ public class ForgeModRecipeProvider extends RecipeProvider implements ModRecipeP
 
 
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer)
+    protected void buildRecipes(RecipeOutput consumer)
     {
         this.buildModRecipes(consumer);
     }
 
-
     @Override
-    @NotNull
-    public CriterionTriggerInstance hasItem(ItemLike item)
+    public Criterion<InventoryChangeTrigger.TriggerInstance> hasItem(ItemLike item)
     {
         return has(item);
     }

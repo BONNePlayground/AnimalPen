@@ -1,13 +1,12 @@
 package lv.id.bonne.animalpen.data.provider.fabric;
 
 
-import java.util.function.Consumer;
-
 import lv.id.bonne.animalpen.data.provider.ModRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.level.ItemLike;
 
 
@@ -20,14 +19,14 @@ public class FabricModRecipeProvider extends FabricRecipeProvider implements Mod
 
 
     @Override
-    public void buildRecipes(Consumer<FinishedRecipe> consumer)
+    public void buildRecipes(RecipeOutput recipeOutput)
     {
-        this.buildModRecipes(consumer);
+        this.buildModRecipes(recipeOutput);
     }
 
 
     @Override
-    public CriterionTriggerInstance hasItem(ItemLike item)
+    public Criterion<InventoryChangeTrigger.TriggerInstance> hasItem(ItemLike item)
     {
         return has(item);
     }

@@ -458,7 +458,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BOWL)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
+            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "stew_effects", false)).
             sound(SoundEvents.MOOSHROOM_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
@@ -466,7 +466,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BOWL)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/suspicious_stew"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
+            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "stew_effects", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
             sound(SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY.getLocation()).
@@ -476,7 +476,7 @@ public class AnimalInteractionProvider implements DataProvider
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
+            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "stew_effects", false)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
             sound(SoundEvents.MOOSHROOM_EAT.getLocation()).
@@ -484,7 +484,7 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
+            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "stew_effects", true)).
             conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
             build());

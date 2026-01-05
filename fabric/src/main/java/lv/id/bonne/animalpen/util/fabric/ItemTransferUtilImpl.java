@@ -4,6 +4,7 @@ package lv.id.bonne.animalpen.util.fabric;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +35,7 @@ public class ItemTransferUtilImpl
 
         try (Transaction transaction = Transaction.openOuter())
         {
-            long inserted = storage.simulateInsert(ItemVariant.of(stack), stack.getCount(), transaction);
+            long inserted = StorageUtil.simulateInsert(storage, ItemVariant.of(stack), stack.getCount(), transaction);
             return inserted > 0;
         }
     }
@@ -68,7 +69,7 @@ public class ItemTransferUtilImpl
 
         try (Transaction transaction = Transaction.openOuter())
         {
-            long inserted = storage.insert(variant, remaining.getCount(), transaction);
+            long inserted = StorageUtil.tryInsertStacking(storage, variant, remaining.getCount(), transaction);
 
             if (inserted > 0)
             {

@@ -7,7 +7,7 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.List;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
@@ -20,9 +20,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 
 /**
@@ -41,7 +41,7 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
         String dataKey,
         Value dataValue)
     {
-        Optional<Pair<MobEffect, Integer>> effectFromItemStack =
+        Optional<List<SuspiciousEffectHolder.EffectEntry>> effectFromItemStack =
             AnimalPenItemHelper.getEffectFromItemStack(itemConsumed);
 
         if (effectFromItemStack.isEmpty())
@@ -63,8 +63,7 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
             0.2, 0.2, 0.2,
             0.05);
 
-        mushroomCow.setEffect(effectFromItemStack.get().getLeft());
-        mushroomCow.setEffectDuration(effectFromItemStack.get().getRight());
+        mushroomCow.setStewEffects(effectFromItemStack.get());
 
         CompoundTag animalTag = new CompoundTag();
         mob.save(animalTag);

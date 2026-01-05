@@ -8,19 +8,18 @@ package lv.id.bonne.animalpen.util;
 
 
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import net.minecraft.Util;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 
 public class AnimalPenItemHelper
@@ -28,7 +27,7 @@ public class AnimalPenItemHelper
     /**
      * This method returns flower effect if given item stack has one.
      */
-    public static Optional<Pair<MobEffect, Integer>> getEffectFromItemStack(ItemStack itemStack)
+    public static Optional<List<SuspiciousEffectHolder.EffectEntry>> getEffectFromItemStack(ItemStack itemStack)
     {
         Item item = itemStack.getItem();
 
@@ -38,7 +37,7 @@ public class AnimalPenItemHelper
             return Optional.empty();
         }
 
-        return Optional.of(Pair.of(flowerBlock.getSuspiciousEffect(), flowerBlock.getEffectDuration()));
+        return Optional.of(flowerBlock.getSuspiciousEffects());
     }
 
 

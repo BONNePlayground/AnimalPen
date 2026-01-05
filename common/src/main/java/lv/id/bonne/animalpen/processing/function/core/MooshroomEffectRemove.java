@@ -39,8 +39,7 @@ public class MooshroomEffectRemove implements EntityFunction
     {
         if (mob instanceof MushroomCowAccessor mushroomCow)
         {
-            mushroomCow.setEffect(null);
-            mushroomCow.setEffectDuration(0);
+            mushroomCow.setStewEffects(null);
 
             CompoundTag animalTag = new CompoundTag();
             mob.save(animalTag);
@@ -66,8 +65,7 @@ public class MooshroomEffectRemove implements EntityFunction
     {
         if (mob instanceof MushroomCowAccessor mushroomCow)
         {
-            mushroomCow.setEffect(null);
-            mushroomCow.setEffectDuration(0);
+            mushroomCow.setStewEffects(null);
 
             CompoundTag animalTag = new CompoundTag();
             mob.save(animalTag);

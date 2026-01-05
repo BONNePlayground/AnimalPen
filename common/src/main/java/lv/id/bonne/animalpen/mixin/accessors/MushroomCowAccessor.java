@@ -10,17 +10,19 @@ package lv.id.bonne.animalpen.mixin.accessors;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import net.minecraft.world.effect.MobEffect;
+import java.util.List;
+
 import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 
 @Mixin(MushroomCow.class)
 public interface MushroomCowAccessor
 {
     @Accessor
-    void setEffect(MobEffect effect);
+    List<SuspiciousEffectHolder.EffectEntry> getStewEffects();
 
 
     @Accessor
-    void setEffectDuration(int effectDuration);
+    void setStewEffects(List<SuspiciousEffectHolder.EffectEntry> stewEffects);
 }
