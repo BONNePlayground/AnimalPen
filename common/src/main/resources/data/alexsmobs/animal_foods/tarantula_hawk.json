@@ -1,8 +1,0 @@
-{
-  "condition": "mod:alexsmobs",
-  "food_items": [
-    {
-      "tag": "alexsmobs:tarantula_hawk_breedables"
-    }
-  ]
-}

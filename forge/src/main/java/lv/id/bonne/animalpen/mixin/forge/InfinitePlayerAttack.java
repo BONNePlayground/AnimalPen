@@ -52,8 +52,12 @@ public class InfinitePlayerAttack
         int i,
         CallbackInfoReturnable<Packet> cir)
     {
-        if (blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) && this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
-            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) && this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS))
+        if (blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) &&
+            this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
+            blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) &&
+                this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS) ||
+            blockState.is(AnimalPenBlockRegistry.AVIARY.get()) &&
+                this.destroyingItem.is(AnimalPenTags.AVIARY_ATTACK_TOOLS))
         {
             this.destroyBlockPos = new BlockPos(-1, -1, -1);
         }
