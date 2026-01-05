@@ -101,7 +101,7 @@ public class AnimalPenBlockRegistry
 
     public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
         () -> new AviaryBlock(
-            BlockBehaviour.Properties.copy(Blocks.GLASS).
+            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.GLASS).
                 noOcclusion())

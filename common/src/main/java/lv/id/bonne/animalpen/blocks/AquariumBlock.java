@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.blocks;
 
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -32,6 +34,13 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
         this.registerDefaultState(this.getStateDefinition().any().
             setValue(FACING, Direction.NORTH).
             setValue(FILLED, false));
+    }
+
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec()
+    {
+        return CODEC;
     }
 
 
@@ -137,4 +146,6 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
+
+    public static final MapCodec<AquariumBlock> CODEC = simpleCodec(AquariumBlock::new);
 }

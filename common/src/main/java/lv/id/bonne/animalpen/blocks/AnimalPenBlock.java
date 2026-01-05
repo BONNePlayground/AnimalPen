@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.blocks;
 
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -29,6 +31,13 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
     {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
+    }
+
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec()
+    {
+        return CODEC;
     }
 
 
@@ -114,4 +123,7 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
         Block.box(3.0, 5.0, 14.0, 13.0, 7.0, 16.0),
         Block.box(0.0, 5.0, 3.0, 2.0, 7.0, 13.0),
         Block.box(14.0, 5.0, 3.0, 16.0, 7.0, 13.0));
+
+
+    public static final MapCodec<AnimalPenBlock> CODEC = simpleCodec(AnimalPenBlock::new);
 }

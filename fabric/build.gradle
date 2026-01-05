@@ -9,6 +9,10 @@ repositories {
         name "ModMenu Maven"
         url "https://maven.terraformersmc.com/releases/"
     }
+    maven {
+        name = "Nucleoid"
+        url "https://maven.nucleoid.xyz/"
+    }
 }
 
 architectury {
@@ -65,6 +69,10 @@ dependencies {
     }
 
     modImplementation("com.terraformersmc:modmenu:${rootProject.modmenu_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    modImplementation(include("eu.pb4:placeholder-api:${rootProject.placeholder_api_version}")) {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
