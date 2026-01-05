@@ -11,8 +11,6 @@ import com.mojang.serialization.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-import lv.id.bonne.animalpen.AnimalPen;
-
 
 /**
  * This class contains custom generic codecs.
