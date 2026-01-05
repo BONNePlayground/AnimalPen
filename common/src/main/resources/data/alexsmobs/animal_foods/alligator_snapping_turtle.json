@@ -1,8 +1,0 @@
-{
-  "condition": "mod:alexsmobs",
-  "food_items": [
-    {
-      "tag": "alexsmobs:alligator_snapping_turtle_breedables"
-    }
-  ]
-}

@@ -164,7 +164,6 @@ public class CommentGeneration
     }
 
 
-
     /**
      * This method serializes collections into json text with comments.
      */
