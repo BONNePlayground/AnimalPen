@@ -12,7 +12,8 @@ import net.minecraft.world.level.block.state.BlockState;
 public class WaterTankColor implements BlockColor
 {
     @Override
-    public int getColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
+    public int getColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex)
+    {
         int r = 148;   // 0-255
         int g = 190;   // 0-255
         int b = 211;  // 0-255

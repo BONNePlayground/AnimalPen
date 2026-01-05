@@ -28,6 +28,6 @@ public class AnimalPensCreativeTabRegistry
         DeferredRegister.create(AnimalPen.MOD_ID, Registries.CREATIVE_MODE_TAB);
 
     public static final RegistrySupplier<CreativeModeTab> ANIMAL_PEN_TAB = REGISTRY.register("animal_pen", () ->
-        CreativeTabRegistry.create(Component.translatable("category.animal_pen.animal_pen"),
+        CreativeTabRegistry.create(Component.translatable("category.animal_pen.items"),
             () -> new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get())));
 }

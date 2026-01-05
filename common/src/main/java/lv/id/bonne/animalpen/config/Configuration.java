@@ -9,13 +9,12 @@ package lv.id.bonne.animalpen.config;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import lv.id.bonne.animalpen.config.annotations.JsonComment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 
 /**
@@ -23,15 +22,6 @@ import net.minecraft.world.item.Items;
  */
 public class Configuration
 {
-    public static Configuration getDefaultConfig()
-    {
-        Configuration configuration = new Configuration();
-        configuration.setDefaults(true);
-
-        return configuration;
-    }
-
-
     /**
      * Is invalid boolean.
      *
@@ -39,13 +29,12 @@ public class Configuration
      */
     public boolean isInvalid()
     {
-        return this.dropLimitList == null ||
-            this.cooldownList == null ||
+        return
             this.blockedAnimals == null ||
-            this.waterAnimalSize == null ||
-            this.waterAnimalSize <= 0 ||
-            this.animalSize == null ||
-            this.animalSize <= 0 ||
+            this.aquariumMobSize == null ||
+            this.aquariumMobSize <= 0 ||
+            this.animalPenMobSize == null ||
+            this.animalPenMobSize <= 0 ||
             this.growthMultiplier == null ||
             this.growthMultiplier < 0 ||
             this.attackCooldown == null ||
@@ -56,7 +45,10 @@ public class Configuration
             this.maxStoredAnimalVariants < 0 ||
             this.debug == null ||
             this.showAllInteractions == null ||
-            this.showCooldownsOnCrouch == null;
+            this.showCooldownsOnCrouch == null ||
+            this.growAviaryMob == null ||
+            this.aviaryMobSize == null ||
+            this.aviaryMobSize <= 0;
     }
 
 
@@ -65,31 +57,30 @@ public class Configuration
      */
     public void setDefaults(boolean init)
     {
-        if (this.dropLimitList == null || init)
-        {
-            this.dropLimitList = new HashMap<>();
-            this.populateDefaultDropLimits();
-        }
-
-        if (this.cooldownList == null || init)
-        {
-            this.cooldownList = new HashMap<>();
-            this.populateDefaultCooldowns();
-        }
-
         if (this.blockedAnimals == null || init)
         {
             this.blockedAnimals = new HashSet<>();
+            this.blockedAnimals.add(ResourceLocation.tryParse("cobblemon:pokemon"));
         }
 
-        if (this.animalSize == null || this.animalSize <= 0 || init)
+        if (this.animalPenMobSize == null || this.animalPenMobSize <= 0 || init)
         {
-            this.animalSize = 0.33f;
+            this.animalPenMobSize = 0.33f;
         }
 
-        if (this.waterAnimalSize == null || this.waterAnimalSize <= 0 || init)
+        if (this.aquariumMobSize == null || this.aquariumMobSize <= 0 || init)
         {
-            this.waterAnimalSize = 0.33f;
+            this.aquariumMobSize = 0.33f;
+        }
+
+        if (this.aviaryMobSize == null || this.aviaryMobSize <= 0 || init)
+        {
+            this.aviaryMobSize = 0.33f;
+        }
+
+        if (this.growAviaryMob == null || init)
+        {
+            this.growAviaryMob = false;
         }
 
         if (this.growthMultiplier == null || this.growthMultiplier < 0 || init)
@@ -129,156 +120,22 @@ public class Configuration
 
         if (this.showCooldownsOnCrouch == null || init)
         {
-            this.showCooldownsOnCrouch = true;
+            this.showCooldownsOnCrouch = false;
         }
 
         if (init)
         {
             this.maximalAnimalCount = Integer.MAX_VALUE;
 
-            this.growAnimals = false;
-            this.growWaterAnimals = false;
-
-            this.dropScuteAtStart = false;
+            this.growAnimalPenMob = false;
+            this.growAquariumMob = false;
         }
-    }
-
-
-    private void populateDefaultCooldowns()
-    {
-        // Food item
-        this.cooldownList.computeIfAbsent(Items.APPLE.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(ANY,
-                58 * 20,
-                20,
-                5 * 60 * 20));
-
-        // Sheep and sharing
-        this.cooldownList.computeIfAbsent(Items.SHEARS.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.SHEEP.arch$registryName(),
-                59 * 20,
-                20,
-                5 * 60 * 20));
-
-        // Chicken and bucket
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.CHICKEN.arch$registryName(),
-                60 * 5 * 20 + 20,
-                -1 * 20,
-                60 * 20));
-
-        // Turtle and bucket
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.TURTLE.arch$registryName(),
-                60 * 5 * 20 + 20,
-                -1 * 20,
-                60 * 20));
-
-        // Bee and pollen
-        this.cooldownList.computeIfAbsent(Items.HONEY_BLOCK.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.BEE.arch$registryName(),
-                60 * 20 + 20,
-                -1 * 20,
-                20));
-
-        // Init non-used to show options
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.COW.arch$registryName(),
-                0,
-                0,
-                0));
-
-        this.cooldownList.computeIfAbsent(Items.BOWL.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.MOOSHROOM.arch$registryName(),
-                0,
-                0,
-                0));
-
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.MOOSHROOM.arch$registryName(),
-                0,
-                0,
-                0));
-
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.GOAT.arch$registryName(),
-                0,
-                0,
-                0));
-
-        this.cooldownList.computeIfAbsent(Items.MAGMA_BLOCK.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.FROG.arch$registryName(),
-                60 * 5 * 20 + 20,
-                -1 * 20,
-                10 * 20));
-        this.cooldownList.computeIfAbsent(Items.BUCKET.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.SNIFFER.arch$registryName(),
-                60 * 5 * 20 + 20,
-                -1 * 20,
-                10 * 20));
-        this.cooldownList.computeIfAbsent(Items.BOWL.arch$registryName(), i -> new ArrayList<>()).
-            add(new CooldownEntry(EntityType.SNIFFER.arch$registryName(),
-                60 * 5 * 20 + 20,
-                -1 * 20,
-                10 * 20));
-    }
-
-
-    private void populateDefaultDropLimits()
-    {
-        this.dropLimitList = new HashMap<>();
-        this.dropLimitList.put(Items.EGG.arch$registryName(), 16 * 5);
-        this.dropLimitList.put(Items.TURTLE_EGG.arch$registryName(), 64 * 5);
-        this.dropLimitList.put(Items.WHITE_WOOL.arch$registryName(), 64 * 5);
-        this.dropLimitList.put(Items.PEARLESCENT_FROGLIGHT.arch$registryName(), 64 * 5);
-        this.dropLimitList.put(Items.TORCHFLOWER_SEEDS.arch$registryName(), 64 * 5);
     }
 
 
 // ---------------------------------------------------------------------
 // Section: Getters
 // ---------------------------------------------------------------------
-
-
-    /**
-     * This method returns cooldowns for given item using on given entity.
-     *
-     * @param entity Entity that is targeted.
-     * @param usedItem Item that is used.
-     * @param entityAmount Amount of entities.
-     * @return Cooldown for next action.
-     */
-    public int getEntityCooldown(EntityType<?> entity, Item usedItem, long entityAmount)
-    {
-        if (!this.cooldownList.containsKey(usedItem.arch$registryName()))
-        {
-            return 0;
-        }
-
-        Collection<CooldownEntry> cooldownEntries = this.cooldownList.get(usedItem.arch$registryName());
-
-        return cooldownEntries.stream().
-            filter(cooldownEntry -> cooldownEntry.entity.equals(entity.arch$registryName())).
-            findFirst().
-            map(cooldownEntry -> cooldownEntry.getValue(entityAmount)).
-            orElseGet(() -> cooldownEntries.stream().
-                filter(cooldownEntry -> cooldownEntry.entity.equals(ANY)).
-                findFirst().
-                map(cooldownEntry -> cooldownEntry.getValue(entityAmount)).
-                orElse(0));
-    }
-
-
-    /**
-     * This method returns drop limit for given item.
-     *
-     * @param item Drop limit for item.
-     * @return Limit of items that can be dropped at once.
-     */
-    public int getDropLimits(Item item)
-    {
-        return this.dropLimitList.getOrDefault(item.arch$registryName(), 0);
-    }
 
 
     /**
@@ -293,24 +150,13 @@ public class Configuration
 
 
     /**
-     * Is drop scute at start boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isDropScuteAtStart()
-    {
-        return this.dropScuteAtStart;
-    }
-
-
-    /**
      * Is grow animals boolean.
      *
      * @return the boolean
      */
-    public boolean isGrowAnimals()
+    public boolean isGrowAnimalPenMob()
     {
-        return this.growAnimals;
+        return this.growAnimalPenMob;
     }
 
 
@@ -319,9 +165,9 @@ public class Configuration
      *
      * @return the animal size
      */
-    public float getAnimalSize()
+    public float getAnimalPenMobSize()
     {
-        return this.animalSize;
+        return this.animalPenMobSize;
     }
 
 
@@ -330,9 +176,9 @@ public class Configuration
      *
      * @return the boolean
      */
-    public boolean isGrowWaterAnimals()
+    public boolean isGrowAquariumMob()
     {
-        return this.growWaterAnimals;
+        return this.growAquariumMob;
     }
 
 
@@ -341,9 +187,31 @@ public class Configuration
      *
      * @return the water animal size
      */
-    public float getWaterAnimalSize()
+    public float getAquariumMobSize()
     {
-        return this.waterAnimalSize;
+        return this.aquariumMobSize;
+    }
+
+
+    /**
+     * Is grow aviary mob boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGrowAviaryMob()
+    {
+        return this.growAviaryMob;
+    }
+
+
+    /**
+     * Gets aviary mob size.
+     *
+     * @return the aviary mob size
+     */
+    public float getAviaryMobSize()
+    {
+        return this.aviaryMobSize;
     }
 
 
@@ -416,6 +284,7 @@ public class Configuration
 
     /**
      * Returns if debug is enabled.
+     *
      * @return the debug value.
      */
     public boolean isDebug()
@@ -446,98 +315,189 @@ public class Configuration
     }
 
 
+    public static Configuration getDefaultConfig()
+    {
+        Configuration configuration = new Configuration();
+        configuration.setDefaults(true);
+
+        return configuration;
+    }
+
+
 // ---------------------------------------------------------------------
-// Section: variables
+// Section: Setters
 // ---------------------------------------------------------------------
 
 
     /**
-     * The type Cooldown entry.
+     * Sets grow animal pen mob.
+     *
+     * @param growAnimalPenMob the grow animal pen mob
      */
-    public static class CooldownEntry
+    public void setGrowAnimalPenMob(boolean growAnimalPenMob)
     {
-        /**
-         * Instantiates a new Cooldown entry.
-         *
-         * @param entity the entity
-         * @param base the base
-         * @param increment the increment
-         * @param max the max
-         */
-        public CooldownEntry(ResourceLocation entity, int base, int increment, int max)
-        {
-            this.entity = entity;
-            this.baseCooldown = base;
-            this.incrementPerAnimal = increment;
-            this.cooldownLimit = max;
-        }
-
-
-        /**
-         * Gets value.
-         *
-         * @param entityAmount the entity amount
-         * @return the value
-         */
-        public int getValue(long entityAmount)
-        {
-            if (this.incrementPerAnimal > 0)
-            {
-                long endValue = this.baseCooldown + entityAmount * this.incrementPerAnimal;
-
-                return (int) Math.min(this.cooldownLimit, endValue);
-            }
-            else if (this.incrementPerAnimal < 0)
-            {
-                long endValue = this.baseCooldown + entityAmount * this.incrementPerAnimal;
-
-                return (int) Math.max(this.cooldownLimit, endValue);
-            }
-            else
-            {
-                return this.baseCooldown;
-            }
-        }
-
-
-        @JsonComment("The entity ID on which cooldown is applied.")
-        @Expose
-        @SerializedName("entity")
-        private ResourceLocation entity;
-
-        @JsonComment("The base cooldown value for action.")
-        @JsonComment("0 means that there is no cooldown.")
-        @JsonComment("Values in game ticks.")
-        @Expose
-        @SerializedName("base_cooldown")
-        private int baseCooldown;
-
-        @JsonComment("The increment of cooldown per each animal.")
-        @JsonComment("0 means that there is no cooldown increment.")
-        @JsonComment("Negative value decreases base cooldown value.")
-        @JsonComment("Values in game ticks.")
-        @Expose
-        @SerializedName("animal_increment")
-        private int incrementPerAnimal;
-
-        @JsonComment("The the maximal cooldown that can be applied.")
-        @JsonComment("0 means that there is no cooldown limitation.")
-        @JsonComment("Negative animal_increment makes this act as lowest limit.")
-        @JsonComment("Values in game ticks.")
-        @Expose
-        @SerializedName("cooldown_limit")
-        private int cooldownLimit;
+        this.growAnimalPenMob = growAnimalPenMob;
     }
 
 
-    @JsonComment("List of cooldowns that are applied when player performs action.")
-    @JsonComment("Specifying: `animal_pen:any` will indicate that any entity using that item will have same cooldown.")
-    @JsonComment("`minecraft:apple` is universal food item. It is used to indicate for feeding action.")
-    @JsonComment("`minecraft:honey_bloc` is used to indicate pollen regeneration cooldown.")
-    @JsonComment("<item> : <cooldown>.")
-    @Expose
-    @SerializedName("cooldowns")
-    private Map<ResourceLocation, List<CooldownEntry>> cooldownList = new HashMap<>();
+    /**
+     * Sets animal pen mob size.
+     *
+     * @param animalPenMobSize the animal pen mob size
+     */
+    public void setAnimalPenMobSize(float animalPenMobSize)
+    {
+        this.animalPenMobSize = animalPenMobSize;
+    }
+
+
+    /**
+     * Sets grow aquarium mob.
+     *
+     * @param growAquariumMob the grow aquarium mob
+     */
+    public void setGrowAquariumMob(boolean growAquariumMob)
+    {
+        this.growAquariumMob = growAquariumMob;
+    }
+
+
+    /**
+     * Sets aquarium mob size.
+     *
+     * @param aquariumMobSize the aquarium mob size
+     */
+    public void setAquariumMobSize(float aquariumMobSize)
+    {
+        this.aquariumMobSize = aquariumMobSize;
+    }
+
+
+    /**
+     * Sets grow aviary mob.
+     *
+     * @param growAviaryMob the grow aviary mob
+     */
+    public void setGrowAviaryMob(boolean growAviaryMob)
+    {
+        this.growAviaryMob = growAviaryMob;
+    }
+
+
+    /**
+     * Sets aviary mob size.
+     *
+     * @param aviaryMobSize the aviary mob size
+     */
+    public void setAviaryMobSize(float aviaryMobSize)
+    {
+        this.aviaryMobSize = aviaryMobSize;
+    }
+
+
+    /**
+     * Sets growth multiplier.
+     *
+     * @param growthMultiplier the growth multiplier
+     */
+    public void setGrowthMultiplier(float growthMultiplier)
+    {
+        this.growthMultiplier = growthMultiplier;
+    }
+
+
+    /**
+     * Sets show cooldowns on crouch.
+     *
+     * @param showCooldownsOnCrouch the show cooldowns on crouch
+     */
+    public void setShowCooldownsOnCrouch(boolean showCooldownsOnCrouch)
+    {
+        this.showCooldownsOnCrouch = showCooldownsOnCrouch;
+    }
+
+
+    /**
+     * Sets show all interactions.
+     *
+     * @param showAllInteractions the show all interactions
+     */
+    public void setShowAllInteractions(boolean showAllInteractions)
+    {
+        this.showAllInteractions = showAllInteractions;
+    }
+
+
+    /**
+     * Sets attack cooldown.
+     *
+     * @param attackCooldown the attack cooldown
+     */
+    public void setAttackCooldown(Integer attackCooldown)
+    {
+        this.attackCooldown = attackCooldown;
+    }
+
+
+    /**
+     * Sets maximal animal count.
+     *
+     * @param maximalAnimalCount the maximal animal count
+     */
+    public void setMaximalAnimalCount(long maximalAnimalCount)
+    {
+        this.maximalAnimalCount = maximalAnimalCount;
+    }
+
+
+    /**
+     * Sets max stored animal variants.
+     *
+     * @param maxStoredAnimalVariants the max stored animal variants
+     */
+    public void setMaxStoredAnimalVariants(Integer maxStoredAnimalVariants)
+    {
+        this.maxStoredAnimalVariants = maxStoredAnimalVariants;
+    }
+
+
+    /**
+     * Sets trigger advancements.
+     *
+     * @param triggerAdvancements the trigger advancements
+     */
+    public void setTriggerAdvancements(Boolean triggerAdvancements)
+    {
+        this.triggerAdvancements = triggerAdvancements;
+    }
+
+
+    /**
+     * Sets increase statistics.
+     *
+     * @param increaseStatistics the increase statistics
+     */
+    public void setIncreaseStatistics(Boolean increaseStatistics)
+    {
+        this.increaseStatistics = increaseStatistics;
+    }
+
+
+    /**
+     * Sets debug.
+     *
+     * @param debug the debug
+     */
+    public void setDebug(Boolean debug)
+    {
+        this.debug = debug;
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: variables
+// ---------------------------------------------------------------------
+
 
     @JsonComment("A cooldown value in game ticks between attacks that players can perform on animal pens.")
     @JsonComment("Default value: 5 game tick")
@@ -545,39 +505,44 @@ public class Configuration
     @SerializedName("attack_cooldown")
     private Integer attackCooldown;
 
-    @JsonComment("List of drop limits for items when player harvests items.")
-    @JsonComment("<item> : <drop_limit>.")
-    @Expose
-    @SerializedName("drop_limits")
-    private Map<ResourceLocation, Integer> dropLimitList = new HashMap<>();
-
     @JsonComment("Allows to set maximal amount of animals in the pen.")
     @JsonComment("Setting 0 will remove any limit.")
     @Expose
     @SerializedName("animal_limit_in_pen")
     private long maximalAnimalCount = Integer.MAX_VALUE;
 
-    @JsonComment("Allows to enable animal growing in animal pen.")
+    @JsonComment("Allows to enable mob growing in animal pen.")
     @JsonComment("The more animals are inside it, the larger it will be.")
     @Expose
-    @SerializedName("animals_can_grow")
-    private boolean growAnimals = false;
+    @SerializedName(value = "animal_pen_mob_can_grow", alternate = "animals_can_grow")
+    private boolean growAnimalPenMob = false;
 
-    @JsonComment("Allows to change default animal size in pen.")
+    @JsonComment("Allows to change default mob size in pen.")
     @Expose
-    @SerializedName("animal_size")
-    private Float animalSize;
+    @SerializedName(value = "animal_pen_mob_size", alternate = "animal_size")
+    private Float animalPenMobSize;
 
-    @JsonComment("Allows to enable water animal growing in aquarium.")
+    @JsonComment("Allows to enable aquarium mob growing.")
     @JsonComment("The more animals are inside it, the larger it will be.")
     @Expose
-    @SerializedName("water_animals_can_grow")
-    private boolean growWaterAnimals = false;
+    @SerializedName(value = "aquarium_mob_can_grow", alternate = "water_animals_can_grow")
+    private boolean growAquariumMob = false;
 
-    @JsonComment("Allows to change default water animal size in aquarium.")
+    @JsonComment("Allows to change default mob size in aquarium.")
     @Expose
-    @SerializedName("water_animal_size")
-    private Float waterAnimalSize;
+    @SerializedName(value = "aquarium_mob_size", alternate = "water_animal_size")
+    private Float aquariumMobSize;
+
+    @JsonComment("Allows to enable aviary mobs growing.")
+    @JsonComment("The more mobs are inside it, the larger it will be.")
+    @Expose
+    @SerializedName("aviary_mob_can_grow")
+    private Boolean growAviaryMob = false;
+
+    @JsonComment("Allows to change default mob size in aviary.")
+    @Expose
+    @SerializedName("aviary_mob_size")
+    private Float aviaryMobSize;
 
     @JsonComment("Allows to set how fast animals grows in pen and aquarium.")
     @JsonComment("Each animal is multiplied by given value to get end size.")
@@ -586,12 +551,6 @@ public class Configuration
     @Expose
     @SerializedName("growth_multiplier")
     private Float growthMultiplier;
-
-    @JsonComment("Allows to specify if turtle scute are dropped when player breeds animal (true).")
-    @JsonComment("or when food cooldown timer is finished (false).")
-    @Expose
-    @SerializedName("turtle_scute_drop_time")
-    private boolean dropScuteAtStart = false;
 
     @JsonComment("Allows to set how many different animal variants can be stored per item.")
     @JsonComment("Players will not be able to store more different variants than this value.")
@@ -617,12 +576,12 @@ public class Configuration
 
     @JsonComment("Allows to toggle if cooldowns should be shown only while player is crouching (true).")
     @JsonComment("or be visible all the time (false).")
-    @JsonComment("Default value = true")
+    @JsonComment("Default value = false")
     @Expose
     @SerializedName("show_cooldowns_while_crouching")
     private Boolean showCooldownsOnCrouch;
 
-    @JsonComment("Allows to toggle if all interactions (even without cooldown) should be rendered")
+    @JsonComment("Allows to toggle if all interactions (evenNumber without cooldown) should be rendered")
     @JsonComment("above animal pen or aquarium")
     @JsonComment("Default value = false")
     @Expose
@@ -630,7 +589,6 @@ public class Configuration
     private Boolean showAllInteractions;
 
     @JsonComment("Set of animals that are blocked from picking up.")
-    @JsonComment("Pickable animals in vanilla minecraft: https://minecraft.wiki/w/Animal#List_of_animals")
     @Expose
     @SerializedName("blocked_animals")
     private Set<ResourceLocation> blockedAnimals = new HashSet<>();
@@ -639,8 +597,4 @@ public class Configuration
     @Expose
     @SerializedName("debug")
     private Boolean debug;
-
-    @JsonComment("")
-    @Expose(serialize = false, deserialize = false)
-    private final static ResourceLocation ANY = new ResourceLocation("animal_pen:any");
 }

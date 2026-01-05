@@ -1,0 +1,61 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:suspicious_stew",
+          "functions": [
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:23b}" } }],
+              "effects": [{ "type": "minecraft:saturation", "duration": 7 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:16b}" } }],
+              "effects": [{ "type": "minecraft:night_vision", "duration": 5 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:12b}" } }],
+              "effects": [{ "type": "minecraft:fire_resistance", "duration": 4 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:15b}" } }],
+              "effects": [{ "type": "minecraft:blindness", "duration": 8 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:18b}" } }],
+              "effects": [{ "type": "minecraft:weakness", "duration": 9 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:10b}" } }],
+              "effects": [{ "type": "minecraft:regeneration", "duration": 8 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:8b}" } }],
+              "effects": [{ "type": "minecraft:jump_boost", "duration": 6 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:19b}" } }],
+              "effects": [{ "type": "minecraft:poison", "duration": 12 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:20b}" } }],
+              "effects": [{ "type": "minecraft:wither", "duration": 8 }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

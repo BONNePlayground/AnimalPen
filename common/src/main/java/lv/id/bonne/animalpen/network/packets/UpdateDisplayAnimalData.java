@@ -4,7 +4,7 @@ package lv.id.bonne.animalpen.network.packets;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,6 +19,7 @@ public class UpdateDisplayAnimalData
 {
     /**
      * The simple packet encoding.
+     *
      * @param position The block position that is affected.
      * @param tag The new variant of entity.
      * @return packet buffer.
@@ -36,6 +37,7 @@ public class UpdateDisplayAnimalData
 
     /**
      * This method handles incoming packet on server.
+     *
      * @param friendlyByteBuf The incoming packet.
      * @param packetContext The packet context.
      */
@@ -48,7 +50,7 @@ public class UpdateDisplayAnimalData
         {
             Level level = packetContext.getPlayer().level();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.updateAnimalVariant(animalVariant);
             }
@@ -63,5 +65,5 @@ public class UpdateDisplayAnimalData
     /**
      * The resource ID.
      */
-    public static final ResourceLocation ID = new ResourceLocation(AnimalPen.MOD_ID, "update_display_animal");
+    public static final ResourceLocation ID = AnimalPen.resourceOf("update_display_animal");
 }
