@@ -39,7 +39,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
         {
             ItemStack containerItem = this.container.getItem(i);
 
-            if (ItemStack.isSame(containerItem, item))
+            if (ItemStack.isSameItem(containerItem, item))
             {
                 count += containerItem.getCount();
             }
@@ -58,7 +58,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
         {
             ItemStack stack = this.container.getItem(i);
 
-            if (ItemStack.isSame(stack, consumedItem))
+            if (ItemStack.isSameItem(stack, consumedItem))
             {
                 if (consumedItem.getMaxStackSize() == 1)
                 {

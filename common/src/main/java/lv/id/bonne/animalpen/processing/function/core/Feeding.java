@@ -43,7 +43,7 @@ public class Feeding implements EntityFunction
         String dataKey,
         Value dataValue)
     {
-        this.processData(player.getLevel(), itemConsumed, amount, mob, mobNBT, blockPos);
+        this.processData(player.serverLevel(), itemConsumed, amount, mob, mobNBT, blockPos);
 
         if (mob instanceof Animal animal)
         {

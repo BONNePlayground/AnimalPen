@@ -56,6 +56,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -284,7 +285,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             }
             else
             {
-                if (!player.getLevel().isClientSide())
+                if (!player.level().isClientSide())
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
@@ -322,7 +323,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     return false;
                 }
 
-                if (player.getLevel().isClientSide())
+                if (player.level().isClientSide())
                 {
                     // Next only on server.
                     return true;
@@ -388,7 +389,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     return false;
                 }
 
-                if (player.getLevel().isClientSide())
+                if (player.level().isClientSide())
                 {
                     // Next only on server.
                     return true;
@@ -464,7 +465,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (itemInHand.isEmpty() && !this.inventory.isEmpty())
         {
-            if (player.isCrouching() && !player.getLevel().isClientSide())
+            if (player.isCrouching() && !player.level().isClientSide())
             {
                 ItemStack item = this.getItemStack();
                 player.setItemInHand(interactionHand, item);
@@ -598,24 +599,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         // Set fire-ticks (use fire aspect, to get rid of any stored value before).
         animal.setRemainingFireTicks(fireAspect);
 
-        LootTable lootTable = level.getServer().getLootTables().get(animal.getLootTable());
+        LootTable lootTable = level.getServer().getLootData().getLootTable(animal.getLootTable());
 
-        LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel) level).
+        LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
             withParameter(LootContextParams.THIS_ENTITY, animal).
             withParameter(LootContextParams.KILLER_ENTITY, player).
             withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
             withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
-            withLuck(player.getLuck()).
-            withRandom(level.random);
+            withLuck(player.getLuck());
 
-        lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY)).
-            forEach(itemStack ->
-                ItemTransferUtil.insertBellowOrDrop(level,
-                    itemStack,
-                    this.getBlockPos(),
-                    this.dropPosition()));
+        lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
+            forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
 
         animal.clearFire();
 

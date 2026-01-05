@@ -6,8 +6,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 
@@ -22,8 +22,7 @@ public class ItemTransferUtilImpl
             return false;
         }
 
-        LazyOptional<IItemHandler> capability = blockEntity.getCapability(
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+        LazyOptional<IItemHandler> capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side);
 
         return capability.map(handler ->
         {
@@ -57,8 +56,8 @@ public class ItemTransferUtilImpl
             return stack;
         }
 
-        LazyOptional<IItemHandler> capability = blockEntity.getCapability(
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+        LazyOptional<IItemHandler> capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side);
+
 
         return capability.map(handler ->
         {

@@ -86,7 +86,7 @@ public class TurtleScuteDrop implements EntityFunction.ProcessEntityFunction
         {
             // This should never happen
             scuteList.forEach(stack ->
-                Block.popResource(mob.getLevel(), blockPos.above(), stack));
+                Block.popResource(mob.level(), blockPos.above(), stack));
         }
 
         return true;

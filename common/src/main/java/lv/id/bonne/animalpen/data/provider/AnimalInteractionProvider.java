@@ -37,6 +37,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 
 /**
@@ -770,16 +771,26 @@ public class AnimalInteractionProvider implements DataProvider
 
         // Food
         interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("sniffer_food"))));
-        // Milk Pickup
+        // Egg Dropping
+        interactions.add(AnimalInteractionBuilder.create("eggs").
+            ingredient(CustomIngredient.of(Items.BUCKET)).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/sniffer_egg"), 320, true)).
+            cooldown(new CooldownEntry.Linear(6000, -20, 200)).
+            sound(SoundEvents.SNIFFER_EGG_PLOP.getLocation()).
+            redstoneBit(2).
+            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SNIFFER_EGG))).
+            textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.SNIFFER_EGG))).
+            build());
+        // Seed Pickup
         interactions.add(AnimalInteractionBuilder.create("sniff").
             ingredient(CustomIngredient.of(Items.BOWL)).
-            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/torchflower"), 320, true)).
+            lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING, 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             consume(new ConsumerEntry.Interact()).
             sound(SoundEvents.SNIFFER_DIGGING.getLocation()).
-            redstoneBit(2).
-            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TORCHFLOWER_SEEDS))).
-            textLines(TextEntry.cooldown("display.animal_pen.sniff_cooldown", CustomIngredient.of(Items.TORCHFLOWER_SEEDS))).
+            redstoneBit(3).
+            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD))).
+            textLines(TextEntry.cooldown("display.animal_pen.sniff_cooldown", CustomIngredient.of(Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD))).
             build());
         // ambient
         interactions.add(this.generateAmbientSound(SoundEvents.SNIFFER_IDLE));

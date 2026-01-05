@@ -55,12 +55,12 @@ public class WaterBucketPickup implements EntityFunction
         ItemStack bucketItem = bucketable.getBucketItemStack();
         bucketable.saveToBucketTag(bucketItem);
 
-        player.getLevel().playSound(null,
+        player.serverLevel().playSound(null,
             blockPos,
             bucketable.getPickupSound(),
             SoundSource.NEUTRAL,
             1.0F,
-            Mth.randomBetween(player.getLevel().getRandom(), 0.8F, 1.2F));
+            Mth.randomBetween(player.serverLevel().getRandom(), 0.8F, 1.2F));
 
         player.setItemInHand(interactionHand,
             ItemUtils.createFilledResult(itemInHand, player, bucketItem, false));

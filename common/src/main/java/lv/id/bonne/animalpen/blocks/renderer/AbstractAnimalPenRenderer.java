@@ -195,18 +195,33 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
         poseStack.pushPose();
 
+        // Move to block face 7 at the end because 1/16 is a "sign" in front
         poseStack.translate(0, 2 / 16f, -0.51f);
 
+        // Create text
         Component text = Component.translatable("display.animal_pen.count", count);
         int textWidth = this.font.width(text);
 
         float maxWidth = 30f;
         float scale = Math.min(1.0f, maxWidth / textWidth) * 0.015f;
 
+        // Apply scaling
         poseStack.scale(-scale, -scale, 0F);
         poseStack.translate(-textWidth / 2D, -this.font.lineHeight / 2f, 0);
 
-        this.font.draw(poseStack, text, 0, 0, 0xFFFFFF);
+        // Render text
+        this.font.drawInBatch(
+            text,                    // The text component
+            0, 0,                 // X, Y position in the matrix
+            0xFFFFFF,                // Color (white)
+            false,                   // Drop shadow
+            poseStack.last().pose(), // Transformation matrix
+            buffer,                  // Buffer source from method parameters
+            Font.DisplayMode.NORMAL, // Display mode (NORMAL or SEE_THROUGH)
+            0,                       // Packed overlay
+            combinedLight            // Lighting conditions
+        );
+
         poseStack.popPose();
     }
 
@@ -219,6 +234,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         int combinedLight,
         int combinedOverlay)
     {
+        // Get your list of components
         List<Pair<ItemStack[], Component>> textList = tileEntity.getCooldownLines(true);
 
         if (textList.isEmpty())
@@ -229,9 +245,11 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         BlockPos blockPos = tileEntity.getBlockPos();
         Vec3 playerPos = this.minecraft.player.position();
 
+        // Determine the player's relative position to the block
         Vec3 toPlayer = new Vec3(playerPos.x() - blockPos.getX(), 0, playerPos.z() - blockPos.getZ());
         Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
 
+        // Get the facing direction as a vector
         Vec3 facingVec = Vec3.atLowerCornerOf(facing.getNormal());
 
         if (toPlayer.dot(facingVec) < 0)
@@ -256,9 +274,11 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         {
             poseStack.pushPose();
 
+            // Move to the center of the block and above it
             poseStack.translate(0.0, -0.125 * i, 0.00);
             poseStack.scale(-0.0125F, -0.0125F, 0.0125F);
 
+            // apply offset
             poseStack.translate(maxWidth, 0, 0);
             this.renderTextLine(textList.get(i), poseStack, buffer, combinedLight, combinedOverlay);
 
@@ -275,11 +295,13 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         ItemStack first = pair.getLeft().length > 0 ? pair.getLeft()[0] : null;
         ItemStack second = pair.getLeft().length > 1 ? pair.getLeft()[1] : null;
 
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
         int whiteSpace = this.font.width(" ");
         boolean isFirst = true;
 
         double width = 0;
 
+        // Process each text part
         for (Component part : text.toFlatList(Style.EMPTY))
         {
             String content = part.getString();
@@ -288,32 +310,39 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             {
                 if (first == null)
                 {
+                    // Skip rendering as icon is missing.
                     continue;
                 }
 
                 if (!isFirst)
                 {
+                    // move closer to previous part to overlap white space.
                     width -= whiteSpace;
                 }
 
+                // Render the first item
                 width += 16 - whiteSpace;
             }
             else if (content.equals("\uE001"))
             {
                 if (second == null)
                 {
+                    // Skip rendering as icon is missing.
                     continue;
                 }
 
                 if (!isFirst)
                 {
+                    // move closer to previous part to overlap white space.
                     width -= whiteSpace;
                 }
 
+                // Render the second item (if available)
                 width += 16 - whiteSpace;
             }
             else
             {
+                // Render regular text
                 width += this.font.width(part);
             }
 
@@ -334,13 +363,16 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         ItemStack first = componentPair.getLeft().length > 0 ? componentPair.getLeft()[0] : null;
         ItemStack second = componentPair.getLeft().length > 1 ? componentPair.getLeft()[1] : null;
 
+        // A bit of hacky way to compact drawing, as usually lang $s is separated with spaced.
         int whiteSpace = this.font.width(" ");
         boolean isFirst = true;
 
         int leftOffset = 0;
 
+        // Process each text part
         for (Component part : text.toFlatList(Style.EMPTY))
         {
+            // apply offset
             poseStack.translate(leftOffset, 0, 0);
             String content = part.getString();
 
@@ -349,14 +381,17 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 if (first == null)
                 {
                     leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
                     continue;
                 }
 
+                // Render the first item
                 poseStack.pushPose();
+                // image is 20x smaller and flipped than text
                 poseStack.scale(-20f, -20f, 20f);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
-                    second,
+                    first,
                     ItemDisplayContext.GROUND,
                     combinedLight,
                     combinedOverlay,
@@ -374,10 +409,13 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 if (second == null)
                 {
                     leftOffset = isFirst ? 0 : -whiteSpace;
+                    // Skip rendering as icon is missing.
                     continue;
                 }
 
+                // Render the second item
                 poseStack.pushPose();
+                // image is 20x smaller and flipped than text
                 poseStack.scale(-20f, -20f, 20f);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 this.minecraft.getItemRenderer().renderStatic(
@@ -396,8 +434,21 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             }
             else
             {
+                // Render regular text
                 poseStack.pushPose();
-                this.font.draw(poseStack, part, 0, -6, 0xFFFFFF);
+
+                this.font.drawInBatch(
+                    part,  // The text component
+                    0, -6,                     // X, Y position in the matrix
+                    0xFFFFFF,                    // Color (white)
+                    false,                       // Drop shadow
+                    poseStack.last().pose(),     // Transformation matrix
+                    buffer,                      // Buffer source from method parameters
+                    Font.DisplayMode.NORMAL,     // Display mode (NORMAL or SEE_THROUGH)
+                    0,                           // Packed overlay
+                    combinedLight                // Lighting conditions
+                );
+
                 poseStack.popPose();
 
                 leftOffset = this.font.width(part);

@@ -40,7 +40,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
 
         for (ItemStack containerItem : this.player.getInventory().items)
         {
-            if (ItemStack.isSame(containerItem, item))
+            if (ItemStack.isSameItem(containerItem, item))
             {
                 count += containerItem.getCount();
             }
@@ -60,7 +60,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
 
         int removed = amount;
 
-        if (ItemStack.isSame(this.player.getItemInHand(this.hand), consumedItem))
+        if (ItemStack.isSameItem(this.player.getItemInHand(this.hand), consumedItem))
         {
             if (consumedItem.getMaxStackSize() == 1)
             {
@@ -90,7 +90,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
         {
             ItemStack stack = this.player.getInventory().getItem(i);
 
-            if (ItemStack.isSame(stack, consumedItem))
+            if (ItemStack.isSameItem(stack, consumedItem))
             {
                 if (consumedItem.getMaxStackSize() == 1)
                 {
@@ -131,7 +131,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     @Override
     public void drop(ItemStack item)
     {
-        ItemTransferUtil.insertBellowOrDrop(this.player.getLevel(),
+        ItemTransferUtil.insertBellowOrDrop(this.player.serverLevel(),
             item,
             this.blockEntity.getBlockPos(),
             this.blockEntity.dropPosition());

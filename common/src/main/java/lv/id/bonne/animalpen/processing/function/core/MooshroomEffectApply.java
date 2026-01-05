@@ -54,7 +54,7 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
             return false;
         }
 
-        player.getLevel().sendParticles(
+        player.serverLevel().sendParticles(
             ParticleTypes.EFFECT,
             blockPos.getX() + 0.5f,
             blockPos.getY() + 1.5,

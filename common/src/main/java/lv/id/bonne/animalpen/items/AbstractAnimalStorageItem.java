@@ -184,7 +184,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         LivingEntity target,
         InteractionHand hand)
     {
-        if (player.level.isClientSide() || !(target instanceof Mob mob))
+        if (player.level().isClientSide() || !(target instanceof Mob mob))
         {
             return InteractionResult.FAIL;
         }
@@ -370,7 +370,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
             if (mob.getRandom().nextFloat() < ((MobInvoker) mob).callGetEquipmentDropChance(slot))
             {
-                Block.popResource(mob.level, mob.blockPosition(), stack);
+                Block.popResource(mob.level(), mob.blockPosition(), stack);
             }
 
             mob.setDropChance(slot, 0);
