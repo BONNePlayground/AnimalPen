@@ -96,7 +96,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     @Override
     public void damageItem(ItemStack item, int amount)
     {
-        item.hurtAndBreak(amount, this.level.getRandom(), null, () -> {});
+        item.hurtAndBreak(amount, this.level, null, damaged -> {});
     }
 
 

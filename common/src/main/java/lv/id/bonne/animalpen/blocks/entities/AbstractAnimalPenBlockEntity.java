@@ -576,7 +576,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return;
         }
 
-        int fireAspect = EnchantmentHelper.getFireAspect(player);
+        EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level,
+            animal,
+            level.damageSources().playerAttack(player),
+            weapon);
 
         if (AnimalPen.config().isIncreaseStatistics())
         {
@@ -605,16 +608,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             this.worldPosition.getY(),
             this.worldPosition.getZ());
 
-        // Set fire-ticks (use fire aspect, to get rid of any stored value before).
-        animal.setRemainingFireTicks(fireAspect);
-
         LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
 
         LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
             withParameter(LootContextParams.THIS_ENTITY, animal).
-            withParameter(LootContextParams.KILLER_ENTITY, player).
-            withParameter(LootContextParams.DIRECT_KILLER_ENTITY, player).
+            withParameter(LootContextParams.ATTACKING_ENTITY, player).
+            withParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player).
             withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
             withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
             withLuck(player.getLuck());
@@ -624,7 +624,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         animal.clearFire();
 
-        int reward = animal.getExperienceReward();
+        int reward = animal.getExperienceReward((ServerLevel) level, player);
         ExperienceOrb.award((ServerLevel) this.level, position.add(0.5, 1, 0.5), reward);
 
         if (AnimalPen.config().isTriggerAdvancements())

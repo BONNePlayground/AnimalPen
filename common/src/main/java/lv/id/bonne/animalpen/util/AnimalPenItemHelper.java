@@ -84,7 +84,7 @@ public class AnimalPenItemHelper
      */
     public static TagKey<Item> itemTag(String value)
     {
-        return itemTag(new ResourceLocation(value));
+        return itemTag(ResourceLocation.tryParse(value));
     }
 
 
