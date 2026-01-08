@@ -5,6 +5,7 @@ import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -21,7 +22,7 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
      */
     public AnimalInteractionReloadListener()
     {
-        super(AnimalInteractionEntry.CODEC, FOLDER);
+        super(AnimalInteractionEntry.CODEC, FileToIdConverter.json(FOLDER));
     }
 
 
