@@ -1,11 +1,6 @@
 package lv.id.bonne.animalpen.data.listener;
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -19,37 +14,31 @@ import net.minecraft.util.profiling.ProfilerFiller;
 /**
  * This class handles animal interaction resource data loading into registry.
  */
-public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadListener
+public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadListener<AnimalInteractionEntry>
 {
     /**
      * Instantiates a new Animal interaction reload listener.
      */
     public AnimalInteractionReloadListener()
     {
-        super(GSON, FOLDER);
+        super(AnimalInteractionEntry.CODEC, FOLDER);
     }
 
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsonMap,
+    protected void apply(Map<ResourceLocation, AnimalInteractionEntry> objectMap,
         ResourceManager resourceManager,
         ProfilerFiller profiler)
     {
         // Clear the registry before reloading new data.
         AnimalPenInteractionRegistry.clear();
 
-        jsonMap.forEach((id, element) ->
+        objectMap.forEach((id, element) ->
         {
-            DataResult<AnimalInteractionEntry> result = AnimalInteractionEntry.CODEC.parse(JsonOps.INSTANCE, element);
-
-            AnimalInteractionEntry data = result.getOrThrow(message ->
-            {
-                AnimalPen.LOGGER.error("Failed to parse animal interaction entry from {}: {}", id, message);
-                return null;
-            });
-
-            data.interactions().forEach(animalInteraction -> {
-                AnimalPenInteractionRegistry.register(data.entityType().get(), animalInteraction);
+            element.entityType().ifPresent(entityType -> {
+                element.interactions().forEach(animalInteraction ->
+                    AnimalPenInteractionRegistry.register(entityType,
+                        animalInteraction));
             });
         });
 
@@ -57,14 +46,6 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
             "Loaded " + AnimalPenInteractionRegistry.getAll().size() + " animal interaction entries.");
     }
 
-
-    /**
-     * This creates instance of GSON reader for food items.
-     */
-    private static final Gson GSON = new GsonBuilder().
-        registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).
-        setLenient().
-        create();
 
     /**
      * The location of data folder.

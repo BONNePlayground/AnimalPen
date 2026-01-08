@@ -71,7 +71,7 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
 
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos)
+    protected boolean propagatesSkylightDown(BlockState blockState)
     {
         return true;
     }

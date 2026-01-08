@@ -30,6 +30,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -202,7 +203,7 @@ public class AnimalInteractionProvider implements DataProvider
     public AnimalInteraction generateAmbientSound(SoundEvent soundEvent)
     {
         return AnimalInteractionBuilder.create("ambient").
-            sound(soundEvent.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(soundEvent)).
             cooldown(new CooldownEntry.Randomized(1200, 6000)).
             build();
     }
@@ -281,7 +282,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/egg"), 80, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.CHICKEN_EGG.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.CHICKEN_EGG)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.EGG))).
             textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.EGG))).
@@ -320,7 +321,7 @@ public class AnimalInteractionProvider implements DataProvider
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
-            sound(SoundEvents.BEEHIVE_SHEAR.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.BEEHIVE_SHEAR)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.HONEYCOMB))).
             textLines(new TextEntry("",
@@ -341,7 +342,7 @@ public class AnimalInteractionProvider implements DataProvider
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
-            sound(SoundEvents.BOTTLE_FILL.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.BOTTLE_FILL)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.HONEY_BOTTLE))).
             textLines(new TextEntry("",
@@ -353,7 +354,7 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         // Pollen collector
         interactions.add(AnimalInteractionBuilder.create("pollen").
-            sound(SoundEvents.BEEHIVE_WORK.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.BEEHIVE_WORK)).
             conditions(new ConditionEntry.PropertiesCondition(AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 Operator.LT,
                 new IntValue(10))).
@@ -404,7 +405,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
             consume(new ConsumerEntry.Replace()).
-            sound(SoundEvents.COW_MILK.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.COW_MILK)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             textLines(TextEntry.cooldown("display.animal_pen.milk_cooldown", CustomIngredient.of(Items.MILK_BUCKET))).
@@ -434,7 +435,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
             consume(new ConsumerEntry.Replace()).
-            sound(SoundEvents.COW_MILK.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.COW_MILK)).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // Soup pickup
@@ -443,7 +444,7 @@ public class AnimalInteractionProvider implements DataProvider
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew"))).
             consume(new ConsumerEntry.Replace()).
             conditions(new ConditionEntry.MobCondition("stew_effects", Operator.HAS, new BoolValue(false))).
-            sound(SoundEvents.MOOSHROOM_MILK.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.MOOSHROOM_MILK)).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("stew").
@@ -453,7 +454,7 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(new ConditionEntry.MobCondition("stew_effects", Operator.HAS, new BoolValue(true))).
             conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
-            sound(SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY)).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         // Flowers
@@ -463,7 +464,7 @@ public class AnimalInteractionProvider implements DataProvider
             conditions(new ConditionEntry.MobCondition("stew_effects", Operator.HAS, new BoolValue(false))).
             conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
-            sound(SoundEvents.MOOSHROOM_EAT.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.MOOSHROOM_EAT)).
             textLines(TextEntry.ready("display.animal_pen.apply_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
@@ -497,13 +498,13 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/milk_bucket"))).
             consume(new ConsumerEntry.Replace()).
-            sound(SoundEvents.GOAT_MILK.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.GOAT_MILK)).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // ambient
         interactions.add(this.generateAmbientSound(SoundEvents.GOAT_AMBIENT));
         interactions.add(AnimalInteractionBuilder.create("ambient_screaming").
-            sound(SoundEvents.GOAT_SCREAMING_AMBIENT.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.GOAT_SCREAMING_AMBIENT)).
             cooldown(new CooldownEntry.Randomized(12000, 36000)).
             build());
 
@@ -535,7 +536,7 @@ public class AnimalInteractionProvider implements DataProvider
                 conditions(new ConditionEntry.MobCondition("Color", Operator.EQ, new IntValue(value.getId()))).
                 consume(new ConsumerEntry.Damage(1)).
                 cooldown(new CooldownEntry.Static(1200)).
-                sound(SoundEvents.SHEEP_SHEAR.getLocation()).
+                sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.SHEEP_SHEAR)).
                 redstoneBit(2).
                 runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, true)).
                 finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, false)).
@@ -565,7 +566,7 @@ public class AnimalInteractionProvider implements DataProvider
                 Items.RED_DYE,
                 Items.BLACK_DYE)).
             consume(new ConsumerEntry.Replace()).
-            sound(SoundEvents.DYE_USE.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.DYE_USE)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
                 CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.values().stream().map(ItemStack::new)))).
@@ -598,7 +599,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/turtle_egg"), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.TURTLE_LAY_EGG.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.TURTLE_LAY_EGG)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TURTLE_EGG))).
             textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.TURTLE_EGG))).
@@ -686,7 +687,7 @@ public class AnimalInteractionProvider implements DataProvider
                 new StringValue(
                 "minecraft:temperate"))).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.FROG_EAT.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.FROG_EAT)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
                 CustomIngredient.of(Items.OCHRE_FROGLIGHT))).
@@ -703,7 +704,7 @@ public class AnimalInteractionProvider implements DataProvider
                 new StringValue(
                 "minecraft:warm"))).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.FROG_EAT.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.FROG_EAT)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
                 CustomIngredient.of(Items.PEARLESCENT_FROGLIGHT))).
@@ -720,7 +721,7 @@ public class AnimalInteractionProvider implements DataProvider
                 new StringValue(
                 "minecraft:cold"))).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.FROG_EAT.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.FROG_EAT)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
                 CustomIngredient.of(Items.VERDANT_FROGLIGHT))).
@@ -757,7 +758,7 @@ public class AnimalInteractionProvider implements DataProvider
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
             textLines(TextEntry.ready("display.animal_pen.food_ready", food)).
             textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
-            sound(SoundEvents.AMETHYST_BLOCK_CHIME.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.AMETHYST_BLOCK_CHIME)).
             redstoneBit(1).
             build());
 
@@ -787,7 +788,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BUCKET)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/sniffer_egg"), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
-            sound(SoundEvents.SNIFFER_EGG_PLOP.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.SNIFFER_EGG_PLOP)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SNIFFER_EGG))).
             textLines(TextEntry.cooldown("display.animal_pen.egg_cooldown", CustomIngredient.of(Items.SNIFFER_EGG))).
@@ -798,7 +799,7 @@ public class AnimalInteractionProvider implements DataProvider
             lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING.location(), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             consume(new ConsumerEntry.Interact()).
-            sound(SoundEvents.SNIFFER_DIGGING.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.SNIFFER_DIGGING)).
             redstoneBit(3).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD))).
             textLines(TextEntry.cooldown("display.animal_pen.sniff_cooldown", CustomIngredient.of(Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD))).
@@ -830,7 +831,7 @@ public class AnimalInteractionProvider implements DataProvider
                 CustomIngredient.of(AnimalPenTags.COMMON_BRUSHES))).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("brush/armadillo_scute"))).
             consume(new ConsumerEntry.Damage(16)).
-            sound(SoundEvents.ARMADILLO_BRUSH.getLocation()).
+            sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.ARMADILLO_BRUSH)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.ARMADILLO_SCUTE))).
             textLines(TextEntry.cooldown("display.animal_pen.brush_cooldown", CustomIngredient.of(Items.ARMADILLO_SCUTE))).

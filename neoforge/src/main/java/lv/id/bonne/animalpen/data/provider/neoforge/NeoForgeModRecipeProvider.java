@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
+import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.provider.ModRecipeProvider;
@@ -15,16 +16,17 @@ import net.minecraft.world.level.ItemLike;
 
 public class NeoForgeModRecipeProvider extends RecipeProvider implements ModRecipeProvider
 {
-    public NeoForgeModRecipeProvider(PackOutput arg, CompletableFuture<HolderLookup.Provider> lookupProvider)
+    public NeoForgeModRecipeProvider(HolderLookup.Provider provider, RecipeOutput output)
     {
-        super(arg, lookupProvider);
+        super(provider, output);
+        this.provider = provider;
     }
 
 
     @Override
-    protected void buildRecipes(RecipeOutput consumer)
+    protected void buildRecipes()
     {
-        this.buildModRecipes(consumer);
+        this.buildModRecipes(this.provider, this.output);
     }
 
     @Override
@@ -32,4 +34,35 @@ public class NeoForgeModRecipeProvider extends RecipeProvider implements ModReci
     {
         return has(item);
     }
+
+
+    // The runner to add to the data generator
+    public static class Runner extends RecipeProvider.Runner
+    {
+        // Get the parameters from GatherDataEvent.
+        public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider)
+        {
+            super(output, lookupProvider);
+        }
+
+
+        @Override
+        @NotNull
+        protected RecipeProvider createRecipeProvider(HolderLookup.@NotNull Provider provider,
+            @NotNull RecipeOutput output)
+        {
+            return new NeoForgeModRecipeProvider(provider, output);
+        }
+
+
+        @Override
+        @NotNull
+        public String getName()
+        {
+            return "Animal Pen Recipe Generator";
+        }
+    }
+
+
+    private final HolderLookup.Provider provider;
 }

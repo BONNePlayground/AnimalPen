@@ -24,6 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
@@ -86,7 +87,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             CompoundTag cloneTag = new CompoundTag();
             animal.save(cloneTag);
 
-            EntityType.create(cloneTag, tileEntity.getLevel()).
+            EntityType.create(cloneTag, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
                 map(entity -> (Mob) entity).
                 ifPresent(clone ->
                 {
@@ -148,8 +149,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
         this.minecraft.getEntityRenderDispatcher().
-            getRenderer(animal).
-            render(animal, 0.0f, partialTicks, poseStack, buffer, combinedLight);
+            render(animal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
         if (!tileEntity.getDeathTicker().isEmpty())
         {
@@ -174,8 +174,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 }
 
                 this.minecraft.getEntityRenderDispatcher().
-                    getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0.0f, partialTicks, poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, 0.0f, 0.0f, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 
@@ -250,7 +249,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         Direction facing = tileEntity.getBlockState().getValue(AnimalPenBlock.FACING);
 
         // Get the facing direction as a vector
-        Vec3 facingVec = Vec3.atLowerCornerOf(facing.getNormal());
+        Vec3 facingVec = Vec3.atLowerCornerOf(facing.getUnitVec3i());
 
         if (toPlayer.dot(facingVec) < 0)
         {

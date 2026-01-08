@@ -54,7 +54,7 @@ public class AnimalPenBlockRegistry
             new BlockItem(block.get(),
                 new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).
                     setId(ResourceKey.create(Registries.ITEM,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
+                        AnimalPen.resourceOf(name)))));
     }
 
 
@@ -89,7 +89,7 @@ public class AnimalPenBlockRegistry
                     noOcclusion().
                     requiredFeatures(flags).
                     setId(ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
+                        AnimalPen.resourceOf("animal_pen_" + woodName)))
             ));
 
         ANIMAL_PENS.put(woodType, block);
@@ -111,16 +111,19 @@ public class AnimalPenBlockRegistry
                 sound(SoundType.GLASS).
                 noOcclusion().
                 setId(ResourceKey.create(Registries.BLOCK,
-                    ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "aquarium_block")))
+                    AnimalPen.resourceOf("aquarium_block")))
         )
     );
 
     public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
         () -> new AviaryBlock(
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
+            BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                 strength(1.0f).
                 sound(SoundType.GLASS).
-                noOcclusion())
+                noOcclusion().
+                setId(ResourceKey.create(Registries.BLOCK,
+                    AnimalPen.resourceOf("aviary")))
+        )
     );
 
     static

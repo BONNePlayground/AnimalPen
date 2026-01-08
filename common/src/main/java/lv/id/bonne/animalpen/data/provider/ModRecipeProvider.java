@@ -11,6 +11,9 @@ import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -22,9 +25,11 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 public interface ModRecipeProvider
 {
-    default void buildModRecipes(RecipeOutput consumer)
+    default void buildModRecipes(HolderLookup.Provider provider, RecipeOutput consumer)
     {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CAGE.get()).
+        HolderGetter<Item> holder = provider.lookupOrThrow(Registries.ITEM);
+
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CAGE.get()).
             define('B', Items.IRON_BARS).
             define('G', Items.GLASS).
             pattern("BBB").
@@ -34,7 +39,7 @@ public interface ModRecipeProvider
                 this.hasItem(Items.CRAFTING_TABLE)).
             save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CONTAINER.get()).
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CONTAINER.get()).
             define('B', Items.GLASS_PANE).
             define('I', Items.IRON_INGOT).
             pattern("BIB").
@@ -44,19 +49,20 @@ public interface ModRecipeProvider
                 this.hasItem(Items.CRAFTING_TABLE)).
             save(consumer);
 
-        animalPen(WoodType.ACACIA, Items.ACACIA_FENCE, consumer);
-        animalPen(WoodType.BIRCH, Items.BIRCH_FENCE, consumer);
-        animalPen(WoodType.CRIMSON, Items.CRIMSON_FENCE, consumer);
-        animalPen(WoodType.DARK_OAK, Items.DARK_OAK_FENCE, consumer);
-        animalPen(WoodType.JUNGLE, Items.JUNGLE_FENCE, consumer);
-        animalPen(WoodType.OAK, Items.OAK_FENCE, consumer);
-        animalPen(WoodType.SPRUCE, Items.SPRUCE_FENCE, consumer);
-        animalPen(WoodType.WARPED, Items.WARPED_FENCE, consumer);
-        animalPen(WoodType.MANGROVE, Items.MANGROVE_FENCE, consumer);
-        animalPen(WoodType.BAMBOO, Items.BAMBOO_FENCE, consumer);
-        animalPen(WoodType.CHERRY, Items.CHERRY_FENCE_GATE, consumer);
+        animalPen(holder, WoodType.ACACIA, Items.ACACIA_FENCE, consumer);
+        animalPen(holder, WoodType.BIRCH, Items.BIRCH_FENCE, consumer);
+        animalPen(holder, WoodType.CRIMSON, Items.CRIMSON_FENCE, consumer);
+        animalPen(holder, WoodType.DARK_OAK, Items.DARK_OAK_FENCE, consumer);
+        animalPen(holder, WoodType.JUNGLE, Items.JUNGLE_FENCE, consumer);
+        animalPen(holder, WoodType.OAK, Items.OAK_FENCE, consumer);
+        animalPen(holder, WoodType.SPRUCE, Items.SPRUCE_FENCE, consumer);
+        animalPen(holder, WoodType.WARPED, Items.WARPED_FENCE, consumer);
+        animalPen(holder, WoodType.MANGROVE, Items.MANGROVE_FENCE, consumer);
+        animalPen(holder, WoodType.BAMBOO, Items.BAMBOO_FENCE, consumer);
+        animalPen(holder, WoodType.CHERRY, Items.CHERRY_FENCE_GATE, consumer);
+        animalPen(holder, WoodType.PALE_OAK, Items.PALE_OAK_FENCE, consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPenBlockRegistry.AQUARIUM.get()).
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPenBlockRegistry.AQUARIUM.get()).
             define('G', Items.GLASS).
             define('F', Items.WATER_BUCKET).
             define('S', Items.STONE).
@@ -67,7 +73,7 @@ public interface ModRecipeProvider
                 this.hasItem(AnimalPensItemRegistry.ANIMAL_CONTAINER.get())).
             save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPensItemRegistry.BIRD_CATCHER.get()).
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPensItemRegistry.BIRD_CATCHER.get()).
             define('B', Items.STRING).
             define('S', Items.STICK).
             pattern(" BB").
@@ -77,7 +83,7 @@ public interface ModRecipeProvider
                 this.hasItem(Items.CRAFTING_TABLE)).
             save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPenBlockRegistry.AVIARY.get()).
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPenBlockRegistry.AVIARY.get()).
             define('G', Items.CHAIN).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("GGG").
@@ -89,9 +95,9 @@ public interface ModRecipeProvider
     }
 
 
-    private void animalPen(WoodType woodType, Item fence, RecipeOutput consumer)
+    private void animalPen(HolderGetter<Item> holder, WoodType woodType, Item fence, RecipeOutput consumer)
     {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AnimalPenBlockRegistry.ANIMAL_PENS.get(woodType).get()).
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPenBlockRegistry.ANIMAL_PENS.get(woodType).get()).
             group("animal_pens").
             define('F', fence).
             define('S', Items.SMOOTH_STONE_SLAB).

@@ -130,8 +130,11 @@ public abstract class AbstractAnimalStorageItem extends Item
             {
                 CompoundTag animal = compoundTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
                 String entityId = animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID);
-                EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId));
-                itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(), StoredMob.of(entityType, animal));
+
+                BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId)).
+                    ifPresent(entityType ->
+                        itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                            StoredMob.of(entityType.value(), animal)));
             }
 
             itemStack.remove(DataComponents.CUSTOM_DATA);
@@ -172,8 +175,10 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
             {
                 String entityId = compoundTag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID);
-                EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId));
-                itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(), StoredMob.of(entityType, compoundTag));
+                BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId)).
+                    ifPresent(entityType ->
+                        itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                            StoredMob.of(entityType.value(), compoundTag)));
             }
 
             itemStack.remove(DataComponents.ENTITY_DATA);
@@ -260,7 +265,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (player.level().isClientSide() || !(target instanceof Mob mob))
         {
-            return InteractionResult.SUCCESS_NO_ITEM_USED;
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         if (!target.isAlive() || target.isBaby())
@@ -392,7 +397,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         animal.put("Pos", pos);
         animal.remove("UUID");
 
-        Entity mobEntity = storedMob.entityType().create(level);
+        Entity mobEntity = storedMob.entityType().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
         if (!(mobEntity instanceof Mob mob))
         {

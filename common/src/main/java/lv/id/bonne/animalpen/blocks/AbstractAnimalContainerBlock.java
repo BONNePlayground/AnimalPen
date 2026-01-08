@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,16 +62,16 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
     @Override
     @NotNull
-    protected ItemInteractionResult useItemOn(ItemStack itemStack,
+    protected InteractionResult useItemOn(ItemStack itemStack,
         BlockState blockState, Level level, BlockPos blockPos,
         Player player, InteractionHand interactionHand, BlockHitResult blockHitResult)
     {
-        ItemInteractionResult result = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
+        InteractionResult result = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
 
-        if (result == ItemInteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
+        if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
             AnimalPen.sendDebug("Blocked by external forces");
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -81,32 +81,32 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity &&
                 entity.processContainer(player, interactionHand))
             {
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
         else
         {
             if (!(level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity))
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
             if (PlayerHooks.isFake(player) && itemInHand.is(this.getAttackToolTag()))
             {
                 this.attack(blockState, level, blockPos, player);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
-                return ItemInteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS_SERVER;
             }
             else
             {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
     }
@@ -121,7 +121,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
             !level.isClientSide() &&
             level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity)
         {
-            if (player.getCooldowns().isOnCooldown(weapon.getItem()))
+            if (player.getCooldowns().isOnCooldown(weapon))
             {
                 // item is on cooldown. Prevent attack
                 return;
@@ -139,7 +139,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
             if (cooldown > 0)
             {
-                player.getCooldowns().addCooldown(weapon.getItem(), cooldown);
+                player.getCooldowns().addCooldown(weapon, cooldown);
             }
 
             return;

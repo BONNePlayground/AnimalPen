@@ -46,10 +46,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -608,19 +605,22 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             this.worldPosition.getY(),
             this.worldPosition.getZ());
 
-        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
+        animal.getLootTable().ifPresent(lootTableKey ->
+        {
+            LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(lootTableKey);
 
-        LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
-            withParameter(LootContextParams.ORIGIN, position).
-            withParameter(LootContextParams.THIS_ENTITY, animal).
-            withParameter(LootContextParams.ATTACKING_ENTITY, player).
-            withParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player).
-            withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
-            withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
-            withLuck(player.getLuck());
+            LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
+                withParameter(LootContextParams.ORIGIN, position).
+                withParameter(LootContextParams.THIS_ENTITY, animal).
+                withParameter(LootContextParams.ATTACKING_ENTITY, player).
+                withParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player).
+                withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).
+                withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().playerAttack(player)).
+                withLuck(player.getLuck());
 
-        lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
-            forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
+            lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
+                forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
+        });
 
         animal.clearFire();
 
@@ -743,8 +743,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (interaction.sound() != null)
         {
-            this.level.registryAccess().registry(Registries.SOUND_EVENT).
-                flatMap(registry -> registry.getOptional(interaction.sound())).
+            this.level.registryAccess().lookupOrThrow(Registries.SOUND_EVENT).
+                getOptional(interaction.sound()).
                 ifPresent(soundEvent -> level.playSound(null,
                     this.getBlockPos(),
                     soundEvent,
@@ -843,8 +843,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // Play sound
             if (interaction.sound() != null)
             {
-                this.level.registryAccess().registry(Registries.SOUND_EVENT).
-                    flatMap(registry -> registry.getOptional(interaction.sound())).
+                this.level.registryAccess().lookupOrThrow(Registries.SOUND_EVENT).
+                    getOptional(interaction.sound()).
                     ifPresent(soundEvent -> level.playSound(null,
                         this.getBlockPos(),
                         soundEvent,
@@ -1154,7 +1154,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
 
                 StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-                Entity entity = storedMob.entityType().create(this.level);
+                Entity entity = storedMob.entityType().create(this.level, EntitySpawnReason.TRIGGERED);
 
                 if (entity instanceof Mob mob)
                 {

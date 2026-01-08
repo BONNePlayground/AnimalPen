@@ -17,9 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
@@ -110,13 +108,6 @@ public class Feeding implements EntityFunction
             5,
             0.2, 0.2, 0.2,
             0.05);
-
-        serverLevel.playSound(null,
-            blockPos,
-            mob.getEatingSound(itemConsumed),
-            SoundSource.NEUTRAL,
-            1.0F,
-            Mth.randomBetween(serverLevel.getRandom(), 0.8F, 1.2F));
 
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
             StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));

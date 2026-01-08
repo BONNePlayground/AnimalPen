@@ -31,8 +31,8 @@ public record AnimalInteractionSyncEndPacket() implements CustomPacketPayload
             if (!AnimalPenInteractionRegistry.containsAllEntities())
             {
                 AnimalPen.LOGGER.error("Entity count mismatch between server and client.");
-                Objects.requireNonNull(Minecraft.getInstance().player).sendSystemMessage(
-                    Component.translatable("network.animal_pen.missing_entities_form_server"));
+                Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
+                    Component.translatable("network.animal_pen.missing_entities_form_server"), true);
             }
         });
     }
