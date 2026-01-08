@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -27,7 +26,7 @@ public interface EntityFunction
      * @param itemConsumed The consumed item
      * @param amount The amount of consumed item
      * @param mob The mob that was interacted with
-     * @param mobNBT The nbt that contains data for entity
+     * @param componentHolder The data component holder that contains data for entity
      * @param blockPos The block position
      * @param dataKey The input key for function
      * @param dataValue The input object for function
@@ -38,12 +37,12 @@ public interface EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
-        return this.processFunction(player.serverLevel(), mob, mobNBT, blockPos, dataKey, dataValue);
+        return this.processFunction(player.serverLevel(), mob, componentHolder, blockPos, dataKey, dataValue);
     }
 
 
@@ -55,7 +54,7 @@ public interface EntityFunction
      * @param itemConsumed The consumed item
      * @param amount The amount of consumed item
      * @param mob The mob that was interacted with
-     * @param mobNBT The nbt that contains data for entity
+     * @param componentHolder The data component holder that contains data for entity
      * @param blockPos The block position
      * @param dataKey The input key for function
      * @param dataValue The input object for function
@@ -66,12 +65,12 @@ public interface EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
-        return this.processFunction(serverLevel, mob, mobNBT, blockPos, dataKey, dataValue);
+        return this.processFunction(serverLevel, mob, componentHolder, blockPos, dataKey, dataValue);
     }
 
 
@@ -80,7 +79,7 @@ public interface EntityFunction
      *
      * @param serverLevel The server level object
      * @param mob The mob that was interacted with
-     * @param mobNBT The nbt that contains data for entity
+     * @param componentHolder The data component holder that contains data for entity
      * @param blockPos The block position
      * @param dataKey The input key for function
      * @param dataValue The input object for function
@@ -88,7 +87,7 @@ public interface EntityFunction
      */
     default boolean processFunction(ServerLevel serverLevel,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
@@ -109,7 +108,7 @@ public interface EntityFunction
          * @param itemConsumed The consumed item
          * @param amount The amount of consumed item
          * @param mob The mob that was interacted with
-         * @param mobNBT The nbt that contains data for entity
+         * @param componentHolder The data component holder that contains data for entity
          * @param blockPos The block position
          * @param dataKey The input key for function
          * @param dataValue The input object for function
@@ -121,7 +120,7 @@ public interface EntityFunction
             ItemStack itemConsumed,
             int amount,
             Mob mob,
-            CompoundTag mobNBT,
+            ItemStack componentHolder,
             BlockPos blockPos,
             @Nullable String dataKey,
             @Nullable Value dataValue);
@@ -137,7 +136,7 @@ public interface EntityFunction
         /**
          * @param serverLevel The server level object
          * @param mob The mob that was interacted with
-         * @param mobNBT The nbt that contains data for entity
+         * @param componentHolder The data component holder that contains data for entity
          * @param blockPos The block position
          * @param dataKey The input key for function
          * @param dataValue The input object for function
@@ -146,7 +145,7 @@ public interface EntityFunction
         @Override
         boolean processFunction(ServerLevel serverLevel,
             Mob mob,
-            CompoundTag mobNBT,
+            ItemStack componentHolder,
             BlockPos blockPos,
             @Nullable String dataKey,
             @Nullable Value dataValue);

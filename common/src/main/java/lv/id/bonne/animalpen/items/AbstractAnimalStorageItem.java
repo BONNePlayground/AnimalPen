@@ -3,13 +3,23 @@ package lv.id.bonne.animalpen.items;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.items.component.StoredMob;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -27,8 +37,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -71,42 +81,103 @@ public abstract class AbstractAnimalStorageItem extends Item
 
 
     @Override
-    public void verifyTagAfterLoad(CompoundTag compoundTag)
+    public void verifyComponentsAfterLoad(ItemStack itemStack)
     {
-        super.verifyTagAfterLoad(compoundTag);
+        super.verifyComponentsAfterLoad(itemStack);
 
-        if (!compoundTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        // Minecraft 1.20.4 < upgrade to 1.20.5+
+        if (itemStack.has(DataComponents.CUSTOM_DATA))
         {
-            return;
-        }
+            CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+            CompoundTag compoundTag = customData.getUnsafe();
 
-        Tag variants = compoundTag.get(AnimalPenCompoundTags.TAG_VARIANTS);
-        long count = compoundTag.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
-
-        CompoundTag animalData = new CompoundTag();
-        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, count);
-
-        compoundTag.remove(AnimalPenCompoundTags.TAG_VARIANTS);
-        compoundTag.remove(AnimalPenCompoundTags.TAG_AMOUNT);
-
-        CompoundTag animal = compoundTag.copy();
-        CompoundTag cooldownData = new CompoundTag();
-
-        animal.getAllKeys().forEach(key ->
-        {
-            if (key.endsWith("_cooldown"))
+            // Target animal variants
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_VARIANTS))
             {
-                cooldownData.putLong(key, compoundTag.getLong(key));
+                ListTag nbtVariantList = compoundTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
+
+                List<CompoundTag> variantList = new ArrayList<>(nbtVariantList.size());
+                nbtVariantList.forEach(tag -> variantList.add((CompoundTag) tag));
+
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+                    StoredMobVariants.of(variantList));
             }
 
-            compoundTag.remove(key);
-        });
+            // Target animal data
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA))
+            {
+                CompoundTag animalData = compoundTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+                long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+                CompoundTag cooldowns = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
 
-        animalData.put(AnimalPenCompoundTags.TAG_COOLDOWN, cooldownData);
+                Map<String, Integer> cooldownMap = new HashMap<>(cooldowns.size());
+                cooldowns.getAllKeys().forEach(key ->
+                    cooldownMap.put(key, cooldowns.getInt(key)));
 
-        compoundTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variants);
-        compoundTag.put(AnimalPenCompoundTags.TAG_ANIMAL, animal);
-        compoundTag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
+                animalData.remove(AnimalPenCompoundTags.TAG_AMOUNT);
+                animalData.remove(AnimalPenCompoundTags.TAG_COOLDOWN);
+
+                Map<String, Integer> propertiesMap = new HashMap<>(animalData.size());
+                animalData.getAllKeys().forEach(key ->
+                    propertiesMap.put(key, animalData.getInt(key)));
+
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                    StoredMobData.of(animalCount, propertiesMap, cooldownMap));
+            }
+
+            // Target animal itself
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_ANIMAL))
+            {
+                CompoundTag animal = compoundTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
+                String entityId = animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID);
+                EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId));
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(), StoredMob.of(entityType, animal));
+            }
+
+            itemStack.remove(DataComponents.CUSTOM_DATA);
+        }
+
+        // Animal Pens 1.6 to 2.0 upgrade
+        if (itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
+        {
+            CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+            ListTag nbtVariants = customData.getUnsafe().getList("animal_variants", Tag.TAG_COMPOUND);
+            List<CompoundTag> variantList = new ArrayList<>(nbtVariants.size());
+            nbtVariants.forEach(tag -> variantList.add((CompoundTag) tag));
+
+            itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+                StoredMobVariants.of(variantList));
+
+            itemStack.remove(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+        }
+
+        // Move from entity data to my custom mob storage.
+        if (itemStack.has(DataComponents.ENTITY_DATA))
+        {
+            CustomData customData = itemStack.get(DataComponents.ENTITY_DATA);
+            CompoundTag compoundTag = customData.getUnsafe();
+
+            // Target animal count as other data is lost (cooldowns are not worth the effort)
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_AMOUNT))
+            {
+                long animalCount = compoundTag.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+                Map<String, Integer> cooldownMap = new HashMap<>(0);
+                compoundTag.remove(AnimalPenCompoundTags.TAG_AMOUNT);
+                Map<String, Integer> propertiesMap = new HashMap<>(0);
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                    StoredMobData.of(animalCount, propertiesMap, cooldownMap));
+            }
+
+            // Target animal itself
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+            {
+                String entityId = compoundTag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID);
+                EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId));
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(), StoredMob.of(entityType, compoundTag));
+            }
+
+            itemStack.remove(DataComponents.ENTITY_DATA);
+        }
     }
 
 
@@ -117,54 +188,47 @@ public abstract class AbstractAnimalStorageItem extends Item
 
     @Override
     public void appendHoverText(ItemStack stack,
-        @Nullable Level level,
+        TooltipContext tooltipContext,
         List<Component> tooltip,
-        TooltipFlag flag)
+        TooltipFlag tooltipFlag)
     {
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, tooltipContext, tooltip, tooltipFlag);
 
         if (!tooltip.isEmpty())
         {
             tooltip.add(Component.empty());
         }
 
-        if (stack.hasTag())
+        if (stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) &&
+            stack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
         {
-            CompoundTag animal = stack.getTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
-            CompoundTag data = stack.getTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+            StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            StoredMobData storedMobData = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
-            if (animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-            {
-                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".entity",
-                    getEntityTranslationName(animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID))).
-                    withStyle(ChatFormatting.GRAY));
-            }
+            tooltip.add(Component.translatable(this.tooltipKeyBase() + ".entity",
+                    storedMob.entityType().getDescription()).
+                withStyle(ChatFormatting.GRAY));
 
-            if (data.contains(AnimalPenCompoundTags.TAG_AMOUNT))
-            {
-                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".amount",
-                    data.getLong(AnimalPenCompoundTags.TAG_AMOUNT)).
-                    withStyle(ChatFormatting.GRAY));
-            }
+            tooltip.add(Component.translatable(this.tooltipKeyBase() + ".amount",
+                    storedMobData.animalCount()).
+                withStyle(ChatFormatting.GRAY));
 
-            if (stack.getTag().contains(AnimalPenCompoundTags.TAG_VARIANTS))
+            if (stack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()))
             {
+                StoredMobVariants storedMobVariants =
+                    stack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+
                 tooltip.add(Component.translatable(this.tooltipKeyBase() + ".variants",
-                    stack.getTag().getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                        storedMobVariants.variants().size()).
                     withStyle(ChatFormatting.GRAY));
             }
 
-            if (animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-            {
-                tooltip.add(Component.empty());
-                tooltip.add(Component.translatable(this.tooltipKeyBase() + ".release").
-                    withStyle(ChatFormatting.GRAY));
-            }
+            tooltip.add(Component.empty());
+            tooltip.add(Component.translatable(this.tooltipKeyBase() + ".release").
+                withStyle(ChatFormatting.GRAY));
         }
 
-        if (!stack.hasTag() ||
-            !stack.getTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL).
-                contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             tooltip.add(Component.translatable(this.tooltipKeyBase() + ".tip").
                 withStyle(ChatFormatting.GRAY));
@@ -184,9 +248,19 @@ public abstract class AbstractAnimalStorageItem extends Item
         LivingEntity target,
         InteractionHand hand)
     {
+        InteractionResult interactionResult =
+            super.interactLivingEntity(stack, player, target, hand);
+
+        if (interactionResult == InteractionResult.FAIL)
+        {
+            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.unknown").
+                withStyle(ChatFormatting.DARK_RED), true);
+            return interactionResult;
+        }
+
         if (player.level().isClientSide() || !(target instanceof Mob mob))
         {
-            return InteractionResult.FAIL;
+            return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
 
         if (!target.isAlive() || target.isBaby())
@@ -267,21 +341,26 @@ public abstract class AbstractAnimalStorageItem extends Item
         mob.ejectPassengers();
         this.dropEquipment(mob);
 
-        CompoundTag tag = stack.getOrCreateTag();
-
-        if (!tag.contains(AnimalPenCompoundTags.TAG_ANIMAL))
+        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             CompoundTag animalTag = new CompoundTag();
-            mob.save(animalTag);
-            tag.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+            mob.saveWithoutId(animalTag);
+
+            animalTag.remove("Pos");
+            animalTag.remove("UUID");
+
+            stack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                StoredMob.of(mob.getType(), animalTag));
         }
 
-        CompoundTag data = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        data.putLong(AnimalPenCompoundTags.TAG_AMOUNT,
-            data.getLong(AnimalPenCompoundTags.TAG_AMOUNT) + 1);
-
-        tag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, data);
-        stack.setTag(tag);
+        stack.update(
+            AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(0, new HashMap<>(), new HashMap<>()),
+            data -> StoredMobData.of(
+                data.animalCount() + 1,
+                data.properties(),
+                data.cooldowns())
+        );
 
         AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player);
 
@@ -293,9 +372,8 @@ public abstract class AbstractAnimalStorageItem extends Item
     private InteractionResult tryRelease(UseOnContext context)
     {
         ItemStack stack = context.getItemInHand();
-        CompoundTag animal = stack.getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL).copy();
 
-        if (!animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             // Empty container
             return InteractionResult.PASS;
@@ -308,22 +386,29 @@ public abstract class AbstractAnimalStorageItem extends Item
         pos.add(DoubleTag.valueOf(context.getClickedPos().getY() + 1));
         pos.add(DoubleTag.valueOf(context.getClickedPos().getZ() + 0.5));
 
+        StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+        CompoundTag animal = storedMob.tag();
+
         animal.put("Pos", pos);
         animal.remove("UUID");
 
-        EntityType.create(animal, level).
-            map(entity -> (Mob) entity).
-            ifPresent(mob ->
-            {
-                // Strip equipment from spawned mob
-                for (EquipmentSlot slot : EquipmentSlot.values())
-                {
-                    mob.setItemSlot(slot, ItemStack.EMPTY);
-                }
+        Entity mobEntity = storedMob.entityType().create(level);
 
-                level.addFreshEntity(mob);
-                this.decrementStoredAmount(stack, context.getPlayer(), context.getHand());
-            });
+        if (!(mobEntity instanceof Mob mob))
+        {
+            AnimalPen.sendDebug("Failed to spawn mob in given world.");
+            return InteractionResult.SUCCESS;
+        }
+
+        mob.load(animal);
+
+        for (EquipmentSlot slot : EquipmentSlot.values())
+        {
+            mob.setItemSlot(slot, ItemStack.EMPTY);
+        }
+
+        level.addFreshEntity(mob);
+        this.decrementStoredAmount(stack);
 
         return InteractionResult.SUCCESS;
     }
@@ -334,26 +419,21 @@ public abstract class AbstractAnimalStorageItem extends Item
 // ---------------------------------------------------------------------
 
 
-    private void decrementStoredAmount(ItemStack stack, Player player, InteractionHand hand)
+    private void decrementStoredAmount(ItemStack stack)
     {
-        CompoundTag tag = stack.getOrCreateTag();
-        CompoundTag data = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+        StoredMobData data = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
-        long amount = data.getLong(AnimalPenCompoundTags.TAG_AMOUNT) - 1;
-
-        if (amount <= 0)
+        if (data == null || data.animalCount() <= 1)
         {
-            // Clear item completely
-            stack.setTag(new CompoundTag());
+            stack.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            stack.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+            stack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
         }
         else
         {
-            data.putLong(AnimalPenCompoundTags.TAG_AMOUNT, amount);
-            tag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, data);
-            stack.setTag(tag);
+            stack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                StoredMobData.of(data.animalCount() - 1, data.properties(), data.cooldowns()));
         }
-
-        player.setItemInHand(hand, stack);
     }
 
 
@@ -380,23 +460,13 @@ public abstract class AbstractAnimalStorageItem extends Item
 
     private boolean matchEntity(ItemStack stack, LivingEntity entity)
     {
-        CompoundTag tag = stack.getTag();
-
-        if (tag == null)
+        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             return true;
         }
 
-        CompoundTag animal = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
-
-        if (!animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-        {
-            return true;
-        }
-
-        return new ResourceLocation(
-            animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
-            equals(entity.getType().arch$registryName());
+        return entity.getType() ==
+            stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()).entityType();
     }
 
 
@@ -413,13 +483,5 @@ public abstract class AbstractAnimalStorageItem extends Item
     protected interface BlockEntityHandler
     {
         boolean handle(BlockEntity be, Player player, InteractionHand hand);
-    }
-
-
-    private static Component getEntityTranslationName(String entityId)
-    {
-        return EntityType.byString(entityId).
-            map(EntityType::getDescription).
-            orElse(Component.literal(entityId));
     }
 }

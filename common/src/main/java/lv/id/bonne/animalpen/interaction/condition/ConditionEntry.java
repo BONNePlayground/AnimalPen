@@ -2,28 +2,35 @@ package lv.id.bonne.animalpen.interaction.condition;
 
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import lv.id.bonne.animalpen.interaction.value.IntValue;
 import lv.id.bonne.animalpen.interaction.value.TagValue;
 import lv.id.bonne.animalpen.interaction.value.Value;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import lv.id.bonne.animalpen.items.component.StoredMob;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
+import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.util.StringRepresentable;
 
 
 /**
  * This interface allows to define conditions that need to be matched for interaction to operate.
  */
-public interface ConditionEntry
+public sealed interface ConditionEntry permits
+    ConditionEntry.MobCondition,
+    ConditionEntry.AmountCondition,
+    ConditionEntry.PropertiesCondition
 {
     /**
      * This method checks if given tag fulfills required conditions.
-     * @param tag The tag that contains all data.
+     *
+     * @param dataHolder The tag that contains all data.
      * @return {@code true} if condition is matched, {@code false} otherwise.
      */
-    boolean matchCondition(CompoundTag tag);
+    boolean matchCondition(DataComponentHolder dataHolder);
 
 
     /**
@@ -32,24 +39,27 @@ public interface ConditionEntry
     public record MobCondition(String key, Operator operator, Value value) implements ConditionEntry
     {
         @Override
-        public boolean matchCondition(CompoundTag tag)
+        public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!tag.contains(AnimalPenCompoundTags.TAG_ANIMAL, Tag.TAG_COMPOUND))
+            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
             {
                 return false;
             }
 
-            Value dataValue = new TagValue(tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).get(this.key));
+            StoredMob storedMob = dataHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            Value dataValue = new TagValue(storedMob.tag().contains(this.key) ?
+                storedMob.tag().get(this.key) : null);
 
             return operator.test(dataValue, this.value);
         }
 
 
-        public static final Codec<MobCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.STRING.fieldOf("key").forGetter(MobCondition::key),
-            Operator.CODEC.fieldOf("operator").forGetter(MobCondition::operator),
-            Value.CODEC.fieldOf("value").forGetter(MobCondition::value)
-        ).apply(inst, MobCondition::new));
+        public static final MapCodec<MobCondition> CODEC =
+            RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Codec.STRING.fieldOf("key").forGetter(MobCondition::key),
+                Operator.CODEC.fieldOf("operator").forGetter(MobCondition::operator),
+                Value.CODEC.fieldOf("value").forGetter(MobCondition::value)
+            ).apply(inst, MobCondition::new));
     }
 
 
@@ -59,24 +69,24 @@ public interface ConditionEntry
     public record AmountCondition(Operator operator, int value) implements ConditionEntry
     {
         @Override
-        public boolean matchCondition(CompoundTag tag)
+        public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!tag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
+            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
             {
                 return false;
             }
 
-            long animalCount = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
-            return operator.test(new IntValue((int) animalCount), new IntValue(this.value));
+            return operator.test(new IntValue((int) storedMobData.animalCount()), new IntValue(this.value));
         }
 
 
-        public static final Codec<AmountCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Operator.CODEC.fieldOf("operator").forGetter(AmountCondition::operator),
-            Codec.INT.fieldOf("value").forGetter(AmountCondition::value)
-        ).apply(inst, AmountCondition::new));
+        public static final MapCodec<AmountCondition> CODEC =
+            RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Operator.CODEC.fieldOf("operator").forGetter(AmountCondition::operator),
+                Codec.INT.fieldOf("value").forGetter(AmountCondition::value)
+            ).apply(inst, AmountCondition::new));
     }
 
 
@@ -86,57 +96,67 @@ public interface ConditionEntry
     public record PropertiesCondition(String key, Operator operator, Value value) implements ConditionEntry
     {
         @Override
-        public boolean matchCondition(CompoundTag tag)
+        public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!tag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
+            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
             {
                 return false;
             }
 
-            Value dataValue = new TagValue(tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).get(this.key));
+            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
-            return operator.test(dataValue, this.value);
+            return operator.test(new IntValue(storedMobData.properties().getOrDefault(key, 0)), this.value);
         }
 
 
-        public static final Codec<PropertiesCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.STRING.fieldOf("key").forGetter(PropertiesCondition::key),
-            Operator.CODEC.fieldOf("operator").forGetter(PropertiesCondition::operator),
-            Value.CODEC.fieldOf("value").forGetter(PropertiesCondition::value)
-        ).apply(inst, PropertiesCondition::new));
+        public static final MapCodec<PropertiesCondition> CODEC =
+            RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Codec.STRING.fieldOf("key").forGetter(PropertiesCondition::key),
+                Operator.CODEC.fieldOf("operator").forGetter(PropertiesCondition::operator),
+                Value.CODEC.fieldOf("value").forGetter(PropertiesCondition::value)
+            ).apply(inst, PropertiesCondition::new));
     }
 
 
-    public static final Codec<ConditionEntry> CODEC = Codec.STRING.
-        dispatch("type",
-            entry ->
-            {
-                if (entry instanceof AmountCondition)
-                {
-                    return "amount";
-                }
-                else if (entry instanceof MobCondition)
-                {
-                    return "mob";
-                }
-                else if (entry instanceof PropertiesCondition)
-                {
-                    return "data";
-                }
-                else
-                {
-                    // This should never happen
-                    return entry.toString();
-                }
+    enum ConditionType implements StringRepresentable
+    {
+        AMOUNT("amount"),
+        MOB("mob"),
+        PROPERTIES("data");
+
+        ConditionType(String name)
+        {
+            this.name = name;
+        }
+
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+
+        public static final Codec<ConditionEntry.ConditionType> CODEC =
+            StringRepresentable.fromEnum(ConditionEntry.ConditionType::values);
+
+        private final String name;
+    }
+
+
+    public static final Codec<ConditionEntry> CODEC =
+        ConditionEntry.ConditionType.CODEC.dispatch(
+            "type",
+            entry -> switch (entry) {
+                case ConditionEntry.AmountCondition ignored -> ConditionEntry.ConditionType.AMOUNT;
+                case ConditionEntry.MobCondition ignored -> ConditionEntry.ConditionType.MOB;
+                case ConditionEntry.PropertiesCondition ignored -> ConditionEntry.ConditionType.PROPERTIES;
             },
-            type -> switch (type)
-            {
-                case "amount" -> AmountCondition.CODEC;
-                case "mob" -> MobCondition.CODEC;
-                case "data" -> PropertiesCondition.CODEC;
-                default -> Codec.EMPTY.codec().flatXmap(
-                    empty -> DataResult.error(() -> "Unknown cooldown type: " + type),
-                    entry -> DataResult.error(() -> "Unknown cooldown type: " + type)
-                );
-            });
+            type -> switch (type) {
+                case AMOUNT -> ConditionEntry.AmountCondition.CODEC;
+                case MOB -> ConditionEntry.MobCondition.CODEC;
+                case PROPERTIES -> ConditionEntry.PropertiesCondition.CODEC;
+            }
+        );
 }

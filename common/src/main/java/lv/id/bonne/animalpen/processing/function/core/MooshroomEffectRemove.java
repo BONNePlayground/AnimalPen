@@ -8,9 +8,10 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -32,23 +33,12 @@ public class MooshroomEffectRemove implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        if (mob instanceof MushroomCowAccessor mushroomCow)
-        {
-            mushroomCow.setStewEffects(null);
-
-            CompoundTag animalTag = new CompoundTag();
-            mob.save(animalTag);
-            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
-
-            return true;
-        }
-
-        return false;
+        return this.removeEffect(mob, componentHolder);
     }
 
 
@@ -58,18 +48,28 @@ public class MooshroomEffectRemove implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
+    {
+        return this.removeEffect(mob, componentHolder);
+    }
+
+
+    private boolean removeEffect(Mob mob, ItemStack componentHolder)
     {
         if (mob instanceof MushroomCowAccessor mushroomCow)
         {
             mushroomCow.setStewEffects(null);
 
+            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
             CompoundTag animalTag = new CompoundTag();
             mob.save(animalTag);
-            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
+            componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                StoredMob.of(storedMob.entityType(), animalTag));
 
             return true;
         }

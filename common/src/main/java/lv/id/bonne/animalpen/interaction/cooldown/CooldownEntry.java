@@ -2,17 +2,22 @@ package lv.id.bonne.animalpen.interaction.cooldown;
 
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringRepresentable;
 
 
 /**
  * This class stores cooldown related information
  */
-public interface CooldownEntry
+public sealed interface CooldownEntry permits
+    CooldownEntry.Linear,
+    CooldownEntry.Randomized,
+    CooldownEntry.Static
 {
     /**
      * This method calculates the cooldown value.
@@ -20,7 +25,7 @@ public interface CooldownEntry
      * @param animalCount The animal count.
      * @return The cooldown in ticks calculated by cooldown entry.
      */
-    int calculateCooldown(int animalCount);
+    long calculateCooldown(long animalCount);
 
 
     /**
@@ -33,9 +38,9 @@ public interface CooldownEntry
     record Linear(int base, int delta, int limit) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public long calculateCooldown(long animalCount)
         {
-            int value = this.base + animalCount * this.delta;
+            long value = this.base + animalCount * this.delta;
 
             return this.delta >= 0 ?
                 Mth.clamp(value, this.base, this.limit) :
@@ -43,8 +48,8 @@ public interface CooldownEntry
         }
 
 
-        public static final Codec<Linear> CODEC =
-            RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<Linear> CODEC =
+            RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("base").forGetter(Linear::base),
                 Codec.INT.fieldOf("delta").forGetter(Linear::delta),
                 Codec.INT.fieldOf("limit").forGetter(Linear::limit)
@@ -60,14 +65,14 @@ public interface CooldownEntry
     record Static(int base) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public long calculateCooldown(long animalCount)
         {
             return this.base;
         }
 
 
-        public static final Codec<Static> CODEC =
-            RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<Static> CODEC =
+            RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("base").forGetter(Static::base)
             ).apply(instance, Static::new));
     }
@@ -82,7 +87,7 @@ public interface CooldownEntry
     record Randomized(int min, int max) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public long calculateCooldown(long animalCount)
         {
             return this.min + Randomized.RANDOM.nextInt(this.max - this.min + 1);
         }
@@ -91,44 +96,53 @@ public interface CooldownEntry
         public static final Random RANDOM = new Random();
 
 
-        public static final Codec<Randomized> CODEC =
-            RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<Randomized> CODEC =
+            RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("min").forGetter(Randomized::min),
                 Codec.INT.fieldOf("max").forGetter(Randomized::max)
             ).apply(instance, Randomized::new));
     }
 
 
-    Codec<CooldownEntry> CODEC = Codec.STRING.
-        dispatch("type",
-            entry ->
-            {
-                if (entry instanceof Linear)
-                {
-                    return "linear";
-                }
-                else if (entry instanceof Static)
-                {
-                    return "static";
-                }
-                else if (entry instanceof Randomized)
-                {
-                    return "random";
-                }
-                else
-                {
-                    // This should never happen
-                    return entry.toString();
-                }
+    enum CooldownType implements StringRepresentable
+    {
+        LINEAR("linear"),
+        STATIC("static"),
+        RANDOM("random");
+
+        CooldownType(String name)
+        {
+            this.name = name;
+        }
+
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+
+        public static final Codec<CooldownEntry.CooldownType> CODEC =
+            StringRepresentable.fromEnum(CooldownEntry.CooldownType::values);
+
+        private final String name;
+    }
+
+
+    public static final Codec<CooldownEntry> CODEC =
+        CooldownEntry.CooldownType.CODEC.dispatch(
+            "type",
+            entry -> switch (entry) {
+                case CooldownEntry.Linear l -> CooldownType.LINEAR;
+                case CooldownEntry.Static s -> CooldownType.STATIC;
+                case CooldownEntry.Randomized r -> CooldownType.RANDOM;
             },
-            type -> switch (type)
-            {
-                case "linear" -> Linear.CODEC;
-                case "static" -> Static.CODEC;
-                case "random" -> Randomized.CODEC;
-                default -> Codec.EMPTY.codec().flatXmap(
-                    empty -> DataResult.error(() -> "Unknown cooldown type: " + type),
-                    entry -> DataResult.error(() -> "Unknown cooldown type: " + type)
-                );
-            });
+            type -> switch (type) {
+                case LINEAR -> CooldownEntry.Linear.CODEC;
+                case STATIC -> CooldownEntry.Static.CODEC;
+                case RANDOM -> CooldownEntry.Randomized.CODEC;
+            }
+        );
 }

@@ -3,7 +3,6 @@ package lv.id.bonne.animalpen.processing.executor;
 
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 
@@ -32,7 +31,7 @@ public interface AnimalInteractionExecutor
         ItemStack consumedItem,
         int consumedAmount,
         Mob animal,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos);
 
 

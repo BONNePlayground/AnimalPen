@@ -8,13 +8,15 @@ package lv.id.bonne.animalpen.util;
 
 
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.items.component.StoredMobVariants;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -41,16 +43,11 @@ public class AnimalPenVariantHelper
             return false;
         }
 
-        CompoundTag itemTag = itemStack.getOrCreateTag();
+        StoredMobVariants storedMobVariants =
+            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
 
-        if (!itemTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-        {
-            return false;
-        }
-
-        ListTag variantList = itemTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
-
-        if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
+        if (storedMobVariants != null &&
+            storedMobVariants.variants().size() + 1 > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -62,12 +59,21 @@ public class AnimalPenVariantHelper
             return false;
         }
 
-        CompoundTag variant = new CompoundTag();
-        animal.save(variant);
-        variantList.add(variant);
+        itemStack.update(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>(AnimalPen.config().getMaxStoredVariants())),
+            data ->
+            {
+                CompoundTag animalTag = new CompoundTag();
+                animal.saveWithoutId(animalTag);
+                animalTag.remove("Pos");
+                animalTag.remove("UUID");
 
-        itemTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variantList);
-        itemStack.setTag(itemTag);
+                List<CompoundTag> variants = data.variants();
+                variants.add(animalTag);
+
+                return StoredMobVariants.of(variants);
+            }
+        );
 
         return true;
     }
@@ -79,12 +85,12 @@ public class AnimalPenVariantHelper
      * @param itemStack The item stack that need to be checked.
      * @return Optional list of tags for animal variants.
      */
-    public static Optional<ListTag> getAnimalVariants(ItemStack itemStack)
+    public static Optional<List<CompoundTag>> getAnimalVariants(ItemStack itemStack)
     {
-        if (itemStack.getOrCreateTag().contains(AnimalPenCompoundTags.TAG_VARIANTS))
+        if (itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()))
         {
-            return Optional.of(itemStack.getOrCreateTag().getList(AnimalPenCompoundTags.TAG_VARIANTS,
-                Tag.TAG_COMPOUND));
+            return Optional.of(itemStack.get(
+                AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()).variants());
         }
         else
         {
@@ -108,19 +114,22 @@ public class AnimalPenVariantHelper
             return true;
         }
 
-        CompoundTag itemTag = mainItem.getOrCreateTag();
-        CompoundTag redundantTag = redundantItem.getOrCreateTag();
-
-        if (!itemTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(AnimalPenCompoundTags.TAG_ENTITY_ID) ||
-            !redundantTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        if (!mainItem.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) ||
+            !redundantItem.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             return false;
         }
 
-        ListTag variantList = itemTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
-        ListTag redundantList = redundantTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
+        StoredMobVariants mainVariants = mainItem.getOrDefault(
+            AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>()));
 
-        if (variantList.size() + redundantList.size() > AnimalPen.config().getMaxStoredVariants())
+        StoredMobVariants redundantVariants = redundantItem.getOrDefault(
+            AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>()));
+
+        if (mainVariants.variants().size() + redundantVariants.variants().size() >
+            AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
@@ -150,36 +159,28 @@ public class AnimalPenVariantHelper
             return;
         }
 
-        CompoundTag itemTag = mainItem.getOrCreateTag();
-        CompoundTag redundantTag = redundantItem.getOrCreateTag();
+        StoredMobVariants mainVariants = mainItem.getOrDefault(
+            AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>()));
 
-        if (!itemTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(AnimalPenCompoundTags.TAG_ENTITY_ID) ||
-            !redundantTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        StoredMobVariants redundantVariants = redundantItem.getOrDefault(
+            AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>()));
+
+        List<CompoundTag> mergedList = new ArrayList<>(AnimalPen.config().getMaxStoredVariants());
+        mergedList.addAll(mainVariants.variants());
+
+        int remaining = AnimalPen.config().getMaxStoredVariants() - mergedList.size();
+
+        if (remaining > 0)
         {
-            return;
+            mergedList.addAll(redundantVariants.variants().subList(0,
+                Math.min(remaining, redundantVariants.variants().size())));
         }
 
-        ListTag variantList = itemTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
-        ListTag redundantList = redundantTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
+        mainItem.set(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(mergedList));
 
-        for (Tag tag : redundantList)
-        {
-            if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
-            {
-                if (player != null)
-                {
-                    player.displayClientMessage(
-                        Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
-                            withStyle(ChatFormatting.DARK_RED), true);
-                }
-
-                break;
-            }
-
-            variantList.add(tag);
-        }
-
-        itemTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variantList);
-        mainItem.setTag(itemTag);
+        redundantItem.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
     }
 }

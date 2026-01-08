@@ -74,7 +74,8 @@ public class AnimalInteractionProvider implements DataProvider
             featureList.add(this.generateFrog(cache));
             featureList.add(this.generateAllay(cache));
             featureList.add(this.generateSniffer(cache));
-
+            featureList.add(this.generateArmadillo(cache));
+            
             // Fishes
             featureList.add(this.generateFish(cache, EntityType.COD, Items.COD_BUCKET));
             featureList.add(this.generateFish(cache, EntityType.PUFFERFISH, Items.PUFFERFISH_BUCKET));
@@ -226,7 +227,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(),
                 List.of(this.generateAmbientSound(soundEvent)))).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
 
@@ -243,7 +244,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(),
                 List.of(this.generateFood(foodItem), this.generateAmbientSound(soundEvent)))).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
 
@@ -271,7 +272,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.AXOLOTL.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.AXOLOTL.arch$registryName());
 
@@ -306,7 +307,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.CHICKEN.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.CHICKEN.arch$registryName());
 
@@ -324,7 +325,6 @@ public class AnimalInteractionProvider implements DataProvider
         // Shears
         interactions.add(AnimalInteractionBuilder.create("shearing").
             ingredient(CustomIngredient.merge(CustomIngredient.of(Items.SHEARS),
-                CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                 CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/honeycomb"))).
             consume(new ConsumerEntry.Damage(1)).
@@ -399,7 +399,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.BEE.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.BEE.arch$registryName());
 
@@ -429,7 +429,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.COW.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.COW.arch$registryName());
 
@@ -492,7 +492,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.MOOSHROOM.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.MOOSHROOM.arch$registryName());
 
@@ -524,7 +524,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.GOAT.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.GOAT.arch$registryName());
 
@@ -544,7 +544,6 @@ public class AnimalInteractionProvider implements DataProvider
         {
             interactions.add(AnimalInteractionBuilder.create("shearing").
                 ingredient(CustomIngredient.merge(CustomIngredient.of(Items.SHEARS),
-                    CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                     CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
                 lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/wool"), 320, true)).
                 conditions(new ConditionEntry.MobCondition("Color", Operator.EQ, new IntValue(value.getId()))).
@@ -592,7 +591,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.SHEEP.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.SHEEP.arch$registryName());
 
@@ -625,7 +624,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.TURTLE.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.TURTLE.arch$registryName());
 
@@ -676,7 +675,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
 
@@ -749,7 +748,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.FROG.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.FROG.arch$registryName());
 
@@ -782,7 +781,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.ALLAY.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.ALLAY.arch$registryName());
 
@@ -809,7 +808,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Seed Pickup
         interactions.add(AnimalInteractionBuilder.create("sniff").
             ingredient(CustomIngredient.of(Items.BOWL)).
-            lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING, 320, true)).
+            lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING.location(), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             consume(new ConsumerEntry.Interact()).
             sound(SoundEvents.SNIFFER_DIGGING.getLocation()).
@@ -823,7 +822,7 @@ public class AnimalInteractionProvider implements DataProvider
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.SNIFFER.builtInRegistryHolder().key(), interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(EntityType.SNIFFER.arch$registryName());
 
@@ -831,6 +830,37 @@ public class AnimalInteractionProvider implements DataProvider
     }
 
 
+    private CompletableFuture<?> generateArmadillo(CachedOutput cache)
+    {
+        List<AnimalInteraction> interactions = new ArrayList<>(2);
+
+        // Food
+        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("armadillo_food"))));
+        // Brushing
+        interactions.add(AnimalInteractionBuilder.create("brush").
+            ingredient(CustomIngredient.merge(CustomIngredient.of(Items.BRUSH),
+                CustomIngredient.of(AnimalPenTags.COMMON_BRUSHES))).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("brush/armadillo_scute"))).
+            consume(new ConsumerEntry.Damage(16)).
+            sound(SoundEvents.ARMADILLO_BRUSH.getLocation()).
+            redstoneBit(2).
+            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.ARMADILLO_SCUTE))).
+            textLines(TextEntry.cooldown("display.animal_pen.brush_cooldown", CustomIngredient.of(Items.ARMADILLO_SCUTE))).
+            build());
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.ARMADILLO_AMBIENT));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE,
+                AnimalInteractionEntry.of(EntityType.ARMADILLO.builtInRegistryHolder().key(), interactions)).
+            getOrThrow();
+
+        Path file = this.pathProvider.json(EntityType.ARMADILLO.arch$registryName());
+
+        return DataProvider.saveStable(cache, json, file);
+    }
+    
+    
 // ---------------------------------------------------------------------
 // Section: Variables
 // ---------------------------------------------------------------------

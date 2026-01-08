@@ -11,7 +11,6 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
@@ -29,7 +28,7 @@ public class MooshroomEffectFail implements EntityFunction.PlayerEntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)

@@ -1,11 +1,15 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
-import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 
 /**
@@ -13,26 +17,38 @@ import net.minecraft.network.FriendlyByteBuf;
  *
  * @param entityCount The entity count player should receive.
  */
-public record AnimalInteractionSyncStartPacket(int entityCount)
+public record AnimalInteractionSyncStartPacket(int entityCount) implements CustomPacketPayload
 {
-    public static void encode(AnimalInteractionSyncStartPacket pkt, FriendlyByteBuf buf)
+    /**
+     * This method handles incoming packet on server.
+     * @param data The incoming packet.
+     * @param packetContext The packet context.
+     */
+    public static void handle(AnimalInteractionSyncStartPacket data, NetworkManager.PacketContext packetContext)
     {
-        buf.writeVarInt(pkt.entityCount());
-    }
-
-
-    public static AnimalInteractionSyncStartPacket decode(FriendlyByteBuf buf)
-    {
-        return new AnimalInteractionSyncStartPacket(buf.readVarInt());
-    }
-
-
-    public static void handle(AnimalInteractionSyncStartPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
-    {
-        ctx.get().queue(() ->
+        packetContext.queue(() ->
         {
             AnimalPenInteractionRegistry.clear();
-            AnimalPenInteractionRegistry.setEntityCount(pkt.entityCount());
+            AnimalPenInteractionRegistry.setEntityCount(data.entityCount());
         });
     }
+
+
+    @Override
+    @NotNull
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type()
+    {
+        return AnimalInteractionSyncStartPacket.ID;
+    }
+
+
+    public static final CustomPacketPayload.Type<AnimalInteractionSyncStartPacket> ID =
+        new CustomPacketPayload.Type<>(AnimalPen.resourceOf("start_data_sync"));
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, AnimalInteractionSyncStartPacket> STREAM_CODEC =
+        StreamCodec.composite(ByteBufCodecs.INT,
+            AnimalInteractionSyncStartPacket::entityCount,
+            AnimalInteractionSyncStartPacket::new
+    );
 }

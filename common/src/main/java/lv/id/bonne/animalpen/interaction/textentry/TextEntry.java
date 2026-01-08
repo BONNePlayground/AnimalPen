@@ -10,12 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -43,7 +41,7 @@ public record TextEntry(
 {
     @Nullable
     public Pair<ItemStack[], Component> animalPenGetLine(CustomIngredient item,
-        CompoundTag mobNBT,
+        Map<String, Integer> properties,
         int tick,
         boolean shortLine,
         long cooldown)
@@ -61,8 +59,6 @@ public record TextEntry(
             case ON_MATCH -> ChatFormatting.GOLD;
         };
 
-        CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-
         Object[] variables = new Object[2 + this.parameters.length];
         variables[0] = Component.translatable("\uE000");
         variables[1] = Component.translatable("\uE001");
@@ -77,20 +73,9 @@ public record TextEntry(
                 variables[2 + i] = LocalTime.of(0, 0, 0).
                     plusSeconds(cooldown / 20).format(TextEntry.DATE_FORMATTER);
             }
-            else if (animalData.contains(format))
+            else if (properties.containsKey(format))
             {
-                Tag tag = animalData.get(format);
-
-                if (tag != null)
-                {
-                    // tag as string
-                    variables[2 + i] = tag.getAsString();
-                }
-                else
-                {
-                    // Empty tex line
-                    variables[2 + i] = "";
-                }
+                variables[2 + i] = properties.get(format);
             }
             else if (format.equals(parameter))
             {

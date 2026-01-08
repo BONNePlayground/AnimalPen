@@ -9,11 +9,11 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -39,12 +39,16 @@ public class WaterBucketPickup implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        {
+            return false;
+        }
+
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
         if (itemInHand.getItem() != Items.WATER_BUCKET || !(mob instanceof Bucketable bucketable))
@@ -65,8 +69,10 @@ public class WaterBucketPickup implements EntityFunction
         player.setItemInHand(interactionHand,
             ItemUtils.createFilledResult(itemInHand, player, bucketItem, false));
 
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        long animalCount = storedMobData.animalCount() - 1;
+        componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
 
         if (AnimalPen.config().isTriggerAdvancements())
         {
@@ -84,12 +90,15 @@ public class WaterBucketPickup implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        {
+            return false;
+        }
 
         if (!itemConsumed.is(Items.WATER_BUCKET) || !(mob instanceof Bucketable bucketable))
         {
@@ -108,8 +117,10 @@ public class WaterBucketPickup implements EntityFunction
 
         Block.popResource(serverLevel, blockPos, bucketItem);
 
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        long animalCount = storedMobData.animalCount() - 1;
+        componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
 
         return true;
     }

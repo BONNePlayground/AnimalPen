@@ -1,19 +1,18 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
-import java.util.function.Supplier;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 
@@ -24,53 +23,39 @@ import net.minecraft.world.entity.EntityType;
  * @param entityId The id of entity.
  * @param interactions The list of interactions for entity.
  */
-public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entityId, List<AnimalInteraction> interactions)
+public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entityId,
+                                                List<AnimalInteraction> interactions) implements CustomPacketPayload
 {
-    public static void encode(AnimalInteractionSyncEntityPacket pkt, FriendlyByteBuf buf)
+    /**
+     * This method handles incoming packet on server.
+     * @param data The incoming packet.
+     * @param packetContext The packet context.
+     */
+    public static void handle(AnimalInteractionSyncEntityPacket data, NetworkManager.PacketContext packetContext)
     {
-        buf.writeResourceKey(pkt.entityId());
-
-        Tag tag = AnimalInteraction.CODEC.
-            listOf().
-            encodeStart(NbtOps.INSTANCE, pkt.interactions).
-            getOrThrow(false, AnimalPen.LOGGER::error);
-
-        if (tag instanceof ListTag tagList)
-        {
-            CompoundTag data = new CompoundTag();
-            data.put("data", tagList);
-            buf.writeNbt(data);
-        }
-        else
-        {
-            AnimalPen.LOGGER.error("Failed to make data packet for: " + tag.getAsString());
-        }
+        packetContext.queue(() ->
+            AnimalPenInteractionRegistry.register(data.entityId(), data.interactions()));
     }
 
 
-    public static AnimalInteractionSyncEntityPacket decode(FriendlyByteBuf buf)
+    @Override
+    @NotNull
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type()
     {
-        ResourceKey<EntityType<?>> entityId = buf.readResourceKey(Registries.ENTITY_TYPE);
-        CompoundTag tag = buf.readNbt();
-        List<AnimalInteraction> interactions;
-
-        if (tag == null || !tag.contains("data", Tag.TAG_LIST))
-        {
-            AnimalPen.LOGGER.error("Failed to parse data packet for: " + (tag == null ? "null" : tag.getAsString()));
-            return null;
-        }
-
-        interactions = AnimalInteraction.CODEC.
-            listOf().
-            parse(NbtOps.INSTANCE, tag.getList("data", Tag.TAG_COMPOUND)).
-            getOrThrow(false, AnimalPen.LOGGER::error);
-
-        return new AnimalInteractionSyncEntityPacket(entityId, interactions);
+        return AnimalInteractionSyncStartPacket.ID;
     }
 
 
-    public static void handle(AnimalInteractionSyncEntityPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
-    {
-        ctx.get().queue(() -> AnimalPenInteractionRegistry.register(pkt.entityId(), pkt.interactions()));
-    }
+    public static final CustomPacketPayload.Type<AnimalInteractionSyncEntityPacket> ID =
+        new CustomPacketPayload.Type<>(AnimalPen.resourceOf("perform_data_sync"));
+
+
+    public static final StreamCodec<FriendlyByteBuf, AnimalInteractionSyncEntityPacket> STREAM_CODEC =
+        StreamCodec.composite(
+            ResourceKey.streamCodec(Registries.ENTITY_TYPE),
+            AnimalInteractionSyncEntityPacket::entityId,
+            ByteBufCodecs.fromCodec(AnimalInteraction.CODEC.listOf()),
+            AnimalInteractionSyncEntityPacket::interactions,
+            AnimalInteractionSyncEntityPacket::new
+        );
 }

@@ -42,19 +42,15 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
         {
             DataResult<AnimalInteractionEntry> result = AnimalInteractionEntry.CODEC.parse(JsonOps.INSTANCE, element);
 
-            result.get().
-                ifRight(partial ->
-                    AnimalPen.LOGGER.error("Failed to parse animal interaction entry from {}: {}",
-                        id,
-                        partial.message())).
-                ifLeft(entry ->
-                {
-                    if (entry.isActive())
-                    {
-                        entry.interactions().forEach(interaction ->
-                            AnimalPenInteractionRegistry.register(entry.entityType().get(), interaction));
-                    }
-                });
+            AnimalInteractionEntry data = result.getOrThrow(message ->
+            {
+                AnimalPen.LOGGER.error("Failed to parse animal interaction entry from {}: {}", id, message);
+                return null;
+            });
+
+            data.interactions().forEach(animalInteraction -> {
+                AnimalPenInteractionRegistry.register(data.entityType().get(), animalInteraction);
+            });
         });
 
         AnimalPen.LOGGER.info(

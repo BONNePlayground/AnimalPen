@@ -1,29 +1,28 @@
-package lv.id.bonne.animalpen.data.provider.forge;
+package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.helper.SimpleTagAppender;
-import lv.id.bonne.animalpen.data.provider.ModEntityTypeTagsProvider;
+import lv.id.bonne.animalpen.data.provider.ModBlockTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 
-public class ForgeModEntityTypeTagProvider extends EntityTypeTagsProvider implements ModEntityTypeTagsProvider
+public class NeoForgeModBlockTagProvider extends BlockTagsProvider implements ModBlockTagsProvider
 {
-    public ForgeModEntityTypeTagProvider(PackOutput arg,
-        CompletableFuture<HolderLookup.Provider> completableFuture,
+    public NeoForgeModBlockTagProvider(PackOutput output,
+        CompletableFuture<HolderLookup.Provider> lookupProvider,
         String modId,
         @Nullable ExistingFileHelper existingFileHelper)
     {
-        super(arg, completableFuture, modId, existingFileHelper);
+        super(output, lookupProvider, modId, existingFileHelper);
     }
 
 
@@ -35,14 +34,14 @@ public class ForgeModEntityTypeTagProvider extends EntityTypeTagsProvider implem
 
 
     @Override
-    public SimpleTagAppender<EntityType<?>> modTag(TagKey<EntityType<?>> tag)
+    public SimpleTagAppender<Block> modTag(TagKey<Block> tag)
     {
         var builder = this.tag(tag);
 
         return new SimpleTagAppender<>() {
 
             @Override
-            public SimpleTagAppender<EntityType<?>> add(EntityType<?> value) {
+            public SimpleTagAppender<Block> add(Block value) {
                 builder.add(value);
                 return this;
             }

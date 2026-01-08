@@ -1,7 +1,7 @@
 package lv.id.bonne.animalpen.data.provider.fabric;
 
 
-import lv.id.bonne.animalpen.data.provider.*;
+import lv.id.bonne.animalpen.data.provider.AnimalInteractionProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 

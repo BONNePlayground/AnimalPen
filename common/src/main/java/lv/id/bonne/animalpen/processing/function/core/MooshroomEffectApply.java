@@ -7,13 +7,13 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
-import java.util.List;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 
 
 /**
@@ -36,12 +36,12 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        Optional<List<SuspiciousEffectHolder.EffectEntry>> effectFromItemStack =
+        Optional<SuspiciousStewEffects> effectFromItemStack =
             AnimalPenItemHelper.getEffectFromItemStack(itemConsumed);
 
         if (effectFromItemStack.isEmpty())
@@ -50,6 +50,11 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
         }
 
         if (!(mob instanceof MushroomCowAccessor mushroomCow))
+        {
+            return false;
+        }
+
+        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             return false;
         }
@@ -65,9 +70,13 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
 
         mushroomCow.setStewEffects(effectFromItemStack.get());
 
+        StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
         CompoundTag animalTag = new CompoundTag();
         mob.save(animalTag);
-        mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
+        componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+            StoredMob.of(storedMob.entityType(), animalTag));
 
         return true;
     }

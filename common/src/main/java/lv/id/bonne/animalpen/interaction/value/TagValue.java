@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
 
 
 /**

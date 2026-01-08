@@ -6,7 +6,6 @@ import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Mob;
@@ -97,10 +96,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     @Override
     public void damageItem(ItemStack item, int amount)
     {
-        if (item.hurt(amount, this.level.getRandom(), null))
-        {
-            item.shrink(1);
-        }
+        item.hurtAndBreak(amount, this.level.getRandom(), null, () -> {});
     }
 
 
@@ -143,7 +139,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
         ItemStack consumedItem,
         int consumedAmount,
         Mob animal,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos)
     {
         return interaction.triggerFunctions(this.level,
@@ -151,7 +147,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
             consumedItem,
             consumedAmount,
             animal,
-            mobNBT,
+            componentHolder,
             blockPos);
     }
 

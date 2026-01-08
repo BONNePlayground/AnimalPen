@@ -21,14 +21,15 @@ import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AviaryRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
-import lv.id.bonne.animalpen.network.packets.*;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEndPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEntityPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncStartPacket;
+import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
 
@@ -47,7 +48,7 @@ public class AnimalPenClient
 
         ItemPropertiesRegistry.registerGeneric(AnimalPen.resourceOf("filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->
-                itemStack.has(DataComponents.ENTITY_DATA) ? 1.0f : 0.0f));
+                itemStack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) ? 1.0f : 0.0f));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 

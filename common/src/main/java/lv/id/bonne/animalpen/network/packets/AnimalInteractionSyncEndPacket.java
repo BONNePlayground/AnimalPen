@@ -1,36 +1,32 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 
 /**
  * This is validation packet to check if player received all data from it.
  */
-public record AnimalInteractionSyncEndPacket()
+public record AnimalInteractionSyncEndPacket() implements CustomPacketPayload
 {
-    public static void encode(AnimalInteractionSyncEndPacket pkt, FriendlyByteBuf buf)
+    /**
+     * This method handles incoming packet on server.
+     * @param data The incoming packet.
+     * @param packetContext The packet context.
+     */
+    public static void handle(AnimalInteractionSyncEndPacket data, NetworkManager.PacketContext packetContext)
     {
-    }
-
-
-    public static AnimalInteractionSyncEndPacket decode(FriendlyByteBuf buf)
-    {
-        return new AnimalInteractionSyncEndPacket();
-    }
-
-
-    public static void handle(AnimalInteractionSyncEndPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
-    {
-        ctx.get().queue(() ->
+        packetContext.queue(() ->
         {
             if (!AnimalPenInteractionRegistry.containsAllEntities())
             {
@@ -40,4 +36,22 @@ public record AnimalInteractionSyncEndPacket()
             }
         });
     }
+
+
+    @Override
+    @NotNull
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type()
+    {
+        return AnimalInteractionSyncEndPacket.ID;
+    }
+
+
+    public static final CustomPacketPayload.Type<AnimalInteractionSyncEndPacket> ID =
+        new CustomPacketPayload.Type<>(AnimalPen.resourceOf("end_data_sync"));
+
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, AnimalInteractionSyncEndPacket> STREAM_CODEC =
+        CustomPacketPayload.codec(
+            (o1, o2) -> {},
+            object -> new AnimalInteractionSyncEndPacket());
 }

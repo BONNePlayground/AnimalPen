@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
@@ -25,7 +26,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -95,12 +95,12 @@ public class VariantScreenSelection extends Screen
 
         this.blockEntityInterface = animalPenEntity;
 
-        ListTag entityList = this.blockEntityInterface.getEntityVariants();
+        List<CompoundTag> entityList = this.blockEntityInterface.getEntityVariants();
 
         if (entityList == null)
         {
             // Avoid null-pointer
-            entityList = new ListTag();
+            entityList = Collections.emptyList();
         }
 
         // initialize variant buttons.
@@ -707,10 +707,10 @@ public class VariantScreenSelection extends Screen
     {
         // Send message to server
         NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
-                this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton)));
+                this.blockEntityInterface.getEntityVariants().get(this.selectedButton)));
         // Update current client gui.
         this.displayEntity.load(
-            this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton));
+            this.blockEntityInterface.getEntityVariants().get(this.selectedButton));
 
         this.selectedButton = -1;
     }

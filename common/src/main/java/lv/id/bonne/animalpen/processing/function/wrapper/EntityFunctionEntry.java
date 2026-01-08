@@ -9,7 +9,6 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,14 +41,14 @@ public final class EntityFunctionEntry
         ItemStack item,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos pos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
         return function.interactPlayer(
             player, hand, item, amount,
-            mob, mobNBT, pos,
+            mob, componentHolder, pos,
             dataKey, dataValue
         );
     }
@@ -61,14 +60,14 @@ public final class EntityFunctionEntry
         ItemStack item,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos pos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
         return function.interactDispenser(
             level, inventory, item, amount,
-            mob, mobNBT, pos,
+            mob, componentHolder, pos,
             dataKey, dataValue
         );
     }
@@ -77,13 +76,13 @@ public final class EntityFunctionEntry
     public boolean processFunction(
         ServerLevel level,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos pos,
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
         return function.processFunction(
-            level, mob, mobNBT, pos,
+            level, mob, componentHolder, pos,
             dataKey, dataValue
         );
     }

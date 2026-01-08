@@ -12,29 +12,33 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
+import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.items.component.StoredMob;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.PlayerInteractionExecutor;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -42,7 +46,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -72,11 +77,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
     @Override
-    public void saveAdditional(CompoundTag tag)
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider)
     {
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, provider);
 
-        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, this.inventory.createTag());
+        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, this.inventory.createTag(provider));
         tag.put(AnimalPenCompoundTags.TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
         tag.putLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, this.displaySize);
 
@@ -86,16 +91,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
     @Override
-    public void load(CompoundTag tag)
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider)
     {
-        super.load(tag);
+        super.loadAdditional(tag, provider);
 
         this.inventory.clearContent();
         this.deathTicker.clear();
 
         if (tag.contains(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_LIST))
         {
-            this.inventory.fromTag(tag.getList(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_COMPOUND));
+            this.inventory.fromTag(tag.getList(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_COMPOUND), provider);
         }
 
         if (tag.contains(AnimalPenCompoundTags.TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
@@ -140,9 +145,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     @NotNull
     @Override
-    public CompoundTag getUpdateTag()
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider)
     {
-        return this.saveWithoutMetadata();
+        return this.saveWithoutMetadata(provider);
     }
 
 
@@ -198,35 +203,34 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         boolean updated = this.getStoredAnimal().
             map(animal ->
             {
-                CompoundTag mobNBT = this.getItemStack().getOrCreateTag();
-                CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-                CompoundTag coolDown = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
-
+                Map<String, Integer> cooldowns = AnimalPenItemHelper.getCooldowns(this.getItemStack());
                 boolean cooldownChange = false;
 
-                Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
+                Set<String> allKeys = new HashSet<>(cooldowns.keySet());
 
                 for (String key : allKeys)
                 {
-                    long time = coolDown.getLong(key);
+                    int time = cooldowns.get(key);
 
                     if (--time > 0)
                     {
-                        coolDown.putLong(key, time);
+                        cooldowns.put(key, time);
                     }
                     else
                     {
-                        coolDown.remove(key);
-                        this.triggerEndFunctions((ServerLevel) this.getLevel(), animal, mobNBT, key);
+                        cooldowns.remove(key);
+                        this.triggerEndFunctions((ServerLevel) this.getLevel(), animal, this.getItemStack(), key);
                     }
 
                     cooldownChange = true;
                 }
 
                 // trigger continuous functions
-                cooldownChange |= this.triggerStartFunctions((ServerLevel) this.getLevel(), animal, mobNBT, coolDown);
+                cooldownChange |= this.triggerStartFunctions((ServerLevel) this.getLevel(), animal, this.getItemStack(), cooldowns);
 
-                animalData.put(AnimalPenCompoundTags.TAG_COOLDOWN, coolDown);
+                this.getItemStack().update(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                    StoredMobData.EMPTY,
+                    data -> StoredMobData.of(data.animalCount(), data.properties(), cooldowns));
 
                 return cooldownChange;
             }).
@@ -273,10 +277,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (this.inventory.isEmpty())
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
-            CompoundTag animalTag =
-                itemInHand.getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
 
-            if (!animalTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+            if (!itemInHand.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
             {
                 return false;
             }
@@ -290,7 +292,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -308,11 +310,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         else
         {
             ItemStack itemInHand = player.getItemInHand(interactionHand);
-            CompoundTag itemTag = itemInHand.getOrCreateTag();
-            CompoundTag animalTag = itemTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
-            CompoundTag animalData = itemTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
 
-            if (!animalTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+            if (!itemInHand.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
             {
                 if (!player.isCrouching())
                 {
@@ -358,14 +357,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     return false;
                 }
 
-                animal.save(animalTag);
-                itemTag.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+                // Set exact mob data
+                itemInHand.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                    this.getItemStack().get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()));
 
-                animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, newCount);
-                itemTag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
-                itemInHand.setTag(itemTag);
+                // Set mob count and compy cooldowns.
+                itemInHand.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                    new StoredMobData(newCount,
+                        new HashMap<>(0),
+                        AnimalPenItemHelper.getCooldowns(this.getItemStack())));
 
-                player.setItemInHand(interactionHand, itemInHand);
                 this.inventory.setChanged();
 
                 AnimalPen.sendDebug("Half the amount of animals in pen");
@@ -376,9 +377,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             {
                 Mob animal = this.getStoredAnimal().orElse(null);
 
-                if (animal == null ||
-                    !animalTag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID).
-                        equals(animal.getType().arch$registryName().toString()))
+                StoredMob storedMob = itemInHand.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+                if ((animal == null) || !animal.getType().equals(storedMob.entityType()))
                 {
                     AnimalPen.sendDebug("Different animals");
 
@@ -392,7 +393,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     return true;
                 }
 
-                long newCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+                long newCount = AnimalPenItemHelper.getMobCount(itemInHand);
 
                 if (newCount <= 0 || !this.updateAnimalCount(newCount))
                 {
@@ -407,20 +408,35 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     AnimalPen.sendDebug("Variants could not be merged");
 
                     this.updateAnimalCount(-1);
-                    animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, 1);
-                    itemTag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
 
-                    itemInHand.setTag(itemTag);
+                    itemInHand.update(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                        StoredMobData.EMPTY,
+                        data -> StoredMobData.of(1, data.properties(), data.cooldowns()));
                 }
                 else
                 {
                     AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
-                    itemInHand.setTag(new CompoundTag());
+                    itemInHand.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+                    StoredMobData removedData = itemInHand.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+                    itemInHand.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+
+                    if (removedData != null && !removedData.cooldowns().isEmpty())
+                    {
+                        Map<String, Integer> cooldowns = AnimalPenItemHelper.getCooldowns(this.getItemStack());
+
+                        // Take the biggest cooldown from both
+                        removedData.cooldowns().forEach((key, value) -> cooldowns.put(key,
+                            Math.max(value, cooldowns.getOrDefault(key, 0))));
+
+                        this.getItemStack().update(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+                            StoredMobData.EMPTY,
+                            data -> StoredMobData.of(data.animalCount(), data.properties(), cooldowns));
+                    }
 
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -567,14 +583,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             player.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
         }
 
-        weapon.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+        weapon.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
 
         this.deathTicker.add(0);
 
         if (this.getAnimalCount() <= 0)
         {
             ItemStack item = this.getItemStack();
-            item.setTag(new CompoundTag());
+            item.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            item.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+            item.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
 
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
@@ -590,7 +608,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         // Set fire-ticks (use fire aspect, to get rid of any stored value before).
         animal.setRemainingFireTicks(fireAspect);
 
-        LootTable lootTable = level.getServer().getLootData().getLootTable(animal.getLootTable());
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(animal.getLootTable());
 
         LootParams.Builder paramsBuilder = new LootParams.Builder((ServerLevel) level).
             withParameter(LootContextParams.ORIGIN, position).
@@ -651,10 +669,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        CompoundTag mobNBT = this.getItemStack().getOrCreateTag();
-
+        ItemStack mobItemStack = this.getItemStack();
         Optional<AnimalInteraction> interactionOptional =
-            AnimalPenInteractionRegistry.matchInteraction(animal, mobNBT, itemInHand);
+            AnimalPenInteractionRegistry.matchInteraction(animal, mobItemStack, itemInHand);
 
         if (interactionOptional.isEmpty())
         {
@@ -662,10 +679,18 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
+        if (!mobItemStack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ||
+            !mobItemStack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        {
+            AnimalPen.sendDebug("Interaction with " + this.getBlockPos() + " cannot be success as data is missing.");
+            return InteractionResult.FAILED;
+        }
+
+        StoredMob storedMob = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+        StoredMobData storedMobData = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
         AnimalInteraction interaction = interactionOptional.get();
-        int animalCount = interaction.normalizeMobCount(
-            mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                getInt(AnimalPenCompoundTags.TAG_AMOUNT));
+        long animalCount = interaction.normalizeMobCount(storedMobData.animalCount());
 
         // Indication data has been changed.
         boolean dataUpdate = false;
@@ -683,7 +708,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         else
         {
             consumedItem = itemConsumer.getConsumedItem(itemInHand);
-            consumedAmount = itemConsumer.calculateConsumption(executor,
+            consumedAmount = (int) itemConsumer.calculateConsumption(executor,
                 consumedItem,
                 animalCount,
                 interaction.even());
@@ -695,7 +720,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        dataUpdate |= interaction.applyCooldown(mobNBT, animalCount);
+        dataUpdate |= interaction.applyCooldown(mobItemStack, animalCount);
 
         List<ItemStack> lootItems = interaction.lootEntry() == null ?
             Collections.emptyList() :
@@ -732,27 +757,25 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             consumedItem,
             consumedAmount,
             animal,
-            mobNBT,
+            mobItemStack,
             this.getBlockPos());
 
         if (dataUpdate)
         {
             AnimalPen.sendDebug("Animal Interaction finished");
 
-            ItemStack item = this.getItemStack();
-
-            CompoundTag tag = new CompoundTag();
-
             if (this.getAnimalCount() <= 0)
             {
-                item.setTag(tag);
-                Block.popResource(serverLevel, this.getBlockPos().above(), item);
+                mobItemStack.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+                mobItemStack.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+                mobItemStack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+
+                Block.popResource(serverLevel, this.getBlockPos().above(), mobItemStack);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 AnimalPen.sendDebug("Dropping empty cage");
             }
             else
             {
-                item.setTag(mobNBT);
                 AnimalPen.sendDebug("Updating cage tag");
                 this.inventory.setChanged();
             }
@@ -768,7 +791,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     /**
      * This method trigger end functions for interaction with given key for given mob.
      */
-    private void triggerEndFunctions(ServerLevel level, Mob mob, CompoundTag mobNBT, String key)
+    private void triggerEndFunctions(ServerLevel level, Mob mob, ItemStack componentHolder, String key)
     {
         AnimalPenInteractionRegistry.getInteractions(mob).stream().
             filter(interaction -> key.equals(interaction.id())).
@@ -780,7 +803,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             {
                 function.id().processFunction(level,
                     mob,
-                    mobNBT,
+                    componentHolder,
                     this.getBlockPos(),
                     function.key(),
                     function.value());
@@ -792,12 +815,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      * This method triggers start functions for interactions without interaction item. It only runs for interactions it
      * can fulfil conditions
      */
-    private boolean triggerStartFunctions(ServerLevel level, Mob mob, CompoundTag mobNBT, CompoundTag newCooldowns)
+    private boolean triggerStartFunctions(ServerLevel level, Mob mob, ItemStack componentHolder, Map<String, Integer> newCooldowns)
     {
         List<AnimalInteraction> interactions = AnimalPenInteractionRegistry.getInteractions(mob).stream().
-            filter(interaction -> !newCooldowns.contains(interaction.id())).
+            filter(interaction -> !newCooldowns.containsKey(interaction.id())).
             filter(interaction -> interaction.ingredient().isEmpty()).
-            filter(interaction -> interaction.matchAllConditions(mobNBT)).
+            filter(interaction -> interaction.matchAllConditions(componentHolder)).
             toList();
 
         boolean anyChanges = false;
@@ -807,12 +830,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // Apply cooldown
             if (interaction.cooldown() != null)
             {
-                int animalCount = mobNBT.
-                    getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                    getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+                long animalCount = AnimalPenItemHelper.getMobCount(componentHolder);
+                int cooldownTime = (int) interaction.cooldown().calculateCooldown(animalCount);
 
-                int cooldownTime = interaction.cooldown().calculateCooldown(animalCount);
-                newCooldowns.putInt(interaction.id(), cooldownTime);
+                newCooldowns.put(interaction.id(), cooldownTime);
+
                 anyChanges = true;
             }
 
@@ -836,7 +858,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             {
                 anyChanges |= function.id().processFunction(level,
                     mob,
-                    mobNBT,
+                    componentHolder,
                     this.getBlockPos(),
                     function.key(),
                     function.value());
@@ -857,11 +879,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @return List of entity variants in cage.
      */
-    public ListTag getEntityVariants()
+    public List<CompoundTag> getEntityVariants()
     {
         return this.getStoredAnimal().
-            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new)).
-            orElseGet(ListTag::new);
+            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack()).orElseGet(Collections::emptyList)).
+            orElseGet(Collections::emptyList);
     }
 
 
@@ -887,9 +909,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
             // Update animal variant in item stack.
             ItemStack itemStack = this.getItemStack();
-            CompoundTag tag = itemStack.getOrCreateTag();
-            tag.put(AnimalPenCompoundTags.TAG_ANIMAL, animalVariant);
-            itemStack.setTag(tag);
+
+            StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                StoredMob.of(storedMob.entityType(), animalVariant));
 
             // Apply data
             this.triggerUpdate();
@@ -897,7 +920,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             if (this.level != null && !this.level.isClientSide())
             {
                 // Trigger update.
-                AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+                NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                         filter(other ->
                             other.distanceToSqr(this.getBlockPos().getX(),
                                 this.getBlockPos().getY(),
@@ -927,7 +950,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (this.level != null && !this.level.isClientSide())
         {
             // Trigger screen Update
-            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                     filter(other ->
                         other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),
@@ -1032,7 +1055,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @return The animal count in pen.
      */
-    public int getAnimalCount()
+    public long getAnimalCount()
     {
         if (!this.validateItemStack())
         {
@@ -1040,22 +1063,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return 0;
         }
 
-        ItemStack itemStack = this.getItemStack();
-
-        if (!itemStack.hasTag())
-        {
-            return 0;
-        }
-
-        // getOrCreate to not write null-pointer check
-        CompoundTag itemStackTag = itemStack.getOrCreateTag();
-
-        if (!itemStackTag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
-        {
-            return 0;
-        }
-
-        return itemStackTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+        return AnimalPenItemHelper.getMobCount(this.getItemStack());
     }
 
 
@@ -1072,22 +1080,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         ItemStack itemStack = this.getItemStack();
 
-        if (!itemStack.hasTag())
+        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
         {
             return false;
         }
 
-        // getOrCreate to not write null-pointer check
-        CompoundTag itemStackTag = itemStack.getOrCreateTag();
-
-        if (!itemStackTag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
-        {
-            // Does not contain any animal pen data.
-            return false;
-        }
-
-        CompoundTag animalData = itemStackTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+        StoredMobData data = itemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        long animalCount = data.animalCount();
 
         if (change < 0 && animalCount + change < 0)
         {
@@ -1101,7 +1100,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return false;
         }
 
-        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + change);
+        itemStack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(animalCount + change, data.properties(), data.cooldowns()));
 
         return true;
     }
@@ -1136,34 +1136,33 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     public Optional<Mob> getStoredAnimal()
     {
-        if (this.storedAnimal == null && !this.getItemStack().isEmpty())
+        if (this.level == null)
         {
-            CompoundTag tag = this.getItemStack().getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
-
-            if (this.level == null ||
-                !tag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-            {
-                return Optional.ofNullable(this.storedAnimal);
-            }
-
-            EntityType.create(tag, this.level).map(entity -> (Mob) entity).
-                ifPresent(animal -> this.storedAnimal = animal);
+            return Optional.ofNullable(this.storedAnimal);
         }
-        else if (this.storedAnimal != null && this.getItemStack().isEmpty())
+        else
         {
-            this.storedAnimal = null;
-        }
-        else if (this.storedAnimal != null)
-        {
-            CompoundTag tag = this.getItemStack().getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
+            ItemStack itemStack = this.getItemStack();
 
-            if (new ResourceLocation(tag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
-                equals(this.storedAnimal.getType().arch$registryName()))
+            if (this.storedAnimal == null && !itemStack.isEmpty())
             {
-                // Load data without removing entity.
-                this.storedAnimal.load(tag);
+                StoredMob customData = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+                if (customData == null)
+                {
+                    return Optional.ofNullable(this.storedAnimal);
+                }
+
+                StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+                Entity entity = storedMob.entityType().create(this.level);
+
+                if (entity instanceof Mob mob)
+                {
+                    mob.load(storedMob.tag());
+                    this.storedAnimal = mob;
+                }
             }
-            else
+            else if (this.storedAnimal != null && itemStack.isEmpty())
             {
                 this.storedAnimal = null;
             }
@@ -1188,21 +1187,25 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     {
         List<Pair<ItemStack[], Component>> textLines = new ArrayList<>();
 
-        CompoundTag tag = this.getItemStack().getTag();
-        CompoundTag cooldown;
-        int animalCount;
+        long animalCount;
+        Map<String, Integer> cooldowns;
+        Map<String, Integer> properties;
 
-        if (tag != null)
+        if (this.getItemStack().has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
         {
-            CompoundTag animalData = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-            cooldown = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
-            animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+            StoredMobData storedMobData =
+                this.getItemStack().get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+            animalCount = storedMobData.animalCount();
+            cooldowns = storedMobData.cooldowns();
+            properties = storedMobData.properties();
         }
         else
         {
-            // Empty tag.
-            cooldown = new CompoundTag();
+            // Should not run into
             animalCount = 0;
+            cooldowns = Collections.emptyMap();
+            properties = Collections.emptyMap();
         }
 
         this.getStoredAnimal().ifPresent(animal ->
@@ -1214,11 +1217,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                         animalInteraction.cooldown().calculateCooldown(animalCount) != 0).
                 forEach(animalInteraction ->
                     {
-                        boolean matchConditions = animalInteraction.matchAllConditions(tag);
+                        boolean matchConditions = animalInteraction.matchAllConditions(this.getItemStack());
 
                         animalInteraction.textLines().forEach(line ->
                         {
-                            boolean containsInCooldown = cooldown.contains(animalInteraction.id());
+                            boolean containsInCooldown = cooldowns.containsKey(animalInteraction.id());
                             boolean shouldExecute = switch (line.visibility())
                             {
                                 case READY -> matchConditions && !containsInCooldown;
@@ -1229,10 +1232,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                             Pair<ItemStack[], Component> textIconPair = shouldExecute ?
                                 line.animalPenGetLine(animalInteraction.ingredient(),
-                                    tag,
+                                    properties,
                                     this.tickCounter,
                                     shortText,
-                                    cooldown.getLong(animalInteraction.id())) :
+                                    cooldowns.getOrDefault(animalInteraction.id(), 0)) :
                                 null;
 
                             if (textIconPair != null)
@@ -1261,18 +1264,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             Collection<AnimalInteraction> interactions =
                 AnimalPenInteractionRegistry.getInteractions(animal);
 
-            CompoundTag tag = this.getItemStack().getOrCreateTag();
-            CompoundTag cooldowns = tag.
-                getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
+            Map<String, Integer> cooldowns = AnimalPenItemHelper.getCooldowns(this.getItemStack());
+
             int returnValue = 1;
 
             for (AnimalInteraction interaction : interactions)
             {
                 if (interaction.redstoneSignal() > 0 &&
                     interaction.redstoneSignal() < 4 &&
-                    interaction.matchAllConditions(tag) &&
-                    !cooldowns.contains(interaction.id()))
+                    interaction.matchAllConditions(this.getItemStack()) &&
+                    !cooldowns.containsKey(interaction.id()))
                 {
                     returnValue |= (1 << interaction.redstoneSignal());
                 }

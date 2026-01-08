@@ -1,24 +1,26 @@
 package lv.id.bonne.animalpen.interaction.model;
 
 
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
-import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
+import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.CustomCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,12 +61,12 @@ public record AnimalInteraction(@NotNull String id,
     /**
      * This method checks if this interaction matches all conditions defined for it to operate.
      *
-     * @param mobNBT The mobNBT tag
+     * @param dataHolder The dataHolder tag
      * @return {@code true} if all conditions allows to run interaction, {@code false} otherwise
      */
-    public boolean matchAllConditions(CompoundTag mobNBT)
+    public boolean matchAllConditions(DataComponentHolder dataHolder)
     {
-        return this.conditions().stream().allMatch(condition -> condition.matchCondition(mobNBT));
+        return this.conditions().stream().allMatch(condition -> condition.matchCondition(dataHolder));
     }
 
 
@@ -74,7 +76,7 @@ public record AnimalInteraction(@NotNull String id,
      * @param mobCount the input animal count
      * @return normalized animal count value
      */
-    public int normalizeMobCount(int mobCount)
+    public long normalizeMobCount(long mobCount)
     {
         if (this.even && (mobCount & 1) == 1)
         {
@@ -92,20 +94,20 @@ public record AnimalInteraction(@NotNull String id,
      * @param mobCount The mob count for cooldown calculations
      * @return {@code true} if cooldown was applied, {@code false} otherwise
      */
-    public boolean applyCooldown(CompoundTag mobNBT, int mobCount)
+    public boolean applyCooldown(ItemStack mobNBT, long mobCount)
     {
         if (this.cooldown == null)
         {
             return false;
         }
 
-        CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        CompoundTag cooldownNBT = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
-        cooldownNBT.putInt(this.id, this.cooldown.calculateCooldown(mobCount));
+        StoredMobData storedMobData = mobNBT.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        Map<String, Integer> cooldowns = storedMobData.cooldowns();
+        cooldowns.put(this.id, (int) this.cooldown.calculateCooldown(mobCount));
 
         // Need to put if it was missing before.
-        animalData.put(AnimalPenCompoundTags.TAG_COOLDOWN, cooldownNBT);
-        mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
+        mobNBT.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(storedMobData.animalCount(), storedMobData.properties(), cooldowns));
 
         return true;
     }
@@ -119,7 +121,7 @@ public record AnimalInteraction(@NotNull String id,
      * @param consumedItem The consumed item
      * @param consumedAmount The amount of consumed items
      * @param mob The mob that is interacted with
-     * @param mobNBT The NBT data of mob
+     * @param componentHolder The data component holder of mob
      * @param position The position of interaction
      * @return {@code true} if functions modified data, {@code false} otherwise.
      */
@@ -128,7 +130,7 @@ public record AnimalInteraction(@NotNull String id,
         ItemStack consumedItem,
         int consumedAmount,
         @NotNull Mob mob,
-        @NotNull CompoundTag mobNBT,
+        @NotNull ItemStack componentHolder,
         @NotNull BlockPos position)
     {
         boolean dataUpdate = false;
@@ -140,7 +142,7 @@ public record AnimalInteraction(@NotNull String id,
                 consumedItem,
                 consumedAmount,
                 mob,
-                mobNBT,
+                componentHolder,
                 position,
                 function.key(),
                 function.value());
@@ -158,7 +160,7 @@ public record AnimalInteraction(@NotNull String id,
      * @param consumedItem The consumed item
      * @param consumedAmount The amount of consumed items
      * @param mob The mob that is interacted with
-     * @param mobNBT The NBT data of mob
+     * @param componentHolder The data component holder of mob
      * @param position The position of interaction
      * @return {@code true} if functions modified data, {@code false} otherwise.
      */
@@ -167,7 +169,7 @@ public record AnimalInteraction(@NotNull String id,
         ItemStack consumedItem,
         int consumedAmount,
         Mob mob,
-        CompoundTag mobNBT,
+        @NotNull ItemStack componentHolder,
         BlockPos position)
     {
         boolean dataUpdate = false;
@@ -179,7 +181,7 @@ public record AnimalInteraction(@NotNull String id,
                 consumedItem,
                 consumedAmount,
                 mob,
-                mobNBT,
+                componentHolder,
                 position,
                 function.key(),
                 function.value());

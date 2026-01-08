@@ -4,7 +4,7 @@ package lv.id.bonne.animalpen.items;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
 
 
 /**

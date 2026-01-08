@@ -7,24 +7,29 @@ package lv.id.bonne.animalpen.interaction.ingredient;
 
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
+import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.List;
 
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 
 
-public interface ConsumerEntry
+public sealed interface ConsumerEntry permits
+    ConsumerEntry.Damage,
+    ConsumerEntry.Replace,
+    ConsumerEntry.Consume,
+    ConsumerEntry.Interact
 {
     ItemStack getConsumedItem(ItemStack itemInHand);
 
 
-    int calculateConsumption(AnimalInteractionExecutor executor,
+    long calculateConsumption(AnimalInteractionExecutor executor,
         ItemStack itemStack,
-        int animalCount,
+        long animalCount,
         boolean evenCount);
 
 
@@ -47,9 +52,9 @@ public interface ConsumerEntry
         }
 
 
-        public int calculateConsumption(AnimalInteractionExecutor executor,
+        public long calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;
@@ -67,9 +72,8 @@ public interface ConsumerEntry
             return itemInHand;
         }
 
-
-        public static final Codec<Damage> CODEC =
-            RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<Damage> CODEC =
+            RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("damage").forGetter(Damage::damage)
             ).apply(instance, Damage::new));
     }
@@ -88,9 +92,9 @@ public interface ConsumerEntry
 
 
         @Override
-        public int calculateConsumption(AnimalInteractionExecutor executor,
+        public long calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;
@@ -121,7 +125,7 @@ public interface ConsumerEntry
         }
 
 
-        public static final Codec<Replace> CODEC = Codec.unit(new Replace());
+        public static final MapCodec<Replace> CODEC = MapCodec.unit(new Replace());
     }
 
 
@@ -140,12 +144,12 @@ public interface ConsumerEntry
 
 
         @Override
-        public int calculateConsumption(AnimalInteractionExecutor executor,
+        public long calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
-            int consumedAmount;
+            long consumedAmount;
 
             if (!this.limitToStack)
             {
@@ -180,8 +184,8 @@ public interface ConsumerEntry
         }
 
 
-        public static final Codec<Consume> CODEC =
-            RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<Consume> CODEC =
+            RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.BOOL.fieldOf("limit_to_stack").forGetter(Consume::limitToStack)
             ).apply(instance, Consume::new));
     }
@@ -200,9 +204,9 @@ public interface ConsumerEntry
 
 
         @Override
-        public int calculateConsumption(AnimalInteractionExecutor executor,
+        public long calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;
@@ -220,45 +224,52 @@ public interface ConsumerEntry
         }
 
 
-        public static final Codec<Interact> CODEC = Codec.unit(new Interact());
+        public static final MapCodec<Interact> CODEC = MapCodec.unit(new Interact());
     }
 
 
-    Codec<ConsumerEntry> CODEC = Codec.STRING.
-        dispatch("type",
-            entry ->
-            {
-                if (entry instanceof Damage)
-                {
-                    return "damage";
-                }
-                else if (entry instanceof Replace)
-                {
-                    return "replace";
-                }
-                else if (entry instanceof Interact)
-                {
-                    return "interact";
-                }
-                else if (entry instanceof Consume)
-                {
-                    return "consume";
-                }
-                else
-                {
-                    // This should never happen
-                    return entry.toString();
-                }
+    enum ConsumerType implements StringRepresentable
+    {
+        DAMAGE("damage"),
+        REPLACE("replace"),
+        INTERACT("interact"),
+        CONSUME("consume");
+
+        ConsumerType(String name)
+        {
+            this.name = name;
+        }
+
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+
+        public static final Codec<ConsumerType> CODEC =
+            StringRepresentable.fromEnum(ConsumerType::values);
+
+        private final String name;
+    }
+
+
+    public static final Codec<ConsumerEntry> CODEC =
+        ConsumerType.CODEC.dispatch(
+            "type",
+            entry -> switch (entry) {
+                case Damage d -> ConsumerType.DAMAGE;
+                case Replace r -> ConsumerType.REPLACE;
+                case Interact i -> ConsumerType.INTERACT;
+                case Consume c -> ConsumerType.CONSUME;
             },
-            type -> switch (type)
-            {
-                case "damage" -> Damage.CODEC;
-                case "interact" -> Interact.CODEC;
-                case "consume" -> Consume.CODEC;
-                case "replace" -> Replace.CODEC;
-                default -> Codec.EMPTY.codec().flatXmap(
-                    empty -> DataResult.error(() -> "Unknown cooldown type: " + type),
-                    entry -> DataResult.error(() -> "Unknown cooldown type: " + type)
-                );
-            });
+            type -> switch (type) {
+                case DAMAGE -> Damage.CODEC;
+                case REPLACE -> Replace.CODEC;
+                case INTERACT -> Interact.CODEC;
+                case CONSUME -> Consume.CODEC;
+            }
+        );
 }

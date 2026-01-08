@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -61,15 +61,17 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
 
     @Override
-    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos,
+    @NotNull
+    protected ItemInteractionResult useItemOn(ItemStack itemStack,
+        BlockState blockState, Level level, BlockPos blockPos,
         Player player, InteractionHand interactionHand, BlockHitResult blockHitResult)
     {
-        InteractionResult result = super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
+        ItemInteractionResult result = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
 
-        if (result == InteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
+        if (result == ItemInteractionResult.FAIL || interactionHand != InteractionHand.MAIN_HAND)
         {
             AnimalPen.sendDebug("Blocked by external forces");
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
 
         ItemStack itemInHand = player.getItemInHand(interactionHand);
@@ -79,32 +81,32 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity &&
                 entity.processContainer(player, interactionHand))
             {
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
             else
             {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
         }
         else
         {
             if (!(level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity entity))
             {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
 
             if (PlayerHooks.isFake(player) && itemInHand.is(this.getAttackToolTag()))
             {
                 this.attack(blockState, level, blockPos, player);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
             else if (entity.interactWithPen(player, interactionHand))
             {
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return ItemInteractionResult.sidedSuccess(level.isClientSide());
             }
             else
             {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
         }
     }
@@ -186,15 +188,10 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
     /**
      * This method indicates if entities can path find over this block.
-     *
-     * @param state The block state.
-     * @param level Level where block is located.
-     * @param pos Position of the block.
-     * @param type The path finder type.
      * @return {@code false} always
      */
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type)
+    protected boolean isPathfindable(BlockState blockState, PathComputationType pathComputationType)
     {
         return false;
     }

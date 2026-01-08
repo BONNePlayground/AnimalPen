@@ -9,12 +9,12 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -38,12 +38,12 @@ public class Feeding implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        this.processData(player.serverLevel(), itemConsumed, amount, mob, mobNBT, blockPos);
+        this.processData(player.serverLevel(), itemConsumed, amount, mob, componentHolder, blockPos);
 
         if (mob instanceof Animal animal)
         {
@@ -75,12 +75,12 @@ public class Feeding implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        this.processData(serverLevel, itemConsumed, amount, mob, mobNBT, blockPos);
+        this.processData(serverLevel, itemConsumed, amount, mob, componentHolder, blockPos);
         return true;
     }
 
@@ -89,12 +89,18 @@ public class Feeding implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos)
     {
-        CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        {
+            AnimalPen.LOGGER.error("FAILED to feed animal as data is missing.");
+            return;
+        }
+
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        long animalCount = storedMobData.animalCount();
+        animalCount += amount / 2;
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
@@ -112,6 +118,7 @@ public class Feeding implements EntityFunction
             1.0F,
             Mth.randomBetween(serverLevel.getRandom(), 0.8F, 1.2F));
 
-        mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
+        componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
+            StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
     }
 }

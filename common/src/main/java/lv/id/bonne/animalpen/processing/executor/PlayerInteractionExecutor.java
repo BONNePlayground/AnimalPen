@@ -8,10 +8,10 @@ import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
@@ -141,8 +141,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     @Override
     public void damageItem(ItemStack item, int amount)
     {
-        item.hurtAndBreak(amount, this.player,
-            p -> p.broadcastBreakEvent(this.hand));
+        item.hurtAndBreak(amount, this.player, this.hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
     }
 
 
@@ -151,7 +150,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
         ItemStack consumedItem,
         int consumedAmount,
         Mob animal,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos)
     {
         return interaction.triggerFunctions(this.player,
@@ -159,7 +158,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
             consumedItem,
             consumedAmount,
             animal,
-            mobNBT,
+            componentHolder,
             blockPos);
     }
 

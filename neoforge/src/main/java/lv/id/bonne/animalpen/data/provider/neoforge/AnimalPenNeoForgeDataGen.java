@@ -1,4 +1,4 @@
-package lv.id.bonne.animalpen.data.provider.forge;
+package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
 import java.util.concurrent.CompletableFuture;
@@ -8,13 +8,13 @@ import lv.id.bonne.animalpen.data.provider.AnimalInteractionProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-public class AnimalPenForgeDataGen
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+public class AnimalPenNeoForgeDataGen
 {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event)
@@ -25,24 +25,24 @@ public class AnimalPenForgeDataGen
 
         generator.addProvider(event.includeServer(), new AnimalInteractionProvider(output, lookupProvider));
 
-        ForgeModBlockTagProvider blockTags = new ForgeModBlockTagProvider(output,
+        NeoForgeModBlockTagProvider blockTags = new NeoForgeModBlockTagProvider(output,
             lookupProvider,
             AnimalPen.MOD_ID,
             event.getExistingFileHelper());
 
         generator.addProvider(event.includeServer(), blockTags);
-        generator.addProvider(event.includeServer(), new ForgeModItemTagProvider(output,
+        generator.addProvider(event.includeServer(), new NeoForgeModItemTagProvider(output,
             lookupProvider,
             blockTags,
             AnimalPen.MOD_ID,
             event.getExistingFileHelper()));
-        generator.addProvider(event.includeServer(), new ForgeModEntityTypeTagProvider(output,
+        generator.addProvider(event.includeServer(), new NeoForgeModEntityTypeTagProvider(output,
             lookupProvider,
             AnimalPen.MOD_ID,
             event.getExistingFileHelper()));
 
-        generator.addProvider(event.includeServer(), new ForgeModRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new NeoForgeModRecipeProvider(output, lookupProvider));
 
-        generator.addProvider(event.includeServer(), new ForgeModLootTableProvider(output));
+        generator.addProvider(event.includeServer(), new NeoForgeModLootTableProvider(output, lookupProvider));
     }
 }

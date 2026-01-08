@@ -8,18 +8,20 @@ package lv.id.bonne.animalpen.util;
 
 
 import com.google.common.collect.Maps;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.Util;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 
 public class AnimalPenItemHelper
@@ -27,7 +29,7 @@ public class AnimalPenItemHelper
     /**
      * This method returns flower effect if given item stack has one.
      */
-    public static Optional<List<SuspiciousEffectHolder.EffectEntry>> getEffectFromItemStack(ItemStack itemStack)
+    public static Optional<SuspiciousStewEffects> getEffectFromItemStack(ItemStack itemStack)
     {
         Item item = itemStack.getItem();
 
@@ -84,6 +86,28 @@ public class AnimalPenItemHelper
     {
         return itemTag(new ResourceLocation(value));
     }
+
+
+    /**
+     * This method returns stored cooldowns from given data component holder.
+     * @param componentHolder - the data component holder.
+     * @return Map of stored cooldowns.
+     */
+    public static Map<String, Integer> getCooldowns(DataComponentHolder componentHolder)
+    {
+        return componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ?
+            componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()).cooldowns() :
+            Collections.emptyMap();
+    }
+
+
+    public static long getMobCount(DataComponentHolder componentHolder)
+    {
+        return componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ?
+            componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()).animalCount() :
+            0;
+    }
+
 
     /**
      * This map stores dye color link to a proper wool item.

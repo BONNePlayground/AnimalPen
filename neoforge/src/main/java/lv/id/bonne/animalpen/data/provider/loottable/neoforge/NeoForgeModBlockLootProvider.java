@@ -1,4 +1,4 @@
-package lv.id.bonne.animalpen.data.provider.loottable.forge;
+package lv.id.bonne.animalpen.data.provider.loottable.neoforge;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -10,9 +10,9 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 
 
-public class ForgeModBlockLootProvider extends BlockLootSubProvider implements ModBlockLootProvider
+public class NeoForgeModBlockLootProvider extends BlockLootSubProvider implements ModBlockLootProvider
 {
-    public ForgeModBlockLootProvider()
+    public NeoForgeModBlockLootProvider()
     {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags());
     }

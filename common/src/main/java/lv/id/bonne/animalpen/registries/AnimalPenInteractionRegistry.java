@@ -4,9 +4,9 @@ package lv.id.bonne.animalpen.registries;
 import java.util.*;
 
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -78,11 +78,11 @@ public class AnimalPenInteractionRegistry
      * This method returns first interaction that matches given mob with given item in hand.
      *
      * @param mob The mob that is interacted
-     * @param mobNBT The item stack Compound Tag
+     * @param componentHolder the component data holder.
      * @param itemInHand The interaction item
      * @return Optional of AnimalInteraction or Optional empty.
      */
-    public static Optional<AnimalInteraction> matchInteraction(Mob mob, CompoundTag mobNBT, ItemStack itemInHand)
+    public static Optional<AnimalInteraction> matchInteraction(Mob mob, DataComponentHolder componentHolder, ItemStack itemInHand)
     {
         ResourceKey<EntityType<?>> key =
             BuiltInRegistries.ENTITY_TYPE.getResourceKey(mob.getType()).orElseThrow();
@@ -92,16 +92,14 @@ public class AnimalPenInteractionRegistry
             return Optional.empty();
         }
 
-        CompoundTag cooldowns = mobNBT.
-            getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-            getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
+        Map<String, Integer> cooldowns = AnimalPenItemHelper.getCooldowns(componentHolder);
 
         List<AnimalInteraction> interactions = DATA.get(key);
 
         return interactions.stream().
-            filter(interaction -> !cooldowns.contains(interaction.id())).
+            filter(interaction -> !cooldowns.containsKey(interaction.id())).
             filter(interaction -> interaction.ingredient().test(itemInHand)).
-            filter(interaction -> interaction.matchAllConditions(mobNBT)).
+            filter(interaction -> interaction.matchAllConditions(componentHolder)).
             findFirst();
     }
 

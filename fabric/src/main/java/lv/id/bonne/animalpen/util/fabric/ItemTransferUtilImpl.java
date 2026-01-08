@@ -95,7 +95,7 @@ public class ItemTransferUtilImpl
                 container.setItem(i, remaining.copy());
                 remaining = ItemStack.EMPTY;
             }
-            else if (ItemStack.isSameItemSameTags(slotStack, remaining))
+            else if (ItemStack.isSameItemSameComponents(slotStack, remaining))
             {
                 int maxStackSize = Math.min(container.getMaxStackSize(), slotStack.getMaxStackSize());
                 int canInsert = maxStackSize - slotStack.getCount();

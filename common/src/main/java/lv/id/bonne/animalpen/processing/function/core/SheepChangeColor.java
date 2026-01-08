@@ -8,8 +8,9 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -33,23 +34,12 @@ public class SheepChangeColor implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
     {
-        if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
-        {
-            sheep.setColor(dye.getDyeColor());
-
-            CompoundTag animalTag = new CompoundTag();
-            mob.save(animalTag);
-            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
-
-            return true;
-        }
-
-        return false;
+        return this.changeSheepColor(itemConsumed, mob, componentHolder);
     }
 
 
@@ -59,18 +49,28 @@ public class SheepChangeColor implements EntityFunction
         ItemStack itemConsumed,
         int amount,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
+    {
+        return this.changeSheepColor(itemConsumed, mob, componentHolder);
+    }
+
+
+    private boolean changeSheepColor(ItemStack itemConsumed, Mob mob, ItemStack componentHolder)
     {
         if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
         {
             sheep.setColor(dye.getDyeColor());
 
+            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
             CompoundTag animalTag = new CompoundTag();
             mob.save(animalTag);
-            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
+            componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                StoredMob.of(storedMob.entityType(), animalTag));
 
             return true;
         }
