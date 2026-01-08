@@ -16,18 +16,20 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
+import lv.id.bonne.animalpen.blocks.renderer.AviaryRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
-import lv.id.bonne.animalpen.network.packets.AnimalFoodRegistryData;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEndPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEntityPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncStartPacket;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
 
@@ -39,11 +41,14 @@ public class AnimalPenClient
             context -> new AnimalPenRenderer());
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get(),
             context -> new AquariumRenderer());
+        BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
+            context -> new AviaryRenderer());
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
+        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AVIARY.get());
 
-        ItemPropertiesRegistry.registerGeneric(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "filled_cage"),
+        ItemPropertiesRegistry.registerGeneric(AnimalPen.resourceOf("filled_cage"),
             ((itemStack, clientLevel, livingEntity, i) ->
-                itemStack.has(DataComponents.ENTITY_DATA) ? 1.0f : 0.0f));
+                itemStack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) ? 1.0f : 0.0f));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 
@@ -56,7 +61,7 @@ public class AnimalPenClient
                 return EventResult.pass();
             }
 
-            if (!(player.level().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
+            if (!(player.level().getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity blockEntity))
             {
                 return EventResult.pass();
             }
@@ -83,9 +88,19 @@ public class AnimalPenClient
         });
 
         NetworkManager.registerReceiver(NetworkManager.Side.S2C,
-            AnimalFoodRegistryData.ID,
-            AnimalFoodRegistryData.STREAM_CODEC,
-            AnimalFoodRegistryData::handle);
+            AnimalInteractionSyncStartPacket.ID,
+            AnimalInteractionSyncStartPacket.STREAM_CODEC,
+            AnimalInteractionSyncStartPacket::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            AnimalInteractionSyncEntityPacket.ID,
+            AnimalInteractionSyncEntityPacket.STREAM_CODEC,
+            AnimalInteractionSyncEntityPacket::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            AnimalInteractionSyncEndPacket.ID,
+            AnimalInteractionSyncEndPacket.STREAM_CODEC,
+            AnimalInteractionSyncEndPacket::handle);
 
         NetworkManager.registerReceiver(NetworkManager.Side.S2C,
             UpdateVariantScreenData.ID,
