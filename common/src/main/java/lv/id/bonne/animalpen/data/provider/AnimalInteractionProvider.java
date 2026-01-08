@@ -66,6 +66,7 @@ public class AnimalInteractionProvider implements DataProvider
         this.generateSheep(cache);
         this.generateTurtle(cache);
         this.generateFrog(cache);
+        this.generateAllay(cache);
 
         // Fishes
         this.generateFish(cache, EntityType.COD, Items.COD_BUCKET);
@@ -148,7 +149,6 @@ public class AnimalInteractionProvider implements DataProvider
         this.generateAmbient(cache, EntityType.BAT, SoundEvents.BAT_AMBIENT);
         this.generateAmbient(cache, EntityType.PARROT, SoundEvents.PARROT_AMBIENT);
         this.generateAmbient(cache, EntityType.POLAR_BEAR, SoundEvents.POLAR_BEAR_AMBIENT);
-        this.generateAmbient(cache, EntityType.ALLAY, SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM);
     }
 
 
@@ -717,6 +717,38 @@ public class AnimalInteractionProvider implements DataProvider
             getOrThrow(false, IllegalStateException::new);
 
         Path file = this.pathProvider.json(EntityType.FROG.arch$registryName());
+        Files.createDirectories(file.getParent());
+        DataProvider.saveStable(cache, json, file);
+    }
+
+
+    private void generateAllay(CachedOutput cache) throws IOException
+    {
+        List<AnimalInteraction> interactions = new ArrayList<>(5);
+
+        // Food
+        CustomIngredient food = CustomIngredient.of(Items.AMETHYST_SHARD);
+
+        interactions.add(AnimalInteractionBuilder.create("feeding").
+            ingredient(food).
+            even(true).
+            consume(new ConsumerEntry.Consume(true)).
+            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.FEEDING.get())).
+            cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
+            textLines(TextEntry.ready("display.animal_pen.food_ready", food)).
+            textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
+            sound(SoundEvents.AMETHYST_BLOCK_CHIME.getLocation()).
+            redstoneBit(1).
+            build());
+
+        // ambient
+        interactions.add(this.generateAmbientSound(SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM));
+
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.ALLAY, interactions)).
+            getOrThrow(false, IllegalStateException::new);
+
+        Path file = this.pathProvider.json(EntityType.ALLAY.arch$registryName());
         Files.createDirectories(file.getParent());
         DataProvider.saveStable(cache, json, file);
     }
