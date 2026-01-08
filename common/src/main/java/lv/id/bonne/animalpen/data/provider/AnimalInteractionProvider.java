@@ -23,6 +23,9 @@ import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteractionBuilder;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntryVisibility;
+import lv.id.bonne.animalpen.interaction.value.BoolValue;
+import lv.id.bonne.animalpen.interaction.value.IntValue;
+import lv.id.bonne.animalpen.interaction.value.StringValue;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -173,10 +176,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(food).
             even(true).
             consume(new ConsumerEntry.Consume(stackLimit)).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
-                Operator.GTE,
-                AnimalPenCompoundTags.TAG_AMOUNT,
-                2)).
+            conditions(new ConditionEntry.AmountCondition(Operator.GTE, 2)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.FEEDING.get())).
             finishFunctions(finishFunctions).
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
@@ -309,10 +309,9 @@ public class AnimalInteractionProvider implements DataProvider
                 CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/honeycomb"))).
             consume(new ConsumerEntry.Damage(1)).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
+            conditions(new ConditionEntry.PropertiesCondition(AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 Operator.GTE,
-                AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
-                5)).
+                new IntValue(5))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
@@ -331,10 +330,9 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.GLASS_BOTTLE)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/glass_bottle/honey_bottle"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
+            conditions(new ConditionEntry.PropertiesCondition(AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 Operator.GTE,
-                AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
-                5)).
+                new IntValue(5))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 -5)).
@@ -351,10 +349,9 @@ public class AnimalInteractionProvider implements DataProvider
         // Pollen collector
         interactions.add(AnimalInteractionBuilder.create("pollen").
             sound(SoundEvents.BEEHIVE_WORK.getLocation()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL_DATA,
+            conditions(new ConditionEntry.PropertiesCondition(AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
                 Operator.LT,
-                AnimalPenCompoundTags.TAG_POLLEN_LEVEL,
-                10)).
+                new IntValue(10))).
             finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
                 AnimalPenCompoundTags.TAG_POLLEN_LEVEL)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.INCREMENT_KEY.get(),
@@ -438,7 +435,7 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BOWL)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/mushroom_stew"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
+            conditions(new ConditionEntry.MobCondition("EffectId", Operator.HAS, new BoolValue(false))).
             sound(SoundEvents.MOOSHROOM_MILK.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.MUSHROOM_STEW))).
             build());
@@ -446,8 +443,8 @@ public class AnimalInteractionProvider implements DataProvider
             ingredient(CustomIngredient.of(Items.BOWL)).
             lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bowl/suspicious_stew"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
+            conditions(new ConditionEntry.MobCondition("EffectId", Operator.HAS, new BoolValue(true))).
+            conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_REMOVE_EFFECT.get())).
             sound(SoundEvents.MOOSHROOM_MILK_SUSPICIOUSLY.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
@@ -456,16 +453,16 @@ public class AnimalInteractionProvider implements DataProvider
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
             consume(new ConsumerEntry.Replace()).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", false)).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
+            conditions(new ConditionEntry.MobCondition("EffectId", Operator.HAS, new BoolValue(false))).
+            conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_SET_EFFECT.get())).
             sound(SoundEvents.MOOSHROOM_EAT.getLocation()).
             textLines(TextEntry.ready("display.animal_pen.apply_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
             ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.HAS, "EffectId", true)).
-            conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.MATCH, "Type", "brown")).
+            conditions(new ConditionEntry.MobCondition("EffectId", Operator.HAS, new BoolValue(true))).
+            conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
             build());
         // ambient
@@ -527,7 +524,7 @@ public class AnimalInteractionProvider implements DataProvider
                     CustomIngredient.of(AnimalPenTags.FORGE_SHEARS),
                     CustomIngredient.of(AnimalPenTags.COMMON_SHEARS))).
                 lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/shear/wool"), 320, true)).
-                conditions(ConditionEntry.of(AnimalPenCompoundTags.TAG_ANIMAL, Operator.EQ, "Color", value.getId())).
+                conditions(new ConditionEntry.MobCondition("Color", Operator.EQ, new IntValue(value.getId()))).
                 consume(new ConsumerEntry.Damage(1)).
                 cooldown(new CooldownEntry.Static(1200)).
                 sound(SoundEvents.SHEEP_SHEAR.getLocation()).

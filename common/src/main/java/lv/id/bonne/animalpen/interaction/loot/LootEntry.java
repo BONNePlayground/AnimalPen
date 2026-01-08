@@ -46,7 +46,8 @@ public record LootEntry(ResourceLocation lootTable, int dropLimit, boolean perEn
     public List<ItemStack> processLootTable(ServerLevel serverLevel,
         Mob animal,
         BlockPos blockPos,
-        int animalCount)
+        long animalCount,
+        int consumedAmount)
     {
         int itemCount = this.dropLimit();
 
@@ -57,7 +58,7 @@ public record LootEntry(ResourceLocation lootTable, int dropLimit, boolean perEn
             create(LootContextParamSets.GIFT);
 
         List<ItemStack> itemStackList = new ArrayList<>();
-        int rollCount = this.perEntity() ? animalCount : 1;
+        long rollCount = this.perEntity() ? animalCount : consumedAmount;
 
         while (itemCount > 0 && rollCount-- > 0)
         {
