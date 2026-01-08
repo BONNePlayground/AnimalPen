@@ -778,7 +778,8 @@ public class AnimalInteractionProvider implements DataProvider
         interactions.add(this.generateAmbientSound(SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM));
 
         JsonElement json = AnimalInteractionEntry.CODEC.
-            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(EntityType.ALLAY, interactions)).
+            encodeStart(JsonOps.INSTANCE,
+                AnimalInteractionEntry.of(EntityType.ALLAY.builtInRegistryHolder().key(), interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = this.pathProvider.json(EntityType.ALLAY.arch$registryName());
