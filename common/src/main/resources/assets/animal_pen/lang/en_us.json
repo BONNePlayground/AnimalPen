@@ -109,6 +109,8 @@
   "gui.animal_pen.variant_selection_screen.configure.save": "Save",
   "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel",
 
+  "network.animal_pen.missing_entities_form_server": "Could not receive all mob entries from server. Try reconnect.",
+
   "title.animal_pen.config": "Animal Pen Mod Configuration",
   "category.animal_pen.general": "Client Settings",
   "category.animal_pen.animal_pen": "Animal Pen Settings",
