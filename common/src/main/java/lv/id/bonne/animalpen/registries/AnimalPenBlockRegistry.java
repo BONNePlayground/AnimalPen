@@ -16,6 +16,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
+import lv.id.bonne.animalpen.blocks.AviaryBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +38,7 @@ public class AnimalPenBlockRegistry
         REGISTRY.register();
     }
 
+
     private static <T extends Block> RegistrySupplier<T> registerBlock(String name, Supplier<T> block)
     {
         RegistrySupplier<T> toReturn = REGISTRY.register(name, block);
@@ -44,21 +46,25 @@ public class AnimalPenBlockRegistry
         return toReturn;
     }
 
+
     private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
     {
         return AnimalPensItemRegistry.REGISTRY.register(name, () ->
             new BlockItem(block.get(),
                 new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).
                     setId(ResourceKey.create(Registries.ITEM,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, name)))));
+                        AnimalPen.resourceOf(name)))));
     }
 
 
     /**
      * This method registers animal pen with specified wood type
+     *
      * @param woodType that is registered.
      */
-    public static void registerPen(WoodType woodType, MapColor mapColor, FeatureFlag... flags)
+    public static void registerPen(WoodType woodType,
+        MapColor mapColor,
+        FeatureFlag... flags)
     {
         String woodName;
 
@@ -82,7 +88,7 @@ public class AnimalPenBlockRegistry
                     noOcclusion().
                     requiredFeatures(flags).
                     setId(ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_pen_" + woodName)))
+                        AnimalPen.resourceOf("animal_pen_" + woodName)))
             ));
 
         ANIMAL_PENS.put(woodType, block);
@@ -104,11 +110,23 @@ public class AnimalPenBlockRegistry
                 sound(SoundType.GLASS).
                 noOcclusion().
                 setId(ResourceKey.create(Registries.BLOCK,
-                    ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "aquarium_block")))
+                    AnimalPen.resourceOf("aquarium_block")))
         )
     );
 
-    static {
+    public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
+        () -> new AviaryBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
+                strength(1.0f).
+                sound(SoundType.GLASS).
+                noOcclusion().
+                setId(ResourceKey.create(Registries.BLOCK,
+                    AnimalPen.resourceOf("aviary")))
+        )
+    );
+
+    static
+    {
         registerPen(WoodType.OAK, MapColor.WOOD);
         registerPen(WoodType.SPRUCE,  MapColor.PODZOL);
         registerPen(WoodType.BIRCH, MapColor.SAND);
