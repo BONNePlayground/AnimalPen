@@ -708,7 +708,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         List<ItemStack> lootItems = interaction.lootEntry() == null ?
             Collections.emptyList() :
-            interaction.lootEntry().processLootTable(serverLevel, animal, this.getBlockPos(), animalCount);
+            interaction.lootEntry().processLootTable(serverLevel, animal, this.getBlockPos(), animalCount, consumedAmount);
 
         executor.triggerItemUse(animal, itemInHand, consumedAmount);
 

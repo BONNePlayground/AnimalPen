@@ -60,6 +60,7 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.TADPOLE).
             add(EntityType.TURTLE);
         this.modTag(AnimalPenTags.BIRD_CATCHER_PICKABLE).
+            add(EntityType.ALLAY).
             add(EntityType.BEE).
             add(EntityType.BAT).
             add(EntityType.PARROT);
