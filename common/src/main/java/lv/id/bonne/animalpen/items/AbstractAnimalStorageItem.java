@@ -9,6 +9,7 @@ import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
@@ -255,7 +256,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         }
 
         // 2. Sneak + top click = release entity
-        if (player.isCrouching() && context.getClickedFace() == Direction.UP)
+        if (player.isCrouching())
         {
             return this.tryRelease(context);
         }
@@ -320,9 +321,11 @@ public abstract class AbstractAnimalStorageItem extends Item
         ServerLevel level = (ServerLevel) context.getLevel();
 
         ListTag pos = new ListTag();
-        pos.add(DoubleTag.valueOf(context.getClickedPos().getX() + 0.5));
-        pos.add(DoubleTag.valueOf(context.getClickedPos().getY() + 1));
-        pos.add(DoubleTag.valueOf(context.getClickedPos().getZ() + 0.5));
+        BlockPos releaseBlock = context.getClickedPos().relative(context.getClickedFace());
+
+        pos.add(DoubleTag.valueOf(releaseBlock.getX() + 0.5));
+        pos.add(DoubleTag.valueOf(releaseBlock.getY()));
+        pos.add(DoubleTag.valueOf(releaseBlock.getZ() + 0.5));
 
         animal.put("Pos", pos);
         animal.remove("UUID");
