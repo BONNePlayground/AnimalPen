@@ -164,14 +164,8 @@ public abstract class AbstractAnimalStorageItem extends Item
             }
 
             // Target animal itself
-            if (compoundTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
-            {
-                String entityId = compoundTag.getStringOr(AnimalPenCompoundTags.TAG_ENTITY_ID, "");
-                BuiltInRegistries.ENTITY_TYPE.get(Identifier.tryParse(entityId)).
-                    ifPresent(entityType ->
-                        itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
-                            StoredMob.of(entityType.value(), compoundTag)));
-            }
+            itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                StoredMob.of(customData.type(), compoundTag));
 
             itemStack.remove(DataComponents.ENTITY_DATA);
         }
