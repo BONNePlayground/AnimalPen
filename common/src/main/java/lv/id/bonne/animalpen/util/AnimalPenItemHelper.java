@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
-import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.ItemLike;
@@ -73,7 +73,7 @@ public class AnimalPenItemHelper
     /**
      * Item tag accessor from resource location value used in DataGen.
      */
-    public static TagKey<Item> itemTag(ResourceLocation value)
+    public static TagKey<Item> itemTag(Identifier value)
     {
         return TagKey.create(Registries.ITEM, value);
     }
@@ -84,7 +84,7 @@ public class AnimalPenItemHelper
      */
     public static TagKey<Item> itemTag(String value)
     {
-        return itemTag(ResourceLocation.tryParse(value));
+        return itemTag(Identifier.tryParse(value));
     }
 
 

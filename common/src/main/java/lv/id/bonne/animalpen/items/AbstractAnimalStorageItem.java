@@ -24,13 +24,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
+import net.minecraft.world.entity.animal.equine.AbstractChestedHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -123,7 +123,7 @@ public abstract class AbstractAnimalStorageItem extends Item
                 CompoundTag animal = compoundTag.getCompoundOrEmpty(AnimalPenCompoundTags.TAG_ANIMAL);
                 String entityId = animal.getStringOr(AnimalPenCompoundTags.TAG_ENTITY_ID, "");
 
-                BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId)).
+                BuiltInRegistries.ENTITY_TYPE.get(Identifier.tryParse(entityId)).
                     ifPresent(entityType ->
                         itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                             StoredMob.of(entityType.value(), animal)));
@@ -167,7 +167,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
             {
                 String entityId = compoundTag.getStringOr(AnimalPenCompoundTags.TAG_ENTITY_ID, "");
-                BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId)).
+                BuiltInRegistries.ENTITY_TYPE.get(Identifier.tryParse(entityId)).
                     ifPresent(entityType ->
                         itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                             StoredMob.of(entityType.value(), compoundTag)));

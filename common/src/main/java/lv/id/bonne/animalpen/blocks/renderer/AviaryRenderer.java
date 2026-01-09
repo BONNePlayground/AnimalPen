@@ -12,7 +12,7 @@ import lv.id.bonne.animalpen.blocks.entities.AviaryTileEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.phys.Vec3;
 
 

@@ -13,7 +13,7 @@ import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.textentry.TextEntry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 
@@ -163,7 +163,7 @@ public class AnimalInteractionBuilder
      * @param sound the sound
      * @return the animal interaction builder
      */
-    public AnimalInteractionBuilder sound(ResourceLocation sound)
+    public AnimalInteractionBuilder sound(Identifier sound)
     {
         this.sound = sound;
         return this;
@@ -272,7 +272,7 @@ public class AnimalInteractionBuilder
     /**
      * The sound that is played when interaction happens
      */
-    private ResourceLocation sound = null;
+    private Identifier sound = null;
 
     /**
      * The redstone signal bit value for current interaction 0-4

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -99,11 +99,11 @@ public final class CustomIngredient implements Predicate<ItemStack>
                 if (str.startsWith("#"))
                 {
                     return new TagValue(TagKey.create(Registries.ITEM,
-                        ResourceLocation.tryParse(str.substring(1))));
+                        Identifier.tryParse(str.substring(1))));
                 }
                 else
                 {
-                    return new ItemValue(BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(str)).
+                    return new ItemValue(BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(str)).
                         map(Item::getDefaultInstance).
                         orElse(ItemStack.EMPTY));
                 }

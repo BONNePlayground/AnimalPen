@@ -36,6 +36,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -86,53 +87,53 @@ public class AnimalInteractionProvider implements DataProvider
 
             // Only food animals
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.CAT,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("cat_food")),
+                CustomIngredient.of(ItemTags.CAT_FOOD),
                 SoundEvents.CAT_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DOLPHIN,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+                CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
                 SoundEvents.DOLPHIN_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.FOX,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("fox_food")),
+                CustomIngredient.of(ItemTags.FOX_FOOD),
                 SoundEvents.FOX_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.GLOW_SQUID,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+                CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
                 SoundEvents.GLOW_SQUID_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.HOGLIN,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("hoglin_food")),
+                CustomIngredient.of(ItemTags.HOGLIN_FOOD),
                 SoundEvents.HOGLIN_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.LLAMA,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("llama_food")),
+                CustomIngredient.of(ItemTags.LLAMA_FOOD),
                 SoundEvents.LLAMA_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.OCELOT,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("ocelot_food")),
+                CustomIngredient.of(ItemTags.OCELOT_FOOD),
                 SoundEvents.OCELOT_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.PANDA,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("panda_food")),
+                CustomIngredient.of(ItemTags.PANDA_FOOD),
                 SoundEvents.PANDA_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.PIG,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("pig_food")),
+                CustomIngredient.of(ItemTags.PIG_FOOD),
                 SoundEvents.PIG_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.RABBIT,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("rabbit_food")),
+                CustomIngredient.of(ItemTags.RABBIT_FOOD),
                 SoundEvents.RABBIT_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.SQUID,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("fishes")),
+                CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
                 SoundEvents.SQUID_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.STRIDER,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("strider_food")),
+                CustomIngredient.of(ItemTags.STRIDER_FOOD),
                 SoundEvents.STRIDER_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.TRADER_LLAMA,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("llama_food")),
+                CustomIngredient.of(ItemTags.LLAMA_FOOD),
                 SoundEvents.LLAMA_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.PARROT,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("parrot_food")),
+                CustomIngredient.of(ItemTags.PARROT_FOOD),
                 SoundEvents.PARROT_AMBIENT));
 
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.WOLF,
-                CustomIngredient.merge(CustomIngredient.of(AnimalPenItemHelper.itemTag("wolf_food"))),
+                CustomIngredient.merge(CustomIngredient.of(ItemTags.WOLF_FOOD)),
                 SoundEvents.WOLF_SOUNDS.values().iterator().next().ambientSound().value()));
 
-            CustomIngredient horseFood = CustomIngredient.of(AnimalPenItemHelper.itemTag("horse_food"));
+            CustomIngredient horseFood = CustomIngredient.of(ItemTags.HORSE_FOOD);
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DONKEY, horseFood,
                 SoundEvents.DONKEY_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.HORSE, horseFood,
@@ -141,13 +142,29 @@ public class AnimalInteractionProvider implements DataProvider
                 SoundEvents.MULE_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.SKELETON_HORSE, horseFood,
                 SoundEvents.SKELETON_HORSE_AMBIENT));
-            featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.ZOMBIE_HORSE, horseFood,
+            
+            featureList.add(this.generateWithFoodAndAmbient(cache, 
+                EntityType.ZOMBIE_HORSE,
+                CustomIngredient.of(ItemTags.ZOMBIE_HORSE_FOOD),
                 SoundEvents.ZOMBIE_HORSE_AMBIENT));
 
             featureList.add(this.generateWithFoodAndAmbient(cache,
                 EntityType.CAMEL,
-                CustomIngredient.of(AnimalPenItemHelper.itemTag("camel_food")),
+                CustomIngredient.of(ItemTags.CAMEL_FOOD),
                 SoundEvents.CAMEL_AMBIENT));
+            featureList.add(this.generateWithFoodAndAmbient(cache,
+                EntityType.CAMEL_HUSK,
+                CustomIngredient.of(ItemTags.CAMEL_HUSK_FOOD),
+                SoundEvents.CAMEL_HUSK_AMBIENT));
+
+            featureList.add(this.generateWithFoodAndAmbient(cache,
+                EntityType.NAUTILUS,
+                CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                SoundEvents.NAUTILUS_AMBIENT));
+            featureList.add(this.generateWithFoodAndAmbient(cache,
+                EntityType.ZOMBIE_NAUTILUS,
+                CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                SoundEvents.ZOMBIE_NAUTILUS_AMBIENT));
 
             // Entities with only ambient
             featureList.add(this.generateAmbient(cache, EntityType.BAT, SoundEvents.BAT_AMBIENT));
@@ -248,7 +265,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(3);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_food")),
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.AXOLOTL_FOOD),
             false));
         // Water Pickup
         interactions.add(AnimalInteractionBuilder.create("water_bucket_pickup").
@@ -276,12 +293,12 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("chicken_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.CHICKEN_FOOD)));
 
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootEntry(LootEntry.of(BuiltInLootTables.CHICKEN_LAY.location(), 80, true)).
+            lootEntry(LootEntry.of(BuiltInLootTables.CHICKEN_LAY.identifier(), 80, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.CHICKEN_EGG)).
             redstoneBit(2).
@@ -308,7 +325,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("bee_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.BEE_FOOD)));
 
         // Shears
         interactions.add(AnimalInteractionBuilder.create("shearing").
@@ -400,7 +417,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("cow_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -430,7 +447,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("cow_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -460,7 +477,7 @@ public class AnimalInteractionProvider implements DataProvider
             build());
         // Flowers
         interactions.add(AnimalInteractionBuilder.create("flower").
-            ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
+            ingredient(CustomIngredient.of(ItemTags.SMALL_FLOWERS)).
             consume(new ConsumerEntry.Replace()).
             conditions(new ConditionEntry.MobCondition("stew_effects", Operator.HAS, new BoolValue(false))).
             conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
@@ -469,7 +486,7 @@ public class AnimalInteractionProvider implements DataProvider
             textLines(TextEntry.ready("display.animal_pen.apply_ready", CustomIngredient.of(Items.SUSPICIOUS_STEW))).
             build());
         interactions.add(AnimalInteractionBuilder.create("flower").
-            ingredient(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))).
+            ingredient(CustomIngredient.of(ItemTags.SMALL_FLOWERS)).
             conditions(new ConditionEntry.MobCondition("stew_effects", Operator.HAS, new BoolValue(true))).
             conditions(new ConditionEntry.MobCondition("Type", Operator.MATCH, new StringValue("brown"))).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
@@ -493,7 +510,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("goat_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.GOAT_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -525,7 +542,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(18);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("sheep_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.SHEEP_FOOD)));
 
         // Shearing
         for (DyeColor value : DyeColor.values())
@@ -592,7 +609,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("turtle_food")),
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.TURTLE_FOOD),
             FunctionKey.of(AnimalPenFunctionRegistry.TURTLE_DROP_SCUTE.get())));
 
         // Egg Dropping
@@ -676,7 +693,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(5);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("frog_food"))));
+        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.FROG_FOOD)));
 
         // Froglight
         interactions.add(AnimalInteractionBuilder.create("froglight").
@@ -782,7 +799,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        CustomIngredient food = CustomIngredient.of(AnimalPenItemHelper.itemTag("sniffer_food"));
+        CustomIngredient food = CustomIngredient.of(ItemTags.SNIFFER_FOOD);
         interactions.add(this.generateFood(food));
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
@@ -797,7 +814,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Seed Pickup
         interactions.add(AnimalInteractionBuilder.create("sniff").
             ingredient(CustomIngredient.of(Items.BOWL)).
-            lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING.location(), 320, true)).
+            lootEntry(LootEntry.of(BuiltInLootTables.SNIFFER_DIGGING.identifier(), 320, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             consume(new ConsumerEntry.Interact()).
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.SNIFFER_DIGGING)).
@@ -824,7 +841,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        CustomIngredient food = CustomIngredient.of(AnimalPenItemHelper.itemTag("armadillo_food"));
+        CustomIngredient food = CustomIngredient.of(ItemTags.ARMADILLO_FOOD);
         interactions.add(this.generateFood(food));
         // Brushing
         interactions.add(AnimalInteractionBuilder.create("brush").

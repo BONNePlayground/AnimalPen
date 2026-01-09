@@ -9,7 +9,7 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -91,7 +91,7 @@ public final class EntityFunctionEntry
     private final EntityFunction function;
 
 
-    public static final Codec<EntityFunctionEntry> CODEC = ResourceLocation.CODEC.flatXmap(
+    public static final Codec<EntityFunctionEntry> CODEC = Identifier.CODEC.flatXmap(
         id ->
         {
             EntityFunctionEntry entry = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.get(id);
@@ -99,7 +99,7 @@ public final class EntityFunctionEntry
         },
         entry ->
         {
-            ResourceLocation id = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.getId(entry);
+            Identifier id = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.getId(entry);
             return id != null ? DataResult.success(id) : DataResult.error(() -> "Unregistered entity_function: " + entry);
         }
     );

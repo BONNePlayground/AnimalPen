@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lv.id.bonne.animalpen.config.annotations.JsonComment;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 
 
@@ -60,7 +60,7 @@ public class Configuration
         if (this.blockedAnimals == null || init)
         {
             this.blockedAnimals = new HashSet<>();
-            this.blockedAnimals.add(ResourceLocation.tryParse("cobblemon:pokemon"));
+            this.blockedAnimals.add(Identifier.fromNamespaceAndPath("cobblemon", "pokemon"));
         }
 
         if (this.animalPenMobSize == null || this.animalPenMobSize <= 0 || init)
@@ -591,7 +591,7 @@ public class Configuration
     @JsonComment("Set of animals that are blocked from picking up.")
     @Expose
     @SerializedName("blocked_animals")
-    private Set<ResourceLocation> blockedAnimals = new HashSet<>();
+    private Set<Identifier> blockedAnimals = new HashSet<>();
 
     @JsonComment("Debug code to indicate problems.")
     @Expose

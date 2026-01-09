@@ -23,6 +23,7 @@ public interface ModEntityTypeTagsProvider
     {
         this.modTag(AnimalPenTags.ANIMAL_CAGE_PICKABLE).
             add(EntityType.CAMEL).
+            add(EntityType.CAMEL_HUSK).
             add(EntityType.CAT).
             add(EntityType.CHICKEN).
             add(EntityType.COW).
@@ -58,6 +59,8 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.SQUID).
             add(EntityType.GLOW_SQUID).
             add(EntityType.TADPOLE).
+            add(EntityType.NAUTILUS).
+            add(EntityType.ZOMBIE_NAUTILUS).
             add(EntityType.TURTLE);
         this.modTag(AnimalPenTags.BIRD_CATCHER_PICKABLE).
             add(EntityType.ALLAY).

@@ -10,7 +10,7 @@ package lv.id.bonne.animalpen.data.provider;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;

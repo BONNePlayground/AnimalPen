@@ -15,7 +15,7 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
@@ -121,12 +121,12 @@ public record LootEntry(ResourceKey<LootTable> lootTable, int dropLimit, boolean
     // ---------------------------------------------------------------------
 
 
-    public static LootEntry of(ResourceLocation lootTable, int dropLimit, boolean perEntity)
+    public static LootEntry of(Identifier lootTable, int dropLimit, boolean perEntity)
     {
         return LootEntry.of(ResourceKey.create(Registries.LOOT_TABLE, lootTable), dropLimit, perEntity);
     }
 
-    public static LootEntry of(ResourceLocation lootTable)
+    public static LootEntry of(Identifier lootTable)
     {
         return LootEntry.of(lootTable, Integer.MAX_VALUE, false);
     }

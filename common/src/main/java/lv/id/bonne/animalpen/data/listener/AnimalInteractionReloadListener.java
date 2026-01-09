@@ -6,7 +6,7 @@ import java.util.Map;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -27,7 +27,7 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
 
 
     @Override
-    protected void apply(Map<ResourceLocation, AnimalInteractionEntry> objectMap,
+    protected void apply(Map<Identifier, AnimalInteractionEntry> objectMap,
         ResourceManager resourceManager,
         ProfilerFiller profiler)
     {

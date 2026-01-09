@@ -22,7 +22,7 @@ import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.animal.turtle.Turtle;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;

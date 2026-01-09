@@ -21,7 +21,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.CustomCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentHolder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -55,7 +55,7 @@ public record AnimalInteraction(@NotNull String id,
                                 @NotNull List<TextEntry> textLines,
                                 @NotNull List<FunctionKey> runFunctions,
                                 @NotNull List<FunctionKey> finishFunctions,
-                                @Nullable ResourceLocation sound,
+                                @Nullable Identifier sound,
                                 int redstoneSignal)
 {
     /**
@@ -215,7 +215,7 @@ public record AnimalInteraction(@NotNull String id,
                 .forGetter(a -> a.runFunctions),
             CustomCodec.strictOptionalListField("finish_functions", FunctionKey.CODEC)
                 .forGetter(a -> a.finishFunctions),
-            ResourceLocation.CODEC.optionalFieldOf("sound")
+            Identifier.CODEC.optionalFieldOf("sound")
                 .forGetter(a -> Optional.ofNullable(a.sound)),
             Codec.INT.optionalFieldOf("redstone_signal", 0)
                 .forGetter(a -> a.redstoneSignal)
