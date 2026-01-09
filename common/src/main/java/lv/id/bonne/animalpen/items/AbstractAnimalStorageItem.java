@@ -267,7 +267,21 @@ public abstract class AbstractAnimalStorageItem extends Item
     private void captureMob(ItemStack stack, Player player, Mob mob, InteractionHand hand)
     {
         mob.ejectPassengers();
+
+        if (mob.isPassenger())
+        {
+            // Eject before processing
+            mob.stopRiding();
+        }
+
+        // Drop items
         this.dropEquipment(mob);
+
+        if (mob.isLeashed())
+        {
+            // Drop leash
+            mob.dropLeash(true, true);
+        }
 
         CompoundTag tag = stack.getOrCreateTag();
 
