@@ -12,6 +12,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.AnimalCageItem;
 import lv.id.bonne.animalpen.items.AnimalContainerItem;
+import lv.id.bonne.animalpen.items.BirdCatcherItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +40,7 @@ public class AnimalPensItemRegistry
         REGISTRY.register("animal_cage", () -> new AnimalCageItem(new Item.Properties().
             arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1).
             setId(ResourceKey.create(Registries.ITEM,
-                ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "animal_cage")))));
+                AnimalPen.resourceOf("animal_cage")))));
 
     /**
      * The animal container item
@@ -48,5 +49,12 @@ public class AnimalPensItemRegistry
         REGISTRY.register("water_animal_container", () -> new AnimalContainerItem(new Item.Properties().
             arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1).
             setId(ResourceKey.create(Registries.ITEM,
-                ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "water_animal_container")))));
+                AnimalPen.resourceOf("water_animal_container")))));
+
+
+    public static final RegistrySupplier<BirdCatcherItem> BIRD_CATCHER =
+        REGISTRY.register("bird_catcher", () -> new BirdCatcherItem(new Item.Properties().
+            arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).stacksTo(1).
+            setId(ResourceKey.create(Registries.ITEM,
+                AnimalPen.resourceOf("bird_catcher")))));
 }

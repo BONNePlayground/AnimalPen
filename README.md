@@ -152,6 +152,7 @@ Use these commands (server moderators) to manage the mod:
 
 📌 **[Architectury API](https://modrinth.com/mod/architectury-api)** (Required).  
 📖 **[Patchouli](https://modrinth.com/mod/patchouli)** (Optional, adds an in-game guidebook).
+📖 **[ClothConfigAPI](https://modrinth.com/mod/cloth-config)** (Optional, adds config editing GUI).
 
 ***
 

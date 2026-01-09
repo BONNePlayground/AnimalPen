@@ -5,18 +5,14 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.storage.TagValueInput;
 
 
 /**
@@ -38,17 +34,9 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
         {
             Level level = packetContext.getPlayer().level();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                BlockEntity e = ((BlockEntity) animalPen);
-
-                try (ProblemReporter.ScopedCollector scopedCollector =
-                         new ProblemReporter.ScopedCollector(e.problemPath(), AnimalPen.LOGGER))
-                {
-                    animalPen.updateAnimalVariant(TagValueInput.create(scopedCollector,
-                        packetContext.registryAccess(),
-                        animalVariant));
-                }
+                animalPen.updateAnimalVariant(animalVariant);
             }
             else
             {
@@ -67,7 +55,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
 
 
     public static final Type<UpdateDisplayAnimalData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_display_animal"));
+        new Type<>(AnimalPen.resourceOf("update_display_animal"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
