@@ -1,0 +1,205 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:suspicious_stew",
+          "functions": [
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:saturation"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:saturation", "duration": 7 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:night_vision"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:night_vision", "duration": 5 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:fire_resistance"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:fire_resistance", "duration": 4 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:blindness"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:blindness", "duration": 8 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:weakness"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:weakness", "duration": 9 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:regeneration"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:regeneration", "duration": 8 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:jump_boost"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:jump_boost", "duration": 6 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:poison"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:poison", "duration": 12 }]
+            },
+            {
+              "function": "minecraft:set_stew_effect",
+              "conditions": [
+                {
+                  "condition": "minecraft:entity_properties",
+                  "entity": "this",
+                  "predicate": {
+                    "type": "minecraft:mooshroom",
+                    "nbt": {
+                      "Type": "brown",
+                      "stew_effects": [
+                        {
+                          "id": "minecraft:wither"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "effects": [{ "type": "minecraft:wither", "duration": 8 }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

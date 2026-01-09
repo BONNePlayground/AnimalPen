@@ -8,14 +8,16 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -29,17 +31,13 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
@@ -97,19 +95,19 @@ public class VariantScreenSelection extends Screen
 
         BlockEntity blockEntity = this.minecraft.level.getBlockEntity(this.position);
 
-        if (!(blockEntity instanceof AnimalPenBlockInterface<?> animalPenEntity))
+        if (!(blockEntity instanceof AbstractAnimalPenBlockEntity animalPenEntity))
         {
             return;
         }
 
         this.blockEntityInterface = animalPenEntity;
 
-        ListTag entityList = this.blockEntityInterface.getEntityVariants();
+        List<CompoundTag> entityList = this.blockEntityInterface.getEntityVariants();
 
         if (entityList == null)
         {
             // Avoid null-pointer
-            entityList = new ListTag();
+            entityList = Collections.emptyList();
         }
 
         // initialize variant buttons.
@@ -197,6 +195,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This returns position of block that relates to current screen.
+     *
      * @return block position.
      */
     public BlockPos getPosition()
@@ -224,7 +223,7 @@ public class VariantScreenSelection extends Screen
             this.displayEntity.tickCount++;
         }
 
-        if (!(this.minecraft.level.getBlockEntity(this.position) instanceof AnimalPenBlockInterface<?>) ||
+        if (!(this.minecraft.level.getBlockEntity(this.position) instanceof AbstractAnimalPenBlockEntity) ||
             this.blockEntityInterface.getStoredAnimal().isEmpty())
         {
             // close screen
@@ -278,6 +277,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * Renders the main background image.
+     *
      * @param graphics The pose stack
      */
     @Override
@@ -301,6 +301,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders all variant selection buttons.
+     *
      * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
@@ -437,6 +438,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the entity size bar in proper position.
+     *
      * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
@@ -470,6 +472,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the entity in proper position.
+     *
      * @param graphics The pose stack.
      */
     private void renderEntity(@NotNull GuiGraphics graphics, float partialTicks)
@@ -524,6 +527,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders the cooldown menu and button.
+     *
      * @param graphics The pose stack
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
@@ -573,6 +577,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method renders text component and inserts icons in their correct spots.
+     *
      * @param graphics The pose stack.
      * @param componentPair The pair that contains icons and text
      * @param leftOffset Offset from left side.
@@ -706,6 +711,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method indicates if scroll bar is necessary to be enabled or not.
+     *
      * @return {@code true} if scroll bar is needed, {@code false} otherwise.
      */
     private boolean needsScrollBars()
@@ -717,6 +723,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method handles the deletion of the pose from the list.
+     *
      * @param button The deletion button.
      */
     private void handleDeleteButton(Button button)
@@ -740,25 +747,25 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method handles the applying of the pose to the animal pen.
+     *
      * @param button The apply button.
      */
     private void handleApplyButton(Button button)
     {
-        this.blockEntityInterface.getEntityVariants().getCompound(this.selectedButton).
-            ifPresent(tag ->
-            {
-                // Send message to server
-                NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, tag));
+        List<CompoundTag> variants = this.blockEntityInterface.getEntityVariants();
 
-                // Update current client gui.
-                try (ProblemReporter.ScopedCollector scopedCollector =
-                         new ProblemReporter.ScopedCollector(this.displayEntity.problemPath(), AnimalPen.LOGGER))
-                {
-                    ValueInput valueInput =
-                        TagValueInput.create(scopedCollector, this.displayEntity.registryAccess(), tag);
-                    this.displayEntity.load(valueInput);
-                }
-            });
+        if (this.selectedButton < 0 || this.selectedButton >= variants.size())
+        {
+            return;
+        }
+
+        CompoundTag variantTag = variants.get(this.selectedButton);
+
+        // Send message to server
+        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, variantTag));
+
+        // Update current client gui.
+        AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag);
 
         this.selectedButton = -1;
     }
@@ -766,6 +773,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method handles entity pose selection from the menu.
+     *
      * @param button The button of pose.
      * @param index The index of pose.
      */
@@ -796,7 +804,6 @@ public class VariantScreenSelection extends Screen
         if (this.selectedButton != -1)
         {
             tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
-
         }
         else
         {
@@ -824,6 +831,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * This method handles the configure button that opens new menu.
+     *
      * @param button The configure button.
      */
     private void handleConfigureButton(Button button)
@@ -846,6 +854,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * Indicate if player clicks on scroll bar
+     *
      * @param mouseX cursor x location
      * @param mouseY cursor y location
      * @return {@code true} if scrollbar is clicked, {@code false} otherwise.
@@ -865,6 +874,7 @@ public class VariantScreenSelection extends Screen
 
     /**
      * Indicate if player clicks on entity area
+     *
      * @param mouseX cursor x location
      * @param mouseY cursor y location
      * @return {@code true} if entity area is clicked, {@code false} otherwise.
@@ -949,8 +959,14 @@ public class VariantScreenSelection extends Screen
             this.entityRotation -= deltaX;
 
             // Keep rotation in 0-360 range
-            while (this.entityRotation < 0) this.entityRotation += 360;
-            while (this.entityRotation >= 360) this.entityRotation -= 360;
+            while (this.entityRotation < 0)
+            {
+                this.entityRotation += 360;
+            }
+            while (this.entityRotation >= 360)
+            {
+                this.entityRotation -= 360;
+            }
 
             this.currentXOnEntity = (int) mouseButtonEvent.x();
             return true;
@@ -1115,7 +1131,7 @@ public class VariantScreenSelection extends Screen
     /**
      * This variable stores current animal pen.
      */
-    protected AnimalPenBlockInterface<?> blockEntityInterface;
+    protected AbstractAnimalPenBlockEntity blockEntityInterface;
 
     /**
      * The left position of the menu.
@@ -1263,12 +1279,12 @@ public class VariantScreenSelection extends Screen
      * The texture of menu
      */
     private static final Identifier TEXTURE =
-        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/animal_selection.png");
+        AnimalPen.resourceOf("textures/gui/animal_selection.png");
 
     /**
      * The texture of cooldown
      */
     private static final Identifier COOLDOWN_TEXTURE =
-        Identifier.fromNamespaceAndPath(AnimalPen.MOD_ID, "textures/gui/cooldown_area.png");
+        AnimalPen.resourceOf("textures/gui/cooldown_area.png");
 }
 

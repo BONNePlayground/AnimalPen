@@ -76,6 +76,11 @@ public class ConfigurationManager
 
             if (this.isInvalid())
             {
+                if (this.configuration == null)
+                {
+                    this.configuration = new Configuration();
+                }
+
                 this.configuration.setDefaults(false);
                 this.writeConfig(false);
             }

@@ -13,11 +13,14 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
+import lv.id.bonne.animalpen.blocks.renderer.AviaryRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
-import lv.id.bonne.animalpen.network.packets.AnimalFoodRegistryData;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEndPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEntityPacket;
+import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncStartPacket;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
@@ -35,7 +38,10 @@ public class AnimalPenClient
             AnimalPenRenderer::new);
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AQUARIUM_TILE_ENTITY.get(),
             AquariumRenderer::new);
+        BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
+            AviaryRenderer::new);
         RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AQUARIUM.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AVIARY.get());
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 
@@ -48,7 +54,7 @@ public class AnimalPenClient
                 return InteractionResult.PASS;
             }
 
-            if (!(player.level().getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> blockEntity))
+            if (!(player.level().getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity blockEntity))
             {
                 return InteractionResult.PASS;
             }
@@ -75,9 +81,19 @@ public class AnimalPenClient
         });
 
         NetworkManager.registerReceiver(NetworkManager.Side.S2C,
-            AnimalFoodRegistryData.ID,
-            AnimalFoodRegistryData.STREAM_CODEC,
-            AnimalFoodRegistryData::handle);
+            AnimalInteractionSyncStartPacket.ID,
+            AnimalInteractionSyncStartPacket.STREAM_CODEC,
+            AnimalInteractionSyncStartPacket::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            AnimalInteractionSyncEntityPacket.ID,
+            AnimalInteractionSyncEntityPacket.STREAM_CODEC,
+            AnimalInteractionSyncEntityPacket::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C,
+            AnimalInteractionSyncEndPacket.ID,
+            AnimalInteractionSyncEndPacket.STREAM_CODEC,
+            AnimalInteractionSyncEndPacket::handle);
 
         NetworkManager.registerReceiver(NetworkManager.Side.S2C,
             UpdateVariantScreenData.ID,
