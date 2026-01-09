@@ -15,6 +15,7 @@ import java.util.List;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,10 +25,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -85,26 +83,26 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         {
             this.dyingAnimal = null;
 
-            CompoundTag cloneTag = new CompoundTag();
-            animal.save(cloneTag);
+            CompoundTag cloneTag = AnimalPenVariantHelper.saveMob(animal);
+            Entity clone = animal.getType().create(tileEntity.getLevel(), EntitySpawnReason.TRIGGERED);
 
-            EntityType.create(cloneTag, tileEntity.getLevel(), EntitySpawnReason.TRIGGERED).
-                map(entity -> (Mob) entity).
-                ifPresent(clone ->
-                {
-                    this.dyingAnimal = clone;
-                    this.dyingAnimal.setPose(Pose.DYING);
+            if (clone instanceof Mob mob)
+            {
+                this.dyingAnimal = mob;
 
-                    // Freeze entity rotation
-                    this.dyingAnimal.yBodyRot = 0.0f;
-                    this.dyingAnimal.setYRot(0.0f);
-                    this.dyingAnimal.yHeadRot = 0.0f;
-                    this.dyingAnimal.yHeadRotO = 0.0f;
+                AnimalPenVariantHelper.loadMob(this.dyingAnimal, cloneTag);
+                this.dyingAnimal.setPose(Pose.DYING);
 
-                    // Stop animations
-                    this.dyingAnimal.tickCount = 0;
-                    this.dyingAnimal.deathTime = 0;
-                });
+                // Freeze entity rotation
+                this.dyingAnimal.yBodyRot = 0.0f;
+                this.dyingAnimal.setYRot(0.0f);
+                this.dyingAnimal.yHeadRot = 0.0f;
+                this.dyingAnimal.yHeadRotO = 0.0f;
+
+                // Stop animations
+                this.dyingAnimal.tickCount = 0;
+                this.dyingAnimal.deathTime = 0;
+            }
         }
     }
 
@@ -213,7 +211,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         this.font.drawInBatch(
             text,                    // The text component
             0, 0,                 // X, Y position in the matrix
-            0xFFFFFF,                // Color (white)
+            -1,                // Color (white)
             false,                   // Drop shadow
             poseStack.last().pose(), // Transformation matrix
             buffer,                  // Buffer source from method parameters
@@ -440,7 +438,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 this.font.drawInBatch(
                     part,  // The text component
                     0, -6,                     // X, Y position in the matrix
-                    0xFFFFFF,                    // Color (white)
+                    -1,                    // Color (white)
                     false,                       // Drop shadow
                     poseStack.last().pose(),     // Transformation matrix
                     buffer,                      // Buffer source from method parameters

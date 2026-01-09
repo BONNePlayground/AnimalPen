@@ -46,10 +46,9 @@ public class AviaryRenderer extends AbstractAnimalPenRenderer<AviaryTileEntity>
 
 
     @Override
-    public boolean shouldRenderOffScreen(AviaryTileEntity blockEntity)
+    public boolean shouldRenderOffScreen()
     {
-        return !blockEntity.getInventory().isEmpty() &&
-            AnimalPen.config().isGrowAviaryMob();
+        return AnimalPen.config().isGrowAviaryMob();
     }
 
 

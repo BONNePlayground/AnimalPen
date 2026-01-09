@@ -8,22 +8,20 @@ import lv.id.bonne.animalpen.data.helper.SimpleItemTagAppender;
 import lv.id.bonne.animalpen.data.provider.ModItemTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 
 
 public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModItemTagsProvider
 {
     public NeoForgeModItemTagProvider(PackOutput arg,
         CompletableFuture<HolderLookup.Provider> completableFuture,
-        TagsProvider<Block> arg2,
         String modId)
     {
-        super(arg, completableFuture, arg2.contentsGetter(), modId);
+        super(arg, completableFuture, modId);
     }
 
 
@@ -37,7 +35,7 @@ public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModI
     @Override
     public SimpleItemTagAppender modTag(TagKey<Item> tag)
     {
-        var builder = this.tag(tag);
+        TagAppender<Item, Item> builder = this.tag(tag);
 
         return new SimpleItemTagAppender() {
 
@@ -49,12 +47,12 @@ public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModI
 
             @Override
             public SimpleItemTagAppender copy(TagKey<Block> blockTag) {
-                NeoForgeModItemTagProvider.this.copy(blockTag, tag);
+                // NeoForge made a separate copy block to item provider
                 return this;
             }
 
             @Override
-            public SimpleItemTagAppender optionalTag(ResourceLocation other) {
+            public SimpleItemTagAppender optionalTag(TagKey<Item> other) {
                 builder.addOptionalTag(other);
                 return this;
             }

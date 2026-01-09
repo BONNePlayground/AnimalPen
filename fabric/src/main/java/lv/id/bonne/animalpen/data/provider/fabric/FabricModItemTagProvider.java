@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -36,14 +37,13 @@ public class FabricModItemTagProvider extends FabricTagProvider.ItemTagProvider 
     @Override
     public SimpleItemTagAppender modTag(TagKey<Item> tag)
     {
-        var builder = this.tag(tag);
+        TagAppender<Item, Item> builder = this.valueLookupBuilder(tag);
 
         return new SimpleItemTagAppender() {
 
             @Override
             public SimpleItemTagAppender add(Item value) {
-                BuiltInRegistries.ITEM.getResourceKey(value).
-                    ifPresent(builder::add);
+                builder.add(value);
                 return this;
             }
 
@@ -54,7 +54,7 @@ public class FabricModItemTagProvider extends FabricTagProvider.ItemTagProvider 
             }
 
             @Override
-            public SimpleItemTagAppender optionalTag(ResourceLocation other) {
+            public SimpleItemTagAppender optionalTag(TagKey<Item> other) {
                 builder.addOptionalTag(other);
                 return this;
             }

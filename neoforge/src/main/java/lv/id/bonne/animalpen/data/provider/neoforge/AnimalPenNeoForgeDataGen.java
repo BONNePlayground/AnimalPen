@@ -13,7 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class AnimalPenNeoForgeDataGen
 {
     @SubscribeEvent
@@ -32,7 +32,10 @@ public class AnimalPenNeoForgeDataGen
         generator.addProvider(true, blockTags);
         generator.addProvider(true, new NeoForgeModItemTagProvider(output,
             lookupProvider,
-            blockTags,
+            AnimalPen.MOD_ID));
+        generator.addProvider(true, new NeoForgeModBlockTagCopyingItemTagProvider(output,
+            lookupProvider,
+            blockTags.contentsGetter(),
             AnimalPen.MOD_ID));
         generator.addProvider(true, new NeoForgeModEntityTypeTagProvider(output,
             lookupProvider,

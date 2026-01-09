@@ -15,6 +15,7 @@ import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +60,7 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
             return false;
         }
 
-        player.serverLevel().sendParticles(
+        player.level().sendParticles(
             ParticleTypes.EFFECT,
             blockPos.getX() + 0.5f,
             blockPos.getY() + 1.5,
@@ -71,10 +72,7 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
         mushroomCow.setStewEffects(effectFromItemStack.get());
 
         StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-
-        CompoundTag animalTag = new CompoundTag();
-        mob.save(animalTag);
-
+        CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
             StoredMob.of(storedMob.entityType(), animalTag));
 

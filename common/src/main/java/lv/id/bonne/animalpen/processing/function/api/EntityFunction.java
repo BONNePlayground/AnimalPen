@@ -42,7 +42,7 @@ public interface EntityFunction
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
-        return this.processFunction(player.serverLevel(), mob, componentHolder, blockPos, dataKey, dataValue);
+        return this.processFunction(player.level(), mob, componentHolder, blockPos, dataKey, dataValue);
     }
 
 

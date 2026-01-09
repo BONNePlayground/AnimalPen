@@ -337,12 +337,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
-            CompoundTag animalTag = new CompoundTag();
-            mob.saveWithoutId(animalTag);
-
-            animalTag.remove("Pos");
-            animalTag.remove("UUID");
-
+            CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
             stack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                 StoredMob.of(mob.getType(), animalTag));
         }
@@ -381,10 +376,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         pos.add(DoubleTag.valueOf(context.getClickedPos().getZ() + 0.5));
 
         StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-        CompoundTag animal = storedMob.tag();
+        CompoundTag animalTag = storedMob.tag();
 
-        animal.put("Pos", pos);
-        animal.remove("UUID");
+        animalTag.put("Pos", pos);
+        animalTag.remove("UUID");
 
         Entity mobEntity = storedMob.entityType().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
@@ -394,7 +389,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             return InteractionResult.SUCCESS;
         }
 
-        mob.load(animal);
+        AnimalPenVariantHelper.loadMob(mob, animalTag);
 
         for (EquipmentSlot slot : EquipmentSlot.values())
         {

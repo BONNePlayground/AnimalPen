@@ -43,10 +43,9 @@ public class AnimalPenRenderer extends AbstractAnimalPenRenderer<AnimalPenTileEn
 
 
     @Override
-    public boolean shouldRenderOffScreen(AnimalPenTileEntity blockEntity)
+    public boolean shouldRenderOffScreen()
     {
-        return !blockEntity.getInventory().isEmpty() &&
-            AnimalPen.config().isGrowAnimalPenMob();
+        return AnimalPen.config().isGrowAnimalPenMob();
     }
 
 

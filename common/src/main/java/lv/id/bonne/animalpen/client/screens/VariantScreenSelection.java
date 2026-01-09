@@ -17,6 +17,7 @@ import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -32,10 +33,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -752,21 +750,20 @@ public class VariantScreenSelection extends Screen
      */
     private void handleApplyButton(Button button)
     {
-        this.blockEntityInterface.getEntityVariants().get(this.selectedButton).
-            ifPresent(tag ->
-            {
-                // Send message to server
-                NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, tag));
+        List<CompoundTag> variants = this.blockEntityInterface.getEntityVariants();
 
-                // Update current client gui.
-                try (ProblemReporter.ScopedCollector scopedCollector =
-                         new ProblemReporter.ScopedCollector(this.displayEntity.problemPath(), AnimalPen.LOGGER))
-                {
-                    ValueInput valueInput =
-                        TagValueInput.create(scopedCollector, this.displayEntity.registryAccess(), tag);
-                    this.displayEntity.load(valueInput);
-                }
-            });
+        if (this.selectedButton < 0 || this.selectedButton >= variants.size())
+        {
+            return;
+        }
+
+        CompoundTag variantTag = variants.get(this.selectedButton);
+
+        // Send message to server
+        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, variantTag));
+
+        // Update current client gui.
+        AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag);
 
         this.selectedButton = -1;
     }

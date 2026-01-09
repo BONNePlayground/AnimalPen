@@ -33,7 +33,7 @@ public class MooshroomEffectFail implements EntityFunction.PlayerEntityFunction
         String dataKey,
         Value dataValue)
     {
-        player.serverLevel().sendParticles(
+        player.level().sendParticles(
             ParticleTypes.SMOKE,
             blockPos.getX() + 0.5f,
             blockPos.getY() + 1.5,

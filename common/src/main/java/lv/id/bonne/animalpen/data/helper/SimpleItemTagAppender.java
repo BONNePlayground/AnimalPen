@@ -1,7 +1,6 @@
 package lv.id.bonne.animalpen.data.helper;
 
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -16,7 +15,7 @@ public interface SimpleItemTagAppender extends SimpleTagAppender<Item>
     SimpleItemTagAppender copy(TagKey<Block> blockTag);
 
 
-    SimpleItemTagAppender optionalTag(ResourceLocation resourceLocation);
+    SimpleItemTagAppender optionalTag(TagKey<Item> optionalTag);
 
 
     SimpleItemTagAppender tag(TagKey<Item> itemTag);

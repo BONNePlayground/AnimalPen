@@ -7,7 +7,6 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
-import com.mojang.serialization.DataResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,8 +36,6 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -59,6 +56,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -78,54 +77,54 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider)
+    public void saveAdditional(ValueOutput valueOutput)
     {
-        super.saveAdditional(tag, provider);
+        super.saveAdditional(valueOutput);
 
-        CompoundTag inventory = ContainerHelper.saveAllItems(new CompoundTag(),
-            this.getInventory().getItems(), provider);
-        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, inventory);
+        ContainerHelper.saveAllItems(valueOutput, this.inventory.getItems(), true);
 
         if (!this.deathTicker.isEmpty())
         {
-            tag.put(AnimalPenCompoundTags.TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
+            valueOutput.putIntArray(AnimalPenCompoundTags.TAG_DEATH_TICKER,
+                this.deathTicker.stream().mapToInt(i->i).toArray());
         }
 
-        tag.putLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, this.displaySize);
+        valueOutput.putLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, this.displaySize);
 
-        tag.storeNullable(AnimalPenCompoundTags.TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
+        valueOutput.storeNullable(AnimalPenCompoundTags.TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
 
-        tag.putLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, this.protectedAmount);
+        valueOutput.putLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, this.protectedAmount);
     }
 
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider)
+    protected void loadAdditional(ValueInput valueInput)
     {
-        super.loadAdditional(tag, provider);
+        super.loadAdditional(valueInput);
 
         this.inventory.clearContent();
         this.deathTicker.clear();
-        this.storedAnimal = null;
         this.ownerUUID = null;
 
-        tag.getCompound(AnimalPenCompoundTags.TAG_INVENTORY).ifPresent(inventoryTag ->
-            ContainerHelper.loadAllItems(inventoryTag, this.inventory.getItems(), provider));
+        ContainerHelper.loadAllItems(valueInput, this.inventory.getItems());
 
-        tag.getIntArray(AnimalPenCompoundTags.TAG_DEATH_TICKER).ifPresent(deaths -> {
+        // Legacy code.
+        valueInput.child(AnimalPenCompoundTags.TAG_INVENTORY).ifPresent(oldInput ->
+            ContainerHelper.loadAllItems(oldInput, this.inventory.getItems()));
+
+        valueInput.getIntArray(AnimalPenCompoundTags.TAG_DEATH_TICKER).ifPresent(deaths -> {
             for (int death : deaths)
             {
                 this.deathTicker.add(death);
             }
         });
 
-        this.displaySize = tag.getLongOr(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, -1);
+        this.displaySize = valueInput.getLongOr(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, -1);
 
-        DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag.get(AnimalPenCompoundTags.TAG_OWNER_UUID));
-        parse.ifSuccess(uuid -> this.ownerUUID = uuid);
+        valueInput.read(AnimalPenCompoundTags.TAG_OWNER_UUID, UUIDUtil.CODEC).
+            ifPresent(uuid -> this.ownerUUID = uuid);
 
-        this.protectedAmount = tag.getLongOr(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, 0);
-        this.setChanged();
+        this.protectedAmount = valueInput.getLongOr(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, 0);
     }
 
 
@@ -909,7 +908,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             AnimalPen.sendDebug("Animal Variant changed");
 
             // load new variant
-            animal.load(animalVariant);
+            AnimalPenVariantHelper.loadMob(animal, animalVariant);
 
             // Update animal variant in item stack.
             ItemStack itemStack = this.getItemStack();
@@ -1162,7 +1161,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                 if (entity instanceof Mob mob)
                 {
-                    mob.load(storedMob.tag());
+                    AnimalPenVariantHelper.loadMob(mob, storedMob.tag());
                     this.storedAnimal = mob;
                 }
             }

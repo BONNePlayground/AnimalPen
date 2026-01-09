@@ -101,9 +101,9 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
 
 
     @Override
-    public boolean shouldRenderOffScreen(AquariumTileEntity blockEntity)
+    public boolean shouldRenderOffScreen()
     {
-        return !blockEntity.getInventory().isEmpty();
+        return true;
     }
 
 

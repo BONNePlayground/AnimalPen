@@ -133,7 +133,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     @Override
     public void drop(ItemStack item)
     {
-        ItemTransferUtil.insertBellowOrDrop(this.player.serverLevel(),
+        ItemTransferUtil.insertBellowOrDrop(this.player.level(),
             item,
             this.blockEntity.getBlockPos(),
             this.blockEntity.dropPosition());

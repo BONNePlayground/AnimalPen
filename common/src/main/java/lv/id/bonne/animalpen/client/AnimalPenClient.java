@@ -23,10 +23,9 @@ import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEntityPacket;
 import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncStartPacket;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
-import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 
@@ -41,8 +40,8 @@ public class AnimalPenClient
             context -> new AquariumRenderer());
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
             context -> new AviaryRenderer());
-        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
-        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AVIARY.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AQUARIUM.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AVIARY.get());
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 

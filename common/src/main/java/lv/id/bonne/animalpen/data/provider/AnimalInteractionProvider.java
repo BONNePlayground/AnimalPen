@@ -152,6 +152,7 @@ public class AnimalInteractionProvider implements DataProvider
             // Entities with only ambient
             featureList.add(this.generateAmbient(cache, EntityType.BAT, SoundEvents.BAT_AMBIENT));
             featureList.add(this.generateAmbient(cache, EntityType.POLAR_BEAR, SoundEvents.POLAR_BEAR_AMBIENT));
+            featureList.add(this.generateAmbient(cache, EntityType.HAPPY_GHAST, SoundEvents.HAPPY_GHAST_AMBIENT));
 
             return CompletableFuture.allOf(featureList.toArray(CompletableFuture[]::new));
         });
@@ -644,7 +645,7 @@ public class AnimalInteractionProvider implements DataProvider
         }
         else if (entityType == EntityType.PUFFERFISH)
         {
-            interactions.add(this.generateAmbientSound(SoundEvents.PUFFER_FISH_AMBIENT));
+            interactions.add(this.generateAmbientSound(SoundEvents.PUFFER_FISH_FLOP));
         }
         else if (entityType == EntityType.SALMON)
         {

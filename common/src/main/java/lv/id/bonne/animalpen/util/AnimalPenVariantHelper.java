@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.util;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,13 @@ import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 
 /**
@@ -63,12 +68,11 @@ public class AnimalPenVariantHelper
             StoredMobVariants.of(new ArrayList<>(AnimalPen.config().getMaxStoredVariants())),
             data ->
             {
-                CompoundTag animalTag = new CompoundTag();
-                animal.saveWithoutId(animalTag);
+                List<CompoundTag> variants = data.variants();
+
+                CompoundTag animalTag = AnimalPenVariantHelper.saveMob(animal);
                 animalTag.remove("Pos");
                 animalTag.remove("UUID");
-
-                List<CompoundTag> variants = data.variants();
                 variants.add(animalTag);
 
                 return StoredMobVariants.of(variants);
@@ -182,5 +186,30 @@ public class AnimalPenVariantHelper
             StoredMobVariants.of(mergedList));
 
         redundantItem.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+    }
+
+
+    @NotNull
+    public static CompoundTag saveMob(@NotNull Mob mob)
+    {
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(mob.problemPath(), AnimalPen.LOGGER))
+        {
+            TagValueOutput tagValueOutput = TagValueOutput.createWithContext(scopedCollector, mob.registryAccess());
+            mob.saveWithoutId(tagValueOutput);
+
+            return tagValueOutput.buildResult();
+        }
+    }
+
+
+    public static void loadMob(@NotNull Mob mob, CompoundTag tag)
+    {
+        try (ProblemReporter.ScopedCollector scopedCollector =
+                 new ProblemReporter.ScopedCollector(mob.problemPath(), AnimalPen.LOGGER))
+        {
+            ValueInput valueInput = TagValueInput.create(scopedCollector, mob.registryAccess(), tag);
+            mob.load(valueInput);
+        }
     }
 }
