@@ -5,8 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 
 
@@ -19,26 +17,26 @@ public record TagValue(@Nullable Tag value) implements Value
     @Override
     public int getAsInt()
     {
-        if (this.value == null || this.value.getType() != IntTag.TYPE)
+        if (this.value == null || this.value.asInt().isEmpty())
         {
             AnimalPen.sendDebug("Tag cannot be converted into integer, as value is not set.");
             return 0;
         }
 
-        return ((IntTag) this.value).getAsInt();
+        return this.value.asInt().orElse(0);
     }
 
 
     @Override
     public boolean getAsBoolean()
     {
-        if (this.value == null || this.value.getType() != ByteTag.TYPE)
+        if (this.value == null || this.value.asBoolean().isEmpty())
         {
             AnimalPen.sendDebug("Tag cannot be converted into boolean, as value is not set.");
             return false;
         }
 
-        return this.value == ByteTag.ONE;
+        return this.value.asBoolean().orElse(false);
     }
 
 
@@ -46,6 +44,6 @@ public record TagValue(@Nullable Tag value) implements Value
     @NotNull
     public String getAsString()
     {
-        return this.value == null ? "" : this.value.getAsString();
+        return this.value == null ? "" : this.value.asString().orElse("");
     }
 }

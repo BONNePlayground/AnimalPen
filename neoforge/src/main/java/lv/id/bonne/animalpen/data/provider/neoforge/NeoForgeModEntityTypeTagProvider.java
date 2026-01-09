@@ -2,7 +2,6 @@ package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.helper.SimpleTagAppender;
@@ -12,17 +11,15 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 
 public class NeoForgeModEntityTypeTagProvider extends EntityTypeTagsProvider implements ModEntityTypeTagsProvider
 {
     public NeoForgeModEntityTypeTagProvider(PackOutput arg,
         CompletableFuture<HolderLookup.Provider> completableFuture,
-        String modId,
-        @Nullable ExistingFileHelper existingFileHelper)
+        String modId)
     {
-        super(arg, completableFuture, modId, existingFileHelper);
+        super(arg, completableFuture, modId);
     }
 
 

@@ -38,8 +38,10 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     {
         int count = 0;
 
-        for (ItemStack containerItem : this.player.getInventory().items)
+        for (int i = 0; i < this.player.getInventory().getContainerSize(); i++)
         {
+            ItemStack containerItem = this.player.getInventory().getItem(i);
+
             if (ItemStack.isSameItem(containerItem, item))
             {
                 count += containerItem.getCount();

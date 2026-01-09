@@ -130,7 +130,7 @@ public class AnimalInteractionProvider implements DataProvider
 
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.WOLF,
                 CustomIngredient.merge(CustomIngredient.of(AnimalPenItemHelper.itemTag("wolf_food"))),
-                SoundEvents.WOLF_AMBIENT));
+                SoundEvents.WOLF_SOUNDS.values().iterator().next().ambientSound().value()));
 
             CustomIngredient horseFood = CustomIngredient.of(AnimalPenItemHelper.itemTag("horse_food"));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DONKEY, horseFood,
@@ -280,7 +280,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
             ingredient(CustomIngredient.of(Items.BUCKET)).
-            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/bucket/egg"), 80, true)).
+            lootEntry(LootEntry.of(BuiltInLootTables.CHICKEN_LAY.location(), 80, true)).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.CHICKEN_EGG)).
             redstoneBit(2).

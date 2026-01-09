@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import com.mojang.serialization.DataResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,11 +33,12 @@ import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -44,6 +46,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
@@ -78,11 +82,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     {
         super.saveAdditional(tag, provider);
 
-        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, this.inventory.createTag(provider));
-        tag.put(AnimalPenCompoundTags.TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
+        CompoundTag inventory = ContainerHelper.saveAllItems(new CompoundTag(),
+            this.getInventory().getItems(), provider);
+        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, inventory);
+
+        if (!this.deathTicker.isEmpty())
+        {
+            tag.put(AnimalPenCompoundTags.TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker.stream().mapToInt(i->i).toArray()));
+        }
+
         tag.putLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, this.displaySize);
 
-        this.getOwner().ifPresent(owner -> tag.putUUID(AnimalPenCompoundTags.TAG_OWNER_UUID, owner));
+        tag.storeNullable(AnimalPenCompoundTags.TAG_OWNER_UUID, UUIDUtil.CODEC, this.ownerUUID);
+
         tag.putLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, this.protectedAmount);
     }
 
@@ -94,43 +106,25 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         this.inventory.clearContent();
         this.deathTicker.clear();
+        this.storedAnimal = null;
+        this.ownerUUID = null;
 
-        if (tag.contains(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_LIST))
-        {
-            this.inventory.fromTag(tag.getList(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_COMPOUND), provider);
-        }
+        tag.getCompound(AnimalPenCompoundTags.TAG_INVENTORY).ifPresent(inventoryTag ->
+            ContainerHelper.loadAllItems(inventoryTag, this.inventory.getItems(), provider));
 
-        if (tag.contains(AnimalPenCompoundTags.TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
-        {
-            int[] intArray = tag.getIntArray(AnimalPenCompoundTags.TAG_DEATH_TICKER);
-
-            for (int i : intArray)
+        tag.getIntArray(AnimalPenCompoundTags.TAG_DEATH_TICKER).ifPresent(deaths -> {
+            for (int death : deaths)
             {
-                this.deathTicker.add(i);
+                this.deathTicker.add(death);
             }
-        }
+        });
 
-        if (tag.contains(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, Tag.TAG_LONG))
-        {
-            this.displaySize = tag.getLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE);
-        }
-        else
-        {
-            this.displaySize = -1;
-        }
+        this.displaySize = tag.getLongOr(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, -1);
 
-        if (tag.contains(AnimalPenCompoundTags.TAG_OWNER_UUID))
-        {
-            this.ownerUUID = tag.getUUID(AnimalPenCompoundTags.TAG_OWNER_UUID);
-        }
+        DataResult<UUID> parse = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag.get(AnimalPenCompoundTags.TAG_OWNER_UUID));
+        parse.ifSuccess(uuid -> this.ownerUUID = uuid);
 
-        this.protectedAmount = tag.getLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT);
-
-        if (this.getStoredAnimal().isEmpty())
-        {
-            this.storedAnimal = null;
-        }
-
+        this.protectedAmount = tag.getLongOr(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, 0);
         this.setChanged();
     }
 
@@ -177,6 +171,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             this.getBlockState(),
             this.getBlockState(),
             Block.UPDATE_CLIENTS);
+    }
+
+
+    @Override
+    public void preRemoveSideEffects(BlockPos blockPos, BlockState blockState)
+    {
+        if (this.level != null)
+        {
+            Containers.dropContents(this.level, blockPos, this.inventory.getItems());
+        }
     }
 
 

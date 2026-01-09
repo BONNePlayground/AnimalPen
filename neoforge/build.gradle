@@ -7,10 +7,9 @@ plugins {
 loom {
     runs {
         dataGen {
-            data()
+            serverData()
             programArg("--mod")
             programArg("animal_pen")
-            programArg("--server")
             programArg("--output")
             programArg(file('src/main/generated/').absolutePath)
             programArg("--existing")

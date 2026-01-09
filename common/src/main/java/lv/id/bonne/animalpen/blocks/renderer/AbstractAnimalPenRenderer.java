@@ -43,7 +43,8 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         @NotNull PoseStack poseStack,
         @NotNull MultiBufferSource buffer,
         int combinedLight,
-        int combinedOverlay)
+        int combinedOverlay,
+        Vec3 location)
     {
         Mob animal = tileEntity.getStoredAnimal().orElse(null);
 

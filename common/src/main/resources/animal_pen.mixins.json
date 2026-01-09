@@ -10,8 +10,7 @@
     "FixChestedHorseInteraction",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
-    "accessors.MushroomCowAccessor",
-    "invokers.MobInvoker"
+    "accessors.MushroomCowAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
