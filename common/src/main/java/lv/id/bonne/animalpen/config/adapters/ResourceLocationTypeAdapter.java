@@ -14,6 +14,7 @@ public class ResourceLocationTypeAdapter implements JsonSerializer<ResourceLocat
         return new JsonPrimitive(src.toString());
     }
 
+
     @Override
     public ResourceLocation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException

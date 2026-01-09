@@ -60,7 +60,8 @@ public class VariantsConfigScreen extends Screen
         }
 
         // Minimal Animal Count Input Field
-        this.minimalAnimalCountField = new EditBox(this.font, centerX - 100, startY + 40, 200, 20, MINIMAL_ANIMAL_COUNT);
+        this.minimalAnimalCountField =
+            new EditBox(this.font, centerX - 100, startY + 40, 200, 20, MINIMAL_ANIMAL_COUNT);
         this.minimalAnimalCountField.setValue(String.valueOf(this.minimalAnimalCount));
         this.minimalAnimalCountField.setFilter(this::isValidNumber);
         this.minimalAnimalCountField.setMaxLength(3);
@@ -246,6 +247,7 @@ public class VariantsConfigScreen extends Screen
 
         private final int maxValue;
     }
+
 
     private final VariantScreenSelection parent;
 
