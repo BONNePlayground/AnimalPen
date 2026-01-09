@@ -7,14 +7,13 @@ import java.util.UUID;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.entities.AnimalPenBlockInterface;
+import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 
@@ -39,7 +38,7 @@ public record UpdateConfigurationData(BlockPos position, long size, long protect
         {
             Level level = packetContext.getPlayer().level();
 
-            if (level.getBlockEntity(blockPos) instanceof AnimalPenBlockInterface<?> animalPen)
+            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 animalPen.setAnimalDisplaySize(displaySize);
                 animalPen.setProtectedAmount(protectedAmount);
@@ -62,7 +61,7 @@ public record UpdateConfigurationData(BlockPos position, long size, long protect
 
 
     public static final Type<UpdateConfigurationData> ID =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(AnimalPen.MOD_ID, "update_configuration"));
+        new Type<>(AnimalPen.resourceOf("update_configuration"));
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateConfigurationData> STREAM_CODEC = StreamCodec.composite(
