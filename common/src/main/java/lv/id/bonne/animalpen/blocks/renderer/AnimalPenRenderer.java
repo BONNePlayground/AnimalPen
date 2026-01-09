@@ -9,11 +9,18 @@ package lv.id.bonne.animalpen.blocks.renderer;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.phys.Vec3;
 
 
 public class AnimalPenRenderer extends AbstractAnimalPenRenderer<AnimalPenTileEntity>
 {
+    public AnimalPenRenderer(BlockEntityRendererProvider.Context context)
+    {
+        super(context);
+    }
+
+
     @Override
     protected float getAnimalVerticalOffset()
     {

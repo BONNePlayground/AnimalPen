@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.blocks.renderer;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AquariumTileEntity;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
@@ -20,6 +21,12 @@ import net.minecraft.world.phys.Vec3;
 
 public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEntity>
 {
+    public AquariumRenderer(BlockEntityRendererProvider.Context context)
+    {
+        super(context);
+    }
+
+
     @Override
     protected float getAnimalVerticalOffset()
     {
@@ -51,8 +58,6 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
     @Override
     protected void configureAnimalPose(Mob animal, AquariumTileEntity tileEntity)
     {
-        super.configureAnimalPose(animal, tileEntity);
-
         animal.setPose(Pose.SWIMMING);
         animal.setSwimming(true);
         ((EntityAccessor) animal).setWasTouchingWater(true);
@@ -61,6 +66,8 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         {
             return;
         }
+
+        super.configureAnimalPose(animal, tileEntity);
 
         // The animation speed is required for some entities to display their swimming animation
 

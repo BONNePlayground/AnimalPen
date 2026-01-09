@@ -5,80 +5,61 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 
 public class ItemTransferUtilImpl
 {
     public static boolean canInsert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-
-        if (blockEntity == null)
+        if (stack.isEmpty())
         {
             return false;
         }
 
-        IItemHandler capability = Capabilities.ItemHandler.BLOCK.getCapability(level,
-            pos,
-            blockEntity.getBlockState(),
-            blockEntity,
-            side);
+        ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, side);
 
-        if (capability == null)
+        if (handler == null)
         {
             return false;
         }
 
-        // Check if there's at least one slot that can accept items
-        for (int i = 0; i < capability.getSlots(); i++)
+        ItemResource resource = ItemResource.of(stack);
+
+        try (Transaction tx = Transaction.open(null))
         {
-            ItemStack itemStack = capability.insertItem(i, stack, true);
-
-            if (itemStack.isEmpty() || itemStack.getCount() != stack.getCount())
-            {
-                return true;
-            }
+            long inserted = handler.insert(resource, stack.getCount(), tx);
+            return inserted > 0;
         }
-
-        return false;
     }
-
 
     public static ItemStack insert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
         if (stack.isEmpty())
         {
-            return ItemStack.EMPTY;
+            return stack;
         }
 
-        BlockEntity blockEntity = level.getBlockEntity(pos);
+        ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, side);
 
-        if (blockEntity == null)
+        if (handler == null)
         {
             return stack;
         }
 
-        IItemHandler capability = Capabilities.ItemHandler.BLOCK.getCapability(level,
-            pos,
-            blockEntity.getBlockState(),
-            blockEntity,
-            side);
 
-        if (capability == null)
+        ItemResource resource = ItemResource.of(stack);
+
+        try (Transaction tx = Transaction.open(null))
         {
+            int inserted = handler.insert(resource, stack.getCount(), tx);
+            tx.commit();
+            stack.shrink(inserted);
+
             return stack;
         }
-
-        ItemStack remaining = stack.copy();
-
-        for (int i = 0; i < capability.getSlots() && !remaining.isEmpty(); i++)
-        {
-            remaining = capability.insertItem(i, remaining, false);
-        }
-
-        return remaining;
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -30,7 +31,7 @@ public interface ModRecipeProvider
         HolderGetter<Item> holder = provider.lookupOrThrow(Registries.ITEM);
 
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CAGE.get()).
-            define('B', Items.IRON_BARS).
+            define('B', ItemTags.BARS).
             define('G', Items.GLASS).
             pattern("BBB").
             pattern("BGB").
@@ -84,7 +85,7 @@ public interface ModRecipeProvider
             save(consumer);
 
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPenBlockRegistry.AVIARY.get()).
-            define('G', Items.CHAIN).
+            define('G', Items.IRON_CHAIN).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("GGG").
             pattern("G G").

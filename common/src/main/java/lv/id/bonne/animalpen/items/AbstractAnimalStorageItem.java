@@ -37,6 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -79,16 +80,13 @@ public abstract class AbstractAnimalStorageItem extends Item
 // ---------------------------------------------------------------------
 
 
-    @Override
-    public void verifyComponentsAfterLoad(ItemStack itemStack)
+    public static void verifyComponentsAfterLoad(ItemStack itemStack)
     {
-        super.verifyComponentsAfterLoad(itemStack);
-
         // Minecraft 1.20.4 < upgrade to 1.20.5+
         if (itemStack.has(DataComponents.CUSTOM_DATA))
         {
             CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
-            CompoundTag compoundTag = customData.getUnsafe();
+            CompoundTag compoundTag = customData.copyTag();
 
             // Target animal variants
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_VARIANTS))
@@ -138,7 +136,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         if (itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
         {
             CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
-            ListTag nbtVariants = customData.getUnsafe().getListOrEmpty("animal_variants");
+            ListTag nbtVariants = customData.copyTag().getListOrEmpty("animal_variants");
             List<CompoundTag> variantList = new ArrayList<>(nbtVariants.size());
             nbtVariants.forEach(tag -> variantList.add((CompoundTag) tag));
 
@@ -151,7 +149,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         // Move from entity data to my custom mob storage.
         if (itemStack.has(DataComponents.ENTITY_DATA))
         {
-            CustomData customData = itemStack.get(DataComponents.ENTITY_DATA);
+            TypedEntityData<EntityType<?>> customData = itemStack.get(DataComponents.ENTITY_DATA);
             CompoundTag compoundTag = customData.getUnsafe();
 
             // Target animal count as other data is lost (cooldowns are not worth the effort)

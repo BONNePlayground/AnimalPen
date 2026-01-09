@@ -28,4 +28,11 @@ public class NeoForgeModBlockTagCopyingItemTagProvider extends BlockTagCopyingIt
     {
         this.copy(AnimalPenTags.ANIMAL_PEN_BLOCKS, AnimalPenTags.ANIMAL_PEN_ITEMS);
     }
+
+
+    @Override
+    public String getName()
+    {
+        return "AnimalPen Block to Item Tag Copy";
+    }
 }

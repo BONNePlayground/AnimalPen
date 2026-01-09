@@ -176,7 +176,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos)
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction)
     {
         BlockEntity be = level.getBlockEntity(pos);
 

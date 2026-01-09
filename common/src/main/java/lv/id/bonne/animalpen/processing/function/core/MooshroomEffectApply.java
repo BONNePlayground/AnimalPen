@@ -18,6 +18,7 @@ import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SpellParticleOption;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -60,8 +61,10 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
             return false;
         }
 
+        SpellParticleOption spellParticleOption = SpellParticleOption.create(ParticleTypes.EFFECT, -1, 1.0F);
+
         player.level().sendParticles(
-            ParticleTypes.EFFECT,
+            spellParticleOption,
             blockPos.getX() + 0.5f,
             blockPos.getY() + 1.5,
             blockPos.getZ() + 0.5f,

@@ -8,6 +8,8 @@
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "FixChestedHorseInteraction",
+    "MigrateItemStack",
+    "MigrateEquipmentSlot",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
