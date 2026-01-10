@@ -290,6 +290,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         {
             CompoundTag animalTag = new CompoundTag();
             mob.save(animalTag);
+
+            animalTag.remove("UUID");
+            animalTag.remove("Pos");
+
             tag.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
         }
 
