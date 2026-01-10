@@ -358,7 +358,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         if (mob.isLeashed())
         {
             // Drop leash
-            mob.dropLeash(true, true);
+            mob.dropLeash();
         }
 
         if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
