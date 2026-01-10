@@ -48,7 +48,12 @@ public class AnimalPenFunctionRegistry
 
     public static final RegistrySupplier<EntityFunctionEntry> FEEDING = ENTITY_FUNCTIONS.register(
         AnimalPen.resourceOf("feeding"),
-        () -> new EntityFunctionEntry(new Feeding())
+        () -> new EntityFunctionEntry(new Feeding(false))
+    );
+
+    public static final RegistrySupplier<EntityFunctionEntry> DUPLICATE = ENTITY_FUNCTIONS.register(
+        AnimalPen.resourceOf("duplicate"),
+        () -> new EntityFunctionEntry(new Feeding(true))
     );
 
     public static final RegistrySupplier<EntityFunctionEntry> SHEEP_SET_SHEARED = ENTITY_FUNCTIONS.register(
