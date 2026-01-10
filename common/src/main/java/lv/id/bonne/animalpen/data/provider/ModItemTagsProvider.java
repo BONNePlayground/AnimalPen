@@ -26,22 +26,19 @@ public interface ModItemTagsProvider
         this.modTag(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("swords")).location()).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("axes")).location()).
-            optionalTag(ResourceLocation.tryParse("forge:knives")).
-            optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("c:tools/knife")).
             optionalTag(ResourceLocation.tryParse("c:knives"));
 
         this.modTag(AnimalPenTags.AQUARIUM_ATTACK_TOOLS).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("swords")).location()).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("axes")).location()).
-            optionalTag(ResourceLocation.tryParse("forge:knives")).
-            optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("c:tools/knife")).
             optionalTag(ResourceLocation.tryParse("c:knives"));
 
         this.modTag(AnimalPenTags.AVIARY_ATTACK_TOOLS).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("swords")).location()).
             optionalTag(TagKey.create(Registries.ITEM, ResourceLocation.tryParse("axes")).location()).
-            optionalTag(ResourceLocation.tryParse("forge:knives")).
-            optionalTag(ResourceLocation.tryParse("forge:tools/knives")).
+            optionalTag(ResourceLocation.tryParse("c:tools/knife")).
             optionalTag(ResourceLocation.tryParse("c:knives"));
 
         this.modTag(AnimalPenTags.ANIMAL_PEN_ITEMS).copy(AnimalPenTags.ANIMAL_PEN_BLOCKS);
