@@ -7,11 +7,14 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import java.util.Map;
+
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
+import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -118,7 +121,8 @@ public class Feeding implements EntityFunction
         animalCount += amount;
 
         // Save last increment into animal data
-        animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, animalCount / 2);
+        Map<String, Integer> properties = storedMobData.properties();
+        properties.put(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, (int) animalCount / 2);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
@@ -137,7 +141,7 @@ public class Feeding implements EntityFunction
             Mth.randomBetween(serverLevel.getRandom(), 0.8F, 1.2F));
 
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
-            StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
+            StoredMobData.of(animalCount, properties, storedMobData.cooldowns()));
     }
 
 
