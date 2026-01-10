@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import lv.id.bonne.animalpen.interaction.value.BoolValue;
 import lv.id.bonne.animalpen.interaction.value.IntValue;
 import lv.id.bonne.animalpen.interaction.value.TagValue;
 import lv.id.bonne.animalpen.interaction.value.Value;
@@ -39,7 +40,10 @@ public interface ConditionEntry
                 return false;
             }
 
-            Value dataValue = new TagValue(tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).get(this.key));
+            // Operator has checks if key exists. Need to use contains.
+            Value dataValue = this.operator == Operator.HAS ?
+                new BoolValue(tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).contains(this.key)) :
+                new TagValue(tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL).get(this.key));
 
             return operator.test(dataValue, this.value);
         }

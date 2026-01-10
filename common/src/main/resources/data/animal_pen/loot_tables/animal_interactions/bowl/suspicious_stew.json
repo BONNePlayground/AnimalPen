@@ -10,47 +10,47 @@
           "functions": [
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:23b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:23}" } }],
               "effects": [{ "type": "minecraft:saturation", "duration": 7 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:16b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:16}" } }],
               "effects": [{ "type": "minecraft:night_vision", "duration": 5 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:12b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:12}" } }],
               "effects": [{ "type": "minecraft:fire_resistance", "duration": 4 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:15b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:15}" } }],
               "effects": [{ "type": "minecraft:blindness", "duration": 8 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:18b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:18}" } }],
               "effects": [{ "type": "minecraft:weakness", "duration": 9 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:10b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:10}" } }],
               "effects": [{ "type": "minecraft:regeneration", "duration": 8 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:8b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:8}" } }],
               "effects": [{ "type": "minecraft:jump_boost", "duration": 6 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:19b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:19}" } }],
               "effects": [{ "type": "minecraft:poison", "duration": 12 }]
             },
             {
               "function": "minecraft:set_stew_effect",
-              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:20b}" } }],
+              "conditions": [{ "condition": "minecraft:entity_properties", "entity": "this", "predicate": { "nbt": "{EffectId:20}" } }],
               "effects": [{ "type": "minecraft:wither", "duration": 8 }]
             }
           ]
