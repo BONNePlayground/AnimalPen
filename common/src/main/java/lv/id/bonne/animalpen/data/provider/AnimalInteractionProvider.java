@@ -827,7 +827,7 @@ public class AnimalInteractionProvider implements DataProvider
         interactions.add(AnimalInteractionBuilder.create("brush").
             ingredient(CustomIngredient.merge(CustomIngredient.of(Items.BRUSH),
                 CustomIngredient.of(AnimalPenTags.COMMON_BRUSHES))).
-            lootEntry(LootEntry.of(AnimalPen.resourceOf("brush/armadillo_scute"))).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/brush/armadillo_scute"))).
             consume(new ConsumerEntry.Damage(16)).
             sound(SoundEvents.ARMADILLO_BRUSH.getLocation()).
             redstoneBit(2).
