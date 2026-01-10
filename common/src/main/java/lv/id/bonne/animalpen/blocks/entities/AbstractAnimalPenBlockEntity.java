@@ -43,6 +43,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
@@ -78,7 +79,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     {
         super.saveAdditional(tag, provider);
 
-        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, this.inventory.createTag(provider));
+        CompoundTag inventory = new CompoundTag();
+        ContainerHelper.saveAllItems(inventory, this.inventory.getItems(), provider);
+        tag.put(AnimalPenCompoundTags.TAG_INVENTORY, inventory);
+
         tag.put(AnimalPenCompoundTags.TAG_DEATH_TICKER, new IntArrayTag(this.deathTicker));
         tag.putLong(AnimalPenCompoundTags.TAG_DISPLAY_SIZE, this.displaySize);
 
@@ -98,6 +102,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (tag.contains(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_LIST))
         {
             this.inventory.fromTag(tag.getList(AnimalPenCompoundTags.TAG_INVENTORY, Tag.TAG_COMPOUND), provider);
+        }
+        else
+        {
+            ContainerHelper.loadAllItems(tag.getCompound(AnimalPenCompoundTags.TAG_INVENTORY),
+                this.inventory.getItems(),
+                provider);
         }
 
         if (tag.contains(AnimalPenCompoundTags.TAG_DEATH_TICKER, Tag.TAG_INT_ARRAY))
