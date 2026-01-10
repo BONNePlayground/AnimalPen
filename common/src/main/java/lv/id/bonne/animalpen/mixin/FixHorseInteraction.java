@@ -1,9 +1,3 @@
-//
-// Created by BONNe
-// Copyright - 2025
-//
-
-
 package lv.id.bonne.animalpen.mixin;
 
 
@@ -16,21 +10,21 @@ import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 
 /**
- * Either I rewrite everything to be an Interaction event, or just make that animal cage should not trigger interaction
- * with chested horses.
+ * Either I rewrite everything to be an Interaction event, or just make that animal cage should not
+ * trigger interaction with chested horses.
  */
-@Mixin(AbstractChestedHorse.class)
-public abstract class FixChestedHorseInteraction extends AbstractHorse
+@Mixin(Horse.class)
+public abstract class FixHorseInteraction extends LivingEntity
 {
-    protected FixChestedHorseInteraction(EntityType<? extends AbstractHorse> entityType,
+    protected FixHorseInteraction(EntityType<? extends LivingEntity> entityType,
         Level level)
     {
         super(entityType, level);
@@ -39,8 +33,8 @@ public abstract class FixChestedHorseInteraction extends AbstractHorse
 
     @Inject(method = "mobInteract",
         at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/animal/horse/AbstractChestedHorse;isTamed()Z",
-            ordinal = 1),
+            target = "Lnet/minecraft/world/entity/animal/horse/Horse;isTamed()Z"),
+            order = 1,
         cancellable = true)
     private void addAnimalCageException(Player player,
         InteractionHand interactionHand,
