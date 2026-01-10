@@ -32,6 +32,16 @@ import net.minecraft.world.item.ItemStack;
  */
 public class Feeding implements EntityFunction
 {
+    /**
+     * Indicates if increment should be half or full.
+     * @param fullIncrement - indicates if it is full increment of  halfed
+     */
+    public Feeding(boolean fullIncrement)
+    {
+        this.fullIncrement = fullIncrement;
+    }
+
+
     @Override
     public boolean interactPlayer(ServerPlayer player,
         InteractionHand interactionHand,
@@ -94,7 +104,13 @@ public class Feeding implements EntityFunction
     {
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
         int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+
+        if (!this.fullIncrement)
+        {
+            amount = amount / 2;
+        }
+
+        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
@@ -114,4 +130,10 @@ public class Feeding implements EntityFunction
 
         mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, animalData);
     }
+
+
+    /**
+     * Used to decide how much breeding increments.
+     */
+    private final boolean fullIncrement;
 }
