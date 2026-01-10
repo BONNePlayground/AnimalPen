@@ -32,11 +32,10 @@ import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -52,6 +51,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -1313,6 +1313,28 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         public boolean canPlaceItem(int slot, ItemStack stack)
         {
             return AbstractAnimalPenBlockEntity.this.validateItemStack(stack);
+        }
+
+
+        @Override
+        public void fromTag(ListTag listTag, HolderLookup.Provider provider)
+        {
+            this.clearContent();
+
+            for(int i = 0; i < listTag.size(); ++i)
+            {
+                CompoundTag tag = listTag.getCompound(i);
+                ItemStack.parse(provider, tag).ifPresent(itemStack ->
+                {
+                    if (tag.contains("tag"))
+                    {
+                        // Upgrade from < 1.20.5 versions to new data.
+                        itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.getCompound("tag")));
+                    }
+
+                    this.addItem(itemStack);
+                });
+            }
         }
 
 
