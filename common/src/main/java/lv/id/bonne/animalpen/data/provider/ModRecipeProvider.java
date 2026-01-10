@@ -59,7 +59,7 @@ public interface ModRecipeProvider
         animalPen(holder, WoodType.WARPED, Items.WARPED_FENCE, consumer);
         animalPen(holder, WoodType.MANGROVE, Items.MANGROVE_FENCE, consumer);
         animalPen(holder, WoodType.BAMBOO, Items.BAMBOO_FENCE, consumer);
-        animalPen(holder, WoodType.CHERRY, Items.CHERRY_FENCE_GATE, consumer);
+        animalPen(holder, WoodType.CHERRY, Items.CHERRY_FENCE, consumer);
         animalPen(holder, WoodType.PALE_OAK, Items.PALE_OAK_FENCE, consumer);
 
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPenBlockRegistry.AQUARIUM.get()).

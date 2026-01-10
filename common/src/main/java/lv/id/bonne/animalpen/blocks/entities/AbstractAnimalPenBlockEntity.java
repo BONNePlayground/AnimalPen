@@ -34,6 +34,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -53,6 +54,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -106,7 +108,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         this.inventory.clearContent();
         this.deathTicker.clear();
-        this.storedAnimal = null;
         this.ownerUUID = null;
 
         tag.getCompound(AnimalPenCompoundTags.TAG_INVENTORY).ifPresent(inventoryTag ->
@@ -125,6 +126,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         parse.ifSuccess(uuid -> this.ownerUUID = uuid);
 
         this.protectedAmount = tag.getLongOr(AnimalPenCompoundTags.TAG_KEEP_AMOUNT, 0);
+
+        if (this.getStoredAnimal().isEmpty())
+        {
+            this.storedAnimal = null;
+        }
+        else if (this.level != null && this.level.isClientSide())
+        {
+            // Load stored mob data into client to update server changes.
+            StoredMob storedMob = this.getItemStack().
+                get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+            this.storedAnimal.load(storedMob.tag());
+        }
+
         this.setChanged();
     }
 
@@ -223,7 +237,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                         this.triggerEndFunctions((ServerLevel) this.getLevel(), animal, this.getItemStack(), key);
                     }
 
-                    cooldownChange = true;
+                    cooldownChange |= this.requiresClientUpdate(animal, key);
                 }
 
                 // trigger continuous functions
@@ -623,7 +637,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 withLuck(player.getLuck());
 
             lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
-                forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
+                forEach(itemStack ->
+                ItemTransferUtil.insertBellowOrDrop(level,
+                    itemStack,
+                    this.getBlockPos(),
+                    this.getBlockPos().above()));
         });
 
         animal.clearFire();
@@ -784,11 +802,25 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 this.inventory.setChanged();
             }
 
+            this.triggerUpdate();
+
             // Trigger update.
             return new InteractionResult(true, itemInHand);
         }
 
         return InteractionResult.FAILED;
+    }
+
+
+    /**
+     * This method returns if client must receive cooldown update from server.
+     * Only cooldowns with text entries should, as it is required for display.
+     */
+    private boolean requiresClientUpdate(Mob mob, String key)
+    {
+        return AnimalPenInteractionRegistry.getInteractions(mob).stream().
+            filter(interaction -> key.equals(interaction.id())).
+            anyMatch(interaction -> !interaction.textLines().isEmpty());
     }
 
 
@@ -1317,10 +1349,31 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
         @Override
+        public void fromTag(ListTag listTag, HolderLookup.Provider provider)
+        {
+            this.clearContent();
+
+            for(int i = 0; i < listTag.size(); ++i)
+            {
+                CompoundTag tag = listTag.getCompound(i);
+                ItemStack.parse(provider, tag).ifPresent(itemStack ->
+                {
+                    if (tag.contains("tag"))
+                    {
+                        // Upgrade from < 1.20.5 versions to new data.
+                        itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.getCompound("tag")));
+                    }
+
+                    this.addItem(itemStack);
+                });
+            }
+        }
+
+
+        @Override
         public void setChanged()
         {
             super.setChanged();
-            AbstractAnimalPenBlockEntity.this.triggerUpdate();
         }
     };
 
