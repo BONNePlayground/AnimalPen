@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.phys.Vec3;
 
@@ -56,7 +57,7 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         animal.setPose(Pose.SWIMMING);
         animal.setSwimming(true);
         ((EntityAccessor) animal).setWasTouchingWater(true);
-        animal.walkAnimation.update(0.2f, 0.4f);
+        animal.walkAnimation.update(0.2f, 0.4f, 1f);
 
         if (animal.tickCount == tileEntity.getTickCounter())
         {
@@ -97,6 +98,11 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         if (animal instanceof Frog frog)
         {
             frog.swimIdleAnimationState.startIfStopped(frog.tickCount);
+        }
+        else if (animal instanceof Axolotl axolotl)
+        {
+            axolotl.inWaterAnimator.tick(true);
+            axolotl.movingAnimator.tick(true);
         }
     }
 
