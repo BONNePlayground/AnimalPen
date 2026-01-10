@@ -11,11 +11,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -188,5 +191,16 @@ public class AnimalPenVariantHelper
 
         itemTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variantList);
         mainItem.setTag(itemTag);
+    }
+
+
+    public static boolean customInteraction(EntityType<?> entityType, ItemStack itemStack)
+    {
+        return itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get()) &&
+            entityType.is(AnimalPenTags.ANIMAL_CAGE_PICKABLE) ||
+            itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()) &&
+                entityType.is(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE) ||
+            itemStack.is(AnimalPensItemRegistry.BIRD_CATCHER.get()) &&
+                entityType.is(AnimalPenTags.BIRD_CATCHER_PICKABLE);
     }
 }
