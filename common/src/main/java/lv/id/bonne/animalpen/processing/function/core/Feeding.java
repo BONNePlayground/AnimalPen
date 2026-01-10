@@ -7,11 +7,14 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import java.util.Map;
+
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
+import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,6 +35,16 @@ import net.minecraft.world.item.ItemStack;
  */
 public class Feeding implements EntityFunction
 {
+    /**
+     * Indicates if increment should be half or full.
+     * @param fullIncrement - indicates if it is full increment of  halfed
+     */
+    public Feeding(boolean fullIncrement)
+    {
+        this.fullIncrement = fullIncrement;
+    }
+
+
     @Override
     public boolean interactPlayer(ServerPlayer player,
         InteractionHand interactionHand,
@@ -98,9 +111,18 @@ public class Feeding implements EntityFunction
             return;
         }
 
+        if (!this.fullIncrement)
+        {
+            amount = amount / 2;
+        }
+
         StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount();
-        animalCount += amount / 2;
+        animalCount += amount;
+
+        // Save last increment into animal data
+        Map<String, Integer> properties = storedMobData.properties();
+        properties.put(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, (int) animalCount / 2);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
@@ -119,6 +141,12 @@ public class Feeding implements EntityFunction
             Mth.randomBetween(serverLevel.getRandom(), 0.8F, 1.2F));
 
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
-            StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
+            StoredMobData.of(animalCount, properties, storedMobData.cooldowns()));
     }
+
+
+    /**
+     * Used to decide how much breeding increments.
+     */
+    private final boolean fullIncrement;
 }

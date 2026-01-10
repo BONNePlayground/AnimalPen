@@ -56,6 +56,7 @@ public class AquariumRenderer extends AbstractAnimalPenRenderer<AquariumTileEnti
         animal.setPose(Pose.SWIMMING);
         animal.setSwimming(true);
         ((EntityAccessor) animal).setWasTouchingWater(true);
+        animal.walkAnimation.update(0.2f, 0.4f);
 
         if (animal.tickCount == tileEntity.getTickCounter())
         {

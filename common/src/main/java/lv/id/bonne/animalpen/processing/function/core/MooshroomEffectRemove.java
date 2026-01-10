@@ -66,7 +66,10 @@ public class MooshroomEffectRemove implements EntityFunction
             StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
 
             CompoundTag animalTag = new CompoundTag();
-            mob.save(animalTag);
+            mob.saveWithoutId(animalTag);
+
+            animalTag.remove("UUID");
+            animalTag.remove("Pos");
 
             componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                 StoredMob.of(storedMob.entityType(), animalTag));
