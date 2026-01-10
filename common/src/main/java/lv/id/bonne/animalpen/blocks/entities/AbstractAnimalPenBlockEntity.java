@@ -620,7 +620,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             withLuck(player.getLuck());
 
         lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
-            forEach(itemStack -> Block.popResource(level, this.getBlockPos().above(), itemStack));
+            forEach(itemStack ->
+                ItemTransferUtil.insertBellowOrDrop(level,
+                    itemStack,
+                    this.getBlockPos(),
+                    this.getBlockPos().above()));
 
         animal.clearFire();
 

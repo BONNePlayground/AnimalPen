@@ -149,7 +149,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
         this.minecraft.getEntityRenderDispatcher().
             getRenderer(animal).
-            render(animal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
+            render(animal, 0.0f, partialTicks, poseStack, buffer, combinedLight);
 
         if (!tileEntity.getDeathTicker().isEmpty())
         {
@@ -175,7 +175,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
                 this.minecraft.getEntityRenderDispatcher().
                     getRenderer(this.dyingAnimal).
-                    render(this.dyingAnimal, 0.0f, this.minecraft.getFrameTime(), poseStack, buffer, combinedLight);
+                    render(this.dyingAnimal, 0.0f, partialTicks, poseStack, buffer, combinedLight);
             }
         });
 

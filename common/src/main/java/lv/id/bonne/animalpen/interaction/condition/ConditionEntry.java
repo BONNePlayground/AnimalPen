@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import lv.id.bonne.animalpen.interaction.value.BoolValue;
 import lv.id.bonne.animalpen.interaction.value.IntValue;
 import lv.id.bonne.animalpen.interaction.value.TagValue;
 import lv.id.bonne.animalpen.interaction.value.Value;
@@ -47,8 +48,11 @@ public sealed interface ConditionEntry permits
             }
 
             StoredMob storedMob = dataHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-            Value dataValue = new TagValue(storedMob.tag().contains(this.key) ?
-                storedMob.tag().get(this.key) : null);
+
+            // Operator has checks if key exists. Need to use contains.
+            Value dataValue = this.operator == Operator.HAS ?
+                new BoolValue(storedMob.tag().contains(this.key)) :
+                new TagValue(storedMob.tag().get(this.key));
 
             return operator.test(dataValue, this.value);
         }
