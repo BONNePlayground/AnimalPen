@@ -7,7 +7,12 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:honeycomb",
-          "quality": 3
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 3
+            }
+          ]
         }
       ]
     }

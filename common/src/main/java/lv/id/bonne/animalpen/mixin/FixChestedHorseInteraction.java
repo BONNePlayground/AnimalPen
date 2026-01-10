@@ -12,8 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import lv.id.bonne.animalpen.registries.AnimalPenTags;
-import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -49,14 +48,10 @@ public abstract class FixChestedHorseInteraction extends AbstractHorse
     {
         ItemStack itemStack = player.getItemInHand(interactionHand);
 
-        if (itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get()) &&
-            this.getType().is(AnimalPenTags.ANIMAL_CAGE_PICKABLE) ||
-            itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()) &&
-                this.getType().is(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE) ||
-            itemStack.is(AnimalPensItemRegistry.BIRD_CATCHER.get()) &&
-                this.getType().is(AnimalPenTags.BIRD_CATCHER_PICKABLE))
+        if (AnimalPenVariantHelper.customInteraction(this.getType(), itemStack))
         {
             cir.setReturnValue(InteractionResult.PASS);
+            cir.cancel();
         }
     }
 }

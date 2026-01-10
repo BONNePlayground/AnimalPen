@@ -752,9 +752,8 @@ public class AnimalInteractionProvider implements DataProvider
 
         interactions.add(AnimalInteractionBuilder.create("feeding").
             ingredient(food).
-            even(true).
             consume(new ConsumerEntry.Consume(true)).
-            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.FEEDING.get())).
+            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.DUPLICATE.get())).
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
             textLines(TextEntry.ready("display.animal_pen.food_ready", food)).
             textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
@@ -829,7 +828,7 @@ public class AnimalInteractionProvider implements DataProvider
         interactions.add(AnimalInteractionBuilder.create("brush").
             ingredient(CustomIngredient.merge(CustomIngredient.of(Items.BRUSH),
                 CustomIngredient.of(AnimalPenTags.COMMON_BRUSHES))).
-            lootEntry(LootEntry.of(AnimalPen.resourceOf("brush/armadillo_scute"))).
+            lootEntry(LootEntry.of(AnimalPen.resourceOf("animal_interactions/brush/armadillo_scute"))).
             consume(new ConsumerEntry.Damage(16)).
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.ARMADILLO_BRUSH)).
             redstoneBit(2).
