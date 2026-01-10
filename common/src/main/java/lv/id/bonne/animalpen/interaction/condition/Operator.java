@@ -79,7 +79,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return !left.getAsString().isBlank() == right.getAsBoolean();
+                return left.getAsBoolean() == right.getAsBoolean();
             }
         };
 
