@@ -64,10 +64,17 @@ public class AnimalPenVariantHelper
 
         CompoundTag variant = new CompoundTag();
         animal.save(variant);
-        variantList.add(variant);
 
-        itemTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variantList);
-        itemStack.setTag(itemTag);
+        variant.remove("UUID");
+        variant.remove("Pos");
+
+        if (!variantList.contains(variant))
+        {
+            // small optimization?
+            variantList.add(variant);
+            itemTag.put(AnimalPenCompoundTags.TAG_VARIANTS, variantList);
+            itemStack.setTag(itemTag);
+        }
 
         return true;
     }
