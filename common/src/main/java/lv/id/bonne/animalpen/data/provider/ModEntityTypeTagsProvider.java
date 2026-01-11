@@ -64,6 +64,7 @@ public interface ModEntityTypeTagsProvider
             add(EntityType.ALLAY).
             add(EntityType.BEE).
             add(EntityType.BAT).
+            add(EntityType.HAPPY_GHAST).
             add(EntityType.PARROT);
     }
 }
