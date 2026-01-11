@@ -42,7 +42,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
     @NotNull
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type()
     {
-        return AnimalInteractionSyncStartPacket.ID;
+        return AnimalInteractionSyncEntityPacket.ID;
     }
 
 
