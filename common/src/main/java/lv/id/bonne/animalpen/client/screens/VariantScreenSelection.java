@@ -705,12 +705,23 @@ public class VariantScreenSelection extends Screen
      */
     private void handleApplyButton(Button button)
     {
+        if (this.selectedButton == -1)
+        {
+            return;
+        }
+
         // Send message to server
+        List<CompoundTag> entityVariants = this.blockEntityInterface.getEntityVariants();
+
+        if (this.selectedButton >= entityVariants.size())
+        {
+            return;
+        }
+
         NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
-                this.blockEntityInterface.getEntityVariants().get(this.selectedButton)));
+                entityVariants.get(this.selectedButton)));
         // Update current client gui.
-        this.displayEntity.load(
-            this.blockEntityInterface.getEntityVariants().get(this.selectedButton));
+        this.displayEntity.load(entityVariants.get(this.selectedButton));
 
         this.selectedButton = -1;
     }
