@@ -137,7 +137,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // Load stored mob data into client to update server changes.
             StoredMob storedMob = this.getItemStack().
                 get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-            this.storedAnimal.load(storedMob.tag());
+            AnimalPenVariantHelper.loadMob(this.storedAnimal, storedMob.tag());
         }
 
         this.setChanged();
