@@ -2,7 +2,7 @@
 
 ## ✅ Optimize Your Farms & Reduce Lag!
 
-Tired of lag caused by massive animal farms? **Animal Pens** lets you store animals in specialized **pens** and **aquariums** while keeping full functionality!  
+Tired of lag caused by massive animal farms? **Animal Pens** lets you store animals in specialized **pens**, **aquariums** and **aviaries** while keeping full functionality!  
 No more overcrowded barns - keep your animals neatly contained while still breeding, shearing, milking, and collecting drops like normal.
 
 ***
@@ -36,8 +36,8 @@ No more overcrowded barns - keep your animals neatly contained while still breed
     • You can toggle if animal pen/aquarium should be interactable only by you.
 
 ✔️ **Releasing animals** by crouch clicking on ground.  
-✔️ Animal Pens and Aquariums can send **Redstone** signal with comparator.  
-✔️ **Dispenser** can be used on Animal Pens and Aquariums with certain tools.
+✔️ Animal Pens, Aquariums and Aviaries can send **Redstone** signal with comparator.  
+✔️ **Dispenser** can be used on Animal Pens, Aquariums and Aviaries with certain tools.
 
 (1) Features not added:  
      Any animal transformation  
@@ -49,17 +49,7 @@ No more overcrowded barns - keep your animals neatly contained while still breed
 
 Easily adjust gameplay with the **mod’s configuration file** _\[config/animal\_pen\_config.json\]_, allowing you to tweak:
 
-⚙️ **Cooldowns for actions** – Example:  
-    • Feeding animals  
-    • Shearing sheep  
-    • Collecting eggs from chickens/turtles  
-    • Milking cow
-
 🗡️ **Attack cooldown** - Allows to change how fast players can kill animals in pen.
-
-📦 **Drop Limits** – Prevent item overflow:  
-    • 🐑 Wool drop limit  
-    • 🥚 Egg drop limit
 
 📏 **Animal Growth System** (Optional):  
     • If enabled, **more animals = larger pen display**.  
@@ -73,12 +63,13 @@ Easily adjust gameplay with the **mod’s configuration file** _\[config/animal\
 
 ## 🔧 Data Driven Settings:
 
-### Added Two New Item Tags:
+### Added Three New Item Tags:
 
 These tags define which items can attack their respective blocks:
 
 *   **`animal_pen:can_attack_aquarium`** – Items in this tag can attack the **Aquarium** block.
 *   **`animal_pen:can_attack_pen`** – Items in this tag can attack the **Animal Pen** block.
+*   **`animal_pen:can_attack_aviary`** – Items in this tag can attack the **Aviary** block.
 
 ### Example: Adding Custom Weapons
 
@@ -104,38 +95,29 @@ Path: `your_custom_datapack/data/animal_pen/tags/item/can_attack_pen.json`
 
 This allows **custom weapons** to be used for attacking animal pens and aquariums.
 
-### Customizable Food Items
+### Added Three New Entity Tags:
 
-You can also add or change food items for each animal. You can do it with data packs.
-To add/change animal food you need to create a file: `<mod_that_adds_animal>/animal_foods/<animal_id>.json`
+These tags define which items can attack their respective blocks:
 
-#### 📂 **For Minecraft 1.18.2-1.21.1**
-```
-{
-  // optional value. Defines when the food items should be loaded
-  "condition": "mod:<mod_id>",
-  "food_items": [
-    {
-      "item": "<mod>:<item>"
-    },
-    {
-      "tag": "<mod>:<tag>"
-    }
-  ]
-}
-```
-#### 📂 **For Minecraft 1.21.2 and forward**
+*   **`animal_pen:animal_cage_pickable`** – Mobs that can be picked up by Animal Cage.
+*   **`animal_pen:bird_catcher_pickable`** – Mobs that can be picked up by Bird Catcher.
+*   **`animal_pen:water_mob_container_pickable`** – Mobs that can be picked up by Water Animal Container.
 
-```
-{
-  // optional value. Defines when the food items should be loaded
-  "condition": "mod:<mod_id>",
-  "food_items": [
-    "<mod>:<item>", // for items
-    "#<mod>:<tag>"  // for tags (# at front)
-  ]
-}
-```
+#### 📂 **For Minecraft 1.20.6 and Below:**
+
+Path: `<your_custom_datapack>/data/animal_pen/tags/entity_types/animal_cage_pickable.json`
+
+#### 📂 **For Minecraft 1.21 and Above:**
+
+Path: `<your_custom_datapack>/data/animal_pen/tags/entity_type/animal_cage_pickable.json`
+
+### Customizable Interaction
+
+You can also add or change interactions each animal. You can do it with data packs.
+To add animal interaction you need to create a file: `<your_custom_datapack>/data/<your_data_pack_id>/animal_interactions/<your_interaction>.json`
+To change animal interaction you need to change animal file: `<your_custom_datapack>/data/minecraft/animal_interactions/<entity_id>.json`
+
+The interaction definition you can check at: [Wiki] (https://github.com/BONNePlayground/AnimalPen/wiki/Animal-Interaction)
 
 ***
 
