@@ -1349,28 +1349,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
 
         @Override
-        public void fromTag(ListTag listTag, HolderLookup.Provider provider)
-        {
-            this.clearContent();
-
-            for(int i = 0; i < listTag.size(); ++i)
-            {
-                CompoundTag tag = listTag.getCompound(i);
-                ItemStack.parse(provider, tag).ifPresent(itemStack ->
-                {
-                    if (tag.contains("tag"))
-                    {
-                        // Upgrade from < 1.20.5 versions to new data.
-                        itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag.getCompound("tag")));
-                    }
-
-                    this.addItem(itemStack);
-                });
-            }
-        }
-
-
-        @Override
         public void setChanged()
         {
             super.setChanged();
