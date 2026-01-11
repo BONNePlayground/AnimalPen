@@ -28,24 +28,21 @@ public interface ModItemTagsProvider
             optionalTag(ItemTags.SWORDS).
             optionalTag(ItemTags.AXES).
             optionalTag(ItemTags.SPEARS).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:knives"))).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:tools/knives"))).
+            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:tools/knife"))).
             optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:knives")));
 
         this.modTag(AnimalPenTags.AQUARIUM_ATTACK_TOOLS).
             optionalTag(ItemTags.SWORDS).
             optionalTag(ItemTags.AXES).
             optionalTag(ItemTags.SPEARS).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:knives"))).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:tools/knives"))).
+            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:tools/knife"))).
             optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:knives")));
 
         this.modTag(AnimalPenTags.AVIARY_ATTACK_TOOLS).
             optionalTag(ItemTags.SWORDS).
             optionalTag(ItemTags.AXES).
             optionalTag(ItemTags.SPEARS).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:knives"))).
-            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("forge:tools/knives"))).
+            optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:tools/knife"))).
             optionalTag(TagKey.create(Registries.ITEM, Identifier.tryParse("c:knives")));
 
         this.modTag(AnimalPenTags.ANIMAL_PEN_ITEMS).copy(AnimalPenTags.ANIMAL_PEN_BLOCKS);
