@@ -19,6 +19,7 @@ import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
@@ -126,11 +127,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         this.protectedAmount = tag.getLong(AnimalPenCompoundTags.TAG_KEEP_AMOUNT);
 
-        if (this.getStoredAnimal().isEmpty())
+        if (this.getItemStack().isEmpty())
         {
+            // Remove entity
             this.storedAnimal = null;
         }
-        else if (this.level != null && this.level.isClientSide())
+        else if (this.storedAnimal != null && this.level != null && this.level.isClientSide())
         {
             // Load stored mob data into client to update server changes.
             StoredMob storedMob = this.getItemStack().
@@ -292,6 +294,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 {
                     this.inventory.addItem(itemInHand);
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
+                    this.triggerUpdate();
 
                     if (this.level != null && !this.level.isClientSide())
                     {
@@ -371,7 +374,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                         new HashMap<>(0),
                         AnimalPenItemHelper.getCooldowns(this.getItemStack())));
 
-                this.inventory.setChanged();
+                this.triggerUpdate();
 
                 AnimalPen.sendDebug("Half the amount of animals in pen");
                 // Remove half of animals.
@@ -451,7 +454,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
 
                 player.setItemInHand(interactionHand, itemInHand);
-                this.inventory.setChanged();
+                this.triggerUpdate();
 
                 AnimalPen.sendDebug("Cage merged into pen");
 
@@ -487,7 +490,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 ItemStack item = this.getItemStack();
                 player.setItemInHand(interactionHand, item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
-                this.inventory.setChanged();
+
+                this.triggerUpdate();
 
                 AnimalPen.sendDebug("Taking out animal cage");
             }
@@ -964,13 +968,34 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     public void removeAnimalVariant(int index)
     {
-        if (this.getStoredAnimal().isEmpty() || this.getEntityVariants().size() <= index)
+        ItemStack itemStack = this.getItemStack();
+
+        if (itemStack.isEmpty())
         {
             return;
         }
 
-        this.getEntityVariants().remove(index);
-        this.inventory.setChanged();
+        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()))
+        {
+            return;
+        }
+
+        StoredMobVariants storedMobVariants =
+            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+        List<CompoundTag> variants = storedMobVariants.variants();
+
+        if (index >= variants.size())
+        {
+            return;
+        }
+
+        variants.remove(index);
+
+        itemStack.update(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
+            StoredMobVariants.of(new ArrayList<>()),
+            data -> StoredMobVariants.of(variants));
+
+        this.triggerUpdate();
 
         if (this.level != null && !this.level.isClientSide())
         {
