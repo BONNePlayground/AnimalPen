@@ -2,7 +2,7 @@
   "model": {
     "type": "minecraft:condition",
     "property": "minecraft:has_component",
-    "component": "minecraft:entity_data",
+    "component": "animal_pen:mob",
     "on_false": {
       "type": "minecraft:model",
       "model": "animal_pen:item/bird_catcher"

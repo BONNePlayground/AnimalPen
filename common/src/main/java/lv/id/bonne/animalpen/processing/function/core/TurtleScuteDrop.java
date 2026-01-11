@@ -58,10 +58,10 @@ public class TurtleScuteDrop implements EntityFunction.ProcessEntityFunction
 
         int count;
 
-        if (properties.containsKey(AnimalPenCompoundTags.TAG_TURTLE_SCUTE))
+        if (properties.containsKey(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT))
         {
             // Get and remove value from data.
-            count = properties.remove(AnimalPenCompoundTags.TAG_TURTLE_SCUTE);
+            count = properties.getOrDefault(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, 0);
         }
         else
         {

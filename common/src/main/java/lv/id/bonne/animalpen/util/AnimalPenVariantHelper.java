@@ -16,9 +16,12 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenTags;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -186,6 +189,17 @@ public class AnimalPenVariantHelper
             StoredMobVariants.of(mergedList));
 
         redundantItem.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+    }
+
+
+    public static boolean customInteraction(EntityType<?> entityType, ItemStack itemStack)
+    {
+        return itemStack.is(AnimalPensItemRegistry.ANIMAL_CAGE.get()) &&
+            entityType.is(AnimalPenTags.ANIMAL_CAGE_PICKABLE) ||
+            itemStack.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()) &&
+                entityType.is(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE) ||
+            itemStack.is(AnimalPensItemRegistry.BIRD_CATCHER.get()) &&
+                entityType.is(AnimalPenTags.BIRD_CATCHER_PICKABLE);
     }
 
 
