@@ -36,6 +36,14 @@ loom {
     }
 }
 
+sourceSets {
+    main {
+        resources {
+            exclude '**/.cache/**'
+        }
+    }
+}
+
 configurations {
     common {
         canBeResolved = true
