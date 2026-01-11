@@ -7,7 +7,9 @@
   ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
+    "FixAllayPickup",
     "FixChestedHorseInteraction",
+    "FixHorseInteraction",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"

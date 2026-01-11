@@ -33,5 +33,5 @@ public class AnimalPenCompoundTags
 
     public static final String TAG_POLLEN_LEVEL = "pollen_level";
 
-    public static final String TAG_TURTLE_SCUTE = "scute_count";
+    public static final String TAG_LAST_FEEDING_AMOUNT = "last_feeding_increment";
 }
