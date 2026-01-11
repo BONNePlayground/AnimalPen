@@ -91,12 +91,14 @@ public class AnimalInteractionProvider implements DataProvider
                 SoundEvents.CAT_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DOLPHIN,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                false,
                 SoundEvents.DOLPHIN_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.FOX,
                 CustomIngredient.of(ItemTags.FOX_FOOD),
                 SoundEvents.FOX_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.GLOW_SQUID,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                false,
                 SoundEvents.GLOW_SQUID_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.HOGLIN,
                 CustomIngredient.of(ItemTags.HOGLIN_FOOD),
@@ -118,6 +120,7 @@ public class AnimalInteractionProvider implements DataProvider
                 SoundEvents.RABBIT_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.SQUID,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                false,
                 SoundEvents.SQUID_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.STRIDER,
                 CustomIngredient.of(ItemTags.STRIDER_FOOD),
@@ -160,10 +163,12 @@ public class AnimalInteractionProvider implements DataProvider
             featureList.add(this.generateWithFoodAndAmbient(cache,
                 EntityType.NAUTILUS,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                false,
                 SoundEvents.NAUTILUS_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache,
                 EntityType.ZOMBIE_NAUTILUS,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
+                false,
                 SoundEvents.ZOMBIE_NAUTILUS_AMBIENT));
 
             // Entities with only ambient
@@ -247,11 +252,20 @@ public class AnimalInteractionProvider implements DataProvider
         EntityType<?> entityType,
         CustomIngredient foodItem,
         SoundEvent soundEvent)
+    {
+        return this.generateWithFoodAndAmbient(cache, entityType, foodItem, true, soundEvent);
+    }
 
+
+    public CompletableFuture<?> generateWithFoodAndAmbient(CachedOutput cache,
+        EntityType<?> entityType,
+        CustomIngredient foodItem,
+        boolean withStackLimit,
+        SoundEvent soundEvent)
     {
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(),
-                List.of(this.generateFood(foodItem), this.generateAmbientSound(soundEvent)))).
+                List.of(this.generateFood(foodItem, withStackLimit), this.generateAmbientSound(soundEvent)))).
             getOrThrow();
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
