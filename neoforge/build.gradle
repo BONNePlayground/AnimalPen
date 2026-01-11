@@ -32,6 +32,10 @@ loom {
 sourceSets {
     main {
         resources.srcDir 'src/main/generated'
+
+        resources {
+            exclude '**/.cache/**'
+        }
     }
 }
 
