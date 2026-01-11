@@ -2,7 +2,6 @@ package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.data.helper.SimpleItemTagAppender;
@@ -15,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 
 public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModItemTagsProvider
@@ -23,10 +21,9 @@ public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModI
     public NeoForgeModItemTagProvider(PackOutput arg,
         CompletableFuture<HolderLookup.Provider> completableFuture,
         TagsProvider<Block> arg2,
-        String modId,
-        @Nullable ExistingFileHelper existingFileHelper)
+        String modId)
     {
-        super(arg, completableFuture, arg2.contentsGetter(), modId, existingFileHelper);
+        super(arg, completableFuture, arg2.contentsGetter(), modId);
     }
 
 

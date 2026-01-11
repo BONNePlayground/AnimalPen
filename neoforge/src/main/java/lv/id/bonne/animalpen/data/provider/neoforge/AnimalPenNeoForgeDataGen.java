@@ -17,32 +17,29 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 public class AnimalPenNeoForgeDataGen
 {
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event)
+    public static void gatherData(GatherDataEvent.Server event)
     {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(event.includeServer(), new AnimalInteractionProvider(output, lookupProvider));
+        generator.addProvider(true, new AnimalInteractionProvider(output, lookupProvider));
 
         NeoForgeModBlockTagProvider blockTags = new NeoForgeModBlockTagProvider(output,
             lookupProvider,
-            AnimalPen.MOD_ID,
-            event.getExistingFileHelper());
+            AnimalPen.MOD_ID);
 
-        generator.addProvider(event.includeServer(), blockTags);
-        generator.addProvider(event.includeServer(), new NeoForgeModItemTagProvider(output,
+        generator.addProvider(true, blockTags);
+        generator.addProvider(true, new NeoForgeModItemTagProvider(output,
             lookupProvider,
             blockTags,
-            AnimalPen.MOD_ID,
-            event.getExistingFileHelper()));
-        generator.addProvider(event.includeServer(), new NeoForgeModEntityTypeTagProvider(output,
+            AnimalPen.MOD_ID));
+        generator.addProvider(true, new NeoForgeModEntityTypeTagProvider(output,
             lookupProvider,
-            AnimalPen.MOD_ID,
-            event.getExistingFileHelper()));
+            AnimalPen.MOD_ID));
 
-        generator.addProvider(event.includeServer(), new NeoForgeModRecipeProvider.Runner(output, lookupProvider));
+        generator.addProvider(true, new NeoForgeModRecipeProvider.Runner(output, lookupProvider));
 
-        generator.addProvider(event.includeServer(), new NeoForgeModLootTableProvider(output, lookupProvider));
+        generator.addProvider(true, new NeoForgeModLootTableProvider(output, lookupProvider));
     }
 }
