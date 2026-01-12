@@ -57,8 +57,6 @@ Easily adjust gameplay with the **mod’s configuration file** _\[config/animal\
 
 🎨 **Stored Variants** – Allows to change how many variants can be stored per pen.
 
-🚫 **Blocked Animals List** – Prevent specific mobs from being captured.
-
 ***
 
 ## 🔧 Data Driven Settings:
@@ -133,7 +131,7 @@ Use these commands (server moderators) to manage the mod:
 ## 🛠️ Requirements:
 
 📌 **[Architectury API](https://modrinth.com/mod/architectury-api)** (Required).  
-📖 **[Patchouli](https://modrinth.com/mod/patchouli)** (Optional, adds an in-game guidebook).
+📖 **[Patchouli](https://modrinth.com/mod/patchouli)** (Optional, adds an in-game guidebook).  
 📖 **[ClothConfigAPI](https://modrinth.com/mod/cloth-config)** (Optional, adds config editing GUI).
 
 ***
