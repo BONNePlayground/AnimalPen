@@ -85,7 +85,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         // Stop animations
         this.configureAnimalPose(animal, blockEntity);
 
-        renderState.displayEntity = this.entityRenderer.extractEntity(animal, partialTick);
+        renderState.displayEntity = this.entityRenderer.extractEntity(animal, 0);
         renderState.displayEntity.lightCoords = renderState.lightCoords;
 
         CompoundTag animalTag = AnimalPenVariantHelper.saveMob(animal);
