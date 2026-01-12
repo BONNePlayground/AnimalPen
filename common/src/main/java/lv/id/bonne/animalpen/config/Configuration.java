@@ -9,12 +9,8 @@ package lv.id.bonne.animalpen.config;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.HashSet;
-import java.util.Set;
 
 import lv.id.bonne.animalpen.config.annotations.JsonComment;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 
 
 /**
@@ -30,7 +26,6 @@ public class Configuration
     public boolean isInvalid()
     {
         return
-            this.blockedAnimals == null ||
             this.aquariumMobSize == null ||
             this.aquariumMobSize <= 0 ||
             this.animalPenMobSize == null ||
@@ -57,12 +52,6 @@ public class Configuration
      */
     public void setDefaults(boolean init)
     {
-        if (this.blockedAnimals == null || init)
-        {
-            this.blockedAnimals = new HashSet<>();
-            this.blockedAnimals.add(ResourceLocation.tryParse("cobblemon:pokemon"));
-        }
-
         if (this.animalPenMobSize == null || this.animalPenMobSize <= 0 || init)
         {
             this.animalPenMobSize = 0.33f;
@@ -223,18 +212,6 @@ public class Configuration
     public Float getGrowthMultiplier()
     {
         return this.growthMultiplier;
-    }
-
-
-    /**
-     * This indicates is given entity is blocked from being picked up.
-     *
-     * @param entityType Entity that need to be checked.
-     * @return {@code true} if entity is blocked from being picked up, {@code false} otherwise.
-     */
-    public boolean isBlocked(EntityType<?> entityType)
-    {
-        return this.blockedAnimals.contains(entityType.arch$registryName());
     }
 
 
@@ -587,11 +564,6 @@ public class Configuration
     @Expose
     @SerializedName("show_all_interactions_above")
     private Boolean showAllInteractions;
-
-    @JsonComment("Set of animals that are blocked from picking up.")
-    @Expose
-    @SerializedName("blocked_animals")
-    private Set<ResourceLocation> blockedAnimals = new HashSet<>();
 
     @JsonComment("Debug code to indicate problems.")
     @Expose

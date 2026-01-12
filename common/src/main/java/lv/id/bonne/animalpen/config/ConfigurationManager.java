@@ -12,9 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.config.adapters.ResourceLocationTypeAdapter;
 import lv.id.bonne.animalpen.config.util.CommentGeneration;
-import net.minecraft.resources.ResourceLocation;
 
 
 /**
@@ -29,8 +27,6 @@ public class ConfigurationManager
     {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
-        // Register type adapter for ResourceLocation
-        builder.registerTypeAdapter(ResourceLocation.class, new ResourceLocationTypeAdapter());
 
         this.gson = builder.create();
     }
