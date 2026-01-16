@@ -40,6 +40,7 @@ public interface ModBlockTagsProvider
                 stream().
                 map(Supplier::get).
                 toArray(Block[]::new)).
-            add(AnimalPenBlockRegistry.AVIARY.get());
+            add(AnimalPenBlockRegistry.AVIARY.get()).
+            add(AnimalPenBlockRegistry.GOLD_AVIARY.get());
     }
 }

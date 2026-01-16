@@ -40,6 +40,7 @@ public class AnimalPenClient
             context -> new AviaryRenderer());
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AVIARY.get());
+        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.GOLD_AVIARY.get());
 
         AnimalPenBlockRegistry.COPPER_AVIARIES.values().forEach(
             aviary -> RenderTypeRegistry.register(RenderType.translucent(),

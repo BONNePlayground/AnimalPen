@@ -86,6 +86,17 @@ public interface ModRecipeProvider
                 this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
             save(consumer);
 
+        ShapedRecipeBuilder.shaped(AnimalPenBlockRegistry.GOLD_AVIARY.get()).
+            define('G', Items.GOLD_INGOT).
+            define('N', Items.GOLD_NUGGET).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("NGN").
+            pattern("G G").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
+
         // Generate copper aviaries. Currently just base one
         ShapedRecipeBuilder.shaped(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.UNAFFECTED).get()).
             group("animal_pens").

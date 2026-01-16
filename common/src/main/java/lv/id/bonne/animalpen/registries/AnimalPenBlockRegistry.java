@@ -179,6 +179,15 @@ public class AnimalPenBlockRegistry
     );
 
 
+    public static final RegistrySupplier<Block> GOLD_AVIARY = registerBlock("gold_aviary",
+        () -> new AviaryBlock(
+            BlockBehaviour.Properties.copy(Blocks.GLASS).
+                strength(1.0f).
+                sound(SoundType.METAL).
+                noOcclusion())
+    );
+
+
 // ---------------------------------------------------------------------
 // Section: Static Registry
 // ---------------------------------------------------------------------

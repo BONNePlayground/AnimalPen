@@ -53,7 +53,7 @@ public class AnimalPenTileEntityRegistry
                     Stream.concat(
                         Stream.concat(AnimalPenBlockRegistry.COPPER_AVIARIES.values().stream().map(Supplier::get),
                             AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().stream().map(Supplier::get)),
-                        Stream.of(AnimalPenBlockRegistry.AVIARY.get())).
+                        Stream.of(AnimalPenBlockRegistry.AVIARY.get(), AnimalPenBlockRegistry.GOLD_AVIARY.get())).
                         toArray(Block[]::new)).
                 build(null));
 }
