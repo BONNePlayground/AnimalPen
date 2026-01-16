@@ -75,5 +75,6 @@ public interface ModItemTagsProvider
             add(Items.NETHERITE_AXE);
 
         this.modTag(AnimalPenTags.ANIMAL_PEN_ITEMS).copy(AnimalPenTags.ANIMAL_PEN_BLOCKS);
+        this.modTag(AnimalPenTags.AVIARIES_ITEMS).copy(AnimalPenTags.AVIARIES_BLOCKS);
     }
 }

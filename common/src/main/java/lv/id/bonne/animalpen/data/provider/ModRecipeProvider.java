@@ -17,6 +17,8 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 
@@ -79,6 +81,18 @@ public interface ModRecipeProvider
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("GGG").
             pattern("G G").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
+
+        // Generate copper aviaries. Currently just base one
+        ShapedRecipeBuilder.shaped(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.UNAFFECTED).get()).
+            group("animal_pens").
+            define('F', Items.COPPER_INGOT).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("FFF").
+            pattern("F F").
             pattern("SSS").
             unlockedBy("has_bird_catcher",
                 this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).

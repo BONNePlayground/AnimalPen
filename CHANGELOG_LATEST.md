@@ -1,4 +1,5 @@
-# Animal Pens 2.1.0
+# Animal Pens 2.2.0
 
 #### Features:
-- Fixes an issue with configuration loader.
+- Adds Copper Aviary that oxidizes
+- 

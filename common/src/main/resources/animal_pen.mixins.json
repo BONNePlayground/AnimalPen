@@ -9,10 +9,14 @@
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "FixChestedHorseInteraction",
+    "MixinAxeItem",
+    "MixinHoneycombItem",
+    "MixinLightingBolt",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
+    "accessors.HoneycombItemAccessor",
     "accessors.MushroomCowAccessor",
-    "invokers.MobInvoker",
+    "invokers.MobInvoker"
   ],
   "injectors": {
     "defaultRequire": 1
