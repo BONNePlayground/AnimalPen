@@ -10,6 +10,8 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
+    "MixinHoneycombItem",
+    "MixinLightingBolt",
     "MushroomStewEffectRemove",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",

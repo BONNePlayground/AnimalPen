@@ -7,6 +7,7 @@
     "InfinitePlayerAttack"
   ],
   "mixins": [
+    "MixinIBlockExtension"
   ],
   "injectors": {
     "defaultRequire": 1
