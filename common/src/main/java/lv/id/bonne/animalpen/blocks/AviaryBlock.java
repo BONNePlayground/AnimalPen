@@ -15,7 +15,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
@@ -78,20 +78,17 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
 
 
     @Override
-    public InteractionResult use(BlockState blockState,
-        Level level,
-        BlockPos blockPos,
-        Player player,
-        InteractionHand interactionHand,
-        BlockHitResult blockHitResult)
+    protected ItemInteractionResult useItemOn(ItemStack itemStack,
+        BlockState blockState, Level level, BlockPos blockPos,
+        Player player, InteractionHand interactionHand, BlockHitResult blockHitResult)
     {
-        InteractionResult use = super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
+        ItemInteractionResult use = super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
         // Allow copper mechanics
         if (itemInHand.getItem() instanceof AxeItem || itemInHand.is(Items.HONEYCOMB))
         {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         return use;
