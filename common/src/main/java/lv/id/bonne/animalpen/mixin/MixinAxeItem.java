@@ -7,57 +7,56 @@
 package lv.id.bonne.animalpen.mixin;
 
 
+import com.google.common.collect.BiMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.blocks.WeatheringCopperAviary;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 
 
 @Mixin(AxeItem.class)
 public class MixinAxeItem
 {
-    @ModifyVariable(method = "useOn", at = @At(value = "STORE"), ordinal = 1)
-    private Optional<BlockState> modifyOxidizedBlock(
-        Optional<BlockState> originalBlockState,
-        UseOnContext context)
+    @Redirect(method = "evaluateNewBlockState",
+        at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/level/block/WeatheringCopper;getPrevious(Lnet/minecraft/world/level/block/state/BlockState;)Ljava/util/Optional;"))
+    private Optional<BlockState> modifyOxidizedBlock(BlockState blockState)
     {
-        if (originalBlockState.isPresent())
-        {
-            return originalBlockState;
-        }
+        Optional<BlockState> previous = WeatheringCopper.getPrevious(blockState);
 
-        Level world = context.getLevel();
-        BlockPos blockPos = context.getClickedPos();
-        BlockState blockState = world.getBlockState(blockPos);
+        if (previous.isPresent())
+        {
+            return previous;
+        }
 
         return WeatheringCopperAviary.getPrevious(blockState);
     }
 
 
-    @ModifyVariable(method = "useOn", at = @At(value = "STORE"), ordinal = 2)
-    private Optional<BlockState> modifyWaxedBlock(
-        Optional<BlockState> originalBlockState,
-        UseOnContext context)
+    @Redirect(method = "evaluateNewBlockState",
+        at = @At(value = "INVOKE",
+            target = "Lcom/google/common/collect/BiMap;get(Ljava/lang/Object;)Ljava/lang/Object;"))
+    private Object modifyWaxedBlock(BiMap instance, Object key)
     {
-        if (originalBlockState.isPresent())
+        Object original = instance.get(key);
+
+        if (original != null)
         {
-            return originalBlockState;
+            return original;
         }
 
-        Level world = context.getLevel();
-        BlockPos blockPos = context.getClickedPos();
-        BlockState blockState = world.getBlockState(blockPos);
+        if (key instanceof Block block)
+        {
+            return WeatheringCopperAviary.WAXED_TO_UNWAXED_BLOCKS.get().get(block);
+        }
 
-        return Optional.ofNullable(
-            WeatheringCopperAviary.WAXED_TO_UNWAXED_BLOCKS.get().get(blockState.getBlock())).
-            map(block -> block.withPropertiesOf(blockState));
+        return null;
     }
 }

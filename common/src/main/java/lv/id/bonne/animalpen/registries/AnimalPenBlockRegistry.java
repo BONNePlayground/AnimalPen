@@ -98,7 +98,7 @@ public class AnimalPenBlockRegistry
 
         if (weatherState != WeatheringCopper.WeatherState.UNAFFECTED)
         {
-            blockName += weatherState.name().toLowerCase() + "_";
+            blockName += weatherState.getSerializedName() + "_";
         }
 
         blockName += "copper_aviary";
@@ -108,7 +108,7 @@ public class AnimalPenBlockRegistry
             // Register the block
             RegistrySupplier<Block> block = registerBlock(blockName,
                 () -> new AviaryBlock(
-                    BlockBehaviour.Properties.copy(Blocks.GLASS).
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion()));
@@ -121,7 +121,7 @@ public class AnimalPenBlockRegistry
             RegistrySupplier<Block> block = registerBlock(blockName,
                 () -> new CopperAviaryBlock(
                     weatherState,
-                    BlockBehaviour.Properties.copy(Blocks.GLASS).
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion()));
@@ -182,7 +182,7 @@ public class AnimalPenBlockRegistry
 
     public static final RegistrySupplier<Block> GOLD_AVIARY = registerBlock("gold_aviary",
         () -> new AviaryBlock(
-            BlockBehaviour.Properties.copy(Blocks.GLASS).
+            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).
                 strength(1.0f).
                 sound(SoundType.METAL).
                 noOcclusion())
