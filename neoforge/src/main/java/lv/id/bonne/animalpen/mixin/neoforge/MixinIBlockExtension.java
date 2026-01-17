@@ -11,7 +11,7 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.blocks.WeatheringCopperAviary;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
 
 
@@ -21,7 +21,7 @@ public interface MixinIBlockExtension
     @Inject(method = "getToolModifiedState", at = @At(value = "RETURN", ordinal = 2), cancellable = true)
     private void modifyOxidizedBlock(BlockState state,
         UseOnContext context,
-        ToolAction toolAction,
+        ItemAbility toolAction,
         boolean simulate,
         CallbackInfoReturnable<BlockState> cir)
     {
@@ -38,7 +38,7 @@ public interface MixinIBlockExtension
     @Inject(method = "getToolModifiedState", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
     private void modifyWaxedBlock(BlockState state,
         UseOnContext context,
-        ToolAction toolAction,
+        ItemAbility toolAction,
         boolean simulate,
         CallbackInfoReturnable<BlockState> cir)
     {
