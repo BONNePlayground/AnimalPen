@@ -45,5 +45,6 @@ public interface ModItemTagsProvider
             optionalTag(ResourceLocation.tryParse("c:knives"));
 
         this.modTag(AnimalPenTags.ANIMAL_PEN_ITEMS).copy(AnimalPenTags.ANIMAL_PEN_BLOCKS);
+        this.modTag(AnimalPenTags.AVIARIES_ITEMS).copy(AnimalPenTags.AVIARIES_BLOCKS);
     }
 }
