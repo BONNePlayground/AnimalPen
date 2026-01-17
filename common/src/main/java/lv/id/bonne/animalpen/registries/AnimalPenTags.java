@@ -32,13 +32,13 @@ public class AnimalPenTags
 /**
      * Tags for aviaries blocks.
      */
-    public static final TagKey<Block> AVIARIES_BLOCKS = TagKey.create(Registry.BLOCK_REGISTRY,
+    public static final TagKey<Block> AVIARIES_BLOCKS = TagKey.create(Registries.BLOCK,
         AnimalPen.resourceOf("aviaries"));
 
     /**
      * Tags for aviaries items.
      */
-    public static final TagKey<Item> AVIARIES_ITEMS = TagKey.create(Registry.ITEM_REGISTRY,
+    public static final TagKey<Item> AVIARIES_ITEMS = TagKey.create(Registries.ITEM,
         AnimalPen.resourceOf( "aviaries"));
 
     /**
