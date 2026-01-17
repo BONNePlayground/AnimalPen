@@ -1,0 +1,6 @@
+{
+  "name": "Aviary",
+  "description": "The Aviary is a simple block that allows players to interact with flying animals within a single block of space. It allows to interact with dispensers and outputs redstone signal from comparator.",
+  "icon": "animal_pen:aviary",
+  "sortnum": 1
+}

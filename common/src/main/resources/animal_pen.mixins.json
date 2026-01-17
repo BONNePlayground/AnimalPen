@@ -10,8 +10,12 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
+    "MixinAxeItem",
+    "MixinHoneycombItem",
+    "MixinLightingBolt",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
+    "accessors.HoneycombItemAccessor",
     "accessors.MushroomCowAccessor",
     "invokers.MobInvoker"
   ],
