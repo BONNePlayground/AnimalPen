@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "animal_pen:block/exposed_copper_aviary",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "animal_pen:block/exposed_copper_aviary"
+    },
+    "facing=south": {
+      "model": "animal_pen:block/exposed_copper_aviary",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "animal_pen:block/exposed_copper_aviary",
+      "y": 270
+    }
+  }
+}

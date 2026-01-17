@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.registries;
 
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.blocks.AviaryBlock;
+import lv.id.bonne.animalpen.blocks.CopperAviaryBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.item.BlockItem;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
@@ -84,12 +87,81 @@ public class AnimalPenBlockRegistry
 
 
     /**
+     * This method registers aviary with specified weathering status
+     *
+     * @param waxed Indicates if it is waxed variant or not.
+     * @param weatherState that is registered.
+     */
+    public static void registerAviary(WeatheringCopper.WeatherState weatherState, boolean waxed)
+    {
+        String blockName = (waxed ? "waxed_" : "");
+
+        if (weatherState != WeatheringCopper.WeatherState.UNAFFECTED)
+        {
+            blockName += weatherState.name().toLowerCase() + "_";
+        }
+
+        blockName += "copper_aviary";
+
+        if (waxed)
+        {
+            // Register the block
+            RegistrySupplier<Block> block = registerBlock(blockName,
+                () -> new AviaryBlock(
+                    BlockBehaviour.Properties.copy(Blocks.GLASS).
+                        strength(1.0f).
+                        sound(SoundType.COPPER).
+                        noOcclusion()));
+
+            WAXED_COPPER_AVIARIES.put(weatherState, block);
+        }
+        else
+        {
+            // Register the block
+            RegistrySupplier<Block> block = registerBlock(blockName,
+                () -> new CopperAviaryBlock(
+                    weatherState,
+                    BlockBehaviour.Properties.copy(Blocks.GLASS).
+                        strength(1.0f).
+                        sound(SoundType.COPPER).
+                        noOcclusion()));
+
+            COPPER_AVIARIES.put(weatherState, block);
+        }
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Variables
+// ---------------------------------------------------------------------
+
+    /**
      * The main block registry.
      */
     public static final DeferredRegister<Block> REGISTRY =
         DeferredRegister.create(AnimalPen.MOD_ID, Registries.BLOCK);
 
+    /**
+     * The map that links wood type to all animal pens.
+     */
     public static final Map<WoodType, RegistrySupplier<Block>> ANIMAL_PENS = new HashMap<>();
+
+    /**
+     * The map that links copper weather state to aviary block.
+     */
+    public static final EnumMap<WeatheringCopper.WeatherState, RegistrySupplier<Block>> COPPER_AVIARIES =
+        new EnumMap<>(WeatheringCopper.WeatherState.class);
+
+    /**
+     * The map that links copper weather state to waxed aviary block.
+     */
+    public static final EnumMap<WeatheringCopper.WeatherState, RegistrySupplier<Block>> WAXED_COPPER_AVIARIES =
+        new EnumMap<>(WeatheringCopper.WeatherState.class);
+
+// ---------------------------------------------------------------------
+// Section: Block Registry
+// ---------------------------------------------------------------------
+
 
     public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
@@ -103,12 +175,38 @@ public class AnimalPenBlockRegistry
         () -> new AviaryBlock(
             BlockBehaviour.Properties.copy(Blocks.GLASS).
                 strength(1.0f).
-                sound(SoundType.GLASS).
+                sound(SoundType.METAL).
                 noOcclusion())
     );
 
+
+    public static final RegistrySupplier<Block> GOLD_AVIARY = registerBlock("gold_aviary",
+        () -> new AviaryBlock(
+            BlockBehaviour.Properties.copy(Blocks.GLASS).
+                strength(1.0f).
+                sound(SoundType.METAL).
+                noOcclusion())
+    );
+
+
+// ---------------------------------------------------------------------
+// Section: Static Registry
+// ---------------------------------------------------------------------
+
+
     static
     {
+        // Register aviary versions.
+        for (WeatheringCopper.WeatherState value : WeatheringCopper.WeatherState.values())
+        {
+            registerAviary(value, false);
+        }
+
+        for (WeatheringCopper.WeatherState value : WeatheringCopper.WeatherState.values())
+        {
+            registerAviary(value, true);
+        }
+
         registerPen(WoodType.OAK, MapColor.WOOD);
         registerPen(WoodType.SPRUCE,  MapColor.PODZOL);
         registerPen(WoodType.BIRCH, MapColor.SAND);
