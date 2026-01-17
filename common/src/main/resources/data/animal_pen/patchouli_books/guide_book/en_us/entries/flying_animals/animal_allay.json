@@ -8,6 +8,11 @@
       "entity": "minecraft:allay",
       "scale": 1,
       "text": "Allays are just decorative."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:amethyst_shard",
+      "text": "Feed allay with amethyst shard and it will duplicate an allay."
     }
   ]
 }
