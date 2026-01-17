@@ -22,10 +22,21 @@ public interface ModBlockLootProvider
 
     default Iterable<Block> getMobBlockList()
     {
-        List<Block> blockList = new ArrayList<>(AnimalPenBlockRegistry.ANIMAL_PENS.size() + 2);
+        List<Block> blockList = new ArrayList<>(AnimalPenBlockRegistry.ANIMAL_PENS.size() + 11);
 
         blockList.add(AnimalPenBlockRegistry.AQUARIUM.get());
         blockList.add(AnimalPenBlockRegistry.AVIARY.get());
+        blockList.add(AnimalPenBlockRegistry.GOLD_AVIARY.get());
+
+        for (Supplier<Block> supplier : AnimalPenBlockRegistry.COPPER_AVIARIES.values())
+        {
+            blockList.add(supplier.get());
+        }
+
+        for (Supplier<Block> supplier : AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values())
+        {
+            blockList.add(supplier.get());
+        }
 
         for (Supplier<Block> supplier : AnimalPenBlockRegistry.ANIMAL_PENS.values())
         {

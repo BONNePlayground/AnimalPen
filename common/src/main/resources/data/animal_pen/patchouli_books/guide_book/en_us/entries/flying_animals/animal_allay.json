@@ -1,0 +1,13 @@
+{
+  "name": "Allay",
+  "icon": "minecraft:allay_spawn_egg",
+  "category": "animal_pen:category_aviary",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "minecraft:allay",
+      "scale": 1,
+      "text": "Allays are just decorative."
+    }
+  ]
+}

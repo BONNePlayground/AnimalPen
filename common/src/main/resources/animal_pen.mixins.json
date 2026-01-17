@@ -9,8 +9,12 @@
     "AquariumBlockCollisionPrevention",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
+    "MixinAxeItem",
+    "MixinHoneycombItem",
+    "MixinLightingBolt",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
+    "accessors.HoneycombItemAccessor",
     "accessors.MushroomCowAccessor",
     "invokers.MobInvoker"
   ],
