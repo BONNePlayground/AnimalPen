@@ -1,0 +1,21 @@
+{
+  "name": "Crafting",
+  "icon": "minecraft:crafting_table",
+  "category": "animal_pen:category_aviary",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "You can craft an Aviaries from simple materials: smooth stone slabs, chains, ingots or nuggets."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:aviary",
+      "recipe2": "animal_pen:gold_aviary"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:copper_aviary"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ package lv.id.bonne.animalpen.registries;
 
 
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -49,6 +50,10 @@ public class AnimalPenTileEntityRegistry
     public static final RegistrySupplier<BlockEntityType<AviaryTileEntity>> AVIARY_TILE_ENTITY =
         REGISTRY.register("aviary_tile_entity",
             () -> BlockEntityType.Builder.of(AviaryTileEntity::new,
-                    AnimalPenBlockRegistry.AVIARY.get()).
+                    Stream.concat(
+                        Stream.concat(AnimalPenBlockRegistry.COPPER_AVIARIES.values().stream().map(Supplier::get),
+                            AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().stream().map(Supplier::get)),
+                        Stream.of(AnimalPenBlockRegistry.AVIARY.get(), AnimalPenBlockRegistry.GOLD_AVIARY.get())).
+                        toArray(Block[]::new)).
                 build(null));
 }

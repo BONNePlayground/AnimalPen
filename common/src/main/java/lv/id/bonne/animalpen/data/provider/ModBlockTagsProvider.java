@@ -30,5 +30,17 @@ public interface ModBlockTagsProvider
                 map(Supplier::get).
                 toArray(Block[]::new)
         );
+
+        this.modTag(AnimalPenTags.AVIARIES_BLOCKS).
+            add(AnimalPenBlockRegistry.COPPER_AVIARIES.values().
+                stream().
+                map(Supplier::get).
+                toArray(Block[]::new)).
+            add(AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().
+                stream().
+                map(Supplier::get).
+                toArray(Block[]::new)).
+            add(AnimalPenBlockRegistry.AVIARY.get()).
+            add(AnimalPenBlockRegistry.GOLD_AVIARY.get());
     }
 }

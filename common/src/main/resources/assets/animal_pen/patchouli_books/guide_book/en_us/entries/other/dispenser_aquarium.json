@@ -9,8 +9,8 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "minecraft:water_bucket",
-      "text": "You can use water bucket on aquariums that contains fishes."
+      "item": "minecraft:bucket",
+      "text": "You can use bucket on animal pen that contains turtle."
     }
   ]
 }
