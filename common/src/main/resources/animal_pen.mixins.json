@@ -10,7 +10,6 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
-    "MixinAxeItem",
     "MixinHoneycombItem",
     "MixinLightingBolt",
     "MushroomStewEffectRemove",

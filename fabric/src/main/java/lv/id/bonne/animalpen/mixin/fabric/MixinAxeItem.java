@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.mixin;
+package lv.id.bonne.animalpen.mixin.fabric;
 
 
 import com.google.common.collect.BiMap;
