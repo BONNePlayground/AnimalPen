@@ -2,6 +2,7 @@
   "name": "Water Animal Container",
   "icon": "animal_pen:water_animal_container",
   "category": "animal_pen:category_items",
+  "sortnum": 1,
   "pages": [
     {
       "type": "patchouli:text",

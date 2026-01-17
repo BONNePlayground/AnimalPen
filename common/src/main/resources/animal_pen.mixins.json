@@ -10,6 +10,7 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
+    "MixinHoneycombItem",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"

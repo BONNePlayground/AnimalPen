@@ -2,6 +2,7 @@
   "name": "Crafting",
   "icon": "minecraft:crafting_table",
   "category": "animal_pen:category_aquarium",
+  "sortnum": 0,
   "pages": [
     {
       "type": "patchouli:text",
