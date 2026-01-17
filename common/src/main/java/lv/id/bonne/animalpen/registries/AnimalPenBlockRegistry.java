@@ -108,7 +108,7 @@ public class AnimalPenBlockRegistry
             // Register the block
             RegistrySupplier<Block> block = registerBlock(blockName,
                 () -> new AviaryBlock(
-                    BlockBehaviour.Properties.of(Material.METAL).
+                    BlockBehaviour.Properties.copy(Blocks.GLASS).
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion()));
@@ -121,7 +121,7 @@ public class AnimalPenBlockRegistry
             RegistrySupplier<Block> block = registerBlock(blockName,
                 () -> new CopperAviaryBlock(
                     weatherState,
-                    BlockBehaviour.Properties.of(Material.METAL).
+                    BlockBehaviour.Properties.copy(Blocks.GLASS).
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion()));
