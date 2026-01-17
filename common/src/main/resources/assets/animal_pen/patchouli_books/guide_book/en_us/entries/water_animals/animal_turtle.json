@@ -1,7 +1,7 @@
 {
   "name": "Turtle",
   "icon": "minecraft:turtle_spawn_egg",
-  "category": "animal_pen:category_animal_pen",
+  "category": "animal_pen:category_aquarium",
   "pages": [
     {
       "type": "patchouli:entity",

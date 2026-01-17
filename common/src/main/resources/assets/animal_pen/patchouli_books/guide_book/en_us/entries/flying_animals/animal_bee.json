@@ -1,7 +1,7 @@
 {
   "name": "Bee",
   "icon": "minecraft:bee_spawn_egg",
-  "category": "animal_pen:category_animal_pen",
+  "category": "animal_pen:category_aviary",
   "pages": [
     {
       "type": "patchouli:entity",
