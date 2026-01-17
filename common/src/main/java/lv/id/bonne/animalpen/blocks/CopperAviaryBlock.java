@@ -2,11 +2,11 @@ package lv.id.bonne.animalpen.blocks;
 
 
 import org.jetbrains.annotations.NotNull;
-import java.util.Random;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -27,7 +27,7 @@ public class CopperAviaryBlock extends AviaryBlock implements WeatheringCopperAv
 
 
     @Override
-    public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random)
+    public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random)
     {
         this.onRandomTick(blockState, serverLevel, blockPos, random);
     }
