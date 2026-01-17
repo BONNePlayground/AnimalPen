@@ -116,6 +116,8 @@ public class AnimalPenBlockRegistry
 
         blockName += "copper_aviary";
 
+        ResourceLocation resourceId = AnimalPen.resourceOf(blockName);
+
         if (waxed)
         {
             // Register the block
@@ -125,8 +127,7 @@ public class AnimalPenBlockRegistry
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion().
-                        setId(ResourceKey.create(Registries.BLOCK,
-                            AnimalPen.resourceOf(blockName))));
+                        setId(ResourceKey.create(Registries.BLOCK, resourceId))));
 
             WAXED_COPPER_AVIARIES.put(weatherState, block);
         }
@@ -140,8 +141,7 @@ public class AnimalPenBlockRegistry
                         strength(1.0f).
                         sound(SoundType.COPPER).
                         noOcclusion().
-                        setId(ResourceKey.create(Registries.BLOCK,
-                            AnimalPen.resourceOf(blockName))));
+                        setId(ResourceKey.create(Registries.BLOCK, resourceId))));
 
             COPPER_AVIARIES.put(weatherState, block);
         }

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.*;
@@ -47,7 +46,7 @@ public class CopperAviaryBlock extends AviaryBlock implements WeatheringCopperAv
     @Override
     public boolean isRandomlyTicking(BlockState blockState)
     {
-        return WeatheringCopperAviary.getNext(blockState.getBlock()).isPresent();
+        return this.weatherState != WeatherState.OXIDIZED;
     }
 
 

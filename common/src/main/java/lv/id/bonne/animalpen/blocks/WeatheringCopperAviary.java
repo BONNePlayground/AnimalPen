@@ -22,20 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface WeatheringCopperAviary extends WeatheringCopper
 {
-    public static final Supplier<BiMap<Block, Block>> OXIDATION_LEVEL_INCREASES =
-        Suppliers.memoize(() -> ImmutableBiMap.<Block, Block>builder().
-            put(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.UNAFFECTED).get(),
-                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.EXPOSED).get()).
-            put(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.EXPOSED).get(),
-                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.WEATHERED).get()).
-            put(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.WEATHERED).get(),
-                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.OXIDIZED).get()).
-            build());
-
-    public static final Supplier<BiMap<Block, Block>> OXIDATION_LEVEL_DECREASES =
-        Suppliers.memoize(() -> OXIDATION_LEVEL_INCREASES.get().inverse());
-
-
     public static final Supplier<BiMap<Block, Block>> UNWAXED_TO_WAXED_BLOCKS =
         Suppliers.memoize(() ->
         {
@@ -56,7 +42,17 @@ public interface WeatheringCopperAviary extends WeatheringCopper
 
     static Optional<Block> getPrevious(Block block)
     {
-        return Optional.ofNullable(OXIDATION_LEVEL_DECREASES.get().get(block));
+        if (block instanceof CopperAviaryBlock copperAviaryBlock)
+        {
+            int ordinal = copperAviaryBlock.getAge().ordinal();
+
+            if (ordinal > 0)
+            {
+                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal - 1]).getOrNull());
+            }
+        }
+
+        return Optional.empty();
     }
 
 
@@ -69,7 +65,17 @@ public interface WeatheringCopperAviary extends WeatheringCopper
     @NotNull
     static Optional<Block> getNext(Block block)
     {
-        return Optional.ofNullable(OXIDATION_LEVEL_INCREASES.get().get(block));
+        if (block instanceof CopperAviaryBlock copperAviaryBlock)
+        {
+            int ordinal = copperAviaryBlock.getAge().ordinal();
+
+            if (ordinal + 1 < WeatherState.values().length)
+            {
+                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal + 1]).getOrNull());
+            }
+        }
+
+        return Optional.empty();
     }
 
 
