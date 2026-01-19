@@ -20,6 +20,7 @@ import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.blocks.AviaryBlock;
 import lv.id.bonne.animalpen.blocks.CopperAviaryBlock;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.item.BlockItem;

@@ -20,6 +20,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
@@ -110,8 +111,44 @@ public interface ModRecipeProvider
         // Generate copper aviaries. Currently just base one
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.UNAFFECTED).get()).
-            group("animal_pens").
-            define('F', Items.COPPER_INGOT).
+            group("aviaries").
+            define('F', Ingredient.of(Items.COPPER_CHAIN.unaffected(), Items.COPPER_CHAIN.waxed())).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("FFF").
+            pattern("F F").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
+
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
+                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.EXPOSED).get()).
+            group("aviaries").
+            define('F', Ingredient.of(Items.COPPER_CHAIN.exposed(), Items.COPPER_CHAIN.waxedExposed())).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("FFF").
+            pattern("F F").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
+
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
+                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.WEATHERED).get()).
+            group("aviaries").
+            define('F', Ingredient.of(Items.COPPER_CHAIN.weathered(), Items.COPPER_CHAIN.waxedWeathered())).
+            define('S', Items.SMOOTH_STONE_SLAB).
+            pattern("FFF").
+            pattern("F F").
+            pattern("SSS").
+            unlockedBy("has_bird_catcher",
+                this.hasItem(AnimalPensItemRegistry.BIRD_CATCHER.get())).
+            save(consumer);
+
+        ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
+                AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.OXIDIZED).get()).
+            group("aviaries").
+            define('F', Ingredient.of(Items.COPPER_CHAIN.oxidized(), Items.COPPER_CHAIN.waxedOxidized())).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
             pattern("F F").
