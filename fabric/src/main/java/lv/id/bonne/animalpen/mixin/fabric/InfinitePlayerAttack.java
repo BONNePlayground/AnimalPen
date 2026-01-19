@@ -53,7 +53,7 @@ public class InfinitePlayerAttack
             this.destroyingItem.is(AnimalPenTags.ANIMAL_PEN_ATTACK_TOOLS) ||
             blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) &&
                 this.destroyingItem.is(AnimalPenTags.AQUARIUM_ATTACK_TOOLS) ||
-            blockState.is(AnimalPenBlockRegistry.AVIARY.get()) &&
+            blockState.is(AnimalPenTags.AVIARIES_BLOCKS) &&
                 this.destroyingItem.is(AnimalPenTags.AVIARY_ATTACK_TOOLS))
         {
             this.destroyBlockPos = new BlockPos(-1, -1, -1);

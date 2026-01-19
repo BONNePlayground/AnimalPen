@@ -53,7 +53,7 @@ public class UseToolsBehaviour implements DispenseItemBehavior
 
             if (!blockState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) &&
                 !blockState.is(AnimalPenBlockRegistry.AQUARIUM.get()) &&
-                !blockState.is(AnimalPenBlockRegistry.AVIARY.get()))
+                !blockState.is(AnimalPenTags.AVIARIES_BLOCKS))
             {
                 // If not animal pen/aquarium then return to original output
                 return this.originalBehaviour.dispense(blockSource, itemStack);

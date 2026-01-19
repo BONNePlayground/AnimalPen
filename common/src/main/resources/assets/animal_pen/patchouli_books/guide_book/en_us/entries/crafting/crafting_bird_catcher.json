@@ -1,0 +1,16 @@
+{
+  "name": "Bird Catcher",
+  "icon": "animal_pen:bird_catcher",
+  "category": "animal_pen:category_items",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With an Bird Catcher, you can pick up any Minecraft flyign animal and deposit them into Aviaries. You cannot pick up tamed or baby animals. Clicking an empty cage on an Aviary while crouching will give you half of the animals from it. You can release animals by crouch clicking on ground."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "animal_pen:bird_catcher"
+    }
+  ]
+}
