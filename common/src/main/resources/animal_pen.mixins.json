@@ -12,6 +12,9 @@
     "FixHorseInteraction",
     "MigrateItemStack",
     "MigrateEquipmentSlot",
+    "MixinHoneycombItem",
+    "MixinLevelChunk",
+    "MixinLightingBolt",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"

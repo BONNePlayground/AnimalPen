@@ -29,6 +29,17 @@ public class AnimalPenTags
      */
     public static final TagKey<Item> ANIMAL_PEN_ITEMS = TagKey.create(Registries.ITEM,
         AnimalPen.resourceOf( "animal_pens"));
+/**
+     * Tags for aviaries blocks.
+     */
+    public static final TagKey<Block> AVIARIES_BLOCKS = TagKey.create(Registries.BLOCK,
+        AnimalPen.resourceOf("aviaries"));
+
+    /**
+     * Tags for aviaries items.
+     */
+    public static final TagKey<Item> AVIARIES_ITEMS = TagKey.create(Registries.ITEM,
+        AnimalPen.resourceOf( "aviaries"));
 
     /**
      * Tag that stores which tools can attack entity in animal pen

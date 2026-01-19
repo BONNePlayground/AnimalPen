@@ -42,6 +42,14 @@ public class AnimalPenClient
             AviaryRenderer::new);
         RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AQUARIUM.get());
         RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AVIARY.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.GOLD_AVIARY.get());
+
+        AnimalPenBlockRegistry.COPPER_AVIARIES.values().forEach(
+            aviary -> RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT,
+                aviary.get()));
+        AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().forEach(
+            copperAviary -> RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT,
+                copperAviary.get()));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
 
