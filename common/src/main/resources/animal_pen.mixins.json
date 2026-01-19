@@ -11,6 +11,8 @@
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
     "MixinHoneycombItem",
+    "MixinLevelChunk",
+    "MixinLightingBolt",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
