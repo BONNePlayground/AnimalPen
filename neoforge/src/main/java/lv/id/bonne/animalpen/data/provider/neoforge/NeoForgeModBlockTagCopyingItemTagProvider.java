@@ -27,6 +27,7 @@ public class NeoForgeModBlockTagCopyingItemTagProvider extends BlockTagCopyingIt
     protected void addTags(@NotNull HolderLookup.Provider lookupProvider)
     {
         this.copy(AnimalPenTags.ANIMAL_PEN_BLOCKS, AnimalPenTags.ANIMAL_PEN_ITEMS);
+        this.copy(AnimalPenTags.AVIARIES_BLOCKS, AnimalPenTags.AVIARIES_ITEMS);
     }
 
 
