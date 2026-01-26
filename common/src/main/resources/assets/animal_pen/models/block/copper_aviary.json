@@ -4,7 +4,7 @@
   "textures": {
     "0": "animal_pen:block/aviary_base_top",
     "3": "animal_pen:block/base_side",
-    "4": "animal_pen:block/copper_chain",
+    "4": "minecraft:block/copper_chain",
     "particle": "animal_pen:block/aviary_base_top"
   },
   "elements": [
