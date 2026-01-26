@@ -109,7 +109,7 @@ public interface ModRecipeProvider
         // Generate copper aviaries. Currently just base one
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.UNAFFECTED).get()).
-            group("animal_pens").
+            group("aviaries").
             define('F', Items.COPPER_INGOT).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
