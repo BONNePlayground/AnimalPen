@@ -51,9 +51,18 @@ public class AnimalPenFunctionRegistry
         () -> new EntityFunctionEntry(new Feeding())
     );
 
+    /**
+     * This is replaced with `mob_set_sheared` and left just as backup.
+     */
+    @Deprecated
     public static final RegistrySupplier<EntityFunctionEntry> SHEEP_SET_SHEARED = ENTITY_FUNCTIONS.register(
         AnimalPen.resourceOf("sheep_set_sheared"),
-        () -> new EntityFunctionEntry(new SheepSetSheared())
+        () -> new EntityFunctionEntry(new MobSetSheared())
+    );
+
+    public static final RegistrySupplier<EntityFunctionEntry> MOB_SET_SHEARED = ENTITY_FUNCTIONS.register(
+        AnimalPen.resourceOf("mob_set_sheared"),
+        () -> new EntityFunctionEntry(new MobSetSheared())
     );
 
     public static final RegistrySupplier<EntityFunctionEntry> SHEEP_CHANGE_COLOR = ENTITY_FUNCTIONS.register(

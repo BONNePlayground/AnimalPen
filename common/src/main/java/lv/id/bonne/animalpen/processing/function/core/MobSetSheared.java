@@ -23,7 +23,7 @@ import net.minecraft.world.entity.Mob;
 /**
  * This function sets sheep sheared status based on input data value.
  */
-public class SheepSetSheared implements EntityFunction.ProcessEntityFunction
+public class MobSetSheared implements EntityFunction.ProcessEntityFunction
 {
     @Override
     public boolean processFunction(ServerLevel serverLevel,
