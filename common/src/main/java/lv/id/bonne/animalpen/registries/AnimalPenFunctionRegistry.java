@@ -76,9 +76,18 @@ public class AnimalPenFunctionRegistry
         () -> new EntityFunctionEntry(new MooshroomEffectRemove())
     );
 
+    /**
+     * This is replaced with `bucketable_pickup` and left just as backup.
+     */
+    @Deprecated
     public static final RegistrySupplier<EntityFunctionEntry> WATER_BUCKET_PICKUP = ENTITY_FUNCTIONS.register(
         AnimalPen.resourceOf("water_bucket_pickup"),
-        () -> new EntityFunctionEntry(new WaterBucketPickup())
+        () -> new EntityFunctionEntry(new BucketablePickup())
+    );
+
+    public static final RegistrySupplier<EntityFunctionEntry> BUCKETABLE_PICKUP = ENTITY_FUNCTIONS.register(
+        AnimalPen.resourceOf("bucketable_pickup"),
+        () -> new EntityFunctionEntry(new BucketablePickup())
     );
 
     public static final RegistrySupplier<EntityFunctionEntry> INCREMENT_KEY = ENTITY_FUNCTIONS.register(
