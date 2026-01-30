@@ -824,19 +824,32 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         for (AnimalInteraction interaction : interactions)
         {
+            int animalCount = mobNBT.
+                getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
+                getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+
             // Apply cooldown
             if (interaction.cooldown() != null)
             {
-                int animalCount = mobNBT.
-                    getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                    getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-
                 int cooldownTime = interaction.cooldown().calculateCooldown(animalCount);
                 newCooldowns.putInt(interaction.id(), cooldownTime);
                 anyChanges = true;
             }
 
-            // TODO: think about dropping loot. Currently I do not have usage for it, so I have not implemented it.
+            if (interaction.even() && animalCount % 2 != 0)
+            {
+                animalCount--;
+            }
+
+            // Process loot table
+            List<ItemStack> lootItems = interaction.lootEntry() == null ?
+                Collections.emptyList() :
+                interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
+
+            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
+                itemStack,
+                this.getBlockPos(),
+                this.dropPosition()));
 
             // Play sound
             if (interaction.sound() != null && Registry.SOUND_EVENT.containsKey(interaction.sound()))
