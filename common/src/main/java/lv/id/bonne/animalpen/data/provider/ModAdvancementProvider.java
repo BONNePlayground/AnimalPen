@@ -81,6 +81,7 @@ public interface ModAdvancementProvider
             EntityType.COW,
             EntityType.DONKEY,
             EntityType.FOX,
+            EntityType.FROG,
             EntityType.GOAT,
             EntityType.HOGLIN,
             EntityType.HORSE,
@@ -230,6 +231,29 @@ public interface ModAdvancementProvider
                                 Items.RED_DYE, Items.BLACK_DYE)),
                     AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_dye"));
             }
+
+            if (animal == EntityType.FROG)
+            {
+                // Froglight
+                this.generatePlatformAdvancement(consumer,
+                    Advancement.Builder.advancement().
+                        parent(advancement).
+                        display(
+                            Items.OCHRE_FROGLIGHT,
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_froglight.title"),
+                            Component.translatable(
+                                "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
+                            null,
+                            FrameType.TASK,
+                            true,  // show toast
+                            false,  // announce to chat
+                            false  // not hidden
+                        ).
+                        addCriterion(animal.getDescriptionId(),
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                                Items.MAGMA_BLOCK)),
+                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_froglight"));
+            }
         });
 
         // First aquatic catch
@@ -261,7 +285,9 @@ public interface ModAdvancementProvider
             EntityType.DOLPHIN,
             EntityType.SQUID,
             EntityType.GLOW_SQUID,
-            EntityType.TURTLE
+            EntityType.TURTLE,
+            EntityType.FROG,
+            EntityType.TADPOLE
         );
 
         aquatics.forEach(animal ->
@@ -309,7 +335,7 @@ public interface ModAdvancementProvider
             }
 
             if (animal == EntityType.AXOLOTL || animal == EntityType.COD || animal == EntityType.PUFFERFISH ||
-                animal == EntityType.TROPICAL_FISH || animal == EntityType.SALMON)
+                animal == EntityType.TROPICAL_FISH || animal == EntityType.SALMON || animal == EntityType.TADPOLE)
             {
                 // Interact with water bucket
                 this.generatePlatformAdvancement(consumer,
@@ -330,6 +356,29 @@ public interface ModAdvancementProvider
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.WATER_BUCKET)),
                     AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_water_bucket"));
+            }
+
+            if (animal == EntityType.FROG)
+            {
+                // Froglight
+                this.generatePlatformAdvancement(consumer,
+                    Advancement.Builder.advancement().
+                        parent(advancement).
+                        display(
+                            Items.OCHRE_FROGLIGHT,
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_froglight.title"),
+                            Component.translatable(
+                                "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
+                            null,
+                            FrameType.TASK,
+                            true,  // show toast
+                            false,  // announce to chat
+                            false  // not hidden
+                        ).
+                        addCriterion(animal.getDescriptionId(),
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                                Items.MAGMA_BLOCK)),
+                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_froglight"));
             }
         });
 
@@ -352,7 +401,8 @@ public interface ModAdvancementProvider
 
         List<EntityType<?>> flyers = List.of(EntityType.BEE,
             EntityType.BAT,
-            EntityType.PARROT);
+            EntityType.PARROT,
+            EntityType.ALLAY);
 
         flyers.forEach(animal ->
         {
