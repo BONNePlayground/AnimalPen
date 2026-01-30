@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionEntry;
@@ -207,7 +209,47 @@ public class AnimalInteractionProvider implements DataProvider
     }
 
 
-    public void generateAmbient(Path basePath,
+    public AnimalInteraction generateBucketable(Item bucketItem, Item resultItem, int redstoneSignal)
+    {
+        return AnimalInteractionBuilder.create("bucketable_pickup").
+            ingredient(CustomIngredient.of(bucketItem)).
+            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.BUCKETABLE_PICKUP.get())).
+            redstoneBit(redstoneSignal).
+            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(resultItem))).
+            build();
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Modded generators
+// ---------------------------------------------------------------------
+
+
+    public void generateWithInteractions(Path basePath,
+        HashCache cache,
+        EntityType<?> entityType,
+        List<AnimalInteraction> interactions,
+        String... mods)
+        throws IOException
+    {
+        JsonElement json = AnimalInteractionEntry.CODEC.
+            encodeStart(JsonOps.INSTANCE, new AnimalInteractionEntry(Optional.of(entityType),
+                Arrays.stream(mods).toList(),
+                interactions)).
+            getOrThrow(false, IllegalStateException::new);
+
+        Path file = basePath.resolve(entityType.arch$registryName().getPath() + ".json");
+        Files.createDirectories(file.getParent());
+        DataProvider.save(GSON, cache, json, file);
+    }
+
+
+// ---------------------------------------------------------------------
+// Section: Private constructors
+// ---------------------------------------------------------------------
+
+
+    private void generateAmbient(Path basePath,
         HashCache cache,
         EntityType<?> entityType,
         SoundEvent soundEvent)
@@ -224,7 +266,7 @@ public class AnimalInteractionProvider implements DataProvider
     }
 
 
-    public void generateWithFoodAndAmbient(Path basePath,
+    private void generateWithFoodAndAmbient(Path basePath,
         HashCache cache,
         EntityType<?> entityType,
         CustomIngredient foodItem,
@@ -249,12 +291,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Food
         interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items")), false));
         // Water Pickup
-        interactions.add(AnimalInteractionBuilder.create("water_bucket_pickup").
-            ingredient(CustomIngredient.of(Items.WATER_BUCKET)).
-            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.WATER_BUCKET_PICKUP.get())).
-            redstoneBit(2).
-            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(Items.AXOLOTL_BUCKET))).
-            build());
+        interactions.add(this.generateBucketable(Items.WATER_BUCKET, Items.AXOLOTL_BUCKET, 2));
         // ambient
         interactions.add(this.generateAmbientSound(SoundEvents.AXOLOTL_IDLE_WATER));
 
@@ -536,8 +573,8 @@ public class AnimalInteractionProvider implements DataProvider
                 cooldown(new CooldownEntry.Static(1200)).
                 sound(SoundEvents.SHEEP_SHEAR.getLocation()).
                 redstoneBit(2).
-                runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, true)).
-                finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_SET_SHEARED.get(), null, false)).
+                runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOB_SET_SHEARED.get(), null, true)).
+                finishFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOB_SET_SHEARED.get(), null, false)).
                 textLines(TextEntry.ready("display.animal_pen.full_ready",
                     CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.get(value)))).
                 textLines(TextEntry.cooldown("display.animal_pen.wool_cooldown",
@@ -622,12 +659,7 @@ public class AnimalInteractionProvider implements DataProvider
         // Food
         interactions.add(this.generateFood(CustomIngredient.of(Items.KELP, Items.SEAGRASS)));
         // Water Pickup
-        interactions.add(AnimalInteractionBuilder.create("water_bucket_pickup").
-            ingredient(CustomIngredient.of(Items.WATER_BUCKET)).
-            runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.WATER_BUCKET_PICKUP.get())).
-            redstoneBit(2).
-            textLines(TextEntry.ready("display.animal_pen.full_ready", CustomIngredient.of(resultItem))).
-            build());
+        interactions.add(this.generateBucketable(Items.WATER_BUCKET, resultItem, 2));
 
         // ambient
         if (entityType == EntityType.COD)

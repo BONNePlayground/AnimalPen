@@ -4,4 +4,7 @@
 - 
 
 #### API:
-- `sheep_set_sheared` can now be used on any mob that has `void setSheared(boolean);` method.
+- `mob_set_sheared` can now be used on any mob that has `void setSheared(boolean);` method.
+- `sheep_set_sheared` deprecated
+- `bucketable_pickup` can now be used with any `item` type, not only water bucket, as long as entity implements `Bucketable` interface
+- `water_bucket_pickup` deprecated
