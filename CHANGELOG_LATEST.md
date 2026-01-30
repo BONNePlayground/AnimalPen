@@ -1,7 +1,7 @@
-# Animal Pens 2.2.0
+# Animal Pens 2.3.0
 
 #### Features:
-- Adds Copper Aviary that oxidizes
-- Adds Gold Aviary
-- Update patchouli book
-- Separate aviary from animal pens in recipe book
+- 
+
+#### API:
+- `sheep_set_sheared` can now be used on any mob that has `void setSheared(boolean);` method.
