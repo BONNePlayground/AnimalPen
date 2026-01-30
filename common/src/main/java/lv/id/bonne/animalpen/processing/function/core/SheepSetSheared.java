@@ -7,6 +7,10 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -14,7 +18,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Sheep;
 
 
 /**
@@ -30,15 +33,28 @@ public class SheepSetSheared implements EntityFunction.ProcessEntityFunction
         String dataKey,
         Value dataValue)
     {
-        if (mob instanceof Sheep sheep && dataValue != null)
+        if (dataValue != null)
         {
-            sheep.setSheared(dataValue.getAsBoolean());
+            try
+            {
+                MethodHandle setSheared = MethodHandles.publicLookup().findVirtual(
+                    mob.getClass(),
+                    "setSheared",
+                    MethodType.methodType(void.class, boolean.class));
 
-            CompoundTag animalTag = new CompoundTag();
-            mob.save(animalTag);
-            mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+                setSheared.invoke(mob, dataValue.getAsBoolean());
 
-            return true;
+                CompoundTag animalTag = new CompoundTag();
+                mob.save(animalTag);
+                mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+
+                return true;
+            }
+            catch (Throwable e)
+            {
+                // ignored.
+                return false;
+            }
         }
 
         return false;
