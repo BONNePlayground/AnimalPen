@@ -22,6 +22,9 @@
     ],
     "modmenu": [
       "lv.id.bonne.animalpen.client.fabric.AnimalPenModMenuIntegration"
+    ],
+    "jei_mod_plugin": [
+      "lv.id.bonne.animalpen.integrations.fabric.JEIPlugin"
     ]
   },
   "mixins": [

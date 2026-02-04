@@ -73,6 +73,10 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 
     modImplementation "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
+
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${rootProject.jei_version}")
+    // at runtime, use the full JEI jar for Forge
+    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${rootProject.jei_version}")
 }
 
 processResources {

@@ -2,6 +2,7 @@
 
 #### Features:
 - Implements few advancements as a simplistic tutorial for animal pens.
+- Implements JEI information about animals that can be captured by each item.
 
 #### API:
 - `mob_set_sheared` can now be used on any mob that has `void setSheared(boolean);` method.

@@ -295,5 +295,10 @@
   "advancements.animal_pen.release.title": "Set Free",
   "advancements.animal_pen.release.description": "Release an animal back into the wild",
   "advancements.animal_pen.variant_change.title": "New Look",
-  "advancements.animal_pen.variant_change.description": "Change an animal's appearance variant"
+  "advancements.animal_pen.variant_change.description": "Change an animal's appearance variant",
+
+  "jei.animal_pen.item_info": "Animal Capture Information",
+  "jei.animal_pen.animal_cage": "With animal cage you can capture:",
+  "jei.animal_pen.water_animal_container": "With water animal container you can capture:",
+  "jei.animal_pen.bird_catcher": "With bird catcher you can capture:"
 }
