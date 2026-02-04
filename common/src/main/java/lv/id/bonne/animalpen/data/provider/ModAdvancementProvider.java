@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.advancements.critereon.AnimalCaughtTrigger;
+import lv.id.bonne.animalpen.advancements.critereon.AnimalItemUseTrigger;
 import lv.id.bonne.animalpen.advancements.critereon.AnimalInteractTrigger;
+import lv.id.bonne.animalpen.advancements.critereon.AnimalVariantChangeTrigger;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Advancement;
@@ -70,7 +71,7 @@ public interface ModAdvancementProvider
                     false  // not hidden
                 ).
                 addCriterion("caught_animal",
-                    AnimalCaughtTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CAGE.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CAGE.get())
                 ),
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
@@ -116,7 +117,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalCaughtTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.ANIMAL_CAGE.get())),
                 AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
 
@@ -246,7 +247,7 @@ public interface ModAdvancementProvider
                     false
                 ).
                 addCriterion("caught_aquatic",
-                    AnimalCaughtTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CONTAINER.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CONTAINER.get())
 
                 ),
             AnimalPen.resourceOf("animal_pen/aquatic_keeper"));
@@ -280,7 +281,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalCaughtTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.ANIMAL_CONTAINER.get())),
                 AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
 
@@ -345,7 +346,7 @@ public interface ModAdvancementProvider
                     true, true, false
                 ).
                 addCriterion("caught_bird",
-                    AnimalCaughtTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.BIRD_CATCHER.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.BIRD_CATCHER.get())
                 ),
             AnimalPen.resourceOf("animal_pen/bird_watcher"));
 
@@ -370,7 +371,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalCaughtTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.BIRD_CATCHER.get())),
                 AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
 
@@ -417,5 +418,39 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_bottle"));
             }
         });
+
+        // Release Animal Trigger
+        this.generatePlatformAdvancement(consumer,
+            Advancement.Builder.advancement().
+                parent(root).
+                display(
+                    Items.LEAD,
+                    new TranslatableComponent("advancements.animal_pen.release.title"),
+                    new TranslatableComponent("advancements.animal_pen.release.description"),
+                    null,
+                    FrameType.TASK,
+                    true, true, false
+                ).
+                addCriterion("release",
+                    AnimalItemUseTrigger.TriggerInstance.releaseAnimal()
+                ),
+            AnimalPen.resourceOf("animal_pen/release"));
+
+        // Change Animal Variant trigger
+        this.generatePlatformAdvancement(consumer,
+            Advancement.Builder.advancement().
+                parent(root).
+                display(
+                    Items.MAP,
+                    new TranslatableComponent("advancements.animal_pen.variant_change.title"),
+                    new TranslatableComponent("advancements.animal_pen.variant_change.description"),
+                    null,
+                    FrameType.TASK,
+                    true, true, false
+                ).
+                addCriterion("variant_change",
+                    AnimalVariantChangeTrigger.TriggerInstance.changeVariant()
+                ),
+            AnimalPen.resourceOf("animal_pen/variant_change"));
     }
 }

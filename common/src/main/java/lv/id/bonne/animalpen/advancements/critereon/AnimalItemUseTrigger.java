@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.advancements.critereon;
 
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -14,7 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 
-public class AnimalCaughtTrigger extends SimpleCriterionTrigger<AnimalCaughtTrigger.TriggerInstance>
+public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTrigger.TriggerInstance>
 {
     @Override
     @NotNull
@@ -32,28 +33,34 @@ public class AnimalCaughtTrigger extends SimpleCriterionTrigger<AnimalCaughtTrig
     {
         EntityPredicate.Composite entity = EntityPredicate.Composite.fromJson(json, "entity", context);
         ItemPredicate item = ItemPredicate.fromJson(json.get("item"));
-        return new TriggerInstance(player, entity, item);
+        return new TriggerInstance(player, entity, item, json.get("release").getAsBoolean());
     }
 
 
-    public void trigger(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem)
+    public void trigger(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem, boolean release)
     {
-        this.trigger(player, (instance) -> instance.matches(player, caughtEntity, catchingItem));
+        this.trigger(player, (instance) -> instance.matches(player, caughtEntity, catchingItem, release));
     }
 
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(EntityPredicate.Composite player, EntityPredicate.Composite entity, ItemPredicate item)
+        public TriggerInstance(EntityPredicate.Composite player, EntityPredicate.Composite entity, ItemPredicate item, boolean release)
         {
             super(ID, player);
             this.entity = entity;
             this.item = item;
+            this.release = release;
         }
 
 
-        public boolean matches(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem)
+        public boolean matches(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem, boolean release)
         {
+            if (this.release != release)
+            {
+                return false;
+            }
+
             if (!this.entity.matches(EntityPredicate.createContext(player, caughtEntity)))
             {
                 return false;
@@ -70,16 +77,18 @@ public class AnimalCaughtTrigger extends SimpleCriterionTrigger<AnimalCaughtTrig
             JsonObject json = super.serializeToJson(context);
             json.add("entity", this.entity.toJson(context));
             json.add("item", this.item.serializeToJson());
+            json.add("release", new JsonPrimitive(this.release));
             return json;
         }
 
 
-        public static TriggerInstance caughtAnimal(EntityType<?> entity)
+        public static TriggerInstance releaseAnimal()
         {
             return new TriggerInstance(
                 EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
-                ItemPredicate.ANY
+                EntityPredicate.Composite.ANY,
+                ItemPredicate.ANY,
+                true
             );
         }
 
@@ -89,7 +98,8 @@ public class AnimalCaughtTrigger extends SimpleCriterionTrigger<AnimalCaughtTrig
             return new TriggerInstance(
                 EntityPredicate.Composite.ANY,
                 EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
-                ItemPredicate.Builder.item().of(item).build()
+                ItemPredicate.Builder.item().of(item).build(),
+                false
             );
         }
 
@@ -98,13 +108,16 @@ public class AnimalCaughtTrigger extends SimpleCriterionTrigger<AnimalCaughtTrig
             return new TriggerInstance(
                 EntityPredicate.Composite.ANY,
                 EntityPredicate.Composite.ANY,
-                ItemPredicate.Builder.item().of(item).build()
+                ItemPredicate.Builder.item().of(item).build(),
+                false
             );
         }
 
         private final EntityPredicate.Composite entity;
 
         private final ItemPredicate item;
+
+        private final boolean release;
     }
 
     private static final ResourceLocation ID = AnimalPen.resourceOf("animal_caught");

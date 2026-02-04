@@ -1,7 +1,7 @@
 # Animal Pens 2.3.0
 
 #### Features:
-- 
+- Implements few advancements as a simplistic tutorial for animal pens.
 
 #### API:
 - `mob_set_sheared` can now be used on any mob that has `void setSheared(boolean);` method.
@@ -10,3 +10,7 @@
 - `water_bucket_pickup` deprecated
 - Implements ability to define custom animations for mobs in tile entity using AnimalPenMobAnimationsRegistry.
 - Implements loot dropping for `non-interaction` interactions.
+- Add advancement triggers:
+  - Animal Interact Trigger - triggered when player interacts with animal in pen/aquarium/aviary using item
+  - Animal Item Use Trigger - triggered when player catches or releases animal using cage/container/bird catcher
+  - Animal Variant Change Trigger - triggered when player changes variant of animal in pen/aquarium/aviary

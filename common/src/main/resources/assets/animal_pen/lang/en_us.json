@@ -290,5 +290,10 @@
   "advancements.animal_pen.entity.minecraft.bat.title": "Cave Flyer",
   "advancements.animal_pen.entity.minecraft.bat.description": "Catch a Bat",
   "advancements.animal_pen.entity.minecraft.parrot.title": "Pirate's Companion",
-  "advancements.animal_pen.entity.minecraft.parrot.description": "Catch a Parrot"
+  "advancements.animal_pen.entity.minecraft.parrot.description": "Catch a Parrot",
+
+  "advancements.animal_pen.release.title": "Set Free",
+  "advancements.animal_pen.release.description": "Release an animal back into the wild",
+  "advancements.animal_pen.variant_change.title": "New Look",
+  "advancements.animal_pen.variant_change.description": "Change an animal's appearance variant"
 }
