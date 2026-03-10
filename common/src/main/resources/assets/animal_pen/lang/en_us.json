@@ -297,8 +297,13 @@
   "advancements.animal_pen.variant_change.title": "New Look",
   "advancements.animal_pen.variant_change.description": "Change an animal's appearance variant",
 
-  "jei.animal_pen.item_info": "Animal Capture Information",
-  "jei.animal_pen.animal_cage": "With animal cage you can capture:",
-  "jei.animal_pen.water_animal_container": "With water animal container you can capture:",
-  "jei.animal_pen.bird_catcher": "With bird catcher you can capture:"
+  "jei.animal_pen.item_info_animal_cage": "Animal Cage Capturable",
+  "jei.animal_pen.item_info_water_animal_container": "Water Animal Container Capturable",
+  "jei.animal_pen.item_info_bird_catcher": "Bird Catcher Capturable",
+  "jei.animal_pen.animal_cage": "Right-click with Animal Cage to capture:",
+  "jei.animal_pen.water_animal_container": "Right-click with Water Animal Container to capture:",
+  "jei.animal_pen.bird_catcher": "Right-click with Bird Catcher to capture:",
+  "jei.animal_pen.animal_cage.info": "Right-click a mob to capture it. Crouch + Right-click a block to release it. Place in an Animal Pen to interact with captured animals.",
+  "jei.animal_pen.water_animal_container.info": "Right-click a mob to capture it. Crouch + Right-click a block to release it. Place in an Aquarium to interact with captured animals.",
+  "jei.animal_pen.bird_catcher.info": "Right-click a mob to capture it. Crouch + Right-click a block to release it. Place in an Aviary to interact with captured animals."
 }
