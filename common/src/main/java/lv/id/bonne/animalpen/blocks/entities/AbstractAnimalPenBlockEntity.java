@@ -897,10 +897,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     /**
      * This method sets new animal variant from given CompoundTag tag.
      *
-     * @param animalVariant a new animal variant
+     * @param index a new animal variant index
      */
-    public void updateAnimalVariant(CompoundTag animalVariant)
+    public void updateAnimalVariant(int index)
     {
+        if (this.getStoredAnimal().isEmpty() || index >= this.getEntityVariants().size() || index < 0)
+        {
+            return;
+        }
+
+        CompoundTag animalVariant = (CompoundTag) this.getEntityVariants().get(index);
+
         if (animalVariant == null || animalVariant.isEmpty())
         {
             // Nothing to update

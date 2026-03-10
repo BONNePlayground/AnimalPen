@@ -7,7 +7,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,15 +22,15 @@ public class UpdateDisplayAnimalData
      * The simple packet encoding.
      *
      * @param position The block position that is affected.
-     * @param tag The new variant of entity.
+     * @param index The new variant of entity.
      * @return packet buffer.
      */
-    public static FriendlyByteBuf encode(BlockPos position, CompoundTag tag)
+    public static FriendlyByteBuf encode(BlockPos position, int index)
     {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 
-        buffer.writeNbt(tag);
         buffer.writeBlockPos(position);
+        buffer.writeInt(index);
 
         return buffer;
     }
@@ -45,8 +44,8 @@ public class UpdateDisplayAnimalData
      */
     public static void handle(FriendlyByteBuf friendlyByteBuf, NetworkManager.PacketContext packetContext)
     {
-        CompoundTag animalVariant = friendlyByteBuf.readNbt();
         BlockPos blockPos = friendlyByteBuf.readBlockPos();
+        int index = friendlyByteBuf.readInt();
 
         packetContext.queue(() ->
         {
@@ -54,13 +53,13 @@ public class UpdateDisplayAnimalData
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                if (animalVariant != null && !animalVariant.isEmpty())
+                if (index >= 0 && index < animalPen.getEntityVariants().size())
                 {
                     AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.trigger(
                         (ServerPlayer) packetContext.getPlayer());
                 }
 
-                animalPen.updateAnimalVariant(animalVariant);
+                animalPen.updateAnimalVariant(index);
             }
             else
             {
