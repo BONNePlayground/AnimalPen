@@ -54,7 +54,7 @@ public class NeoForgeModAdvancementProvider extends AdvancementProvider
             Consumer<AdvancementHolder> consumer,
             ExistingFileHelper existingFileHelper)
         {
-            this.buildModAdvancements(consumer);
+            this.buildModAdvancements(consumer, arg);
         }
 
 

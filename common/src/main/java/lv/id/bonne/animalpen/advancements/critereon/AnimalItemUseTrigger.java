@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -76,25 +78,25 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
         }
 
 
-        public static Criterion<TriggerInstance> caughtAnimalWithItem(EntityType<?> entityType, Item item)
+        public static Criterion<TriggerInstance> caughtAnimalWithItem(HolderLookup.Provider provider, EntityType<?> entityType, Item item)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().createCriterion(
                 new TriggerInstance(
                     Optional.empty(),
-                    Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entityType).build())),
-                    Optional.of(ItemPredicate.Builder.item().of(item).build()),
+                    Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entityType).build())),
+                    Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), item).build()),
                     false
                 ));
         }
 
 
-        public static Criterion<TriggerInstance> caughtWithItem(Item item)
+        public static Criterion<TriggerInstance> caughtWithItem(HolderLookup.Provider provider, Item item)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().createCriterion(
                 new TriggerInstance(
                     Optional.empty(),
                     Optional.empty(),
-                    Optional.of(ItemPredicate.Builder.item().of(item).build()),
+                    Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), item).build()),
                     false
                 ));
         }

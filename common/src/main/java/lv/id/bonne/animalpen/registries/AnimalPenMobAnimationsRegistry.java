@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.frog.Frog;
 
 
@@ -69,7 +70,7 @@ public class AnimalPenMobAnimationsRegistry
         {
             if (mob instanceof Frog frog)
             {
-                frog.walkAnimation.update(0.6f, 0.4f);
+                frog.walkAnimation.update(0.6f, 0.4f, 1.0F);
             }
         });
 
@@ -77,7 +78,16 @@ public class AnimalPenMobAnimationsRegistry
         {
             if (mob instanceof Turtle turtle)
             {
-                turtle.walkAnimation.update(0.6f, 0.4f);
+                turtle.walkAnimation.update(0.6f, 0.4f, 1.0F);
+            }
+        });
+
+        AQUARIUM_ANIMATIONS.put(EntityType.AXOLOTL, mob ->
+        {
+            if (mob instanceof Axolotl axolotl)
+            {
+                axolotl.inWaterAnimator.tick(true);
+                axolotl.movingAnimator.tick(true);
             }
         });
 

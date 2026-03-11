@@ -30,7 +30,7 @@ public class FabricModAdvancementProvider extends FabricAdvancementProvider impl
     @Override
     public void generateAdvancement(HolderLookup.Provider provider, Consumer<AdvancementHolder> consumer)
     {
-        this.buildModAdvancements(consumer);
+        this.buildModAdvancements(consumer, provider);
     }
 
 

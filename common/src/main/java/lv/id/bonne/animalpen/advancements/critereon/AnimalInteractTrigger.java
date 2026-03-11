@@ -10,6 +10,8 @@ import java.util.Optional;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -60,32 +62,32 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         }
 
 
-        public static Criterion<TriggerInstance> interactAnimal(EntityType<?> entity)
+        public static Criterion<TriggerInstance> interactAnimal(HolderLookup.Provider provider, EntityType<?> entity)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
+                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
                 Optional.empty()
             ));
         }
 
 
-        public static Criterion<TriggerInstance> interactAnimalWithItem(EntityType<?> entity, Item... item)
+        public static Criterion<TriggerInstance> interactAnimalWithItem(HolderLookup.Provider provider, EntityType<?> entity, Item... item)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
-                Optional.of(ItemPredicate.Builder.item().of(item).build())
+                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
+                Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), item).build())
             ));
         }
 
 
-        public static Criterion<TriggerInstance> interactAnimalWithItem(EntityType<?> entity, TagKey<Item> itemTag)
+        public static Criterion<TriggerInstance> interactAnimalWithItem(HolderLookup.Provider provider, EntityType<?> entity, TagKey<Item> itemTag)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
-                Optional.of(ItemPredicate.Builder.item().of(itemTag).build())
+                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
+                Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), itemTag).build())
             ));
         }
     }

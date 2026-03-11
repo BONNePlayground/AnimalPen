@@ -21,6 +21,8 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -35,7 +37,7 @@ public interface ModAdvancementProvider
         Advancement.Builder builder,
         ResourceLocation resourceLocation);
 
-    default void buildModAdvancements(Consumer<AdvancementHolder> consumer)
+    default void buildModAdvancements(Consumer<AdvancementHolder> consumer, HolderLookup.Provider provider)
     {
         AdvancementHolder root = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
@@ -52,6 +54,7 @@ public interface ModAdvancementProvider
                 addCriterion("has_any_catching_item",
                     InventoryChangeTrigger.TriggerInstance.hasItems(
                         ItemPredicate.Builder.item().of(
+                            provider.lookupOrThrow(Registries.ITEM),
                             AnimalPensItemRegistry.ANIMAL_CAGE.get(),
                             AnimalPensItemRegistry.ANIMAL_CONTAINER.get(),
                             AnimalPensItemRegistry.BIRD_CATCHER.get()).build())
@@ -72,8 +75,7 @@ public interface ModAdvancementProvider
                     false  // not hidden
                 ).
                 addCriterion("caught_animal",
-
-                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CAGE.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(provider, AnimalPensItemRegistry.ANIMAL_CAGE.get())
                 ),
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
@@ -123,7 +125,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(provider, animal,
                             AnimalPensItemRegistry.ANIMAL_CAGE.get())),
                 AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_catch"));
 
@@ -145,7 +147,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.BUCKET)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bucket"));
             }
@@ -168,7 +170,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.BOWL)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
 
@@ -187,7 +189,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 ItemTags.SMALL_FLOWERS)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_flower"));
             }
@@ -210,7 +212,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.SHEARS)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_shear"));
 
@@ -229,7 +231,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.WHITE_DYE, Items.ORANGE_DYE, Items.MAGENTA_DYE, Items.LIGHT_BLUE_DYE,
                                 Items.YELLOW_DYE, Items.LIME_DYE, Items.PINK_DYE, Items.GRAY_DYE, Items.LIGHT_GRAY_DYE,
                                 Items.CYAN_DYE, Items.PURPLE_DYE, Items.BLUE_DYE, Items.BROWN_DYE, Items.GREEN_DYE,
@@ -255,7 +257,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.MAGMA_BLOCK)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_froglight"));
             }
@@ -278,7 +280,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.BOWL)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
             }
@@ -301,7 +303,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.BRUSH)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_brush"));
             }
@@ -322,7 +324,7 @@ public interface ModAdvancementProvider
                     false
                 ).
                 addCriterion("caught_aquatic",
-                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CONTAINER.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(provider, AnimalPensItemRegistry.ANIMAL_CONTAINER.get())
 
                 ),
             AnimalPen.resourceOf("animal_pen/aquatic_keeper"));
@@ -358,7 +360,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(provider, animal,
                             AnimalPensItemRegistry.ANIMAL_CONTAINER.get())),
                 AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_catch"));
 
@@ -380,7 +382,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.BUCKET)),
                     AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_bucket"));
             }
@@ -404,7 +406,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.WATER_BUCKET)),
                     AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_water_bucket"));
             }
@@ -427,7 +429,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.MAGMA_BLOCK)),
                     AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_froglight"));
             }
@@ -446,7 +448,7 @@ public interface ModAdvancementProvider
                     true, true, false
                 ).
                 addCriterion("caught_bird",
-                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.BIRD_CATCHER.get())
+                    AnimalItemUseTrigger.TriggerInstance.caughtWithItem(provider, AnimalPensItemRegistry.BIRD_CATCHER.get())
                 ),
             AnimalPen.resourceOf("animal_pen/bird_watcher"));
 
@@ -472,7 +474,7 @@ public interface ModAdvancementProvider
                         false  // not hidden
                     ).
                     addCriterion(animal.getDescriptionId(),
-                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
+                        AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(provider, animal,
                             AnimalPensItemRegistry.BIRD_CATCHER.get())),
                 AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_catch"));
 
@@ -494,7 +496,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.SHEARS)),
                     AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_shear"));
 
@@ -514,7 +516,7 @@ public interface ModAdvancementProvider
                             false  // not hidden
                         ).
                         addCriterion(animal.getDescriptionId(),
-                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
                                 Items.GLASS_BOTTLE)),
                     AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_bottle"));
             }
