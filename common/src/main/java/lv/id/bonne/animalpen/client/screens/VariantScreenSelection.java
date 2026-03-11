@@ -763,7 +763,7 @@ public class VariantScreenSelection extends Screen
         CompoundTag variantTag = variants.get(this.selectedButton);
 
         // Send message to server
-        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, variantTag));
+        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, this.selectedButton));
 
         // Update current client gui.
         AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag);

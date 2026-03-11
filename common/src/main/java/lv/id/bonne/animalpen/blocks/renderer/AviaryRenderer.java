@@ -7,13 +7,13 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
+import java.util.Optional;
+
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AviaryTileEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenMobAnimationsRegistry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -82,19 +82,7 @@ public class AviaryRenderer extends AbstractAnimalPenRenderer<AviaryTileEntity>
 
         // The animation speed is required for some entities to display their swimming animation
 
-        if (animal instanceof Parrot parrot)
-        {
-            parrot.oFlap = parrot.flap;
-            parrot.oFlapSpeed = parrot.flapSpeed;
-
-            parrot.flapSpeed += (float) 4 * 0.3F;
-            parrot.flapSpeed = Mth.clamp(parrot.flapSpeed, 0.0F, 1.0F);
-
-            parrot.flap += 1.8f;
-        }
-        else if (animal instanceof Bat bat)
-        {
-            bat.flyAnimationState.startIfStopped(bat.tickCount);
-        }
+        Optional.ofNullable(AnimalPenMobAnimationsRegistry.AVIARY_ANIMATIONS.get(animal.getType())).
+            ifPresent(animator -> animator.animate(animal));
     }
 }

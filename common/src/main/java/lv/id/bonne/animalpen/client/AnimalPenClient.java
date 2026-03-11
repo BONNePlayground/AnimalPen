@@ -22,6 +22,7 @@ import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEndPacket;
 import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncEntityPacket;
 import lv.id.bonne.animalpen.network.packets.AnimalInteractionSyncStartPacket;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
+import lv.id.bonne.animalpen.registries.AnimalPenMobAnimationsRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import net.minecraft.client.Minecraft;
@@ -107,5 +108,8 @@ public class AnimalPenClient
             UpdateVariantScreenData.ID,
             UpdateVariantScreenData.STREAM_CODEC,
             UpdateVariantScreenData::handle);
+
+        // Register custom animations for each entity.
+        AnimalPenMobAnimationsRegistry.init();
     }
 }
