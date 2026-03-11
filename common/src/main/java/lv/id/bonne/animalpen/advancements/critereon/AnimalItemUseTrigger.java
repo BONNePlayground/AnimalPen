@@ -28,10 +28,10 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
     @Override
     @NotNull
     protected TriggerInstance createInstance(JsonObject json,
-        EntityPredicate.Composite player,
+        ContextAwarePredicate player,
         DeserializationContext context)
     {
-        EntityPredicate.Composite entity = EntityPredicate.Composite.fromJson(json, "entity", context);
+        ContextAwarePredicate entity = EntityPredicate.fromJson(json, "entity", context);
         ItemPredicate item = ItemPredicate.fromJson(json.get("item"));
         return new TriggerInstance(player, entity, item, json.get("release").getAsBoolean());
     }
@@ -45,7 +45,7 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(EntityPredicate.Composite player, EntityPredicate.Composite entity, ItemPredicate item, boolean release)
+        public TriggerInstance(ContextAwarePredicate player, ContextAwarePredicate entity, ItemPredicate item, boolean release)
         {
             super(ID, player);
             this.entity = entity;
@@ -85,8 +85,8 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
         public static TriggerInstance releaseAnimal()
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.ANY,
+                ContextAwarePredicate.ANY,
+                ContextAwarePredicate.ANY,
                 ItemPredicate.ANY,
                 true
             );
@@ -96,8 +96,8 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
         public static TriggerInstance caughtAnimalWithItem(EntityType<?> entity, Item item)
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
+                ContextAwarePredicate.ANY,
+                EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build()),
                 ItemPredicate.Builder.item().of(item).build(),
                 false
             );
@@ -106,14 +106,14 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
         public static TriggerInstance caughtWithItem(Item item)
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.ANY,
+                ContextAwarePredicate.ANY,
+                ContextAwarePredicate.ANY,
                 ItemPredicate.Builder.item().of(item).build(),
                 false
             );
         }
 
-        private final EntityPredicate.Composite entity;
+        private final ContextAwarePredicate entity;
 
         private final ItemPredicate item;
 

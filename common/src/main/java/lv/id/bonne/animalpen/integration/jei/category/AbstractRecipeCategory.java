@@ -1,7 +1,6 @@
 package lv.id.bonne.animalpen.integration.jei.category;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
@@ -61,7 +61,7 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
 
     @Override
     public void draw(ItemInfoRecipe recipe, IRecipeSlotsView recipeSlotsView,
-        PoseStack poseStack, double mouseX, double mouseY)
+        GuiGraphics guiGraphics, double mouseX, double mouseY)
     {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
@@ -74,7 +74,7 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
 
         for (FormattedCharSequence line : lines)
         {
-            font.draw(poseStack, line, TEXT_X, yPos, 0xFF404040);
+            guiGraphics.drawString(font, line, TEXT_X, yPos, 0xFF404040, false);
             yPos += font.lineHeight + 1;
         }
     }

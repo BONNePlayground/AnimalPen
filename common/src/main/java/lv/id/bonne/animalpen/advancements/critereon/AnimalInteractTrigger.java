@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 
 public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteractTrigger.TriggerInstance>
@@ -28,34 +29,37 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
     @Override
     @NotNull
     protected TriggerInstance createInstance(JsonObject json,
-        EntityPredicate.Composite player,
+        ContextAwarePredicate player,
         DeserializationContext context)
     {
-        EntityPredicate.Composite entity = EntityPredicate.Composite.fromJson(json, "entity", context);
+        ContextAwarePredicate entity = EntityPredicate.fromJson(json, "entity", context);
         ItemPredicate item = ItemPredicate.fromJson(json.get("item"));
         return new TriggerInstance(player, entity, item);
     }
 
 
-    public void trigger(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem)
+    public void trigger(ServerPlayer player, Entity entity, ItemStack stack)
     {
-        this.trigger(player, (instance) -> instance.matches(player, caughtEntity, catchingItem));
+        LootContext ctx = EntityPredicate.createContext(player, entity);
+
+        this.trigger(player, instance -> instance.matches(ctx, stack));
     }
 
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(EntityPredicate.Composite player, EntityPredicate.Composite entity, ItemPredicate item)
+        public TriggerInstance(ContextAwarePredicate player,
+            ContextAwarePredicate entity,
+            ItemPredicate item)
         {
             super(ID, player);
             this.entity = entity;
             this.item = item;
         }
 
-
-        public boolean matches(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem)
+        public boolean matches(LootContext entityContext, ItemStack catchingItem)
         {
-            if (!this.entity.matches(EntityPredicate.createContext(player, caughtEntity)))
+            if (this.entity != null && !this.entity.matches(entityContext))
             {
                 return false;
             }
@@ -78,8 +82,8 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         public static TriggerInstance interactAnimal(EntityType<?> entity)
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
+                ContextAwarePredicate.ANY,
+                EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build()),
                 ItemPredicate.ANY
             );
         }
@@ -88,8 +92,8 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         public static TriggerInstance interactAnimalWithItem(EntityType<?> entity, Item... item)
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
+                ContextAwarePredicate.ANY,
+                EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build()),
                 ItemPredicate.Builder.item().of(item).build()
             );
         }
@@ -97,14 +101,14 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         public static TriggerInstance interactAnimalWithItem(EntityType<?> entity, TagKey<Item> itemTag)
         {
             return new TriggerInstance(
-                EntityPredicate.Composite.ANY,
-                EntityPredicate.Composite.wrap(EntityPredicate.Builder.entity().of(entity).build()),
+                ContextAwarePredicate.ANY,
+                EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build()),
                 ItemPredicate.Builder.item().of(itemTag).build()
             );
         }
 
 
-        private final EntityPredicate.Composite entity;
+        private final ContextAwarePredicate entity;
 
         private final ItemPredicate item;
     }

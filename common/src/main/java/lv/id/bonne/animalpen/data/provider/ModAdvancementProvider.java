@@ -76,6 +76,7 @@ public interface ModAdvancementProvider
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
         List<EntityType<?>> animals = List.of(
+            EntityType.CAMEL,
             EntityType.CAT,
             EntityType.CHICKEN,
             EntityType.COW,
@@ -95,6 +96,7 @@ public interface ModAdvancementProvider
             EntityType.RABBIT,
             EntityType.SHEEP,
             EntityType.SKELETON_HORSE,
+            EntityType.SNIFFER,
             EntityType.STRIDER,
             EntityType.TRADER_LLAMA,
             EntityType.WOLF,
@@ -122,7 +124,7 @@ public interface ModAdvancementProvider
                             AnimalPensItemRegistry.ANIMAL_CAGE.get())),
                 AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_catch"));
 
-            if (animal == EntityType.CHICKEN || animal == EntityType.COW || animal == EntityType.MOOSHROOM || animal == EntityType.GOAT)
+            if (animal == EntityType.CHICKEN || animal == EntityType.COW || animal == EntityType.MOOSHROOM || animal == EntityType.GOAT || animal == EntityType.SNIFFER)
             {
                 // Interact with bucket
                 this.generatePlatformAdvancement(consumer,
@@ -253,6 +255,29 @@ public interface ModAdvancementProvider
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.MAGMA_BLOCK)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_froglight"));
+            }
+
+            if (animal == EntityType.SNIFFER)
+            {
+                // Shearing
+                this.generatePlatformAdvancement(consumer,
+                    Advancement.Builder.advancement().
+                        parent(advancement).
+                        display(
+                            Items.BOWL,
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bowl.title"),
+                            Component.translatable(
+                                "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
+                            null,
+                            FrameType.TASK,
+                            true,  // show toast
+                            false,  // announce to chat
+                            false  // not hidden
+                        ).
+                        addCriterion(animal.getDescriptionId(),
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                                Items.BOWL)),
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
             }
         });
 

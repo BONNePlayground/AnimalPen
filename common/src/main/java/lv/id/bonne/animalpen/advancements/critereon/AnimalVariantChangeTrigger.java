@@ -23,7 +23,7 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
     @Override
     @NotNull
     protected TriggerInstance createInstance(JsonObject json,
-        EntityPredicate.Composite player,
+        ContextAwarePredicate player,
         DeserializationContext context)
     {
         return new TriggerInstance(player);
@@ -38,7 +38,7 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(EntityPredicate.Composite player)
+        public TriggerInstance(ContextAwarePredicate player)
         {
             super(ID, player);
         }
@@ -54,7 +54,7 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
 
         public static TriggerInstance changeVariant()
         {
-            return new TriggerInstance(EntityPredicate.Composite.ANY);
+            return new TriggerInstance(ContextAwarePredicate.ANY);
         }
     }
 
