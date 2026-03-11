@@ -15,7 +15,6 @@ import java.util.*;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
-import lv.id.bonne.animalpen.interaction.loot.LootEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
@@ -28,7 +27,6 @@ import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -823,19 +821,32 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         for (AnimalInteraction interaction : interactions)
         {
+            int animalCount = mobNBT.
+                getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
+                getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+
             // Apply cooldown
             if (interaction.cooldown() != null)
             {
-                int animalCount = mobNBT.
-                    getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                    getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-
                 int cooldownTime = interaction.cooldown().calculateCooldown(animalCount);
                 newCooldowns.putInt(interaction.id(), cooldownTime);
                 anyChanges = true;
             }
 
-            // TODO: think about dropping loot. Currently I do not have usage for it, so I have not implemented it.
+            if (interaction.even() && animalCount % 2 != 0)
+            {
+                animalCount--;
+            }
+
+            // Process loot table
+            List<ItemStack> lootItems = interaction.lootEntry() == null ?
+                Collections.emptyList() :
+                interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
+
+            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
+                itemStack,
+                this.getBlockPos(),
+                this.dropPosition()));
 
             // Play sound
             if (interaction.sound() != null && Registry.SOUND_EVENT.containsKey(interaction.sound()))
@@ -885,10 +896,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     /**
      * This method sets new animal variant from given CompoundTag tag.
      *
-     * @param animalVariant a new animal variant
+     * @param index a new animal variant index
      */
-    public void updateAnimalVariant(CompoundTag animalVariant)
+    public void updateAnimalVariant(int index)
     {
+        if (this.getStoredAnimal().isEmpty() || index >= this.getEntityVariants().size() || index < 0)
+        {
+            return;
+        }
+
+        CompoundTag animalVariant = (CompoundTag) this.getEntityVariants().get(index);
+
         if (animalVariant == null || animalVariant.isEmpty())
         {
             // Nothing to update

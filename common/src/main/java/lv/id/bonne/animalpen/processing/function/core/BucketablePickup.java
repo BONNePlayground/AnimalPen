@@ -24,14 +24,13 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 
 
 /**
  * This function allows to pick up any animal that has Bucketable interface.
  */
-public class WaterBucketPickup implements EntityFunction
+public class BucketablePickup implements EntityFunction
 {
     @Override
     public boolean interactPlayer(ServerPlayer player,
@@ -47,7 +46,7 @@ public class WaterBucketPickup implements EntityFunction
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
-        if (itemInHand.getItem() != Items.WATER_BUCKET || !(mob instanceof Bucketable bucketable))
+        if (!(mob instanceof Bucketable bucketable))
         {
             return false;
         }
@@ -91,7 +90,7 @@ public class WaterBucketPickup implements EntityFunction
     {
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
 
-        if (!itemConsumed.is(Items.WATER_BUCKET) || !(mob instanceof Bucketable bucketable))
+        if (!(mob instanceof Bucketable bucketable))
         {
             return false;
         }
