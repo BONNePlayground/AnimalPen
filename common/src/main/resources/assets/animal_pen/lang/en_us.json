@@ -326,6 +326,8 @@
   "advancements.animal_pen.entity.minecraft.parrot.description": "Catch a Parrot",
   "advancements.animal_pen.entity.minecraft.allay.title": "Useful Helper",
   "advancements.animal_pen.entity.minecraft.allay.description": "Catch an Allay",
+  "advancements.animal_pen.entity.minecraft.happy_ghast.title": "White Ballon",
+  "advancements.animal_pen.entity.minecraft.happy_ghast.description": "Catch a Happy Ghast",
 
   "advancements.animal_pen.release.title": "Set Free",
   "advancements.animal_pen.release.description": "Release an animal back into the wild",

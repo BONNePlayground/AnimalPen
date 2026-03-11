@@ -455,6 +455,7 @@ public interface ModAdvancementProvider
         List<EntityType<?>> flyers = List.of(EntityType.BEE,
             EntityType.BAT,
             EntityType.PARROT,
+            EntityType.HAPPY_GHAST,
             EntityType.ALLAY);
 
         flyers.forEach(animal ->

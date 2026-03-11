@@ -15,6 +15,7 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
+import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -46,12 +47,7 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
 
                 setSheared.invoke(mob, dataValue.getAsBoolean());
 
-                CompoundTag animalTag = new CompoundTag();
-                mob.saveWithoutId(animalTag);
-
-                animalTag.remove("UUID");
-                animalTag.remove("Pos");
-
+                CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
                 componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                     StoredMob.of(mob.getType(), animalTag));
 

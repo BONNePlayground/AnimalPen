@@ -76,9 +76,9 @@ dependencies {
 
     modImplementation "me.shedaniel.cloth:cloth-config-neoforge:${rootProject.cloth_config_version}"
 
-    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-neoforge-api:${rootProject.jei_version}")
+//    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-neoforge-api:${rootProject.jei_version}")
     // at runtime, use the full JEI jar for Forge
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${rootProject.jei_version}")
+//    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${rootProject.jei_version}")
 }
 
 processResources {
