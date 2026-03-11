@@ -7,9 +7,13 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
+import java.util.Optional;
+
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AnimalPenTileEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import lv.id.bonne.animalpen.registries.AnimalPenMobAnimationsRegistry;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -61,5 +65,20 @@ public class AnimalPenRenderer extends AbstractAnimalPenRenderer<AnimalPenTileEn
     {
         return AnimalPen.config().isGrowAnimalPenMob() ||
             super.shouldRender(blockEntity, vec3);
+    }
+
+
+    @Override
+    protected void configureAnimalPose(Mob animal, AnimalPenTileEntity tileEntity)
+    {
+        super.configureAnimalPose(animal, tileEntity);
+
+        if (animal.tickCount == tileEntity.getTickCounter())
+        {
+            return;
+        }
+
+        Optional.ofNullable(AnimalPenMobAnimationsRegistry.ANIMAL_PEN_ANIMATIONS.get(animal.getType())).
+            ifPresent(animator -> animator.animate(animal));
     }
 }

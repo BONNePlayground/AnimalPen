@@ -1,24 +1,26 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
+import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 
 /**
  * This is a simple packet send from client to server to indicate that animal variant is changed.
  */
-public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implements CustomPacketPayload
+public record UpdateDisplayAnimalData(BlockPos position, int index) implements CustomPacketPayload
 {
     /**
      * This method handles incoming packet on server.
@@ -27,7 +29,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
      */
     public static void handle(UpdateDisplayAnimalData data, NetworkManager.PacketContext packetContext)
     {
-        CompoundTag animalVariant = data.tag();
+        int index = data.index();
         BlockPos blockPos = data.position();
 
         packetContext.queue(() ->
@@ -36,7 +38,13 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                animalPen.updateAnimalVariant(animalVariant);
+                if (index >= 0 && index < animalPen.getEntityVariants().size())
+                {
+                    AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(
+                        (ServerPlayer) packetContext.getPlayer());
+                }
+
+                animalPen.updateAnimalVariant(index);
             }
             else
             {
@@ -60,7 +68,7 @@ public record UpdateDisplayAnimalData(BlockPos position, CompoundTag tag) implem
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UpdateDisplayAnimalData> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC, UpdateDisplayAnimalData::position,
-        ByteBufCodecs.COMPOUND_TAG, UpdateDisplayAnimalData::tag,
+        ByteBufCodecs.VAR_INT, UpdateDisplayAnimalData::index,
         UpdateDisplayAnimalData::new
     );
 }
