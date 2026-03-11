@@ -16,48 +16,37 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 
 public class NeoForgeModAdvancementProvider extends AdvancementProvider
 {
     public NeoForgeModAdvancementProvider(PackOutput output,
-        CompletableFuture<HolderLookup.Provider> lookupProvider,
-        ExistingFileHelper existingFileHelper)
+        CompletableFuture<HolderLookup.Provider> lookupProvider)
     {
-        super(output, lookupProvider, existingFileHelper, List.of(new NeoForgeModAdvancementSubProvider(existingFileHelper)));
+        super(output, lookupProvider, List.of(new NeoForgeModAdvancementSubProvider()));
     }
 
 
     private static class NeoForgeModAdvancementSubProvider
-        implements AdvancementProvider.AdvancementGenerator, ModAdvancementProvider
+        implements AdvancementSubProvider, ModAdvancementProvider
     {
-        public NeoForgeModAdvancementSubProvider(ExistingFileHelper existingFileHelper)
-        {
-            this.existingFileHelper = existingFileHelper;
-        }
-
-
         @Override
         public AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
             Advancement.Builder builder,
             ResourceLocation resourceLocation)
         {
-            return builder.save(consumer, resourceLocation, this.existingFileHelper);
+            return builder.save(consumer, resourceLocation);
         }
 
 
         @Override
         public void generate(HolderLookup.Provider arg,
-            Consumer<AdvancementHolder> consumer,
-            ExistingFileHelper existingFileHelper)
+            Consumer<AdvancementHolder> consumer)
         {
             this.buildModAdvancements(consumer, arg);
         }
-
-
-        private final ExistingFileHelper existingFileHelper;
     }
 }

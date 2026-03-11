@@ -14,5 +14,5 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    modCompileOnlyApi("mezz.jei:jei-1.21-common-api:${rootProject.jei_version}")
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${rootProject.jei_version}")
 }
