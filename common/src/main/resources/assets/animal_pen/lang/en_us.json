@@ -248,6 +248,11 @@
   "advancements.animal_pen.entity.minecraft.zombie_horse.title": "Zombie Steed",
   "advancements.animal_pen.entity.minecraft.zombie_horse.description": "Catch a Zombie Horse",
 
+  "advancements.animal_pen.entity.minecraft.frog.title": "Amphibian Friend",
+  "advancements.animal_pen.entity.minecraft.frog.description": "Catch a Frog",
+  "advancements.animal_pen.entity.minecraft.frog_froglight.title": "Froglight Gatherer",
+  "advancements.animal_pen.entity.minecraft.frog_froglight.description": "Feed magma cubes to frog",
+
   "advancements.animal_pen.aquatic_keeper.title": "Aquatic Keeper",
   "advancements.animal_pen.aquatic_keeper.description": "Catch your first aquatic creature with an Animal Water Container",
   "advancements.animal_pen.entity.minecraft.axolotl.title": "Adorable Amphibian",
@@ -280,6 +285,10 @@
   "advancements.animal_pen.entity.minecraft.turtle.description": "Catch a Turtle",
   "advancements.animal_pen.entity.minecraft.turtle_bucket.title": "Turtle Eggs",
   "advancements.animal_pen.entity.minecraft.turtle_bucket.description": "Use a bucket on a Turtle to collect turtle eggs",
+  "advancements.animal_pen.entity.minecraft.tadpole.title": "Tadpole Snatcher",
+  "advancements.animal_pen.entity.minecraft.tadpole.description": "Catch a Tadpole",
+  "advancements.animal_pen.entity.minecraft.tadpole_water_bucket.title": "Tadpole in a Bucket",
+  "advancements.animal_pen.entity.minecraft.tadpole_water_bucket.description": "Use a water bucket on an Aquarium to pick it up",
 
   "advancements.animal_pen.bird_watcher.title": "Bird Watcher",
   "advancements.animal_pen.bird_watcher.description": "Catch your first flying creature with a Bird Catcher",
@@ -293,6 +302,8 @@
   "advancements.animal_pen.entity.minecraft.bat.description": "Catch a Bat",
   "advancements.animal_pen.entity.minecraft.parrot.title": "Pirate's Companion",
   "advancements.animal_pen.entity.minecraft.parrot.description": "Catch a Parrot",
+  "advancements.animal_pen.entity.minecraft.allay.title": "Useful Helper",
+  "advancements.animal_pen.entity.minecraft.allay.description": "Catch an Allay",
 
   "advancements.animal_pen.release.title": "Set Free",
   "advancements.animal_pen.release.description": "Release an animal back into the wild",
