@@ -45,7 +45,7 @@ public interface ModAdvancementProvider
                     AnimalPenBlockRegistry.ANIMAL_PENS.values().iterator().next().get().asItem(),
                     Component.translatable("advancements.animal_pen.root.title"),
                     Component.translatable("advancements.animal_pen.root.description"),
-                    ResourceLocation.tryParse("textures/gui/advancements/backgrounds/husbandry.png"),
+                    ResourceLocation.tryParse("minecraft:gui/advancements/backgrounds/husbandry"),
                     AdvancementType.TASK,
                     false, // no toast
                     false, // no chat
