@@ -239,16 +239,15 @@ public class AnimalInteractionProvider implements DataProvider
         EntityType<?> entityType,
         List<AnimalInteraction> interactions,
         String... mods)
-        throws IOException
     {
         JsonElement json = AnimalInteractionEntry.CODEC.
-            encodeStart(JsonOps.INSTANCE, new AnimalInteractionEntry(Optional.of(entityType),
+            encodeStart(JsonOps.INSTANCE, new AnimalInteractionEntry(Optional.of(entityType.builtInRegistryHolder().key()),
                 Arrays.stream(mods).toList(),
                 interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
-        Files.createDirectories(file.getParent());
+
         return DataProvider.saveStable(cache, json, file);
     }
 

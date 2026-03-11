@@ -23,10 +23,9 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 
@@ -56,12 +55,12 @@ public class JEIPlugin implements IModPlugin
     @Override
     public void registerRecipes(IRecipeRegistration registration)
     {
-        for (EntityType<?> entityType : Registry.ENTITY_TYPE)
+        BuiltInRegistries.ENTITY_TYPE.stream().forEach(entityType ->
         {
             SpawnEggItem spawnEggItem = SpawnEggItem.byId(entityType);
             if (spawnEggItem == null)
             {
-                continue;
+                return;
             }
 
             if (entityType.is(AnimalPenTags.ANIMAL_CAGE_PICKABLE))
@@ -90,7 +89,7 @@ public class JEIPlugin implements IModPlugin
                     spawnEggItem.getDefaultInstance()
                 )));
             }
-        }
+        });
 
 
         // Add description text that shows under the item in JEI
