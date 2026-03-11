@@ -20,7 +20,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
@@ -40,8 +40,8 @@ public interface ModAdvancementProvider
             Advancement.Builder.advancement().
                 display(
                     AnimalPenBlockRegistry.ANIMAL_PENS.values().iterator().next().get().asItem(),
-                    new TranslatableComponent("advancements.animal_pen.root.title"),
-                    new TranslatableComponent("advancements.animal_pen.root.description"),
+                    Component.translatable("advancements.animal_pen.root.title"),
+                    Component.translatable("advancements.animal_pen.root.description"),
                     new ResourceLocation("textures/gui/advancements/backgrounds/husbandry.png"),
                     FrameType.TASK,
                     false, // no toast
@@ -62,8 +62,8 @@ public interface ModAdvancementProvider
                 parent(root).
                 display(
                     AnimalPensItemRegistry.ANIMAL_CAGE.get(),
-                    new TranslatableComponent("advancements.animal_pen.first_catch.title"),
-                    new TranslatableComponent("advancements.animal_pen.first_catch.description"),
+                    Component.translatable("advancements.animal_pen.first_catch.title"),
+                    Component.translatable("advancements.animal_pen.first_catch.description"),
                     null,
                     FrameType.TASK,
                     true,  // show toast
@@ -107,8 +107,8 @@ public interface ModAdvancementProvider
                     parent(firstAnimal).
                     display(
                         SpawnEggItem.byId(animal),
-                        new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
-                        new TranslatableComponent(
+                        Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
+                        Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
                         FrameType.TASK,
@@ -129,8 +129,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.BUCKET,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
                             null,
                             FrameType.TASK,
@@ -152,8 +152,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.BOWL,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_bowl.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bowl.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
                             null,
                             FrameType.TASK,
@@ -171,8 +171,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.DANDELION,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_flower.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_flower.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_flower.description"),
                             null,
                             FrameType.TASK,
@@ -194,8 +194,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.SHEARS,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
                             null,
                             FrameType.TASK,
@@ -213,8 +213,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.WHITE_DYE,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_dye.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_dye.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_dye.description"),
                             null,
                             FrameType.TASK,
@@ -238,8 +238,8 @@ public interface ModAdvancementProvider
                 parent(root).
                 display(
                     AnimalPensItemRegistry.ANIMAL_CONTAINER.get(),
-                    new TranslatableComponent("advancements.animal_pen.aquatic_keeper.title"),
-                    new TranslatableComponent("advancements.animal_pen.aquatic_keeper.description"),
+                    Component.translatable("advancements.animal_pen.aquatic_keeper.title"),
+                    Component.translatable("advancements.animal_pen.aquatic_keeper.description"),
                     null,
                     FrameType.TASK,
                     true,
@@ -271,8 +271,8 @@ public interface ModAdvancementProvider
                     parent(firstAquatic).
                     display(
                         SpawnEggItem.byId(animal),
-                        new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
-                        new TranslatableComponent(
+                        Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
+                        Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
                         FrameType.TASK,
@@ -293,8 +293,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.BUCKET,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
                             null,
                             FrameType.TASK,
@@ -317,8 +317,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.WATER_BUCKET,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.description"),
                             null,
                             FrameType.TASK,
@@ -339,8 +339,8 @@ public interface ModAdvancementProvider
                 parent(root).
                 display(
                     AnimalPensItemRegistry.BIRD_CATCHER.get(),
-                    new TranslatableComponent("advancements.animal_pen.bird_watcher.title"),
-                    new TranslatableComponent("advancements.animal_pen.bird_watcher.description"),
+                    Component.translatable("advancements.animal_pen.bird_watcher.title"),
+                    Component.translatable("advancements.animal_pen.bird_watcher.description"),
                     null,
                     FrameType.TASK,
                     true, true, false
@@ -361,8 +361,8 @@ public interface ModAdvancementProvider
                     parent(firstFlyer).
                     display(
                         SpawnEggItem.byId(animal),
-                        new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
-                        new TranslatableComponent(
+                        Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
+                        Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
                         FrameType.TASK,
@@ -383,8 +383,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.SHEARS,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
                             null,
                             FrameType.TASK,
@@ -403,8 +403,8 @@ public interface ModAdvancementProvider
                         parent(advancement).
                         display(
                             Items.GLASS_BOTTLE,
-                            new TranslatableComponent("advancements.animal_pen." + animal.getDescriptionId() + "_bottle.title"),
-                            new TranslatableComponent(
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bottle.title"),
+                            Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bottle.description"),
                             null,
                             FrameType.TASK,
@@ -425,8 +425,8 @@ public interface ModAdvancementProvider
                 parent(root).
                 display(
                     Items.LEAD,
-                    new TranslatableComponent("advancements.animal_pen.release.title"),
-                    new TranslatableComponent("advancements.animal_pen.release.description"),
+                    Component.translatable("advancements.animal_pen.release.title"),
+                    Component.translatable("advancements.animal_pen.release.description"),
                     null,
                     FrameType.TASK,
                     true, true, false
@@ -442,8 +442,8 @@ public interface ModAdvancementProvider
                 parent(root).
                 display(
                     Items.MAP,
-                    new TranslatableComponent("advancements.animal_pen.variant_change.title"),
-                    new TranslatableComponent("advancements.animal_pen.variant_change.description"),
+                    Component.translatable("advancements.animal_pen.variant_change.title"),
+                    Component.translatable("advancements.animal_pen.variant_change.description"),
                     null,
                     FrameType.TASK,
                     true, true, false

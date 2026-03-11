@@ -24,7 +24,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -68,7 +68,7 @@ public class JEIPlugin implements IModPlugin
             {
                 registration.addRecipes(AnimalCageRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get()),
-                    new TranslatableComponent("jei.animal_pen.animal_cage"),
+                    Component.translatable("jei.animal_pen.animal_cage"),
                     spawnEggItem.getDefaultInstance()
                 )));
             }
@@ -77,7 +77,7 @@ public class JEIPlugin implements IModPlugin
             {
                 registration.addRecipes(WaterContainerRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()),
-                    new TranslatableComponent("jei.animal_pen.water_animal_container"),
+                    Component.translatable("jei.animal_pen.water_animal_container"),
                     spawnEggItem.getDefaultInstance()
                 )));
             }
@@ -86,7 +86,7 @@ public class JEIPlugin implements IModPlugin
             {
                 registration.addRecipes(BirdCageRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.BIRD_CATCHER.get()),
-                    new TranslatableComponent("jei.animal_pen.bird_catcher"),
+                    Component.translatable("jei.animal_pen.bird_catcher"),
                     spawnEggItem.getDefaultInstance()
                 )));
             }
@@ -97,19 +97,19 @@ public class JEIPlugin implements IModPlugin
         registration.addIngredientInfo(
             new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get()),
             VanillaTypes.ITEM_STACK,
-            new TranslatableComponent("jei.animal_pen.animal_cage.info")
+            Component.translatable("jei.animal_pen.animal_cage.info")
         );
 
         registration.addIngredientInfo(
             new ItemStack(AnimalPensItemRegistry.BIRD_CATCHER.get()),
             VanillaTypes.ITEM_STACK,
-            new TranslatableComponent("jei.animal_pen.bird_catcher.info")
+            Component.translatable("jei.animal_pen.bird_catcher.info")
         );
 
         registration.addIngredientInfo(
             new ItemStack(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()),
             VanillaTypes.ITEM_STACK,
-            new TranslatableComponent("jei.animal_pen.water_animal_container.info")
+            Component.translatable("jei.animal_pen.water_animal_container.info")
         );
     }
 

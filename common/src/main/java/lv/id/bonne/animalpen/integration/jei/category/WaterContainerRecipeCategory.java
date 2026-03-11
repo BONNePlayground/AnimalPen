@@ -15,7 +15,6 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -32,7 +31,7 @@ public class WaterContainerRecipeCategory extends AbstractRecipeCategory
     @NotNull
     public Component getTitle()
     {
-        return new TranslatableComponent("jei.animal_pen.item_info_water_animal_container");
+        return Component.translatable("jei.animal_pen.item_info_water_animal_container");
     }
 
 
@@ -41,20 +40,6 @@ public class WaterContainerRecipeCategory extends AbstractRecipeCategory
     public RecipeType<ItemInfoRecipe> getRecipeType()
     {
         return RECIPE_TYPE;
-    }
-
-
-    @Override
-    public ResourceLocation getUid()
-    {
-        return this.getRecipeType().getUid();
-    }
-
-
-    @Override
-    public Class<? extends ItemInfoRecipe> getRecipeClass()
-    {
-        return getRecipeType().getRecipeClass();
     }
 
 

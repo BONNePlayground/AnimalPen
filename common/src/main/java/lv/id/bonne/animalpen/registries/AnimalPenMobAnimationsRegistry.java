@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.frog.Frog;
 
 
 /**
@@ -61,6 +62,15 @@ public class AnimalPenMobAnimationsRegistry
 
         AQUARIUM_ANIMATIONS.put(EntityType.SQUID, squidAnimation);
         AQUARIUM_ANIMATIONS.put(EntityType.GLOW_SQUID, squidAnimation);
+
+        AQUARIUM_ANIMATIONS.put(EntityType.FROG, mob ->
+        {
+            if (mob instanceof Frog frog)
+            {
+                frog.swimAnimationState.startIfStopped(frog.tickCount);
+            }
+        });
+
 
         // Parrots also have some animation requirements
         AVIARY_ANIMATIONS.put(EntityType.PARROT, mob ->
