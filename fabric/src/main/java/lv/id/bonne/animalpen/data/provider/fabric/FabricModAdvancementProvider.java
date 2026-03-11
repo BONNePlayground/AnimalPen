@@ -1,0 +1,41 @@
+//
+// Created by BONNe
+// Copyright - 2026
+//
+
+
+package lv.id.bonne.animalpen.data.provider.fabric;
+
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import lv.id.bonne.animalpen.data.provider.ModAdvancementProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.resources.ResourceLocation;
+
+
+public class FabricModAdvancementProvider extends FabricAdvancementProvider implements ModAdvancementProvider
+{
+    protected FabricModAdvancementProvider(FabricDataGenerator dataGenerator)
+    {
+        super(dataGenerator);
+    }
+
+
+    @Override
+    public void generateAdvancement(Consumer<Advancement> consumer)
+    {
+        this.buildModAdvancements(consumer);
+    }
+
+
+    public Advancement generatePlatformAdvancement(Consumer<Advancement> consumer,
+        Advancement.Builder builder,
+        ResourceLocation resourceLocation)
+    {
+        return builder.save(consumer, resourceLocation.toString());
+    }
+}
