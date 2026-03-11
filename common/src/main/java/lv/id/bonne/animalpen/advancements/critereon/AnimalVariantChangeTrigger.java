@@ -4,9 +4,11 @@ package lv.id.bonne.animalpen.advancements.critereon;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import lv.id.bonne.animalpen.AnimalPen;
+import java.util.Optional;
+
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 
@@ -14,16 +16,8 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
 {
     @Override
     @NotNull
-    public ResourceLocation getId()
-    {
-        return ID;
-    }
-
-
-    @Override
-    @NotNull
     protected TriggerInstance createInstance(JsonObject json,
-        ContextAwarePredicate player,
+        Optional<ContextAwarePredicate> player,
         DeserializationContext context)
     {
         return new TriggerInstance(player);
@@ -38,25 +32,24 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(ContextAwarePredicate player)
+        public TriggerInstance(Optional<ContextAwarePredicate> player)
         {
-            super(ID, player);
+            super(player);
         }
 
 
         @Override
         @NotNull
-        public JsonObject serializeToJson(SerializationContext context)
+        public JsonObject serializeToJson()
         {
-            return super.serializeToJson(context);
+            return super.serializeToJson();
         }
 
 
-        public static TriggerInstance changeVariant()
+        public static Criterion<TriggerInstance> changeVariant()
         {
-            return new TriggerInstance(ContextAwarePredicate.ANY);
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.createCriterion(
+                new TriggerInstance(Optional.empty()));
         }
     }
-
-    private static final ResourceLocation ID = AnimalPen.resourceOf("change_variant");
 }

@@ -17,6 +17,7 @@ import lv.id.bonne.animalpen.advancements.critereon.AnimalVariantChangeTrigger;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -30,13 +31,13 @@ import net.minecraft.world.item.SpawnEggItem;
 
 public interface ModAdvancementProvider
 {
-    Advancement generatePlatformAdvancement(Consumer<Advancement> consumer,
+    AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
         Advancement.Builder builder,
         ResourceLocation resourceLocation);
 
-    default void buildModAdvancements(Consumer<Advancement> consumer)
+    default void buildModAdvancements(Consumer<AdvancementHolder> consumer)
     {
-        Advancement root = this.generatePlatformAdvancement(consumer,
+        AdvancementHolder root = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
                 display(
                     AnimalPenBlockRegistry.ANIMAL_PENS.values().iterator().next().get().asItem(),
@@ -57,7 +58,7 @@ public interface ModAdvancementProvider
                 ),
             AnimalPen.resourceOf("root"));
 
-        Advancement firstAnimal = this.generatePlatformAdvancement(consumer,
+        AdvancementHolder firstAnimal = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
                 parent(root).
                 display(
@@ -71,6 +72,7 @@ public interface ModAdvancementProvider
                     false  // not hidden
                 ).
                 addCriterion("caught_animal",
+
                     AnimalItemUseTrigger.TriggerInstance.caughtWithItem(AnimalPensItemRegistry.ANIMAL_CAGE.get())
                 ),
             AnimalPen.resourceOf("animal_pen/first_catch"));
@@ -105,7 +107,7 @@ public interface ModAdvancementProvider
 
         animals.forEach(animal ->
         {
-            Advancement advancement = this.generatePlatformAdvancement(consumer,
+            AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstAnimal).
                     display(
@@ -282,7 +284,7 @@ public interface ModAdvancementProvider
         });
 
         // First aquatic catch
-        Advancement firstAquatic = this.generatePlatformAdvancement(consumer,
+        AdvancementHolder firstAquatic = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
                 parent(root).
                 display(
@@ -317,7 +319,7 @@ public interface ModAdvancementProvider
 
         aquatics.forEach(animal ->
         {
-            Advancement advancement = this.generatePlatformAdvancement(consumer,
+            AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstAquatic).
                     display(
@@ -408,7 +410,7 @@ public interface ModAdvancementProvider
         });
 
         // First bird catch
-        Advancement firstFlyer = this.generatePlatformAdvancement(consumer,
+        AdvancementHolder firstFlyer = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
                 parent(root).
                 display(
@@ -431,7 +433,7 @@ public interface ModAdvancementProvider
 
         flyers.forEach(animal ->
         {
-            Advancement advancement = this.generatePlatformAdvancement(consumer,
+            AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstFlyer).
                     display(

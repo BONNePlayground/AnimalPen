@@ -1,38 +1,31 @@
 package lv.id.bonne.animalpen.advancements.critereon;
 
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Optional;
+
 
 public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTrigger.TriggerInstance>
 {
     @Override
     @NotNull
-    public ResourceLocation getId()
-    {
-        return ID;
-    }
-
-
-    @Override
-    @NotNull
     protected TriggerInstance createInstance(JsonObject json,
-        ContextAwarePredicate player,
+        Optional<ContextAwarePredicate> player,
         DeserializationContext context)
     {
-        ContextAwarePredicate entity = EntityPredicate.fromJson(json, "entity", context);
-        ItemPredicate item = ItemPredicate.fromJson(json.get("item"));
+        Optional<ContextAwarePredicate> entity = EntityPredicate.fromJson(json, "entity", context);
+        Optional<ItemPredicate> item = ItemPredicate.fromJson(json.get("item"));
         return new TriggerInstance(player, entity, item, json.get("release").getAsBoolean());
     }
 
@@ -45,9 +38,13 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance
     {
-        public TriggerInstance(ContextAwarePredicate player, ContextAwarePredicate entity, ItemPredicate item, boolean release)
+        public TriggerInstance(
+            Optional<ContextAwarePredicate> player,
+            Optional<ContextAwarePredicate> entity,
+            Optional<ItemPredicate> item,
+            boolean release)
         {
-            super(ID, player);
+            super(player);
             this.entity = entity;
             this.item = item;
             this.release = release;
@@ -61,64 +58,68 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
                 return false;
             }
 
-            if (!this.entity.matches(EntityPredicate.createContext(player, caughtEntity)))
+            if (this.entity.isPresent() &&
+                !this.entity.get().matches(EntityPredicate.createContext(player, caughtEntity)))
             {
                 return false;
             }
 
-            return this.item.matches(catchingItem);
+            return this.item.isEmpty() || this.item.get().matches(catchingItem);
         }
 
 
         @Override
         @NotNull
-        public JsonObject serializeToJson(SerializationContext context)
+        public JsonObject serializeToJson()
         {
-            JsonObject json = super.serializeToJson(context);
-            json.add("entity", this.entity.toJson(context));
-            json.add("item", this.item.serializeToJson());
+            JsonObject json = super.serializeToJson();
+            this.entity.ifPresent(e -> json.add("entity", e.toJson()));
+            this.item.ifPresent(i -> json.add("item", i.serializeToJson()));
             json.add("release", new JsonPrimitive(this.release));
             return json;
         }
 
 
-        public static TriggerInstance releaseAnimal()
+        public static Criterion<TriggerInstance> releaseAnimal()
         {
-            return new TriggerInstance(
-                ContextAwarePredicate.ANY,
-                ContextAwarePredicate.ANY,
-                ItemPredicate.ANY,
-                true
-            );
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+                new TriggerInstance(
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    true
+                ));
         }
 
 
-        public static TriggerInstance caughtAnimalWithItem(EntityType<?> entity, Item item)
+        public static Criterion<TriggerInstance> caughtAnimalWithItem(EntityType<?> entityType, Item item)
         {
-            return new TriggerInstance(
-                ContextAwarePredicate.ANY,
-                EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build()),
-                ItemPredicate.Builder.item().of(item).build(),
-                false
-            );
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+                new TriggerInstance(
+                    Optional.empty(),
+                    Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entityType).build())),
+                    Optional.of(ItemPredicate.Builder.item().of(item).build()),
+                    false
+                ));
         }
 
-        public static TriggerInstance caughtWithItem(Item item)
+
+        public static Criterion<TriggerInstance> caughtWithItem(Item item)
         {
-            return new TriggerInstance(
-                ContextAwarePredicate.ANY,
-                ContextAwarePredicate.ANY,
-                ItemPredicate.Builder.item().of(item).build(),
-                false
-            );
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+                new TriggerInstance(
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.of(ItemPredicate.Builder.item().of(item).build()),
+                    false
+                ));
         }
 
-        private final ContextAwarePredicate entity;
 
-        private final ItemPredicate item;
+        private final Optional<ContextAwarePredicate> entity;
+
+        private final Optional<ItemPredicate> item;
 
         private final boolean release;
     }
-
-    private static final ResourceLocation ID = AnimalPen.resourceOf("animal_caught");
 }

@@ -13,6 +13,7 @@ import lv.id.bonne.animalpen.data.provider.ModAdvancementProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.ResourceLocation;
 
 
@@ -25,13 +26,13 @@ public class FabricModAdvancementProvider extends FabricAdvancementProvider impl
 
 
     @Override
-    public void generateAdvancement(Consumer<Advancement> consumer)
+    public void generateAdvancement(Consumer<AdvancementHolder> consumer)
     {
         this.buildModAdvancements(consumer);
     }
 
 
-    public Advancement generatePlatformAdvancement(Consumer<Advancement> consumer,
+    public AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
         Advancement.Builder builder,
         ResourceLocation resourceLocation)
     {
