@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.animal.frog.Frog;
 
 
@@ -55,7 +56,7 @@ public class AnimalPenMobAnimationsRegistry
                 }
 
                 squid.oldTentacleAngle = squid.tentacleAngle;
-                squid.tentacleAngle = Mth.abs(Mth.sin(squid.tentacleMovement)) * (float) Math.PI * 0.25F;
+                squid.tentacleAngle = Mth.abs(Mth.sin(squid.tentacleMovement)) * (float)Math.PI * 0.25F;
                 squid.xBodyRot = -45.0F + Mth.sin(squid.tickCount * 0.1F) * 2.0F;
             }
         };
@@ -67,10 +68,17 @@ public class AnimalPenMobAnimationsRegistry
         {
             if (mob instanceof Frog frog)
             {
-                frog.swimAnimationState.startIfStopped(frog.tickCount);
+                frog.walkAnimation.update(0.6f, 0.4f);
             }
         });
 
+        AQUARIUM_ANIMATIONS.put(EntityType.TURTLE, mob ->
+        {
+            if (mob instanceof Turtle turtle)
+            {
+                turtle.walkAnimation.update(0.6f, 0.4f);
+            }
+        });
 
         // Parrots also have some animation requirements
         AVIARY_ANIMATIONS.put(EntityType.PARROT, mob ->
