@@ -4,6 +4,7 @@ package lv.id.bonne.animalpen.processing.executor;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -178,6 +179,11 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
         {
             this.player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()), amount);
         }
+
+        // Animal Pen specific advancements.
+        AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.trigger(this.player,
+            animal,
+            itemStack);
     }
 
 
