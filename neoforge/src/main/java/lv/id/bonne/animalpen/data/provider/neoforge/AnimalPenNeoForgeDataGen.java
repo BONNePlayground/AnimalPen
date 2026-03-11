@@ -44,5 +44,8 @@ public class AnimalPenNeoForgeDataGen
         generator.addProvider(event.includeServer(), new NeoForgeModRecipeProvider(output, lookupProvider));
 
         generator.addProvider(event.includeServer(), new NeoForgeModLootTableProvider(output, lookupProvider));
+
+        generator.addProvider(event.includeServer(),
+            new NeoForgeModAdvancementProvider(output, lookupProvider, event.getExistingFileHelper()));
     }
 }
