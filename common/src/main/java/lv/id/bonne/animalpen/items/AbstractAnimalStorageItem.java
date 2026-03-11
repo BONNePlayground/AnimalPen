@@ -6,11 +6,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -18,6 +18,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -306,6 +307,11 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         mob.remove(Entity.RemovalReason.DISCARDED);
         player.setItemInHand(hand, stack);
+
+        AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.trigger((ServerPlayer) player,
+            mob,
+            stack,
+            false);
     }
 
 
@@ -344,6 +350,11 @@ public abstract class AbstractAnimalStorageItem extends Item
 
                 level.addFreshEntity(mob);
                 this.decrementStoredAmount(stack, context.getPlayer(), context.getHand());
+
+                AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.trigger((ServerPlayer) context.getPlayer(),
+                    mob,
+                    stack,
+                    true);
             });
 
         return InteractionResult.SUCCESS;

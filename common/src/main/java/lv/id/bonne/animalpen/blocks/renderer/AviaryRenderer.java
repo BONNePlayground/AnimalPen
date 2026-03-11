@@ -7,8 +7,11 @@
 package lv.id.bonne.animalpen.blocks.renderer;
 
 
+import java.util.Optional;
+
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AviaryTileEntity;
+import lv.id.bonne.animalpen.registries.AnimalPenMobAnimationsRegistry;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Parrot;
@@ -78,15 +81,7 @@ public class AviaryRenderer extends AbstractAnimalPenRenderer<AviaryTileEntity>
         animal.animationSpeed += (0.6f - animal.animationSpeed) * 0.4F;
         animal.animationPosition += animal.animationSpeed;
 
-        if (animal instanceof Parrot parrot)
-        {
-            parrot.oFlap = parrot.flap;
-            parrot.oFlapSpeed = parrot.flapSpeed;
-
-            parrot.flapSpeed += (float) 4 * 0.3F;
-            parrot.flapSpeed = Mth.clamp(parrot.flapSpeed, 0.0F, 1.0F);
-
-            parrot.flap += 1.8f;
-        }
+        Optional.ofNullable(AnimalPenMobAnimationsRegistry.AVIARY_ANIMATIONS.get(animal.getType())).
+            ifPresent(animator -> animator.animate(animal));
     }
 }
