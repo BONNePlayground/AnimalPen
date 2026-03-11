@@ -236,7 +236,7 @@ public class AnimalInteractionProvider implements DataProvider
             encodeStart(JsonOps.INSTANCE, new AnimalInteractionEntry(Optional.of(entityType.builtInRegistryHolder().key()),
                 Arrays.stream(mods).toList(),
                 interactions)).
-            getOrThrow(false, IllegalStateException::new);
+            getOrThrow();
 
         Path file = this.pathProvider.json(entityType.arch$registryName());
 

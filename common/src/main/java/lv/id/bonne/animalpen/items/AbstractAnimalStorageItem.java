@@ -384,7 +384,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         mob.remove(Entity.RemovalReason.DISCARDED);
         player.setItemInHand(hand, stack);
 
-        AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.trigger((ServerPlayer) player,
+        AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().trigger((ServerPlayer) player,
             mob,
             stack,
             false);
@@ -434,7 +434,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         level.addFreshEntity(mob);
         this.decrementStoredAmount(stack);
 
-        AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.trigger((ServerPlayer) context.getPlayer(),
+        AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().trigger((ServerPlayer) context.getPlayer(),
             mob,
             stack,
             true);

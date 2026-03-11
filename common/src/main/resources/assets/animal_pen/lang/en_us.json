@@ -260,6 +260,10 @@
   "advancements.animal_pen.entity.minecraft.sniffer_bucket.description": "Use bucket on a Sniffer to collect eggs",
   "advancements.animal_pen.entity.minecraft.sniffer_bowl.title": "Ancient Plants",
   "advancements.animal_pen.entity.minecraft.sniffer_bowl.description": "Use bowl on a Sniffer to collect ancient seeds",
+  "advancements.animal_pen.entity.minecraft.armadillo.title": "Small Roller",
+  "advancements.animal_pen.entity.minecraft.armadillo.description": "Catch an Armadillo",
+  "advancements.animal_pen.entity.minecraft.armadillo_brush.title": "Scratch an Armadillo",
+  "advancements.animal_pen.entity.minecraft.armadillo_brush.description": "Brush an Armadillo to collect scutes",
 
   "advancements.animal_pen.entity.minecraft.frog.title": "Amphibian Friend",
   "advancements.animal_pen.entity.minecraft.frog.description": "Catch a Frog",

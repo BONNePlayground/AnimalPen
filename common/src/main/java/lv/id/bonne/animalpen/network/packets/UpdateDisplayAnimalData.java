@@ -40,7 +40,7 @@ public record UpdateDisplayAnimalData(BlockPos position, int index) implements C
             {
                 if (index >= 0 && index < animalPen.getEntityVariants().size())
                 {
-                    AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.trigger(
+                    AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(
                         (ServerPlayer) packetContext.getPlayer());
                 }
 

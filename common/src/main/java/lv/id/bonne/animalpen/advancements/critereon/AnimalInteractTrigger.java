@@ -12,7 +12,6 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -43,14 +42,11 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
             instance ->
                 instance.group(
-                    ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
-                        forGetter(TriggerInstance::player),
-                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "entity").
-                            forGetter(TriggerInstance::entity),
-                    ExtraCodecs.strictOptionalField(ItemPredicate.CODEC, "item").
-                        forGetter(TriggerInstance::item)
-                    ).
-                    apply(instance, TriggerInstance::new));
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("entity").forGetter(TriggerInstance::entity),
+                    ItemPredicate.CODEC.optionalFieldOf("item").forGetter(TriggerInstance::item)
+                ).
+                apply(instance, TriggerInstance::new));
 
 
         public boolean matches(LootContext entityContext, ItemStack catchingItem)
@@ -60,13 +56,13 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
                 return false;
             }
 
-            return this.item.isEmpty() || this.item.get().matches(catchingItem);
+            return this.item.isEmpty() || this.item.get().test(catchingItem);
         }
 
 
         public static Criterion<TriggerInstance> interactAnimal(EntityType<?> entity)
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.createCriterion(new TriggerInstance(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
                 Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
                 Optional.empty()
@@ -76,7 +72,7 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
 
         public static Criterion<TriggerInstance> interactAnimalWithItem(EntityType<?> entity, Item... item)
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.createCriterion(new TriggerInstance(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
                 Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
                 Optional.of(ItemPredicate.Builder.item().of(item).build())
@@ -86,7 +82,7 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
 
         public static Criterion<TriggerInstance> interactAnimalWithItem(EntityType<?> entity, TagKey<Item> itemTag)
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.createCriterion(new TriggerInstance(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
                 Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entity).build())),
                 Optional.of(ItemPredicate.Builder.item().of(itemTag).build())

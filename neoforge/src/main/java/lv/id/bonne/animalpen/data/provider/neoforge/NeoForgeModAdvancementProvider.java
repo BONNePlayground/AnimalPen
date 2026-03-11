@@ -4,7 +4,7 @@
 //
 
 
-package lv.id.bonne.animalpen.data.provider.forge;
+package lv.id.bonne.animalpen.data.provider.neoforge;
 
 
 import java.util.List;
@@ -17,28 +17,35 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.ForgeAdvancementProvider;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 
-public class ForgeModAdvancementProvider extends ForgeAdvancementProvider
+public class NeoForgeModAdvancementProvider extends AdvancementProvider
 {
-    public ForgeModAdvancementProvider(PackOutput output,
+    public NeoForgeModAdvancementProvider(PackOutput output,
         CompletableFuture<HolderLookup.Provider> lookupProvider,
         ExistingFileHelper existingFileHelper)
     {
-        super(output, lookupProvider, existingFileHelper, List.of(new ForgeModAdvancementSubProvider()));
+        super(output, lookupProvider, existingFileHelper, List.of(new NeoForgeModAdvancementSubProvider(existingFileHelper)));
     }
 
 
-    private static class ForgeModAdvancementSubProvider implements ForgeAdvancementProvider.AdvancementGenerator, ModAdvancementProvider
+    private static class NeoForgeModAdvancementSubProvider
+        implements AdvancementProvider.AdvancementGenerator, ModAdvancementProvider
     {
+        public NeoForgeModAdvancementSubProvider(ExistingFileHelper existingFileHelper)
+        {
+            this.existingFileHelper = existingFileHelper;
+        }
+
+
         @Override
         public AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
             Advancement.Builder builder,
             ResourceLocation resourceLocation)
         {
-            return builder.save(consumer, resourceLocation);
+            return builder.save(consumer, resourceLocation, this.existingFileHelper);
         }
 
 
@@ -49,5 +56,8 @@ public class ForgeModAdvancementProvider extends ForgeAdvancementProvider
         {
             this.buildModAdvancements(consumer);
         }
+
+
+        private final ExistingFileHelper existingFileHelper;
     }
 }

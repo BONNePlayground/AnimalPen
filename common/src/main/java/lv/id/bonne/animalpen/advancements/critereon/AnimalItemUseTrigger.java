@@ -8,7 +8,6 @@ import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -40,15 +39,12 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
             instance ->
                 instance.group(
-                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
-                            forGetter(TriggerInstance::player),
-                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "entity").
-                            forGetter(TriggerInstance::entity),
-                        ExtraCodecs.strictOptionalField(ItemPredicate.CODEC, "item").
-                            forGetter(TriggerInstance::item),
-                        Codec.BOOL.fieldOf("release").forGetter(TriggerInstance::release)
-                    ).
-                    apply(instance, TriggerInstance::new));
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("entity").forGetter(TriggerInstance::entity),
+                    ItemPredicate.CODEC.optionalFieldOf("item").forGetter(TriggerInstance::item),
+                    Codec.BOOL.fieldOf("release").forGetter(TriggerInstance::release)
+                ).
+                apply(instance, TriggerInstance::new));
 
 
         public boolean matches(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem, boolean release)
@@ -64,13 +60,13 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
                 return false;
             }
 
-            return this.item.isEmpty() || this.item.get().matches(catchingItem);
+            return this.item.isEmpty() || this.item.get().test(catchingItem);
         }
 
 
         public static Criterion<TriggerInstance> releaseAnimal()
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().createCriterion(
                 new TriggerInstance(
                     Optional.empty(),
                     Optional.empty(),
@@ -82,7 +78,7 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
 
         public static Criterion<TriggerInstance> caughtAnimalWithItem(EntityType<?> entityType, Item item)
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().createCriterion(
                 new TriggerInstance(
                     Optional.empty(),
                     Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(entityType).build())),
@@ -94,7 +90,7 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
 
         public static Criterion<TriggerInstance> caughtWithItem(Item item)
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.createCriterion(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().createCriterion(
                 new TriggerInstance(
                     Optional.empty(),
                     Optional.empty(),

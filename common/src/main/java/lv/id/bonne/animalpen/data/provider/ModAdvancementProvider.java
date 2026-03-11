@@ -78,6 +78,7 @@ public interface ModAdvancementProvider
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
         List<EntityType<?>> animals = List.of(
+            EntityType.ARMADILLO,
             EntityType.CAMEL,
             EntityType.CAT,
             EntityType.CHICKEN,
@@ -280,6 +281,29 @@ public interface ModAdvancementProvider
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.BOWL)),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
+            }
+
+            if (animal == EntityType.ARMADILLO)
+            {
+                // Brush
+                this.generatePlatformAdvancement(consumer,
+                    Advancement.Builder.advancement().
+                        parent(advancement).
+                        display(
+                            Items.BRUSH,
+                            Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_brush.title"),
+                            Component.translatable(
+                                "advancements.animal_pen." + animal.getDescriptionId() + "_brush.description"),
+                            null,
+                            AdvancementType.TASK,
+                            true,  // show toast
+                            false,  // announce to chat
+                            false  // not hidden
+                        ).
+                        addCriterion(animal.getDescriptionId(),
+                            AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
+                                Items.BRUSH)),
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_brush"));
             }
         });
 

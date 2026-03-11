@@ -12,7 +12,6 @@ import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ExtraCodecs;
 
 
 public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVariantChangeTrigger.TriggerInstance>
@@ -35,15 +34,14 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
             instance ->
                 instance.group(
-                    ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
-                        forGetter(TriggerInstance::player)
-                    ).
-                    apply(instance, TriggerInstance::new));
+                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player)
+                ).
+                apply(instance, TriggerInstance::new));
 
 
         public static Criterion<TriggerInstance> changeVariant()
         {
-            return AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.createCriterion(
+            return AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().createCriterion(
                 new TriggerInstance(Optional.empty()));
         }
     }

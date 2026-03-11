@@ -180,7 +180,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
         }
 
         // Animal Pen specific advancements.
-        AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.trigger(this.player,
+        AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().trigger(this.player,
             animal,
             itemStack);
     }

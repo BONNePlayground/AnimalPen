@@ -12,12 +12,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ItemStack;
 
 
 /**
@@ -28,7 +30,7 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
     @Override
     public boolean processFunction(ServerLevel serverLevel,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
@@ -45,8 +47,13 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
                 setSheared.invoke(mob, dataValue.getAsBoolean());
 
                 CompoundTag animalTag = new CompoundTag();
-                mob.save(animalTag);
-                mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
+                mob.saveWithoutId(animalTag);
+
+                animalTag.remove("UUID");
+                animalTag.remove("Pos");
+
+                componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
+                    StoredMob.of(mob.getType(), animalTag));
 
                 return true;
             }
