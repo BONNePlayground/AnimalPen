@@ -119,7 +119,7 @@ public interface ModAdvancementProvider
                     addCriterion(animal.getDescriptionId(),
                         AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.ANIMAL_CAGE.get())),
-                AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
+                AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_catch"));
 
             if (animal == EntityType.CHICKEN || animal == EntityType.COW || animal == EntityType.MOOSHROOM || animal == EntityType.GOAT)
             {
@@ -141,7 +141,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.BUCKET)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_bucket"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bucket"));
             }
 
             if (animal == EntityType.MOOSHROOM)
@@ -164,7 +164,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.BOWL)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_bowl"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
 
                 this.generatePlatformAdvancement(consumer,
                     Advancement.Builder.advancement().
@@ -183,7 +183,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 ItemTags.SMALL_FLOWERS)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_flower"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_flower"));
             }
 
             if (animal == EntityType.SHEEP)
@@ -206,7 +206,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.SHEARS)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_shear"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_shear"));
 
                 this.generatePlatformAdvancement(consumer,
                     Advancement.Builder.advancement().
@@ -228,7 +228,7 @@ public interface ModAdvancementProvider
                                 Items.YELLOW_DYE, Items.LIME_DYE, Items.PINK_DYE, Items.GRAY_DYE, Items.LIGHT_GRAY_DYE,
                                 Items.CYAN_DYE, Items.PURPLE_DYE, Items.BLUE_DYE, Items.BROWN_DYE, Items.GREEN_DYE,
                                 Items.RED_DYE, Items.BLACK_DYE)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_dye"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_dye"));
             }
         });
 
@@ -283,7 +283,7 @@ public interface ModAdvancementProvider
                     addCriterion(animal.getDescriptionId(),
                         AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.ANIMAL_CONTAINER.get())),
-                AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
+                AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_catch"));
 
             if (animal == EntityType.TURTLE)
             {
@@ -305,7 +305,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.BUCKET)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_bucket"));
+                    AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_bucket"));
             }
 
             if (animal == EntityType.AXOLOTL || animal == EntityType.COD || animal == EntityType.PUFFERFISH ||
@@ -329,7 +329,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.WATER_BUCKET)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_water_bucket"));
+                    AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_water_bucket"));
             }
         });
 
@@ -373,7 +373,7 @@ public interface ModAdvancementProvider
                     addCriterion(animal.getDescriptionId(),
                         AnimalItemUseTrigger.TriggerInstance.caughtAnimalWithItem(animal,
                             AnimalPensItemRegistry.BIRD_CATCHER.get())),
-                AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_catch"));
+                AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_catch"));
 
             if (animal == EntityType.BEE)
             {
@@ -395,7 +395,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.SHEARS)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_shear"));
+                    AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_shear"));
 
                 // Bottle
                 this.generatePlatformAdvancement(consumer,
@@ -415,7 +415,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.GLASS_BOTTLE)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_bottle"));
+                    AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_bottle"));
             }
         });
 
