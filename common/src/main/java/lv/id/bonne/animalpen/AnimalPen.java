@@ -38,6 +38,7 @@ public final class AnimalPen
         AnimalPensItemRegistry.register();
         AnimalPenTileEntityRegistry.register();
         AnimalPenFunctionRegistry.register();
+        AnimalPenCriteriaTriggersRegistry.register();
 
         AnimalPen.CONFIG_MANAGER.readConfig();
 
