@@ -18,7 +18,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
 public class NeoForgeModAdvancementProvider extends AdvancementProvider
@@ -36,7 +36,7 @@ public class NeoForgeModAdvancementProvider extends AdvancementProvider
         @Override
         public AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
             Advancement.Builder builder,
-            ResourceLocation resourceLocation)
+            Identifier resourceLocation)
         {
             return builder.save(consumer, resourceLocation);
         }

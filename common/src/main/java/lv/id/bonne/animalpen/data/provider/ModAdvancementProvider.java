@@ -19,12 +19,12 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
@@ -35,7 +35,7 @@ public interface ModAdvancementProvider
 {
     AdvancementHolder generatePlatformAdvancement(Consumer<AdvancementHolder> consumer,
         Advancement.Builder builder,
-        ResourceLocation resourceLocation);
+        Identifier resourceLocation);
 
     default void buildModAdvancements(Consumer<AdvancementHolder> consumer, HolderLookup.Provider provider)
     {
@@ -45,7 +45,7 @@ public interface ModAdvancementProvider
                     AnimalPenBlockRegistry.ANIMAL_PENS.values().iterator().next().get().asItem(),
                     Component.translatable("advancements.animal_pen.root.title"),
                     Component.translatable("advancements.animal_pen.root.description"),
-                    ResourceLocation.tryParse("minecraft:gui/advancements/backgrounds/husbandry"),
+                    Identifier.tryParse("minecraft:gui/advancements/backgrounds/husbandry"),
                     AdvancementType.TASK,
                     false, // no toast
                     false, // no chat

@@ -13,9 +13,8 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.integration.jei.recipe.ItemInfoRecipe;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 
@@ -37,12 +36,12 @@ public class AnimalCageRecipeCategory extends AbstractRecipeCategory
 
     @Override
     @NotNull
-    public RecipeType<ItemInfoRecipe> getRecipeType()
+    public IRecipeType<ItemInfoRecipe> getRecipeType()
     {
         return RECIPE_TYPE;
     }
 
 
-    public static final RecipeType<ItemInfoRecipe> RECIPE_TYPE =
-        RecipeType.create(AnimalPen.MOD_ID, "item_info_animal_cage", ItemInfoRecipe.class);
+    public static final IRecipeType<ItemInfoRecipe> RECIPE_TYPE =
+        IRecipeType.create(AnimalPen.MOD_ID, "item_info_animal_cage", ItemInfoRecipe.class);
 }

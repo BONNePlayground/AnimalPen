@@ -25,7 +25,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 
@@ -35,7 +35,7 @@ public class JEIPlugin implements IModPlugin
 {
     @Override
     @NotNull
-    public ResourceLocation getPluginUid()
+    public Identifier getPluginUid()
     {
         return AnimalPen.resourceOf("jei");
     }

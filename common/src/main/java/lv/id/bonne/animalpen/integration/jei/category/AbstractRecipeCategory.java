@@ -29,12 +29,17 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, itemStack);
     }
 
+    @Override
+    public int getWidth()
+    {
+        return BACKGROUND_WIDTH;
+    }
+
 
     @Override
-    @NotNull
-    public IDrawable getBackground()
+    public int getHeight()
     {
-        return this.background;
+        return BACKGROUND_HEIGHT;
     }
 
 
@@ -51,11 +56,11 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
     {
         // Animal Cage (or Bird Catcher) — the tool the player uses
         builder.addSlot(RecipeIngredientRole.INPUT, TOOL_SLOT_X, TOOL_SLOT_Y)
-            .addItemStack(recipe.item());
+            .add(recipe.item());
 
         // Spawn egg — what the player gets
         builder.addSlot(RecipeIngredientRole.OUTPUT, EGG_SLOT_X, EGG_SLOT_Y)
-            .addItemStack(recipe.spawnEgg());
+            .add(recipe.spawnEgg());
     }
 
 
