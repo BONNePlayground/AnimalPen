@@ -18,7 +18,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.network.chat.Component;
@@ -44,7 +44,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.root.title"),
                     Component.translatable("advancements.animal_pen.root.description"),
                     new ResourceLocation("textures/gui/advancements/backgrounds/husbandry.png"),
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     false, // no toast
                     false, // no chat
                     true   // hidden until earned
@@ -66,7 +66,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.first_catch.title"),
                     Component.translatable("advancements.animal_pen.first_catch.description"),
                     null,
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     true,  // show toast
                     true,  // announce to chat
                     false  // not hidden
@@ -116,7 +116,7 @@ public interface ModAdvancementProvider
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
-                        FrameType.TASK,
+                        AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
                         false  // not hidden
@@ -138,7 +138,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -161,7 +161,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -180,7 +180,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_flower.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -203,7 +203,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -222,7 +222,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_dye.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -248,7 +248,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -271,7 +271,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -292,7 +292,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.aquatic_keeper.title"),
                     Component.translatable("advancements.animal_pen.aquatic_keeper.description"),
                     null,
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     true,
                     false,
                     false
@@ -328,7 +328,7 @@ public interface ModAdvancementProvider
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
-                        FrameType.TASK,
+                        AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
                         false  // not hidden
@@ -350,7 +350,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -374,7 +374,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -397,7 +397,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -418,7 +418,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.bird_watcher.title"),
                     Component.translatable("advancements.animal_pen.bird_watcher.description"),
                     null,
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     true, true, false
                 ).
                 addCriterion("caught_bird",
@@ -442,7 +442,7 @@ public interface ModAdvancementProvider
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
                         null,
-                        FrameType.TASK,
+                        AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
                         false  // not hidden
@@ -464,7 +464,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -484,7 +484,7 @@ public interface ModAdvancementProvider
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bottle.description"),
                             null,
-                            FrameType.TASK,
+                            AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
                             false  // not hidden
@@ -505,7 +505,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.release.title"),
                     Component.translatable("advancements.animal_pen.release.description"),
                     null,
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     true, true, false
                 ).
                 addCriterion("release",
@@ -522,7 +522,7 @@ public interface ModAdvancementProvider
                     Component.translatable("advancements.animal_pen.variant_change.title"),
                     Component.translatable("advancements.animal_pen.variant_change.description"),
                     null,
-                    FrameType.TASK,
+                    AdvancementType.TASK,
                     true, true, false
                 ).
                 addCriterion("variant_change",

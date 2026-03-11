@@ -13,6 +13,7 @@ import java.util.Map;
 import lv.id.bonne.animalpen.blocks.renderer.MobDisplayAnimator;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.Turtle;
@@ -92,6 +93,14 @@ public class AnimalPenMobAnimationsRegistry
                 parrot.flapSpeed = Mth.clamp(parrot.flapSpeed, 0.0F, 1.0F);
 
                 parrot.flap += 1.8f;
+            }
+        });
+
+        AVIARY_ANIMATIONS.put(EntityType.BAT, mob ->
+        {
+            if (mob instanceof Bat bat)
+            {
+                bat.flyAnimationState.startIfStopped(bat.tickCount);
             }
         });
     }

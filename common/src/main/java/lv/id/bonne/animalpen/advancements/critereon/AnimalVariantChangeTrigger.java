@@ -1,26 +1,26 @@
 package lv.id.bonne.animalpen.advancements.critereon;
 
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.*;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ExtraCodecs;
 
 
 public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVariantChangeTrigger.TriggerInstance>
 {
     @Override
     @NotNull
-    protected TriggerInstance createInstance(JsonObject json,
-        Optional<ContextAwarePredicate> player,
-        DeserializationContext context)
-    {
-        return new TriggerInstance(player);
+    public Codec<TriggerInstance> codec() {
+        return TriggerInstance.CODEC;
     }
 
 
@@ -30,20 +30,15 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
     }
 
 
-    public static class TriggerInstance extends AbstractCriterionTriggerInstance
+    public record TriggerInstance(Optional<ContextAwarePredicate> player) implements SimpleCriterionTrigger.SimpleInstance
     {
-        public TriggerInstance(Optional<ContextAwarePredicate> player)
-        {
-            super(player);
-        }
-
-
-        @Override
-        @NotNull
-        public JsonObject serializeToJson()
-        {
-            return super.serializeToJson();
-        }
+        public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
+            instance ->
+                instance.group(
+                    ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
+                        forGetter(TriggerInstance::player)
+                    ).
+                    apply(instance, TriggerInstance::new));
 
 
         public static Criterion<TriggerInstance> changeVariant()

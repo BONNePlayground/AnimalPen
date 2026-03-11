@@ -1,13 +1,14 @@
 package lv.id.bonne.animalpen.advancements.critereon;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -20,13 +21,8 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
 {
     @Override
     @NotNull
-    protected TriggerInstance createInstance(JsonObject json,
-        Optional<ContextAwarePredicate> player,
-        DeserializationContext context)
-    {
-        Optional<ContextAwarePredicate> entity = EntityPredicate.fromJson(json, "entity", context);
-        Optional<ItemPredicate> item = ItemPredicate.fromJson(json.get("item"));
-        return new TriggerInstance(player, entity, item, json.get("release").getAsBoolean());
+    public Codec<TriggerInstance> codec() {
+        return TriggerInstance.CODEC;
     }
 
 
@@ -36,19 +32,23 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
     }
 
 
-    public static class TriggerInstance extends AbstractCriterionTriggerInstance
+    public record TriggerInstance(Optional<ContextAwarePredicate> player,
+                                  Optional<ContextAwarePredicate> entity,
+                                  Optional<ItemPredicate> item,
+                                  boolean release) implements SimpleCriterionTrigger.SimpleInstance
     {
-        public TriggerInstance(
-            Optional<ContextAwarePredicate> player,
-            Optional<ContextAwarePredicate> entity,
-            Optional<ItemPredicate> item,
-            boolean release)
-        {
-            super(player);
-            this.entity = entity;
-            this.item = item;
-            this.release = release;
-        }
+        public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
+            instance ->
+                instance.group(
+                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
+                            forGetter(TriggerInstance::player),
+                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "entity").
+                            forGetter(TriggerInstance::entity),
+                        ExtraCodecs.strictOptionalField(ItemPredicate.CODEC, "item").
+                            forGetter(TriggerInstance::item),
+                        Codec.BOOL.fieldOf("release").forGetter(TriggerInstance::release)
+                    ).
+                    apply(instance, TriggerInstance::new));
 
 
         public boolean matches(ServerPlayer player, Entity caughtEntity, ItemStack catchingItem, boolean release)
@@ -65,18 +65,6 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
             }
 
             return this.item.isEmpty() || this.item.get().matches(catchingItem);
-        }
-
-
-        @Override
-        @NotNull
-        public JsonObject serializeToJson()
-        {
-            JsonObject json = super.serializeToJson();
-            this.entity.ifPresent(e -> json.add("entity", e.toJson()));
-            this.item.ifPresent(i -> json.add("item", i.serializeToJson()));
-            json.add("release", new JsonPrimitive(this.release));
-            return json;
         }
 
 
@@ -114,12 +102,5 @@ public class AnimalItemUseTrigger extends SimpleCriterionTrigger<AnimalItemUseTr
                     false
                 ));
         }
-
-
-        private final Optional<ContextAwarePredicate> entity;
-
-        private final Optional<ItemPredicate> item;
-
-        private final boolean release;
     }
 }

@@ -1,22 +1,22 @@
 package lv.id.bonne.animalpen.advancements.critereon;
 
 
-import com.google.gson.JsonObject;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootContext;
 
 
@@ -24,34 +24,34 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
 {
     @Override
     @NotNull
-    protected TriggerInstance createInstance(JsonObject json,
-        Optional<ContextAwarePredicate> player,
-        DeserializationContext context)
-    {
-        Optional<ContextAwarePredicate> entity = EntityPredicate.fromJson(json, "entity", context);
-        Optional<ItemPredicate> item = ItemPredicate.fromJson(json.get("item"));
-        return new TriggerInstance(player, entity, item);
+    public Codec<TriggerInstance> codec() {
+        return TriggerInstance.CODEC;
     }
 
 
     public void trigger(ServerPlayer player, Entity entity, ItemStack stack)
     {
         LootContext ctx = EntityPredicate.createContext(player, entity);
-
         this.trigger(player, instance -> instance.matches(ctx, stack));
     }
 
 
-    public static class TriggerInstance extends AbstractCriterionTriggerInstance
+    public record TriggerInstance(Optional<ContextAwarePredicate> player,
+                                  Optional<ContextAwarePredicate> entity,
+                                  Optional<ItemPredicate> item) implements SimpleCriterionTrigger.SimpleInstance
     {
-        public TriggerInstance(Optional<ContextAwarePredicate> player,
-            Optional<ContextAwarePredicate> entity,
-            Optional<ItemPredicate> item)
-        {
-            super(player);
-            this.entity = entity;
-            this.item = item;
-        }
+        public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
+            instance ->
+                instance.group(
+                    ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "player").
+                        forGetter(TriggerInstance::player),
+                        ExtraCodecs.strictOptionalField(EntityPredicate.ADVANCEMENT_CODEC, "entity").
+                            forGetter(TriggerInstance::entity),
+                    ExtraCodecs.strictOptionalField(ItemPredicate.CODEC, "item").
+                        forGetter(TriggerInstance::item)
+                    ).
+                    apply(instance, TriggerInstance::new));
+
 
         public boolean matches(LootContext entityContext, ItemStack catchingItem)
         {
@@ -61,17 +61,6 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
             }
 
             return this.item.isEmpty() || this.item.get().matches(catchingItem);
-        }
-
-
-        @Override
-        @NotNull
-        public JsonObject serializeToJson()
-        {
-            JsonObject json = super.serializeToJson();
-            this.entity.ifPresent(entity -> json.add("entity", entity.toJson()));
-            this.item.ifPresent(item -> json.add("item", item.serializeToJson()));
-            return json;
         }
 
 
@@ -103,10 +92,5 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
                 Optional.of(ItemPredicate.Builder.item().of(itemTag).build())
             ));
         }
-
-
-        private final Optional<ContextAwarePredicate> entity;
-
-        private final Optional<ItemPredicate> item;
     }
 }
