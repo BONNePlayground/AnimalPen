@@ -866,18 +866,30 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         for (AnimalInteraction interaction : interactions)
         {
+            long animalCount = AnimalPenItemHelper.getMobCount(componentHolder);
+
             // Apply cooldown
             if (interaction.cooldown() != null)
             {
-                long animalCount = AnimalPenItemHelper.getMobCount(componentHolder);
                 int cooldownTime = (int) interaction.cooldown().calculateCooldown(animalCount);
-
                 newCooldowns.put(interaction.id(), cooldownTime);
-
                 anyChanges = true;
             }
 
-            // TODO: think about dropping loot. Currently I do not have usage for it, so I have not implemented it.
+            if (interaction.even() && animalCount % 2 != 0)
+            {
+                animalCount--;
+            }
+
+            // Process loot table
+            List<ItemStack> lootItems = interaction.lootEntry() == null ?
+                Collections.emptyList() :
+                interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
+
+            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
+                itemStack,
+                this.getBlockPos(),
+                this.dropPosition()));
 
             // Play sound
             if (interaction.sound() != null)
@@ -929,10 +941,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     /**
      * This method sets new animal variant from given CompoundTag tag.
      *
-     * @param animalVariant a new animal variant
+     * @param index a new animal variant index
      */
-    public void updateAnimalVariant(CompoundTag animalVariant)
+    public void updateAnimalVariant(int index)
     {
+        if (this.getStoredAnimal().isEmpty() || index >= this.getEntityVariants().size() || index < 0)
+        {
+            return;
+        }
+
+        CompoundTag animalVariant = (CompoundTag) this.getEntityVariants().get(index);
+
         if (animalVariant == null || animalVariant.isEmpty())
         {
             // Nothing to update

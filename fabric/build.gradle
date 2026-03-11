@@ -84,6 +84,10 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
+    modCompileOnlyApi("mezz.jei:jei-1.21-fabric-api:${rootProject.jei_version}")
+    // at runtime, use the full JEI jar for Fabric
+//    modRuntimeOnly("mezz.jei:jei-1.21-fabric:${rootProject.jei_version}")
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }

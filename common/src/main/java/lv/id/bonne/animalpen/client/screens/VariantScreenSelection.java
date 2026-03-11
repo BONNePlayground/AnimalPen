@@ -738,7 +738,7 @@ public class VariantScreenSelection extends Screen
         }
 
         NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
-                entityVariants.get(this.selectedButton)));
+            this.selectedButton));
         // Update current client gui.
         this.displayEntity.load(entityVariants.get(this.selectedButton));
 
