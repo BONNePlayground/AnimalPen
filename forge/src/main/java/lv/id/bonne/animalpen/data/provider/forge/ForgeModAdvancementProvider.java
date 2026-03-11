@@ -7,39 +7,50 @@
 package lv.id.bonne.animalpen.data.provider.forge;
 
 
-import org.jetbrains.annotations.NotNull;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.data.provider.ModAdvancementProvider;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.ForgeAdvancementProvider;
 
 
-public class ForgeModAdvancementProvider extends AdvancementProvider implements ModAdvancementProvider
+public class ForgeModAdvancementProvider extends ForgeAdvancementProvider
 {
-    public ForgeModAdvancementProvider(DataGenerator generatorIn,
-        ExistingFileHelper fileHelperIn)
+    public ForgeModAdvancementProvider(PackOutput output,
+        CompletableFuture<HolderLookup.Provider> lookupProvider,
+        ExistingFileHelper existingFileHelper)
     {
-        super(generatorIn, fileHelperIn);
+        super(output, lookupProvider, existingFileHelper, List.of(new ForgeModAdvancementSubProvider()));
     }
 
 
-    @Override
-    protected void registerAdvancements(@NotNull Consumer<Advancement> consumer, @NotNull ExistingFileHelper fileHelper)
+    private static class ForgeModAdvancementSubProvider implements ForgeAdvancementProvider.AdvancementGenerator, ModAdvancementProvider
     {
-        this.buildModAdvancements(consumer);
-    }
+        @Override
+        public Advancement generatePlatformAdvancement(Consumer<Advancement> consumer,
+            Advancement.Builder builder,
+            ResourceLocation resourceLocation)
+        {
+            return builder.save(consumer, resourceLocation, this.existingFileHelper);
+        }
 
 
-    @Override
-    public Advancement generatePlatformAdvancement(Consumer<Advancement> consumer,
-        Advancement.Builder builder,
-        ResourceLocation resourceLocation)
-    {
-        return builder.save(consumer, resourceLocation, this.fileHelper);
+        @Override
+        public void generate(HolderLookup.Provider arg,
+            Consumer<Advancement> consumer,
+            ExistingFileHelper existingFileHelper)
+        {
+            this.existingFileHelper = existingFileHelper;
+            this.buildModAdvancements(consumer);
+        }
+
+
+        private ExistingFileHelper existingFileHelper;
     }
 }

@@ -47,6 +47,6 @@ public class AnimalPenForgeDataGen
         generator.addProvider(event.includeServer(), new ForgeModLootTableProvider(output));
 
         generator.addProvider(event.includeServer(),
-            new ForgeModAdvancementProvider(output, event.getExistingFileHelper()));
+            new ForgeModAdvancementProvider(output, lookupProvider, event.getExistingFileHelper()));
     }
 }
