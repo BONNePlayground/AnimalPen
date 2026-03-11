@@ -20,6 +20,7 @@ import lv.id.bonne.animalpen.blocks.renderer.AnimalPenRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AquariumRenderer;
 import lv.id.bonne.animalpen.blocks.renderer.AviaryRenderer;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
+import lv.id.bonne.animalpen.registries.AnimalPenMobAnimationsRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -90,5 +91,8 @@ public class AnimalPenClient
 
             return EventResult.interruptTrue();
         });
+
+        // Register custom animations for each entity.
+        AnimalPenMobAnimationsRegistry.init();
     }
 }
