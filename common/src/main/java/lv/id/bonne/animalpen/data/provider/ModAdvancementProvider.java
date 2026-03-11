@@ -252,7 +252,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.MAGMA_BLOCK)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_froglight"));
+                    AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_froglight"));
             }
         });
 
@@ -378,7 +378,7 @@ public interface ModAdvancementProvider
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(animal,
                                 Items.MAGMA_BLOCK)),
-                    AnimalPen.resourceOf("animal_pen/" + animal.getDescriptionId() + "_froglight"));
+                    AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_froglight"));
             }
         });
 
