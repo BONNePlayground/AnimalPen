@@ -9,6 +9,7 @@
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "FixChestedHorseInteraction",
+    "SheepMixin",
     "MixinAxeItem",
     "MixinHoneycombItem",
     "MixinLightingBolt",
