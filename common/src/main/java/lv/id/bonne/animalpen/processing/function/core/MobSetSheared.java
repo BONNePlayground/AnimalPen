@@ -7,13 +7,10 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
+import lv.id.bonne.animalpen.processing.function.api.ShearStateAccessor;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -37,15 +34,9 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
     {
         if (dataValue != null)
         {
-            try
+            if (mob instanceof ShearStateAccessor shearAccessor)
             {
-                MethodHandle setSheared = MethodHandles.publicLookup().findVirtual(
-                    mob.getClass(),
-                    "setSheared",
-                    MethodType.methodType(void.class, boolean.class));
-
-                setSheared.invoke(mob, dataValue.getAsBoolean());
-
+                shearAccessor.setSheared(true);
                 CompoundTag animalTag = new CompoundTag();
                 mob.saveWithoutId(animalTag);
 
@@ -57,7 +48,7 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
 
                 return true;
             }
-            catch (Throwable e)
+            else
             {
                 // ignored.
                 return false;
