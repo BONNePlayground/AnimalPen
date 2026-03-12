@@ -12,6 +12,7 @@
     "FixHorseInteraction",
     "MigrateItemStack",
     "MigrateEquipmentSlot",
+    "SheepMixin",
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
