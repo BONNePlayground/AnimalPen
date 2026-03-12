@@ -9,6 +9,7 @@
     "AquariumBlockCollisionPrevention",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
+    "SheepMixin",
     "MixinAxeItem",
     "MixinHoneycombItem",
     "MixinLightingBolt",
