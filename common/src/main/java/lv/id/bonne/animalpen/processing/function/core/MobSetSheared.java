@@ -34,7 +34,7 @@ public class MobSetSheared implements EntityFunction.ProcessEntityFunction
         {
             if (mob instanceof ShearStateAccessor shearAccessor)
             {
-                shearAccessor.setShearedState(true);
+                shearAccessor.setShearedState(dataValue.getAsBoolean());
                 CompoundTag animalTag = new CompoundTag();
                 mob.save(animalTag);
                 mobNBT.put(AnimalPenCompoundTags.TAG_ANIMAL, animalTag);
