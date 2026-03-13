@@ -114,4 +114,9 @@ public class AnimalPenFunctionRegistry
         AnimalPen.resourceOf("turtle_drop_scute"),
         () -> new EntityFunctionEntry(new TurtleScuteDrop())
     );
+
+    public static final RegistrySupplier<EntityFunctionEntry> DROP_LOOT = ENTITY_FUNCTIONS.register(
+        AnimalPen.resourceOf("drop_loot"),
+        () -> new EntityFunctionEntry(new DropRequestedLoot())
+    );
 }
