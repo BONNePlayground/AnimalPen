@@ -10,7 +10,6 @@ package lv.id.bonne.animalpen.integration.jei;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
-import dev.architectury.core.item.ArchitecturySpawnEggItem;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.integration.jei.category.AnimalCageRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.category.BirdCageRecipeCategory;
