@@ -11,5 +11,13 @@ import net.minecraft.world.entity.animal.sheep.Sheep;
 @Mixin(Sheep.class)
 public abstract class SheepMixin implements ShearStateAccessor
 {
-    @Shadow public abstract void setSheared(boolean sheared);
+    @Shadow
+    public abstract void setSheared(boolean bl);
+
+
+    @Override
+    public void setShearedState(boolean sheared)
+    {
+        this.setSheared(sheared);
+    }
 }
