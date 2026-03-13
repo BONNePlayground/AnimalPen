@@ -1,0 +1,70 @@
+//
+// Created by BONNe
+// Copyright - 2025
+//
+
+
+package lv.id.bonne.animalpen.processing.function.core;
+
+
+import java.util.List;
+
+import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
+import lv.id.bonne.animalpen.util.ItemTransferUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+
+
+/**
+ * This function drops requested loot table items.
+ */
+public class DropRequestedLoot implements EntityFunction.ProcessEntityFunction
+{
+    @Override
+    public boolean processFunction(ServerLevel serverLevel,
+        Mob mob,
+        CompoundTag mobNBT,
+        BlockPos blockPos,
+        String dataKey,
+        Value dataValue)
+    {
+        if (dataValue == null)
+        {
+            // Do not know loot table.
+            return false;
+        }
+
+        ResourceLocation lootTableKey = ResourceLocation.tryParse(dataValue.getAsString());
+
+        LootTable lootTable = serverLevel.getServer().getLootTables().get(lootTableKey);
+        LootContext context = new LootContext.Builder(serverLevel).
+            withParameter(LootContextParams.THIS_ENTITY, mob).
+            withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).
+            create(LootContextParamSets.GIFT);
+
+        List<ItemStack> lootItems = lootTable.getRandomItems(context);
+
+        if (lootItems.isEmpty())
+        {
+            // Nothing to drop
+            return false;
+        }
+
+        lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(serverLevel,
+            itemStack,
+            blockPos,
+            blockPos.above()));
+
+        return true;
+    }
+}
