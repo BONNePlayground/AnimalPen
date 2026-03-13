@@ -10,11 +10,13 @@ package lv.id.bonne.animalpen.integration.jei;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
+import dev.architectury.core.item.ArchitecturySpawnEggItem;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.integration.jei.category.AnimalCageRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.category.BirdCageRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.category.WaterContainerRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.recipe.ItemInfoRecipe;
+import lv.id.bonne.animalpen.platform.PlatformHelper;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import mezz.jei.api.IModPlugin;
@@ -58,7 +60,7 @@ public class JEIPlugin implements IModPlugin
     {
         for (EntityType<?> entityType : Registry.ENTITY_TYPE)
         {
-            SpawnEggItem spawnEggItem = SpawnEggItem.byId(entityType);
+            SpawnEggItem spawnEggItem = PlatformHelper.getSpawnEgg(entityType);
             if (spawnEggItem == null)
             {
                 continue;
