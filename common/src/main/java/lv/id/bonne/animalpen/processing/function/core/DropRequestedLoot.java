@@ -13,7 +13,8 @@ import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -33,7 +34,7 @@ public class DropRequestedLoot implements EntityFunction.ProcessEntityFunction
     @Override
     public boolean processFunction(ServerLevel serverLevel,
         Mob mob,
-        CompoundTag mobNBT,
+        ItemStack componentHolder,
         BlockPos blockPos,
         String dataKey,
         Value dataValue)
@@ -44,9 +45,10 @@ public class DropRequestedLoot implements EntityFunction.ProcessEntityFunction
             return false;
         }
 
-        ResourceLocation lootTableKey = ResourceLocation.tryParse(dataValue.getAsString());
+        ResourceLocation lootTableResource = ResourceLocation.tryParse(dataValue.getAsString());
+        ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableResource);
 
-        LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(lootTableKey);
+        LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(lootTableKey);
 
         LootParams context = new LootParams.Builder(serverLevel).
             withParameter(LootContextParams.THIS_ENTITY, mob).
