@@ -14,8 +14,8 @@ import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +45,13 @@ public class DropRequestedLoot implements EntityFunction.ProcessEntityFunction
             return false;
         }
 
-        ResourceLocation lootTableResource = ResourceLocation.tryParse(dataValue.getAsString());
+        Identifier lootTableResource = Identifier.tryParse(dataValue.getAsString());
+
+        if (lootTableResource == null)
+        {
+            return false;
+        }
+
         ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableResource);
 
         LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(lootTableKey);
