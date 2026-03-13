@@ -6,3 +6,4 @@
 
 #### API Changes:
 - Change `setSheared` to `setShearedState` in `ShearStateAccessor` interface doe to obfuscation access issues
+- Add new function: `drop_loot` which drops one roll from loot table specified in `value` field.
