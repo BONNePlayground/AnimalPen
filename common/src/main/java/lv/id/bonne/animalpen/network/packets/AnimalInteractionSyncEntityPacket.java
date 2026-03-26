@@ -29,7 +29,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<
     {
         buf.writeResourceLocation(pkt.entityId());
 
-        Tag tag = AnimalInteraction.CODEC.
+        Tag tag = AnimalInteraction.STREAM_CODEC.
             listOf().
             encodeStart(NbtOps.INSTANCE, pkt.interactions).
             getOrThrow(false, AnimalPen.LOGGER::error);
@@ -59,7 +59,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<
             return null;
         }
 
-        interactions = AnimalInteraction.CODEC.
+        interactions = AnimalInteraction.STREAM_CODEC.
             listOf().
             parse(NbtOps.INSTANCE, tag.getList("data", Tag.TAG_COMPOUND)).
             getOrThrow(false, AnimalPen.LOGGER::error);
