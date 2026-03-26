@@ -32,6 +32,7 @@ import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import lv.id.bonne.animalpen.util.DataOrderInjection;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -57,6 +58,14 @@ public class AnimalInteractionProvider implements DataProvider
 
     @Override
     public void run(CachedOutput cache) throws IOException
+    {
+        DataOrderInjection.injectCustomOrder();
+        this.generateData(cache);
+        DataOrderInjection.removeCustomOrder();
+    }
+
+
+    public void generateData(CachedOutput cache) throws IOException
     {
         // Default minecraft animals with custom implementations
         this.generateAxolotl(cache);
@@ -759,5 +768,5 @@ public class AnimalInteractionProvider implements DataProvider
 // ---------------------------------------------------------------------
 
 
-    private final DataGenerator.PathProvider pathProvider;
+    protected final DataGenerator.PathProvider pathProvider;
 }
