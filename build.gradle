@@ -135,7 +135,7 @@ loaders.each { loader ->
             from(metaDir)
         }
 
-        archiveFileName      = "${archives_name}-datapack-${loader}-${mod_version}.zip"
+        archiveFileName      = "${archives_name}-datapack-${loader}-${minecraft_version}-${mod_version}.zip"
         destinationDirectory = project(":${loader}").layout.buildDirectory.dir("datapacks")
         preserveFileTimestamps = false
         reproducibleFileOrder  = true
