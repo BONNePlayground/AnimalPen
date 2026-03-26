@@ -2,13 +2,12 @@ package lv.id.bonne.animalpen.interaction.ingredient;
 
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -91,36 +90,83 @@ public final class CustomIngredient implements Predicate<ItemStack>
     {
         Collection<ItemStack> getItems();
 
+        String TAG_PREFIX = "#";
 
-        Codec<Value> CODEC = Codec.STRING.xmap(
-            str ->
-            {
-                if (str.startsWith("#"))
-                {
-                    return new TagValue(TagKey.create(Registry.ITEM_REGISTRY,
-                        ResourceLocation.tryParse(str.substring(1))));
+        Codec<Value> CODEC = Codec.either(
+            Codec.STRING.comapFlatMap(
+                str -> {
+                    if (str.startsWith(TAG_PREFIX))
+                    {
+                        return DataResult.success(new TagValue(TagKey.create(Registry.ITEM_REGISTRY,
+                            ResourceLocation.tryParse(str.substring(TAG_PREFIX.length())))));
+                    }
+                    else
+                    {
+                        return Registry.ITEM.getOptional(ResourceLocation.tryParse(str)).
+                            map(item -> DataResult.success((Value) new ItemValue(item.getDefaultInstance()))).
+                            orElseGet(() -> DataResult.error("Unknown item: " + str + " - was it spelled correctly?"));
+                    }
+                },
+                value -> {
+                    if (value instanceof TagValue tag)
+                    {
+                        return TAG_PREFIX + tag.tag.location();
+                    }
+
+                    if (value instanceof ItemValue item)
+                    {
+                        return Registry.ITEM.getKey(item.item.getItem()).toString();
+                    }
+
+                    throw new UnsupportedOperationException("Unknown Value type: " + value.getClass());
                 }
-                else
+            ),
+            ItemStack.CODEC.xmap(ItemValue::new, v -> v.item)
+        ).xmap(
+            either -> either.map(l -> l, r -> r),
+            value -> {
+                if (value instanceof TagValue)
                 {
-                    return new ItemValue(Registry.ITEM.getOptional(ResourceLocation.tryParse(str)).
-                        map(Item::getDefaultInstance).
-                        orElse(ItemStack.EMPTY));
-                }
-            },
-            value ->
-            {
-                if (value instanceof TagValue tag)
-                {
-                    return "#" + tag.tag.location();
-                }
-                else if (value instanceof ItemValue val)
-                {
-                    return Registry.ITEM.getKey(val.item.getItem()).toString();
+                    return Either.left(value);
                 }
 
-                throw new UnsupportedOperationException("Unknown value type");
+                ItemValue item = (ItemValue) value;
+
+                if (item.item.getCount() == 1 && !item.item.hasTag())
+                {
+                    return Either.left(value);
+                }
+
+                return Either.right(item);
             }
         );
+
+        Codec<Value> STREAM_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.BOOL.fieldOf("is_tag").forGetter(v -> v instanceof TagValue),
+            ResourceLocation.CODEC.optionalFieldOf("tag").forGetter(v -> {
+                if (v instanceof TagValue tag)
+                {
+                    return Optional.of(tag.tag.location());
+                }
+
+                return Optional.empty();
+            }),
+            ItemStack.CODEC.optionalFieldOf("stack").forGetter(v -> {
+                if (v instanceof ItemValue item)
+                {
+                    return Optional.of(item.item);
+                }
+
+                return Optional.empty();
+            })
+        ).apply(instance, (isTag, tag, stack) -> {
+            if (isTag)
+            {
+                return new TagValue(TagKey.create(Registry.ITEM_REGISTRY, tag.orElseThrow()));
+            }
+
+            return new ItemValue(stack.orElse(ItemStack.EMPTY));
+        }));
     }
 
 
@@ -170,12 +216,12 @@ public final class CustomIngredient implements Predicate<ItemStack>
     }
 
 
-    private static Codec<CustomIngredient> codec()
+    private static Codec<CustomIngredient> codec(Codec<Value> valueCodec)
     {
-        Codec<Value[]> codec = Codec.list(Value.CODEC).comapFlatMap(
-            list -> DataResult.success(list.toArray(new Value[0])), List::of);
-
-        return codec.xmap(CustomIngredient::new, i -> i.values);
+        return Codec.list(valueCodec).comapFlatMap(
+            list -> DataResult.success(list.toArray(new Value[0])),
+            List::of
+        ).xmap(CustomIngredient::new, i -> i.values);
     }
 
 
@@ -231,5 +277,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
     public static final CustomIngredient EMPTY = new CustomIngredient(Stream.empty());
 
 
-    public static final Codec<CustomIngredient> CODEC = codec();
+    public static final Codec<CustomIngredient> CODEC = codec(Value.CODEC);
+
+    public static final Codec<CustomIngredient> STREAM_CODEC = codec(Value.STREAM_CODEC);
 }
