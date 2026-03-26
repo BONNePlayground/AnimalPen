@@ -91,3 +91,66 @@ subprojects {
         delete 'src/main/generated/'
     }
 }
+
+
+def loaders = ["fabric", "forge"]  // adjust names to match your subprojects
+
+loaders.each { loader ->
+    tasks.register("generate${loader.capitalize()}Datapack", Zip) {
+        group       = "mod"
+        description = "Assembles a standalone datapack for ${loader}."
+
+        def mcmeta = """
+{
+  "pack": {
+    "pack_format": ${pack_version},
+    "description": "Animal Pens (${loader}) data pack v${mod_version}"
+  }
+}
+""".stripIndent().strip()
+
+        // ── common data files (shared base) ─────────────────────────────────
+        if (findProject(":common") != null) {
+            from("${project(":common").projectDir}/src/main/resources") {
+                include "data/animal_pen/loot_tables/animal_interactions/**"
+                duplicatesStrategy = DuplicatesStrategy.WARN
+            }
+        }
+
+        // ── loader-specific data files (override/extend common) ──────────────
+        from("${project(":${loader}").projectDir}/src/main/generated") {
+            include "data/minecraft/**"
+            include "data/animal_pen/tags/entity_types/**"
+            include "data/animal_pen/tags/items/**"
+            exclude "data/animal_pen/tags/items/animal_pens.json"
+            exclude "data/animal_pen/tags/items/aviaries.json"
+            duplicatesStrategy = DuplicatesStrategy.WARN
+        }
+
+        // ── pack.mcmeta ──────────────────────────────────────────────────────
+        doFirst {
+            def metaDir = project(":${loader}").layout.buildDirectory.dir("tmp/datapack-meta").get().asFile
+            metaDir.mkdirs()
+            new File(metaDir, "pack.mcmeta").text = mcmeta
+            from(metaDir)
+        }
+
+        archiveFileName      = "${archives_name}-datapack-${loader}-${mod_version}.zip"
+        destinationDirectory = project(":${loader}").layout.buildDirectory.dir("datapacks")
+        preserveFileTimestamps = false
+        reproducibleFileOrder  = true
+    }
+}
+
+tasks.register("generateDatapacks") {
+    group       = "mod"
+    description = "Assembles datapacks for all loaders."
+    dependsOn loaders.collect { "generate${it.capitalize()}Datapack" }
+}
+
+// Hook into each loader's own build task
+loaders.each { loader ->
+    project(":${loader}").tasks.named("build") {
+        dependsOn(tasks.named("generate${loader.capitalize()}Datapack"))
+    }
+}
