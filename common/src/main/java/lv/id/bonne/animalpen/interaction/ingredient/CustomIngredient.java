@@ -105,7 +105,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
                     {
                         return BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(str)).
                             map(item -> DataResult.success((Value) new ItemValue(item.getDefaultInstance()))).
-                            orElseGet(() -> DataResult.error("Unknown item: " + str + " - was it spelled correctly?"));
+                            orElseGet(() -> DataResult.error(() -> "Unknown item: " + str + " - was it spelled correctly?"));
                     }
                 },
                 value -> {
