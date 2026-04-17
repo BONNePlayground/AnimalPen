@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -31,6 +32,8 @@ public record AnimalInteractionSyncEndPacket()
 
     public static void handle(AnimalInteractionSyncEndPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
     {
+        if (ctx.get().getEnv() == EnvType.SERVER) return;
+
         ctx.get().queue(() ->
         {
             if (!AnimalPenInteractionRegistry.containsAllEntities())
