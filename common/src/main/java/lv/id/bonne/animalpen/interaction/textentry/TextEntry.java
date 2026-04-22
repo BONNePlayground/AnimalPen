@@ -163,6 +163,24 @@ public record TextEntry(
                     forGetter(TextEntry::parameters)).
                 apply(instance, TextEntry::new));
 
+    public static final Codec<TextEntry> STREAM_CODEC =
+        RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Codec.STRING.optionalFieldOf("short_text", "").
+                        forGetter(TextEntry::shortMessage),
+                    Codec.STRING.optionalFieldOf("long_text", "").
+                        forGetter(TextEntry::longMessage),
+                    CustomIngredient.STREAM_CODEC.optionalFieldOf("main_item", CustomIngredient.EMPTY).
+                        forGetter(TextEntry::mainItem),
+                    CustomIngredient.STREAM_CODEC.optionalFieldOf("result_item", CustomIngredient.EMPTY).
+                        forGetter(TextEntry::resultItem),
+                    TextEntryVisibility.CODEC.fieldOf("visibility").
+                        forGetter(TextEntry::visibility),
+                    Codec.STRING.listOf().optionalFieldOf("parameters", Collections.emptyList()).
+                        xmap(list -> list.toArray(new String[0]), Arrays::asList).
+                        forGetter(TextEntry::parameters)).
+                apply(instance, TextEntry::new));
+
 
     public static DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().
         appendValue(MINUTE_OF_HOUR, 2).

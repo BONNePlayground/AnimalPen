@@ -235,4 +235,49 @@ public record AnimalInteraction(@NotNull String id,
                 finishFunctions,
                 sound.orElse(null),
                 redstoneSignal)));
+
+    /**
+     * This codec is used to send AnimalInteractions over network.
+     */
+    public static final Codec<AnimalInteraction> STREAM_CODEC =
+        RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("id").forGetter(a -> a.id),
+            CustomIngredient.STREAM_CODEC.optionalFieldOf("items", CustomIngredient.EMPTY)
+                .forGetter(a -> a.ingredient),
+            CustomCodec.strictOptionalListField("conditions", ConditionEntry.CODEC)
+                .forGetter(a -> a.conditions),
+            Codec.BOOL.optionalFieldOf("even_entity_count", false)
+                .forGetter(a -> a.even),
+            ConsumerEntry.CODEC.optionalFieldOf("consumer", new ConsumerEntry.Interact())
+                .forGetter(a -> a.consumer),
+            LootEntry.CODEC.optionalFieldOf("loot")
+                .forGetter(a -> Optional.ofNullable(a.lootEntry)),
+            CooldownEntry.CODEC.optionalFieldOf("cooldown")
+                .forGetter(a -> Optional.ofNullable(a.cooldown)),
+            CustomCodec.strictOptionalListField("text_lines", TextEntry.STREAM_CODEC)
+                .forGetter(a -> a.textLines),
+            CustomCodec.strictOptionalListField("run_functions", FunctionKey.CODEC)
+                .forGetter(a -> a.runFunctions),
+            CustomCodec.strictOptionalListField("finish_functions", FunctionKey.CODEC)
+                .forGetter(a -> a.finishFunctions),
+            ResourceLocation.CODEC.optionalFieldOf("sound")
+                .forGetter(a -> Optional.ofNullable(a.sound)),
+            Codec.INT.optionalFieldOf("redstone_signal", 0)
+                .forGetter(a -> a.redstoneSignal)
+        ).apply(instance, (id, ingredient, conditions,
+            even, consumer, lootEntry,
+            cooldown, textLines, runFunctions, finishFunctions,
+            sound, redstoneSignal) -> new AnimalInteraction(
+            id,
+            ingredient,
+            conditions,
+            even,
+            consumer,
+            lootEntry.orElse(null),
+            cooldown.orElse(null),
+            textLines,
+            runFunctions,
+            finishFunctions,
+            sound.orElse(null),
+            redstoneSignal)));
 }
