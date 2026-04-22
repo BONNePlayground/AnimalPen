@@ -35,7 +35,11 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                animalPen.removeAnimalVariant(index);
+                if (animalPen.getOwner().isEmpty() ||
+                    animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
+                {
+                    animalPen.removeAnimalVariant(index);
+                }
             }
             else
             {
