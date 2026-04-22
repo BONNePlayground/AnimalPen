@@ -133,7 +133,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
                 ItemValue item = (ItemValue) value;
 
-                if (item.item.getCount() == 1 && !item.item.hasTag())
+                if (item.item.getCount() == 1 && !item.item.getComponents().isEmpty())
                 {
                     return Either.left(value);
                 }

@@ -93,7 +93,7 @@ subprojects {
 }
 
 
-def loaders = ["fabric", "forge"]  // adjust names to match your subprojects
+def loaders = ["fabric", "neoforge"]  // adjust names to match your subprojects
 
 loaders.each { loader ->
     tasks.register("generate${loader.capitalize()}Datapack", Zip) {
