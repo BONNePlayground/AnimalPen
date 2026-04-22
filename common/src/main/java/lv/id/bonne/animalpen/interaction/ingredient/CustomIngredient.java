@@ -12,6 +12,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -75,7 +77,26 @@ public final class CustomIngredient implements Predicate<ItemStack>
             }
             else
             {
-                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> checkStack.is(itemStack.getItem()));
+                return Arrays.stream(this.itemStacks).anyMatch(checkStack ->
+                {
+                    // Null-check
+                    if (checkStack == null) return false;
+
+                    // Not an item from stack.
+                    if (!checkStack.is(itemStack.getItem())) return false;
+
+                    // Allow any components from items.
+                    if (checkStack.getComponentsPatch().isEmpty()) return true;
+
+                    // Build component patches without damage
+                    DataComponentPatch checkPatch = checkStack.getComponentsPatch().
+                        forget(c -> c == DataComponents.DAMAGE);
+
+                    DataComponentPatch incomingPatch = itemStack.getComponentsPatch().
+                        forget(c -> c == DataComponents.DAMAGE);
+
+                    return checkPatch.equals(incomingPatch);
+                });
             }
         }
     }
@@ -133,7 +154,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
                 ItemValue item = (ItemValue) value;
 
-                if (item.item.getCount() == 1 && !item.item.getComponents().isEmpty())
+                if (item.item.getComponentsPatch().isEmpty())
                 {
                     return Either.left(value);
                 }
