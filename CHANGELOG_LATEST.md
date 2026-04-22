@@ -2,3 +2,4 @@
 
 #### Fixes:
 - Implements ingredients to read NBT data.
+- Fixes some network packet exploits
