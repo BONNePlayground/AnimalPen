@@ -7,6 +7,7 @@ import java.util.Objects;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,8 @@ public record AnimalInteractionSyncEndPacket() implements CustomPacketPayload
      */
     public static void handle(AnimalInteractionSyncEndPacket data, NetworkManager.PacketContext packetContext)
     {
+        if (packetContext.getEnv() == EnvType.SERVER) return;
+
         packetContext.queue(() ->
         {
             if (!AnimalPenInteractionRegistry.containsAllEntities())
