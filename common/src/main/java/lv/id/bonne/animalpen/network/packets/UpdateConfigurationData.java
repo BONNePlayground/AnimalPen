@@ -71,9 +71,13 @@ public class UpdateConfigurationData
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                animalPen.setAnimalDisplaySize(displaySize);
-                animalPen.setProtectedAmount(protectedAmount);
-                animalPen.setOwner(owner);
+                if (animalPen.getOwner().isEmpty() ||
+                    animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
+                {
+                    animalPen.setAnimalDisplaySize(displaySize);
+                    animalPen.setProtectedAmount(protectedAmount);
+                    animalPen.setOwner(owner);
+                }
             }
             else
             {

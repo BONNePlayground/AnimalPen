@@ -8,6 +8,7 @@ import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -30,7 +31,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
     {
         buf.writeResourceKey(pkt.entityId());
 
-        Tag tag = AnimalInteraction.CODEC.
+        Tag tag = AnimalInteraction.STREAM_CODEC.
             listOf().
             encodeStart(NbtOps.INSTANCE, pkt.interactions).
             getOrThrow(false, AnimalPen.LOGGER::error);
@@ -60,7 +61,7 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
             return null;
         }
 
-        interactions = AnimalInteraction.CODEC.
+        interactions = AnimalInteraction.STREAM_CODEC.
             listOf().
             parse(NbtOps.INSTANCE, tag.getList("data", Tag.TAG_COMPOUND)).
             getOrThrow(false, AnimalPen.LOGGER::error);
@@ -71,6 +72,8 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
 
     public static void handle(AnimalInteractionSyncEntityPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
     {
+        if (ctx.get().getEnv() == EnvType.SERVER) return;
+
         ctx.get().queue(() -> AnimalPenInteractionRegistry.register(pkt.entityId(), pkt.interactions()));
     }
 }
