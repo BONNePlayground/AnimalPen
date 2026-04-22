@@ -40,9 +40,13 @@ public record UpdateConfigurationData(BlockPos position, long size, long protect
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
-                animalPen.setAnimalDisplaySize(displaySize);
-                animalPen.setProtectedAmount(protectedAmount);
-                animalPen.setOwner(owner.orElse(null));
+                if (animalPen.getOwner().isEmpty() ||
+                    animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
+                {
+                    animalPen.setAnimalDisplaySize(displaySize);
+                    animalPen.setProtectedAmount(protectedAmount);
+                    animalPen.setOwner(owner.orElse(null));
+                }
             }
             else
             {
