@@ -260,7 +260,7 @@ public record AnimalInteraction(@NotNull String id,
                 .forGetter(a -> a.runFunctions),
             CustomCodec.strictOptionalListField("finish_functions", FunctionKey.CODEC)
                 .forGetter(a -> a.finishFunctions),
-            ResourceLocation.CODEC.optionalFieldOf("sound")
+            Identifier.CODEC.optionalFieldOf("sound")
                 .forGetter(a -> Optional.ofNullable(a.sound)),
             Codec.INT.optionalFieldOf("redstone_signal", 0)
                 .forGetter(a -> a.redstoneSignal)

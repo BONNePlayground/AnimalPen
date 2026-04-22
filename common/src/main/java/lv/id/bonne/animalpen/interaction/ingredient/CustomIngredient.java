@@ -165,7 +165,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
         Codec<Value> STREAM_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("is_tag").forGetter(v -> v instanceof TagValue),
-            ResourceLocation.CODEC.optionalFieldOf("tag").forGetter(v -> {
+            Identifier.CODEC.optionalFieldOf("tag").forGetter(v -> {
                 if (v instanceof TagValue tag)
                 {
                     return Optional.of(tag.tag.location());
