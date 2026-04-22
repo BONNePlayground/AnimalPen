@@ -4,6 +4,7 @@ package lv.id.bonne.animalpen.data.provider;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import org.jetbrains.annotations.NotNull;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import lv.id.bonne.animalpen.util.DataOrderInjection;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -60,6 +62,13 @@ public class AnimalInteractionProvider implements DataProvider
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache)
+    {
+        DataOrderInjection.injectCustomOrder();
+        return this.generateData(cache).
+            whenComplete(((o, throwable) -> DataOrderInjection.removeCustomOrder()));
+    }
+
+    public CompletableFuture<?> generateData(CachedOutput cache)
     {
         return this.registries.thenCompose((provider) ->
         {
@@ -886,7 +895,7 @@ public class AnimalInteractionProvider implements DataProvider
 // ---------------------------------------------------------------------
 
 
-    private final PackOutput.PathProvider pathProvider;
+    protected final PackOutput.PathProvider pathProvider;
 
-    private final CompletableFuture<HolderLookup.Provider> registries;
+    protected final CompletableFuture<HolderLookup.Provider> registries;
 }
