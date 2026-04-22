@@ -8,6 +8,7 @@ import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -70,6 +71,8 @@ public record AnimalInteractionSyncEntityPacket(ResourceLocation entityId, List<
 
     public static void handle(AnimalInteractionSyncEntityPacket pkt, Supplier<NetworkManager.PacketContext> ctx)
     {
+        if (ctx.get().getEnv() == EnvType.SERVER) return;
+
         ctx.get().queue(() ->
             Registry.ENTITY_TYPE.getOptional(pkt.entityId()).ifPresent(
                 entityType -> AnimalPenInteractionRegistry.register(entityType, pkt.interactions())));
