@@ -8,6 +8,7 @@ import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -33,6 +34,8 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
      */
     public static void handle(AnimalInteractionSyncEntityPacket data, NetworkManager.PacketContext packetContext)
     {
+        if (packetContext.getEnv() == EnvType.SERVER) return;
+
         packetContext.queue(() ->
             AnimalPenInteractionRegistry.register(data.entityId(), data.interactions()));
     }

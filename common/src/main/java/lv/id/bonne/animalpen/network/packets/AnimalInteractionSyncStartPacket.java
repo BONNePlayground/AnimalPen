@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
+import net.fabricmc.api.EnvType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,6 +27,8 @@ public record AnimalInteractionSyncStartPacket(int entityCount) implements Custo
      */
     public static void handle(AnimalInteractionSyncStartPacket data, NetworkManager.PacketContext packetContext)
     {
+        if (packetContext.getEnv() == EnvType.SERVER) return;
+
         packetContext.queue(() ->
         {
             AnimalPenInteractionRegistry.clear();
