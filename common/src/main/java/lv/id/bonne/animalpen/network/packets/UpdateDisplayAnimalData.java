@@ -38,6 +38,12 @@ public record UpdateDisplayAnimalData(BlockPos position, int index) implements C
 
             if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
+                if (animalPen.getOwner().isPresent() &&
+                    !animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
+                {
+                    return;
+                }
+
                 if (index >= 0 && index < animalPen.getEntityVariants().size())
                 {
                     AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(
