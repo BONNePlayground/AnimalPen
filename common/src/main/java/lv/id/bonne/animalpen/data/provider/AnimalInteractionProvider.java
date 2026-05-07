@@ -46,9 +46,7 @@ import net.minecraft.world.entity.animal.cow.CowSoundVariants;
 import net.minecraft.world.entity.animal.feline.CatSoundVariants;
 import net.minecraft.world.entity.animal.pig.PigSoundVariants;
 import net.minecraft.world.entity.animal.wolf.WolfSoundVariants;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
@@ -92,7 +90,7 @@ public class AnimalInteractionProvider implements DataProvider
             featureList.add(this.generateAllay(cache));
             featureList.add(this.generateSniffer(cache));
             featureList.add(this.generateArmadillo(cache));
-            
+
             // Fishes
             featureList.add(this.generateFish(cache, EntityType.COD, Items.COD_BUCKET));
             featureList.add(this.generateFish(cache, EntityType.PUFFERFISH, Items.PUFFERFISH_BUCKET));
@@ -160,8 +158,8 @@ public class AnimalInteractionProvider implements DataProvider
                 SoundEvents.MULE_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.SKELETON_HORSE, horseFood,
                 SoundEvents.SKELETON_HORSE_AMBIENT));
-            
-            featureList.add(this.generateWithFoodAndAmbient(cache, 
+
+            featureList.add(this.generateWithFoodAndAmbient(cache,
                 EntityType.ZOMBIE_HORSE,
                 CustomIngredient.of(ItemTags.ZOMBIE_HORSE_FOOD),
                 SoundEvents.ZOMBIE_HORSE_AMBIENT));
@@ -639,7 +637,8 @@ public class AnimalInteractionProvider implements DataProvider
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.DYE_USE)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
-                CustomIngredient.of(ItemTags.DYES))).
+                CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.values().stream().
+                    map(ItemLike::asItem).map(ItemStackTemplate::new)))).
             build());
 
         // ambient
