@@ -81,7 +81,7 @@ modrinth {
     versionNumber = "${rootProject.version}-${rootProject.minecraft_version}"
     versionName = "${rootProject.version}-${rootProject.minecraft_version}-NeoForge"
     versionType = "release"
-    uploadFile = jar
+    uploadFile = tasks.named("jar").get().archiveFile.get().asFile
     gameVersions = ["26.1", "26.1.1", "26.1.2"]
     loaders = ["neoforge"]
     dependencies {
@@ -111,7 +111,7 @@ curseforge {
             optionalDependency "patchouli"
             optionalDependency "cloth-config"
         }
-        mainArtifact(jar) {
+        mainArtifact(tasks.named("jar").get().archiveFile.get().asFile) {
             displayName = "${rootProject.archives_name}-neoforge-${rootProject.minecraft_version}-${rootProject.version}"
         }
         options {

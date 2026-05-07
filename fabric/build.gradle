@@ -70,7 +70,7 @@ modrinth {
     versionNumber = "${rootProject.version}-${rootProject.minecraft_version}"
     versionName = "${rootProject.version}-${rootProject.minecraft_version}-Fabric"
     versionType = "release"
-    uploadFile = jar
+    uploadFile = tasks.named("jar").get().archiveFile.get().asFile
     gameVersions = ["26.1", "26.1.1", "26.1.2"]
     loaders = ["fabric"]
     dependencies {
@@ -102,7 +102,7 @@ curseforge {
             optionalDependency "patchouli-fabric"
             optionalDependency "cloth-config"
         }
-        mainArtifact(jar) {
+        mainArtifact(tasks.named("jar").get().archiveFile.get().asFile) {
             displayName = "${rootProject.archives_name}-fabric-${rootProject.minecraft_version}-${rootProject.version}"
         }
         options {
