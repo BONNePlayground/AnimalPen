@@ -14,7 +14,7 @@ dependencies {
 
     implementation("com.terraformersmc:modmenu:${rootProject.modmenu_version}")
 
-    implementation(include("eu.pb4:placeholder-api:${rootProject.placeholder_api_version}"))
+    runtimeOnly("eu.pb4:placeholder-api:${rootProject.placeholder_api_version}")
 
     compileOnlyApi("mezz.jei:jei-${minecraft_version}-fabric-api:${rootProject.jei_version}")
     // at runtime, use the full JEI jar for Fabric
@@ -62,7 +62,10 @@ sourceSets.configureEach {
     }
 }
 
-sourceSets.main.resources { srcDir rootProject.file('common/src/main/generated/') }
+sourceSets.main.resources {
+    srcDir rootProject.file('common/src/main/generated/')
+    exclude '.cache/**'
+}
 
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")

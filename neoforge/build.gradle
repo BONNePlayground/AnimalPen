@@ -54,7 +54,10 @@ neoForge {
     }
 }
 
-sourceSets.main.resources { srcDir rootProject.file('common/src/main/generated/') }
+sourceSets.main.resources {
+    srcDir rootProject.file('common/src/main/generated/')
+    exclude '.cache/**'
+}
 
 // Implement mcgradleconventions loader attribute
 def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
