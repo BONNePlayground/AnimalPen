@@ -188,6 +188,12 @@ public abstract class AbstractAnimalStorageItem extends Item
         LivingEntity target,
         InteractionHand hand)
     {
+        if (super.interactLivingEntity(stack, player, target, hand) == InteractionResult.FAIL)
+        {
+            this.error(player, ".error.unknown");
+            return InteractionResult.FAIL;
+        }
+
         if (player.level.isClientSide() || !(target instanceof Mob mob))
         {
             return InteractionResult.FAIL;
