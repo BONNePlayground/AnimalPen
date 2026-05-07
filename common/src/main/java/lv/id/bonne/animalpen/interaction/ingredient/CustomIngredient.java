@@ -26,7 +26,7 @@ import net.minecraft.world.level.ItemLike;
 
 
 /**
- * This class is used to define ingredients either as Item, ItemStack or Tag<Item>. It has merge option that allows to
+ * This class is used to define ingredients either as {@code Item}, {@code ItemStack} or {@code Tag<Item>}. It has merge option that allows to
  * merge multiple ingredients into one object, which is missing in native Ingredient class. It also simplifies item and
  * tag definition using same principles that is adopted in native versions after 1.20.6
  */
