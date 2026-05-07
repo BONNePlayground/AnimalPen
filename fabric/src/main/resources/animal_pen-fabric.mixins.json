@@ -2,6 +2,7 @@
   "required": true,
   "package": "lv.id.bonne.animalpen.mixin.fabric",
   "compatibilityLevel": "JAVA_21",
+  "refmap": "${mod_id}.refmap.json",
   "minVersion": "0.8",
   "client": [
     "InfinitePlayerAttack"

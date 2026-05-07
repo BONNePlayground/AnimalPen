@@ -15,10 +15,10 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
-import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -85,7 +85,7 @@ public class TurtleScuteDrop implements EntityFunction.ProcessEntityFunction
         if (blockEntity instanceof AbstractAnimalPenBlockEntity animalPenBlockEntity)
         {
             scuteList.forEach(stack ->
-                ItemTransferUtil.insertBellowOrDrop(serverLevel,
+                Services.ITEM_TRANSFER.insertBellowOrDrop(serverLevel,
                     stack,
                     animalPenBlockEntity.getBlockPos(),
                     animalPenBlockEntity.dropPosition()));

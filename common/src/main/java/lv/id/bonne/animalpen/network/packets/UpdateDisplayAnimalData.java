@@ -1,10 +1,8 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
-import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.NotNull;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
@@ -13,8 +11,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 
 
 /**
@@ -25,38 +23,34 @@ public record UpdateDisplayAnimalData(BlockPos position, int index) implements C
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(UpdateDisplayAnimalData data, NetworkManager.PacketContext packetContext)
+    public static void handle(UpdateDisplayAnimalData data, ServerPlayer player)
     {
         int index = data.index();
         BlockPos blockPos = data.position();
 
-        packetContext.queue(() ->
+        ServerLevel level = player.level();
+
+        if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
         {
-            Level level = packetContext.getPlayer().level();
-
-            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+            if (animalPen.getOwner().isPresent() &&
+                !animalPen.getOwner().get().equals(player.getUUID()))
             {
-                if (animalPen.getOwner().isPresent() &&
-                    !animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
-                {
-                    return;
-                }
-
-                if (index >= 0 && index < animalPen.getEntityVariants().size())
-                {
-                    AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(
-                        (ServerPlayer) packetContext.getPlayer());
-                }
-
-                animalPen.updateAnimalVariant(index);
+                return;
             }
-            else
+
+            if (index >= 0 && index < animalPen.getEntityVariants().size())
             {
-                AnimalPen.LOGGER.error("Block entity not found at the position!");
+                AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(player);
             }
-        });
+
+            animalPen.updateAnimalVariant(index);
+        }
+        else
+        {
+            AnimalPen.LOGGER.error("Block entity not found at the position!");
+        }
     }
 
 

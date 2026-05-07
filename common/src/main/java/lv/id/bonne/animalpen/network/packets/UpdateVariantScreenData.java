@@ -9,15 +9,14 @@ package lv.id.bonne.animalpen.network.packets;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.screens.VariantScreenSelection;
-import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 
 
 /**
@@ -28,39 +27,36 @@ public record UpdateVariantScreenData(BlockPos position) implements CustomPacket
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(UpdateVariantScreenData data, NetworkManager.PacketContext packetContext)
+    public static void handle(UpdateVariantScreenData data, Player player)
     {
-        BlockPos blockPos = data.position();
-
-        if (packetContext.getEnv() == EnvType.SERVER)
+        if (!player.level().isClientSide())
         {
             return;
         }
 
-        packetContext.queue(() ->
+        BlockPos blockPos = data.position();
+
+        if (player != Minecraft.getInstance().player)
         {
-            if (packetContext.getPlayer() != Minecraft.getInstance().player)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (!(Minecraft.getInstance().screen instanceof VariantScreenSelection screenSelection))
-            {
-                // only if player has opened selection screen
-                return;
-            }
+        if (!(Minecraft.getInstance().screen instanceof VariantScreenSelection screenSelection))
+        {
+            // only if player has opened selection screen
+            return;
+        }
 
-            if (!screenSelection.getPosition().equals(blockPos))
-            {
-                // Only if it is the same screen
-                return;
-            }
+        if (!screenSelection.getPosition().equals(blockPos))
+        {
+            // Only if it is the same screen
+            return;
+        }
 
-            // Trigger update on screen
-            screenSelection.update();
-        });
+        // Trigger update on screen
+        screenSelection.update();
     }
 
 

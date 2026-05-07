@@ -1,11 +1,12 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.network.packets.UpdateConfigurationData;
-import net.minecraft.client.gui.GuiGraphics;
+import lv.id.bonne.animalpen.platform.Services;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -61,9 +62,23 @@ public class VariantsConfigScreen extends Screen
 
         // Minimal Animal Count Input Field
         this.minimalAnimalCountField =
-            new EditBox(this.font, centerX - 100, startY + 40, 200, 20, MINIMAL_ANIMAL_COUNT);
+            new EditBox(this.font, centerX - 100, startY + 40, 200, 20, MINIMAL_ANIMAL_COUNT) {
+
+                private boolean isValidText(@NotNull String text) {
+                    return text.chars().allMatch((c) -> Character.isDigit(c) || c == 45);
+                }
+
+                @Override
+                public void insertText(@NotNull String input) {
+                    String before = this.getValue();
+                    super.insertText(input);
+                    if (!this.isValidText(this.getValue())) {
+                        this.setValue(before);
+                    }
+
+                }
+            };
         this.minimalAnimalCountField.setValue(String.valueOf(this.minimalAnimalCount));
-        this.minimalAnimalCountField.setFilter(this::isValidNumber);
         this.minimalAnimalCountField.setMaxLength(3);
         this.addRenderableWidget(this.minimalAnimalCountField);
 
@@ -93,12 +108,12 @@ public class VariantsConfigScreen extends Screen
 
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick)
     {
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         // Draw title
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
+        graphics.centeredText(this.font, this.title, this.width / 2, 20, -1);
 
         // Draw labels
         int centerX = this.width / 2;
@@ -109,10 +124,10 @@ public class VariantsConfigScreen extends Screen
             this.displayAnimalAmountSlider.getIntValue(),
             this.maxAnimalAmount);
 
-        graphics.drawString(this.font, size,
+        graphics.text(this.font, size,
             centerX - 100, startY - 12, -1);
 
-        graphics.drawString(this.font, MINIMAL_ANIMAL_COUNT,
+        graphics.text(this.font, MINIMAL_ANIMAL_COUNT,
             centerX - 100, startY + 28, -1);
     }
 
@@ -167,7 +182,7 @@ public class VariantsConfigScreen extends Screen
 
     private void saveConfiguration()
     {
-        NetworkManager.sendToServer(new UpdateConfigurationData(this.parent.getPosition(),
+        Services.NETWORK.sendToServer(new UpdateConfigurationData(this.parent.getPosition(),
             this.displayAnimalAmount,
             this.minimalAnimalCount,
             Optional.ofNullable(this.enableProtection ? this.minecraft.player.getUUID() : null)));

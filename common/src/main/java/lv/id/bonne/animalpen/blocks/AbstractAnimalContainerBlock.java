@@ -4,9 +4,9 @@ package lv.id.bonne.animalpen.blocks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -94,7 +94,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
                 return InteractionResult.FAIL;
             }
 
-            if (PlayerHooks.isFake(player) && itemInHand.is(this.getAttackToolTag()))
+            if (Services.PLATFORM.isFake(player) && itemInHand.is(this.getAttackToolTag()))
             {
                 this.attack(blockState, level, blockPos, player);
                 return InteractionResult.SUCCESS;
@@ -128,7 +128,7 @@ public abstract class AbstractAnimalContainerBlock<T extends AbstractAnimalPenBl
 
             entity.attackThePen(player, level);
 
-            if (PlayerHooks.isFake(player))
+            if (Services.PLATFORM.isFake(player))
             {
                 // Fake players do not need cooldowns
                 return;

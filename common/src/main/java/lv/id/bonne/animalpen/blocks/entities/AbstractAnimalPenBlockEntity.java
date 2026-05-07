@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
@@ -21,6 +20,7 @@ import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.PlayerInteractionExecutor;
@@ -29,12 +29,10 @@ import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
-import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +50,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -311,7 +308,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        Services.NETWORK.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -455,7 +452,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update
-                        NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                        Services.NETWORK.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
                                     other.distanceToSqr(this.getBlockPos().getX(),
                                         this.getBlockPos().getY(),
@@ -643,7 +640,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
             lootTable.getRandomItems(paramsBuilder.create(LootContextParamSets.ENTITY), level.getRandom().nextLong()).
                 forEach(itemStack ->
-                ItemTransferUtil.insertBellowOrDrop(level,
+                    Services.ITEM_TRANSFER.insertBellowOrDrop(level,
                     itemStack,
                     this.getBlockPos(),
                     this.getBlockPos().above()));
@@ -757,7 +754,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (itemConsumer == null)
         {
-            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(serverLevel,
+            lootItems.forEach(itemStack -> Services.ITEM_TRANSFER.insertBellowOrDrop(serverLevel,
                 itemStack,
                 this.getBlockPos(),
                 this.dropPosition()));
@@ -888,7 +885,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 Collections.emptyList() :
                 interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
 
-            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
+            lootItems.forEach(itemStack -> Services.ITEM_TRANSFER.insertBellowOrDrop(level,
                 itemStack,
                 this.getBlockPos(),
                 this.dropPosition()));
@@ -980,7 +977,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             if (this.level != null && !this.level.isClientSide())
             {
                 // Trigger update.
-                NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+                Services.NETWORK.sendToPlayers(((ServerLevel) this.level).players().stream().
                         filter(other ->
                             other.distanceToSqr(this.getBlockPos().getX(),
                                 this.getBlockPos().getY(),
@@ -1031,7 +1028,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (this.level != null && !this.level.isClientSide())
         {
             // Trigger screen Update
-            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
+            Services.NETWORK.sendToPlayers(((ServerLevel) this.level).players().stream().
                     filter(other ->
                         other.distanceToSqr(this.getBlockPos().getX(),
                             this.getBlockPos().getY(),

@@ -1,6 +1,7 @@
-package lv.id.bonne.animalpen.util.fabric;
+package lv.id.bonne.animalpen.platform.fabric;
 
 
+import lv.id.bonne.animalpen.platform.services.IItemTransferHelper;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -14,9 +15,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 
-public class ItemTransferUtilImpl
+public class ItemTransferHelperImpl implements IItemTransferHelper
 {
-    public static boolean canInsert(Level level, BlockPos pos, Direction side, ItemStack stack)
+    @Override
+    public boolean canInsert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
@@ -41,7 +43,8 @@ public class ItemTransferUtilImpl
     }
 
 
-    public static ItemStack insert(Level level, BlockPos pos, Direction side, ItemStack stack)
+    @Override
+    public ItemStack insert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
         if (stack.isEmpty())
         {

@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import dev.architectury.platform.Platform;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -67,7 +67,7 @@ public record AnimalInteractionEntry(Optional<ResourceKey<EntityType<?>>> entity
                     Codec.STRING.listOf().parse(ops, map.get("required_mods")).result().orElse(List.of()) :
                     List.of();
 
-                boolean modsPresent = requiredMods.stream().allMatch(Platform::isModLoaded);
+                boolean modsPresent = requiredMods.stream().allMatch(Services.PLATFORM::isModLoaded);
 
                 if (!modsPresent)
                 {

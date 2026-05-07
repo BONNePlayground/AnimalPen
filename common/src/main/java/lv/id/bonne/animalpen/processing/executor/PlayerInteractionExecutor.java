@@ -4,9 +4,9 @@ package lv.id.bonne.animalpen.processing.executor;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
-import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -134,7 +134,7 @@ public final class PlayerInteractionExecutor implements AnimalInteractionExecuto
     @Override
     public void drop(ItemStack item)
     {
-        ItemTransferUtil.insertBellowOrDrop(this.player.level(),
+        Services.ITEM_TRANSFER.insertBellowOrDrop(this.player.level(),
             item,
             this.blockEntity.getBlockPos(),
             this.blockEntity.dropPosition());

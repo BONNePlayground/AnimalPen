@@ -1,124 +1,37 @@
 plugins {
-    id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    // see https://fabricmc.net/develop/ for new versions
+    id 'net.fabricmc.fabric-loom' version '1.15.5' apply false
+    // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
+    id 'net.neoforged.moddev' version '2.0.141' apply false
 }
 
-architectury {
-    minecraft = project.minecraft_version
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xdoclint:none"
 }
 
-allprojects {
-    group = rootProject.maven_group
-    version = rootProject.mod_version
-}
+tasks.register("generateDatapack", Zip) {
+    group = "mod"
+    description = "Assembles the standalone datapack."
 
-subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-    apply plugin: 'maven-publish'
-
-    base {
-        // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
-        archivesName = "$rootProject.archives_name-$project.name-$rootProject.minecraft_version"
-    }
-
-    repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
-        maven {
-            url "https://cursemaven.com"
-            content {
-                includeGroup "curse.maven"
-            }
-        }
-        maven { url "https://maven.shedaniel.me/" }
-
-        maven {
-            // location of the maven that hosts JEI files since January 2023
-            name = "Jared's maven"
-            url = "https://maven.blamejared.com/"
-        }
-        maven {
-            // location of a maven mirror for JEI files, as a fallback
-            name = "ModMaven"
-            url = "https://modmaven.dev"
-        }
-    }
-
-    dependencies {
-        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-        mappings loom.officialMojangMappings()
-    }
-
-    java {
-        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-        // if it is present.
-        // If you remove this line, sources will not be generated.
-        withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        it.options.release = 21
-    }
-
-    // Configure Maven publishing.
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                artifactId = base.archivesName.get()
-                from components.java
-            }
-        }
-
-        // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-        repositories {
-            // Add repositories to publish to here.
-            // Notice: This block does NOT have the same function as the block in the top level.
-            // The repositories here will be used for publishing your artifact, not for
-            // retrieving dependencies.
-        }
-    }
-
-    // Remove generated folder.
-    tasks.named('clean') {
-        delete 'src/main/generated/'
-    }
-}
-
-
-def loaders = ["fabric", "neoforge"]  // adjust names to match your subprojects
-
-loaders.each { loader ->
-    tasks.register("generate${loader.capitalize()}Datapack", Zip) {
-        group       = "mod"
-        description = "Assembles a standalone datapack for ${loader}."
-
-        def mcmeta = """
+    // ── pack.mcmeta ──────────────────────────────────────────────────────
+    def mcmeta = """
 {
   "pack": {
     "pack_format": ${pack_version},
-    "description": "Animal Pens (${loader}) data pack v${mod_version}"
+    "description": "Animal Pens data pack v${version}"
   }
 }
-""".stripIndent().strip()
+"""
 
-        // ── common data files (shared base) ─────────────────────────────────
-        if (findProject(":common") != null) {
-            from("${project(":common").projectDir}/src/main/resources") {
-                include "data/animal_pen/loot_tables/animal_interactions/**"
-                duplicatesStrategy = DuplicatesStrategy.WARN
-            }
+    // ── shared resources from common ─────────────────────────────────────
+    if (findProject(":common") != null) {
+
+        from("${project(":common").projectDir}/src/main/resources") {
+            include "data/animal_pen/loot_tables/animal_interactions/**"
+            duplicatesStrategy = DuplicatesStrategy.WARN
         }
 
-        // ── loader-specific data files (override/extend common) ──────────────
-        from("${project(":${loader}").projectDir}/src/main/generated") {
+        from("${project(":common").projectDir}/src/main/generated") {
             include "data/minecraft/**"
             include "data/animal_pen/tags/entity_types/**"
             include "data/animal_pen/tags/items/**"
@@ -126,31 +39,28 @@ loaders.each { loader ->
             exclude "data/animal_pen/tags/items/aviaries.json"
             duplicatesStrategy = DuplicatesStrategy.WARN
         }
-
-        // ── pack.mcmeta ──────────────────────────────────────────────────────
-        doFirst {
-            def metaDir = project(":${loader}").layout.buildDirectory.dir("tmp/datapack-meta").get().asFile
-            metaDir.mkdirs()
-            new File(metaDir, "pack.mcmeta").text = mcmeta
-            from(metaDir)
-        }
-
-        archiveFileName      = "${archives_name}-datapack-${loader}-${minecraft_version}-${mod_version}.zip"
-        destinationDirectory = project(":${loader}").layout.buildDirectory.dir("datapacks")
-        preserveFileTimestamps = false
-        reproducibleFileOrder  = true
     }
+
+    // ── pack.mcmeta injection ────────────────────────────────────────────
+    doFirst {
+        def metaDir = project(":common").layout.buildDirectory
+                .dir("tmp/datapack-meta")
+                .get().asFile
+
+        metaDir.mkdirs()
+        new File(metaDir, "pack.mcmeta").text = mcmeta
+
+        from(metaDir)
+    }
+
+    archiveFileName = "${archives_name}-datapack-${minecraft_version}-${version}.zip"
+
+    destinationDirectory = layout.buildDirectory.dir("datapacks").get().asFile
+
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }
 
-tasks.register("generateDatapacks") {
-    group       = "mod"
-    description = "Assembles datapacks for all loaders."
-    dependsOn loaders.collect { "generate${it.capitalize()}Datapack" }
-}
-
-// Hook into each loader's own build task
-loaders.each { loader ->
-    project(":${loader}").tasks.named("build") {
-        dependsOn(tasks.named("generate${loader.capitalize()}Datapack"))
-    }
+tasks.named("generateDatapack") {
+    dependsOn(":neoforge:runData")
 }

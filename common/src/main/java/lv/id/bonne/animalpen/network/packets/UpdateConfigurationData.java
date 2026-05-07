@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -14,7 +13,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 
 /**
@@ -25,34 +25,31 @@ public record UpdateConfigurationData(BlockPos position, long size, long protect
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(UpdateConfigurationData data, NetworkManager.PacketContext packetContext)
+    public static void handle(UpdateConfigurationData data, ServerPlayer player)
     {
         BlockPos blockPos = data.position();
         long displaySize = data.size();
         long protectedAmount = data.protectedAmount();
         Optional<UUID> owner = data.uuid();
 
-        packetContext.queue(() ->
-        {
-            Level level = packetContext.getPlayer().level();
+        ServerLevel level = player.level();
 
-            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+        if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+        {
+            if (animalPen.getOwner().isEmpty() ||
+                animalPen.getOwner().get().equals(player.getUUID()))
             {
-                if (animalPen.getOwner().isEmpty() ||
-                    animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
-                {
-                    animalPen.setAnimalDisplaySize(displaySize);
-                    animalPen.setProtectedAmount(protectedAmount);
-                    animalPen.setOwner(owner.orElse(null));
-                }
+                animalPen.setAnimalDisplaySize(displaySize);
+                animalPen.setProtectedAmount(protectedAmount);
+                animalPen.setOwner(owner.orElse(null));
             }
-            else
-            {
-                AnimalPen.LOGGER.error("Block entity not found at the position!");
-            }
-        });
+        }
+        else
+        {
+            AnimalPen.LOGGER.error("Block entity not found at the position!");
+        }
     }
 
 

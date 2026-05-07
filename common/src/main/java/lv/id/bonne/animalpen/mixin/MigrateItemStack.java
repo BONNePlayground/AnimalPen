@@ -14,12 +14,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import lv.id.bonne.animalpen.items.AbstractAnimalStorageItem;
+import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 
 
 @Mixin(ItemStack.class)
@@ -29,14 +30,13 @@ public abstract class MigrateItemStack
     public abstract Item getItem();
 
 
-    @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V",
+    @Inject(method = "<init>(Lnet/minecraft/core/Holder;ILnet/minecraft/core/component/PatchedDataComponentMap;)V",
         at = @At("TAIL"))
-    private void migrateOnCreation(ItemLike itemLike,
-        int i,
-        PatchedDataComponentMap patchedDataComponentMap,
-        CallbackInfo ci)
+    private void migrateOnCreation(Holder<Item> item, int count, PatchedDataComponentMap components, CallbackInfo ci)
     {
-        if (itemLike.asItem() instanceof AbstractAnimalStorageItem)
+        if (item.is(AnimalPensItemRegistry.ANIMAL_CAGE.get().builtInRegistryHolder()) ||
+            item.is(AnimalPensItemRegistry.ANIMAL_CONTAINER.get().builtInRegistryHolder()) ||
+            item.is(AnimalPensItemRegistry.BIRD_CATCHER.get().builtInRegistryHolder()))
         {
             AbstractAnimalStorageItem.verifyComponentsAfterLoad((ItemStack) (Object) this);
         }

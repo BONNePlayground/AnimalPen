@@ -20,6 +20,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 
@@ -42,21 +44,21 @@ public final class CustomIngredient implements Predicate<ItemStack>
     }
 
 
-    public ItemStack[] getItems()
+    public ItemStackTemplate[] getItems()
     {
         this.dissolve();
-        return this.itemStacks;
+        return this.itemStackTemplates;
     }
 
 
     private void dissolve()
     {
-        if (this.itemStacks == null)
+        if (this.itemStackTemplates == null)
         {
-            this.itemStacks = Arrays.stream(this.values).
+            this.itemStackTemplates = Arrays.stream(this.values).
                 flatMap((value) -> value.getItems().stream()).
                 distinct().
-                toArray(ItemStack[]::new);
+                toArray(ItemStackTemplate[]::new);
         }
     }
 
@@ -71,13 +73,13 @@ public final class CustomIngredient implements Predicate<ItemStack>
         {
             this.dissolve();
 
-            if (this.itemStacks.length == 0)
+            if (this.itemStackTemplates.length == 0)
             {
                 return itemStack.isEmpty();
             }
             else
             {
-                return Arrays.stream(this.itemStacks).anyMatch(checkStack ->
+                return Arrays.stream(this.itemStackTemplates).anyMatch(checkStack ->
                 {
                     // Null-check
                     if (checkStack == null) return false;
@@ -86,10 +88,13 @@ public final class CustomIngredient implements Predicate<ItemStack>
                     if (!checkStack.is(itemStack.getItem())) return false;
 
                     // Allow any components from items.
-                    if (checkStack.getComponentsPatch().isEmpty()) return true;
+                    if (checkStack.components().isEmpty())
+                    {
+                        return true;
+                    }
 
                     // Build component patches without damage
-                    DataComponentPatch checkPatch = checkStack.getComponentsPatch().
+                    DataComponentPatch checkPatch = checkStack.components().
                         forget(c -> c == DataComponents.DAMAGE);
 
                     DataComponentPatch incomingPatch = itemStack.getComponentsPatch().
@@ -104,13 +109,13 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
     public boolean isEmpty()
     {
-        return this.values.length == 0 && (this.itemStacks == null || this.itemStacks.length == 0);
+        return this.values.length == 0 && (this.itemStackTemplates == null || this.itemStackTemplates.length == 0);
     }
 
 
     interface Value
     {
-        Collection<ItemStack> getItems();
+        Collection<ItemStackTemplate> getItems();
 
         String TAG_PREFIX = "#";
 
@@ -125,7 +130,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
                     else
                     {
                         return BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(str)).
-                            map(item -> DataResult.success((Value) new ItemValue(item.getDefaultInstance()))).
+                            map(item -> DataResult.success((Value) new ItemValue(new ItemStackTemplate(item)))).
                             orElseGet(() -> DataResult.error(() -> "Unknown item: " + str + " - was it spelled correctly?"));
                     }
                 },
@@ -137,13 +142,13 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
                     if (value instanceof ItemValue item)
                     {
-                        return BuiltInRegistries.ITEM.getKey(item.item.getItem()).toString();
+                        return BuiltInRegistries.ITEM.getKey(item.template.item().value()).toString();
                     }
 
                     throw new UnsupportedOperationException("Unknown Value type: " + value.getClass());
                 }
             ),
-            ItemStack.CODEC.xmap(ItemValue::new, v -> v.item)
+            ItemStackTemplate.CODEC.xmap(ItemValue::new, v -> v.template)
         ).xmap(
             either -> either.map(l -> l, r -> r),
             value -> {
@@ -154,7 +159,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
                 ItemValue item = (ItemValue) value;
 
-                if (item.item.getComponentsPatch().isEmpty())
+                if (item.template.components().isEmpty())
                 {
                     return Either.left(value);
                 }
@@ -173,10 +178,11 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
                 return Optional.empty();
             }),
-            ItemStack.CODEC.optionalFieldOf("stack").forGetter(v -> {
+            ItemStackTemplate.CODEC.optionalFieldOf("stack").forGetter(v ->
+            {
                 if (v instanceof ItemValue item)
                 {
-                    return Optional.of(item.item);
+                    return Optional.of(item.template);
                 }
 
                 return Optional.empty();
@@ -187,7 +193,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
                 return new TagValue(TagKey.create(Registries.ITEM, tag.orElseThrow()));
             }
 
-            return new ItemValue(stack.orElse(ItemStack.EMPTY));
+            return new ItemValue(stack.orElse(new ItemStackTemplate(Items.AIR)));
         }));
     }
 
@@ -207,19 +213,20 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
     public static CustomIngredient of(ItemLike... itemLikes)
     {
-        return of(Arrays.stream(itemLikes).map(ItemStack::new));
+        return of(Arrays.stream(itemLikes).map(itemLike -> new ItemStackTemplate(itemLike.asItem())));
     }
 
 
-    public static CustomIngredient of(ItemStack... itemStacks)
+    public static CustomIngredient of(ItemStackTemplate... itemStacks)
     {
         return of(Arrays.stream(itemStacks));
     }
 
 
-    public static CustomIngredient of(Stream<ItemStack> stream)
+    public static CustomIngredient of(Stream<ItemStackTemplate> stream)
     {
-        return fromValues(stream.filter((itemStack) -> !itemStack.isEmpty()).map(ItemValue::new));
+        return fromValues(stream.filter((itemStack) -> !itemStack.is(Items.AIR)).
+            map(ItemValue::new));
     }
 
 
@@ -249,19 +256,19 @@ public final class CustomIngredient implements Predicate<ItemStack>
 
     static class ItemValue implements Value
     {
-        ItemValue(ItemStack itemStack)
+        ItemValue(ItemStackTemplate itemStack)
         {
-            this.item = itemStack;
+            this.template = itemStack;
         }
 
 
-        public Collection<ItemStack> getItems()
+        public Collection<ItemStackTemplate> getItems()
         {
-            return Collections.singleton(this.item);
+            return Collections.singleton(this.template);
         }
 
 
-        private final ItemStack item;
+        private final ItemStackTemplate template;
     }
 
 
@@ -273,13 +280,13 @@ public final class CustomIngredient implements Predicate<ItemStack>
         }
 
 
-        public Collection<ItemStack> getItems()
+        public Collection<ItemStackTemplate> getItems()
         {
-            List<ItemStack> list = Lists.newArrayList();
+            List<ItemStackTemplate> list = Lists.newArrayList();
 
             for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(this.tag))
             {
-                list.add(new ItemStack(holder));
+                list.add(new ItemStackTemplate(holder.value()));
             }
 
             return list;
@@ -293,7 +300,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
     private final Value[] values;
 
     @Nullable
-    private ItemStack[] itemStacks;
+    private ItemStackTemplate[] itemStackTemplates;
 
 
     public static final CustomIngredient EMPTY = new CustomIngredient(Stream.empty());

@@ -24,8 +24,8 @@ import net.minecraft.world.item.ItemStack;
 @Mixin(EntityEquipment.class)
 public class MigrateEquipmentSlot
 {
-    @Inject(method = "<init>(Ljava/util/EnumMap;)V", at = @At("HEAD"))
-    private static void migrateOnCreating(EnumMap enumMap, CallbackInfo ci)
+    @Inject(method = "<init>(Ljava/util/EnumMap;)V", at = @At("RETURN"))
+    private void migrateOnCreating(EnumMap enumMap, CallbackInfo ci)
     {
         if (enumMap == null || enumMap.isEmpty())
         {

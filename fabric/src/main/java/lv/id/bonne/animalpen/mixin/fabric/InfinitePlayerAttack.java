@@ -39,7 +39,7 @@ public class InfinitePlayerAttack
     private BlockPos destroyBlockPos;
 
 
-    @Inject(method = "method_41930",
+    @Inject(method = "lambda$startDestroyBlock$1",
         at = @At(value = "INVOKE",
             shift = At.Shift.AFTER,
             target = "Lnet/minecraft/client/multiplayer/ClientLevel;destroyBlockProgress(ILnet/minecraft/core/BlockPos;I)V"))

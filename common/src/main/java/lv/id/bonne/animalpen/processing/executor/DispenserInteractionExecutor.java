@@ -3,8 +3,8 @@ package lv.id.bonne.animalpen.processing.executor;
 
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
-import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -86,7 +86,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     @Override
     public void drop(ItemStack item)
     {
-        ItemTransferUtil.insertBellowOrDrop(this.level,
+        Services.ITEM_TRANSFER.insertBellowOrDrop(this.level,
             item,
             this.blockEntity.getBlockPos(),
             this.blockEntity.dropPosition());

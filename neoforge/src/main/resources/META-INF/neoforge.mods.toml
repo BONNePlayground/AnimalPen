@@ -1,41 +1,33 @@
 modLoader = "javafml"
-loaderVersion = "[2,)"
+loaderVersion = "${neoforge_loader_version_range}"
 issueTrackerURL = "https://github.com/BONNePlayground/AnimalPen/issues"
-license = "GNU GPL 3.0"
+license = "${license}"
 
 [[mods]]
-modId = "animal_pen"
+modId = "${mod_id}"
 version = "${version}"
-displayName = "Animal Pen"
-authors = "BONNe1704"
-description = '''
-A simple mod aimed to reduce lag on servers by placing animals in single block.
-'''
+displayName = "${mod_name}"
+authors = "${mod_author}"
+credits = "${credits}"
+description = '''${description}'''
 logoFile = "assets/animal_pen/icon.png"
 
-[[dependencies.animal_pen]]
+[[dependencies.${ mod_id }]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21,)"
+versionRange = "[${neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.animal_pen]]
+[[dependencies.${ mod_id }]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.11,)"
+versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.animal_pen]]
-modId = "architectury"
-type = "required"
-versionRange = "[19.0.1,)"
-ordering = "AFTER"
-side = "BOTH"
+[[mixins]]
+config = "${mod_id}.mixins.json"
 
 [[mixins]]
-config = "animal_pen.mixins.json"
-
-[[mixins]]
-config = "animal_pen-neoforge.mixins.json"
+config = "${mod_id}-neoforge.mixins.json"

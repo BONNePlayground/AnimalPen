@@ -9,13 +9,13 @@ package lv.id.bonne.animalpen.integration.jei;
 
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.integration.jei.category.AnimalCageRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.category.BirdCageRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.category.WaterContainerRecipeCategory;
 import lv.id.bonne.animalpen.integration.jei.recipe.ItemInfoRecipe;
-import lv.id.bonne.animalpen.platform.PlatformHelper;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import mezz.jei.api.IModPlugin;
@@ -24,9 +24,11 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 
@@ -58,36 +60,37 @@ public class JEIPlugin implements IModPlugin
     {
         BuiltInRegistries.ENTITY_TYPE.stream().forEach(entityType ->
         {
-            SpawnEggItem spawnEggItem = PlatformHelper.getSpawnEgg(entityType);
-            if (spawnEggItem == null)
+            Optional<Holder<Item>> spawnEggItem = SpawnEggItem.byId(entityType);
+
+            if (spawnEggItem.isEmpty())
             {
                 return;
             }
 
-            if (entityType.is(AnimalPenTags.ANIMAL_CAGE_PICKABLE))
+            if (entityType.builtInRegistryHolder().is(AnimalPenTags.ANIMAL_CAGE_PICKABLE))
             {
                 registration.addRecipes(AnimalCageRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.ANIMAL_CAGE.get()),
                     Component.translatable("jei.animal_pen.animal_cage"),
-                    spawnEggItem.getDefaultInstance()
+                    spawnEggItem.get().value().getDefaultInstance()
                 )));
             }
 
-            if (entityType.is(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE))
+            if (entityType.builtInRegistryHolder().is(AnimalPenTags.WATER_MOB_CONTAINER_PICKABLE))
             {
                 registration.addRecipes(WaterContainerRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.ANIMAL_CONTAINER.get()),
                     Component.translatable("jei.animal_pen.water_animal_container"),
-                    spawnEggItem.getDefaultInstance()
+                    spawnEggItem.get().value().getDefaultInstance()
                 )));
             }
 
-            if (entityType.is(AnimalPenTags.BIRD_CATCHER_PICKABLE))
+            if (entityType.builtInRegistryHolder().is(AnimalPenTags.BIRD_CATCHER_PICKABLE))
             {
                 registration.addRecipes(BirdCageRecipeCategory.RECIPE_TYPE, List.of(new ItemInfoRecipe(
                     new ItemStack(AnimalPensItemRegistry.BIRD_CATCHER.get()),
                     Component.translatable("jei.animal_pen.bird_catcher"),
-                    spawnEggItem.getDefaultInstance()
+                    spawnEggItem.get().value().getDefaultInstance()
                 )));
             }
         });

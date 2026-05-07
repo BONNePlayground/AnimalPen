@@ -4,13 +4,12 @@ package lv.id.bonne.animalpen.data.provider;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import org.jetbrains.annotations.NotNull;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionEntry;
@@ -32,9 +31,9 @@ import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
+import lv.id.bonne.animalpen.util.DataOrderInjection;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import lv.id.bonne.animalpen.util.DataOrderInjection;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -42,10 +41,15 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.chicken.ChickenSoundVariants;
+import net.minecraft.world.entity.animal.cow.CowSoundVariants;
+import net.minecraft.world.entity.animal.feline.CatSoundVariants;
+import net.minecraft.world.entity.animal.pig.PigSoundVariants;
+import net.minecraft.world.entity.animal.wolf.WolfSoundVariants;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 
@@ -99,7 +103,7 @@ public class AnimalInteractionProvider implements DataProvider
             // Only food animals
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.CAT,
                 CustomIngredient.of(ItemTags.CAT_FOOD),
-                SoundEvents.CAT_AMBIENT));
+                SoundEvents.CAT_SOUNDS.get(CatSoundVariants.SoundSet.CLASSIC).adultSounds().ambientSound().value()));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DOLPHIN,
                 CustomIngredient.of(ItemTags.NAUTILUS_FOOD),
                 false,
@@ -125,7 +129,7 @@ public class AnimalInteractionProvider implements DataProvider
                 SoundEvents.PANDA_AMBIENT));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.PIG,
                 CustomIngredient.of(ItemTags.PIG_FOOD),
-                SoundEvents.PIG_AMBIENT));
+                SoundEvents.PIG_SOUNDS.get(PigSoundVariants.SoundSet.CLASSIC).adultSounds().ambientSound().value()));
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.RABBIT,
                 CustomIngredient.of(ItemTags.RABBIT_FOOD),
                 SoundEvents.RABBIT_AMBIENT));
@@ -145,7 +149,7 @@ public class AnimalInteractionProvider implements DataProvider
 
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.WOLF,
                 CustomIngredient.merge(CustomIngredient.of(ItemTags.WOLF_FOOD)),
-                SoundEvents.WOLF_SOUNDS.values().iterator().next().ambientSound().value()));
+                SoundEvents.WOLF_SOUNDS.get(WolfSoundVariants.SoundSet.CLASSIC).adultSounds().ambientSound().value()));
 
             CustomIngredient horseFood = CustomIngredient.of(ItemTags.HORSE_FOOD);
             featureList.add(this.generateWithFoodAndAmbient(cache, EntityType.DONKEY, horseFood,
@@ -271,7 +275,7 @@ public class AnimalInteractionProvider implements DataProvider
                 interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(entityType.arch$registryName());
+        Path file = this.pathProvider.json(entityType.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -292,7 +296,7 @@ public class AnimalInteractionProvider implements DataProvider
                 List.of(this.generateAmbientSound(soundEvent)))).
             getOrThrow();
 
-        Path file = this.pathProvider.json(entityType.arch$registryName());
+        Path file = this.pathProvider.json(entityType.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -318,7 +322,7 @@ public class AnimalInteractionProvider implements DataProvider
                 List.of(this.generateFood(foodItem, withStackLimit), this.generateAmbientSound(soundEvent)))).
             getOrThrow();
 
-        Path file = this.pathProvider.json(entityType.arch$registryName());
+        Path file = this.pathProvider.json(entityType.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -341,7 +345,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.AXOLOTL.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.AXOLOTL.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.AXOLOTL.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -366,14 +370,16 @@ public class AnimalInteractionProvider implements DataProvider
             build());
 
         // ambient
-        interactions.add(this.generateAmbientSound(SoundEvents.CHICKEN_AMBIENT));
+        interactions.add(this.generateAmbientSound(
+            SoundEvents.CHICKEN_SOUNDS.get(ChickenSoundVariants.SoundSet.CLASSIC).adultSounds().ambientSound()
+                .value()));
 
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.CHICKEN.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.CHICKEN.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.CHICKEN.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -465,7 +471,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.BEE.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.BEE.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.BEE.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -488,14 +494,15 @@ public class AnimalInteractionProvider implements DataProvider
             textLines(TextEntry.cooldown("display.animal_pen.milk_cooldown", CustomIngredient.of(Items.MILK_BUCKET))).
             build());
         // ambient
-        interactions.add(this.generateAmbientSound(SoundEvents.COW_AMBIENT));
+        interactions.add(this.generateAmbientSound(
+            SoundEvents.COW_SOUNDS.get(CowSoundVariants.SoundSet.CLASSIC).ambientSound().value()));
 
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.COW.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.COW.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.COW.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -551,14 +558,15 @@ public class AnimalInteractionProvider implements DataProvider
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.MOOSHROOM_FAILED_EFFECT.get())).
             build());
         // ambient
-        interactions.add(this.generateAmbientSound(SoundEvents.COW_AMBIENT));
+        interactions.add(this.generateAmbientSound(
+            SoundEvents.COW_SOUNDS.get(CowSoundVariants.SoundSet.CLASSIC).ambientSound().value()));
 
         JsonElement json = AnimalInteractionEntry.CODEC.
             encodeStart(JsonOps.INSTANCE,
                 AnimalInteractionEntry.of(EntityType.MOOSHROOM.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.MOOSHROOM.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.MOOSHROOM.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -590,7 +598,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.GOAT.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.GOAT.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.GOAT.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -626,27 +634,12 @@ public class AnimalInteractionProvider implements DataProvider
 
         // Dye
         interactions.add(AnimalInteractionBuilder.create("dye").
-            ingredient(CustomIngredient.of(Items.WHITE_DYE,
-                Items.ORANGE_DYE,
-                Items.MAGENTA_DYE,
-                Items.LIGHT_BLUE_DYE,
-                Items.YELLOW_DYE,
-                Items.LIME_DYE,
-                Items.PINK_DYE,
-                Items.GRAY_DYE,
-                Items.LIGHT_GRAY_DYE,
-                Items.CYAN_DYE,
-                Items.PURPLE_DYE,
-                Items.BLUE_DYE,
-                Items.BROWN_DYE,
-                Items.GREEN_DYE,
-                Items.RED_DYE,
-                Items.BLACK_DYE)).
+            ingredient(CustomIngredient.of(ItemTags.DYES)).
             consume(new ConsumerEntry.Replace()).
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.DYE_USE)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.SHEEP_CHANGE_COLOR.get())).
             textLines(TextEntry.ready("display.animal_pen.color_ready",
-                CustomIngredient.of(AnimalPenItemHelper.ITEM_BY_DYE.values().stream().map(ItemStack::new)))).
+                CustomIngredient.of(ItemTags.DYES))).
             build());
 
         // ambient
@@ -657,7 +650,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.SHEEP.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.SHEEP.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.SHEEP.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -690,7 +683,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.TURTLE.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.TURTLE.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.TURTLE.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -736,7 +729,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(entityType.arch$registryName());
+        Path file = this.pathProvider.json(entityType.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -809,7 +802,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.FROG.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.FROG.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.FROG.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -841,7 +834,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.ALLAY.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.ALLAY.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.ALLAY.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -883,7 +876,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.SNIFFER.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.SNIFFER.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.SNIFFER.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }
@@ -915,7 +908,7 @@ public class AnimalInteractionProvider implements DataProvider
                 AnimalInteractionEntry.of(EntityType.ARMADILLO.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
-        Path file = this.pathProvider.json(EntityType.ARMADILLO.arch$registryName());
+        Path file = this.pathProvider.json(EntityType.ARMADILLO.builtInRegistryHolder().key());
 
         return DataProvider.saveStable(cache, json, file);
     }

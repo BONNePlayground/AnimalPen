@@ -6,8 +6,8 @@ import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -94,12 +94,12 @@ public final class EntityFunctionEntry
     public static final Codec<EntityFunctionEntry> CODEC = Identifier.CODEC.flatXmap(
         id ->
         {
-            EntityFunctionEntry entry = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.get(id);
+            EntityFunctionEntry entry = Services.REGISTRY.getFunctionValue(id);
             return entry != null ? DataResult.success(entry) : DataResult.error(() -> "Unknown entity_function: " + id);
         },
         entry ->
         {
-            Identifier id = AnimalPenFunctionRegistry.ENTITY_FUNCTIONS.getId(entry);
+            Identifier id = Services.REGISTRY.getFunctionKey(entry);
             return id != null ? DataResult.success(id) : DataResult.error(() -> "Unregistered entity_function: " + entry);
         }
     );

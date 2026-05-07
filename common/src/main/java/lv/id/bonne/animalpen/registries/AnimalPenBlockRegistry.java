@@ -12,13 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.blocks.AviaryBlock;
 import lv.id.bonne.animalpen.blocks.CopperAviaryBlock;
+import lv.id.bonne.animalpen.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -38,25 +37,24 @@ public class AnimalPenBlockRegistry
 {
     public static void register()
     {
-        REGISTRY.register();
     }
 
 
-    private static <T extends Block> RegistrySupplier<T> registerBlock(String name, Supplier<T> block)
+    private static <T extends Block> Supplier<T> registerBlock(String name, Supplier<T> block)
     {
-        RegistrySupplier<T> toReturn = REGISTRY.register(name, block);
-        registerBlockItem(name, toReturn);
+        Supplier<T> toReturn = Services.REGISTRY.registerBlock(AnimalPen.resourceOf(name), block);
+        registerBlockItem(AnimalPen.resourceOf(name), toReturn);
         return toReturn;
     }
 
 
-    private static <T extends Block> RegistrySupplier<Item> registerBlockItem(String name, RegistrySupplier<T> block)
+    private static <T extends Block> Supplier<Item> registerBlockItem(Identifier name, Supplier<T> block)
     {
-        return AnimalPensItemRegistry.REGISTRY.register(name, () ->
+        return Services.REGISTRY.registerItem(name, () ->
             new BlockItem(block.get(),
-                new Item.Properties().arch$tab(AnimalPensCreativeTabRegistry.ANIMAL_PEN_TAB).
+                new Item.Properties().
                     setId(ResourceKey.create(Registries.ITEM,
-                        AnimalPen.resourceOf(name)))));
+                        name))));
     }
 
 
@@ -82,7 +80,7 @@ public class AnimalPenBlockRegistry
         }
 
         // Register the block
-        RegistrySupplier<Block> block = registerBlock("animal_pen_" + woodName,
+        Supplier<Block> block = registerBlock("animal_pen_" + woodName,
             () -> new AnimalPenBlock(
                 BlockBehaviour.Properties.of().
                     mapColor(mapColor).
@@ -120,7 +118,7 @@ public class AnimalPenBlockRegistry
         if (waxed)
         {
             // Register the block
-            RegistrySupplier<Block> block = registerBlock(blockName,
+            Supplier<Block> block = registerBlock(blockName,
                 () -> new AviaryBlock(
                     BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                         strength(1.0f).
@@ -133,7 +131,7 @@ public class AnimalPenBlockRegistry
         else
         {
             // Register the block
-            RegistrySupplier<Block> block = registerBlock(blockName,
+            Supplier<Block> block = registerBlock(blockName,
                 () -> new CopperAviaryBlock(
                     weatherState,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
@@ -152,26 +150,20 @@ public class AnimalPenBlockRegistry
 // ---------------------------------------------------------------------
 
     /**
-     * The main block registry.
-     */
-    public static final DeferredRegister<Block> REGISTRY =
-        DeferredRegister.create(AnimalPen.MOD_ID, Registries.BLOCK);
-
-    /**
      * The map that links wood type to all animal pens.
      */
-    public static final Map<WoodType, RegistrySupplier<Block>> ANIMAL_PENS = new HashMap<>();
+    public static final Map<WoodType, Supplier<Block>> ANIMAL_PENS = new HashMap<>();
 
     /**
      * The map that links copper weather state to aviary block.
      */
-    public static final EnumMap<WeatheringCopper.WeatherState, RegistrySupplier<Block>> COPPER_AVIARIES =
+    public static final EnumMap<WeatheringCopper.WeatherState, Supplier<Block>> COPPER_AVIARIES =
         new EnumMap<>(WeatheringCopper.WeatherState.class);
 
     /**
      * The map that links copper weather state to waxed aviary block.
      */
-    public static final EnumMap<WeatheringCopper.WeatherState, RegistrySupplier<Block>> WAXED_COPPER_AVIARIES =
+    public static final EnumMap<WeatheringCopper.WeatherState, Supplier<Block>> WAXED_COPPER_AVIARIES =
         new EnumMap<>(WeatheringCopper.WeatherState.class);
 
 // ---------------------------------------------------------------------
@@ -179,7 +171,7 @@ public class AnimalPenBlockRegistry
 // ---------------------------------------------------------------------
 
 
-    public static final RegistrySupplier<Block> AQUARIUM = registerBlock("aquarium_block",
+    public static final Supplier<Block> AQUARIUM = registerBlock("aquarium_block",
         () -> new AquariumBlock(
             BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                 strength(1.0f).
@@ -190,7 +182,7 @@ public class AnimalPenBlockRegistry
         )
     );
 
-    public static final RegistrySupplier<Block> AVIARY = registerBlock("aviary",
+    public static final Supplier<Block> AVIARY = registerBlock("aviary",
         () -> new AviaryBlock(
             BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                 strength(1.0f).
@@ -202,7 +194,7 @@ public class AnimalPenBlockRegistry
     );
 
 
-    public static final RegistrySupplier<Block> GOLD_AVIARY = registerBlock("gold_aviary",
+    public static final Supplier<Block> GOLD_AVIARY = registerBlock("gold_aviary",
         () -> new AviaryBlock(
             BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).
                 strength(1.0f).

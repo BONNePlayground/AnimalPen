@@ -10,8 +10,8 @@ package lv.id.bonne.animalpen.processing.function.core;
 import java.util.List;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
-import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -69,7 +69,7 @@ public class DropRequestedLoot implements EntityFunction.ProcessEntityFunction
             return false;
         }
 
-        lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(serverLevel,
+        lootItems.forEach(itemStack -> Services.ITEM_TRANSFER.insertBellowOrDrop(serverLevel,
             itemStack,
             blockPos,
             blockPos.above()));

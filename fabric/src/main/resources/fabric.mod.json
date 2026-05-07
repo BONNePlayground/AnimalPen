@@ -1,13 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "animal_pen",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Animal Pen",
-  "description": "A simple mod aimed to reduce lag on servers by placing animals in single block.",
-  "authors": ["BONNe1704"],
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "${mod_author}"
+  ],
   "contact": {
     "homepage": ""  },
-  "license": "GPL-3.0",
+  "license": "${license}",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
@@ -17,9 +19,6 @@
     "client": [
       "lv.id.bonne.animalpen.client.fabric.AnimalPenFabricClient"
     ],
-    "fabric-datagen": [
-      "lv.id.bonne.animalpen.data.provider.fabric.AnimalPenFabricDataGen"
-    ],
     "modmenu": [
       "lv.id.bonne.animalpen.client.fabric.AnimalPenModMenuIntegration"
     ],
@@ -27,15 +26,16 @@
       "lv.id.bonne.animalpen.integration.jei.JEIPlugin"
     ]
   },
+  "accessWidener": "${mod_id}.classtweaker",
   "mixins": [
-    "animal_pen.mixins.json",
-    "animal_pen-fabric.mixins.json"
+    "${mod_id}.mixins.json",
+    "${mod_id}-fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.18.4",
-    "minecraft": "~1.21.11",
-    "java": ">=21"
-  ,"architectury": ">=19.0.1"
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=${java_version}"
   },
   "suggests": {
     "another-mod": "*"

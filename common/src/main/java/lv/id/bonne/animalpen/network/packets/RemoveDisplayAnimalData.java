@@ -3,7 +3,6 @@ package lv.id.bonne.animalpen.network.packets;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -11,7 +10,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 
 /**
@@ -22,30 +22,27 @@ public record RemoveDisplayAnimalData(BlockPos position, int index) implements C
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(RemoveDisplayAnimalData data, NetworkManager.PacketContext packetContext)
+    public static void handle(RemoveDisplayAnimalData data, ServerPlayer player)
     {
         BlockPos blockPos = data.position();
         int index = data.index();
 
-        packetContext.queue(() ->
-        {
-            Level level = packetContext.getPlayer().level();
+        ServerLevel level = player.level();
 
-            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+        if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+        {
+            if (animalPen.getOwner().isEmpty() ||
+                animalPen.getOwner().get().equals(player.getUUID()))
             {
-                if (animalPen.getOwner().isEmpty() ||
-                    animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
-                {
-                    animalPen.removeAnimalVariant(index);
-                }
+                animalPen.removeAnimalVariant(index);
             }
-            else
-            {
-                AnimalPen.LOGGER.error("Block entity not found at the position!");
-            }
-        });
+        }
+        else
+        {
+            AnimalPen.LOGGER.error("Block entity not found at the position!");
+        }
     }
 
 

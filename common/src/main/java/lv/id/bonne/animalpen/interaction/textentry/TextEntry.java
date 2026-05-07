@@ -16,6 +16,7 @@ import lv.id.bonne.animalpen.interaction.ingredient.CustomIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
@@ -102,18 +103,18 @@ public record TextEntry(
     }
 
 
-    private ItemStack getItemIcon(ItemStack[] items, int tick)
+    private ItemStack getItemIcon(ItemStackTemplate[] items, int tick)
     {
         return switch (items.length)
         {
             case 0 -> ItemStack.EMPTY;
-            case 1 -> items[0];
+            case 1 -> items[0].create();
             default ->
             {
                 int size = items.length;
                 int index = (tick / 100) % size;
 
-                yield items[index];
+                yield items[index].create();
             }
         };
     }

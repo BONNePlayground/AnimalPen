@@ -11,20 +11,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -251,10 +250,10 @@ public class VariantScreenSelection extends Screen
 
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks)
     {
         this.updateButtonPositions();
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(graphics, mouseX, mouseY);
@@ -264,7 +263,7 @@ public class VariantScreenSelection extends Screen
         this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
 
         // Render title of the menu.
-        graphics.drawString(this.font,
+        graphics.text(this.font,
             this.title,
             this.leftPos + 88 - this.font.width(this.title) / 2,
             this.topPos + 3 + 7 - this.font.lineHeight / 2,
@@ -275,13 +274,8 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    /**
-     * Renders the main background image.
-     *
-     * @param graphics The pose stack
-     */
     @Override
-    public void renderMenuBackground(GuiGraphics graphics)
+    protected void extractMenuBackground(GuiGraphicsExtractor graphics)
     {
         int offsetX = this.leftPos;
         int offsetY = this.topPos;
@@ -307,7 +301,10 @@ public class VariantScreenSelection extends Screen
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderVariantButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
+    private void renderVariantButtons(@NotNull GuiGraphicsExtractor graphics,
+        int mouseX,
+        int mouseY,
+        float partialTicks)
     {
         // Enable scissor test to restrict rendering area
         graphics.enableScissor(10, this.bodyTopPos, this.width - 10, this.bodyTopPos + this.buttonAreaHeight);
@@ -317,7 +314,7 @@ public class VariantScreenSelection extends Screen
         for (int i = 0; i < this.buttons.size(); i++)
         {
             Button button = this.buttons.get(i);
-            button.render(graphics, mouseX, mouseY, partialTicks);
+            button.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
             // If this is the selected button, render a green border around it
             if (i == this.selectedButton)
@@ -333,7 +330,7 @@ public class VariantScreenSelection extends Screen
     /**
      * Renders a colored border around a button
      */
-    private void renderButtonBorder(GuiGraphics graphics, Button button, int color)
+    private void renderButtonBorder(GuiGraphicsExtractor graphics, Button button, int color)
     {
         int width = button.getWidth();
         int height = button.getHeight();
@@ -353,7 +350,7 @@ public class VariantScreenSelection extends Screen
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      */
-    private void renderOtherButtons(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
+    private void renderOtherButtons(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY)
     {
         if (this.blockEntityInterface.getOwner().
             map(uuid -> uuid.equals(this.minecraft.player.getUUID())).
@@ -405,7 +402,7 @@ public class VariantScreenSelection extends Screen
      * @param mouseX Cursor X location
      * @param mouseY Cursor Y location
      */
-    private void renderScrollBar(@NotNull GuiGraphics graphics, int mouseX, int mouseY)
+    private void renderScrollBar(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY)
     {
         int scrollThumbHeight = 15;
         int scrollPosition;
@@ -444,7 +441,7 @@ public class VariantScreenSelection extends Screen
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderTextBar(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
+    private void renderTextBar(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks)
     {
         Component text = Component.translatable(FIXED_TEXT,
             this.blockEntityInterface.getAnimalCount());
@@ -459,7 +456,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + 112 + 7 - this.font.lineHeight * scale / 2f);
         poseStack.scale(scale, scale);
 
-        graphics.drawString(this.font,
+        graphics.text(this.font,
             text,
             scale < 1 ? 0 : (int) (this.sliderAreaWidth - textWidth) / 2,
             0,
@@ -475,7 +472,7 @@ public class VariantScreenSelection extends Screen
      *
      * @param graphics The pose stack.
      */
-    private void renderEntity(@NotNull GuiGraphics graphics, float partialTicks)
+    private void renderEntity(@NotNull GuiGraphicsExtractor graphics, float partialTicks)
     {
         // Calculate screen coordinates for rendering
         int x = this.leftPos + 73;
@@ -513,7 +510,7 @@ public class VariantScreenSelection extends Screen
             0.0F);
 
         // Submit entity for rendering via GuiGraphics
-        graphics.submitEntityRenderState(
+        graphics.entity(
             renderState,
             this.entityScale,
             offset,
@@ -533,7 +530,7 @@ public class VariantScreenSelection extends Screen
      * @param mouseY Cursor Y location
      * @param partialTicks Partial Ticks
      */
-    private void renderCooldown(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
+    private void renderCooldown(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks)
     {
         graphics.blit(RenderPipelines.GUI_TEXTURED,
             COOLDOWN_TEXTURE,
@@ -585,7 +582,7 @@ public class VariantScreenSelection extends Screen
      * @param mouseX The mouse X location.
      * @param mouseY The mouse Y location.
      */
-    private void renderTextLine(@NotNull GuiGraphics graphics,
+    private void renderTextLine(@NotNull GuiGraphicsExtractor graphics,
         Pair<ItemStack[], Component> componentPair,
         int leftOffset,
         int y,
@@ -623,7 +620,7 @@ public class VariantScreenSelection extends Screen
                 }
 
                 // Render the first item
-                graphics.renderItem(first, leftOffset, y);
+                graphics.item(first, leftOffset, y);
                 itemPositions.add(Pair.of(first, new Rect2i(leftOffset, y, 16, 16)));
                 leftOffset += 16 - whiteSpace;
             }
@@ -642,14 +639,14 @@ public class VariantScreenSelection extends Screen
                 }
 
                 // Render the second item (if available)
-                graphics.renderItem(second, leftOffset, y);
+                graphics.item(second, leftOffset, y);
                 itemPositions.add(Pair.of(second, new Rect2i(leftOffset, y, 16, 16)));
                 leftOffset += 16 - whiteSpace;
             }
             else
             {
                 // Render regular text
-                graphics.drawString(this.font,
+                graphics.text(this.font,
                     part,
                     leftOffset,
                     y + this.font.lineHeight / 2 + 2,
@@ -679,7 +676,7 @@ public class VariantScreenSelection extends Screen
     }
 
 
-    private void renderTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
+    private void renderTooltips(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks)
     {
         // Render tooltips
         if (this.applyButton.isMouseOver(mouseX, mouseY))
@@ -734,7 +731,7 @@ public class VariantScreenSelection extends Screen
         }
 
         // Remove entity from list.
-        NetworkManager.sendToServer(new RemoveDisplayAnimalData(this.position, this.selectedButton));
+        Services.NETWORK.sendToServer(new RemoveDisplayAnimalData(this.position, this.selectedButton));
 
         // Update data
         this.selectedButton = -1;
@@ -762,7 +759,7 @@ public class VariantScreenSelection extends Screen
         CompoundTag variantTag = variants.get(this.selectedButton);
 
         // Send message to server
-        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, this.selectedButton));
+        Services.NETWORK.sendToServer(new UpdateDisplayAnimalData(this.position, this.selectedButton));
 
         // Update current client gui.
         AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag);

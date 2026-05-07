@@ -48,7 +48,8 @@ public interface WeatheringCopperAviary extends WeatheringCopper
 
             if (ordinal > 0)
             {
-                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal - 1]).getOrNull());
+                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal -
+                    1]).get());
             }
         }
 
@@ -71,7 +72,8 @@ public interface WeatheringCopperAviary extends WeatheringCopper
 
             if (ordinal + 1 < WeatherState.values().length)
             {
-                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal + 1]).getOrNull());
+                return Optional.ofNullable(AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatherState.values()[ordinal +
+                    1]).get());
             }
         }
 

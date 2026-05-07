@@ -4,15 +4,14 @@ package lv.id.bonne.animalpen.network.packets;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 
 
 /**
@@ -23,21 +22,21 @@ public record AnimalInteractionSyncEndPacket() implements CustomPacketPayload
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(AnimalInteractionSyncEndPacket data, NetworkManager.PacketContext packetContext)
+    public static void handle(AnimalInteractionSyncEndPacket data, Player player)
     {
-        if (packetContext.getEnv() == EnvType.SERVER) return;
-
-        packetContext.queue(() ->
+        if (!player.level().isClientSide())
         {
-            if (!AnimalPenInteractionRegistry.containsAllEntities())
-            {
-                AnimalPen.LOGGER.error("Entity count mismatch between server and client.");
-                Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
-                    Component.translatable("network.animal_pen.missing_entities_form_server"), true);
-            }
-        });
+            return;
+        }
+
+        if (!AnimalPenInteractionRegistry.containsAllEntities())
+        {
+            AnimalPen.LOGGER.error("Entity count mismatch between server and client.");
+            Objects.requireNonNull(Minecraft.getInstance().player).sendOverlayMessage(
+                Component.translatable("network.animal_pen.missing_entities_form_server"));
+        }
     }
 
 

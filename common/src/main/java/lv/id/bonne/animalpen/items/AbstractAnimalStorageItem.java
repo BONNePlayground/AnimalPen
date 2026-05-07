@@ -13,13 +13,12 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
-import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
+import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -243,8 +242,8 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (interactionResult == InteractionResult.FAIL)
         {
-            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.unknown").
-                withStyle(ChatFormatting.DARK_RED), true);
+            player.sendOverlayMessage(Component.translatable("item.animal_pen.animal_cage.error.unknown").
+                withStyle(ChatFormatting.DARK_RED));
             return interactionResult;
         }
 
@@ -259,7 +258,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             return InteractionResult.FAIL;
         }
 
-        if (!target.getType().is(this.pickableTag()))
+        if (!target.is(this.pickableTag()))
         {
             this.error(player, ".error.not_allowed");
             return InteractionResult.FAIL;
@@ -482,10 +481,9 @@ public abstract class AbstractAnimalStorageItem extends Item
 
     private void error(Player player, String suffix)
     {
-        player.displayClientMessage(
+        player.sendOverlayMessage(
             Component.translatable(tooltipKeyBase() + suffix).
-                withStyle(ChatFormatting.DARK_RED),
-            true);
+                withStyle(ChatFormatting.DARK_RED));
     }
 
 

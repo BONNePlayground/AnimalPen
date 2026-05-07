@@ -4,11 +4,9 @@ package lv.id.bonne.animalpen.network.packets;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.fabricmc.api.EnvType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -16,6 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 
 
 /**
@@ -30,14 +29,16 @@ public record AnimalInteractionSyncEntityPacket(ResourceKey<EntityType<?>> entit
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(AnimalInteractionSyncEntityPacket data, NetworkManager.PacketContext packetContext)
+    public static void handle(AnimalInteractionSyncEntityPacket data, Player player)
     {
-        if (packetContext.getEnv() == EnvType.SERVER) return;
+        if (!player.level().isClientSide())
+        {
+            return;
+        }
 
-        packetContext.queue(() ->
-            AnimalPenInteractionRegistry.register(data.entityId(), data.interactions()));
+        AnimalPenInteractionRegistry.register(data.entityId(), data.interactions());
     }
 
 

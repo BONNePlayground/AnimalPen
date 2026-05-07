@@ -2,6 +2,7 @@
   "required": true,
   "package": "lv.id.bonne.animalpen.mixin",
   "compatibilityLevel": "JAVA_21",
+  "refmap": "${mod_id}.refmap.json",
   "minVersion": "0.8",
   "client": [
   ],
@@ -10,12 +11,12 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
-    "MigrateItemStack",
     "MigrateEquipmentSlot",
-    "SheepMixin",
+    "MigrateItemStack",
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
+    "SheepMixin",
     "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"

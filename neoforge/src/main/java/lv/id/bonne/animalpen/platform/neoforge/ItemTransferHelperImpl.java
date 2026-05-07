@@ -1,6 +1,7 @@
-package lv.id.bonne.animalpen.util.neoforge;
+package lv.id.bonne.animalpen.platform.neoforge;
 
 
+import lv.id.bonne.animalpen.platform.services.IItemTransferHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -11,9 +12,10 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 
-public class ItemTransferUtilImpl
+public class ItemTransferHelperImpl implements IItemTransferHelper
 {
-    public static boolean canInsert(Level level, BlockPos pos, Direction side, ItemStack stack)
+    @Override
+    public boolean canInsert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
         if (stack.isEmpty())
         {
@@ -36,7 +38,9 @@ public class ItemTransferUtilImpl
         }
     }
 
-    public static ItemStack insert(Level level, BlockPos pos, Direction side, ItemStack stack)
+
+    @Override
+    public ItemStack insert(Level level, BlockPos pos, Direction side, ItemStack stack)
     {
         if (stack.isEmpty())
         {

@@ -7,12 +7,13 @@
 package lv.id.bonne.animalpen.data.provider;
 
 
+import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.advancements.critereon.AnimalItemUseTrigger;
 import lv.id.bonne.animalpen.advancements.critereon.AnimalInteractTrigger;
+import lv.id.bonne.animalpen.advancements.critereon.AnimalItemUseTrigger;
 import lv.id.bonne.animalpen.advancements.critereon.AnimalVariantChangeTrigger;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
@@ -27,8 +28,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 
 
 public interface ModAdvancementProvider
@@ -79,42 +80,44 @@ public interface ModAdvancementProvider
                 ),
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
-        List<EntityType<?>> animals = List.of(
-            EntityType.ARMADILLO,
-            EntityType.CAMEL,
-            EntityType.CAT,
-            EntityType.CHICKEN,
-            EntityType.COW,
-            EntityType.DONKEY,
-            EntityType.FOX,
-            EntityType.FROG,
-            EntityType.GOAT,
-            EntityType.HOGLIN,
-            EntityType.HORSE,
-            EntityType.LLAMA,
-            EntityType.MOOSHROOM,
-            EntityType.MULE,
-            EntityType.OCELOT,
-            EntityType.PANDA,
-            EntityType.PIG,
-            EntityType.POLAR_BEAR,
-            EntityType.RABBIT,
-            EntityType.SHEEP,
-            EntityType.SKELETON_HORSE,
-            EntityType.SNIFFER,
-            EntityType.STRIDER,
-            EntityType.TRADER_LLAMA,
-            EntityType.WOLF,
-            EntityType.ZOMBIE_HORSE
+        List<Pair<EntityType<?>, Item>> animals = List.of(
+            Pair.of(EntityType.ARMADILLO, Items.ARMADILLO_SPAWN_EGG),
+            Pair.of(EntityType.CAMEL, Items.CAMEL_SPAWN_EGG),
+            Pair.of(EntityType.CAT, Items.CAT_SPAWN_EGG),
+            Pair.of(EntityType.CHICKEN, Items.CHICKEN_SPAWN_EGG),
+            Pair.of(EntityType.COW, Items.COW_SPAWN_EGG),
+            Pair.of(EntityType.DONKEY, Items.DONKEY_SPAWN_EGG),
+            Pair.of(EntityType.FOX, Items.FOX_SPAWN_EGG),
+            Pair.of(EntityType.FROG, Items.FROG_SPAWN_EGG),
+            Pair.of(EntityType.GOAT, Items.GOAT_SPAWN_EGG),
+            Pair.of(EntityType.HOGLIN, Items.HOGLIN_SPAWN_EGG),
+            Pair.of(EntityType.HORSE, Items.HORSE_SPAWN_EGG),
+            Pair.of(EntityType.LLAMA, Items.LLAMA_SPAWN_EGG),
+            Pair.of(EntityType.MOOSHROOM, Items.MOOSHROOM_SPAWN_EGG),
+            Pair.of(EntityType.MULE, Items.MULE_SPAWN_EGG),
+            Pair.of(EntityType.OCELOT, Items.OCELOT_SPAWN_EGG),
+            Pair.of(EntityType.PANDA, Items.PANDA_SPAWN_EGG),
+            Pair.of(EntityType.PIG, Items.PIG_SPAWN_EGG),
+            Pair.of(EntityType.POLAR_BEAR, Items.POLAR_BEAR_SPAWN_EGG),
+            Pair.of(EntityType.RABBIT, Items.RABBIT_SPAWN_EGG),
+            Pair.of(EntityType.SHEEP, Items.SHEEP_SPAWN_EGG),
+            Pair.of(EntityType.SKELETON_HORSE, Items.SKELETON_HORSE_SPAWN_EGG),
+            Pair.of(EntityType.SNIFFER, Items.SNIFFER_SPAWN_EGG),
+            Pair.of(EntityType.STRIDER, Items.STRIDER_SPAWN_EGG),
+            Pair.of(EntityType.TRADER_LLAMA, Items.TRADER_LLAMA_SPAWN_EGG),
+            Pair.of(EntityType.WOLF, Items.WOLF_SPAWN_EGG),
+            Pair.of(EntityType.ZOMBIE_HORSE, Items.ZOMBIE_HORSE_SPAWN_EGG)
         );
 
-        animals.forEach(animal ->
+        animals.forEach(animalPair ->
         {
+            EntityType<?> animal = animalPair.getFirst();
+
             AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstAnimal).
                     display(
-                        SpawnEggItem.byId(animal),
+                        animalPair.getSecond(),
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
@@ -329,27 +332,29 @@ public interface ModAdvancementProvider
                 ),
             AnimalPen.resourceOf("animal_pen/aquatic_keeper"));
 
-        List<EntityType<?>> aquatics = List.of(
-            EntityType.AXOLOTL,
-            EntityType.COD,
-            EntityType.PUFFERFISH,
-            EntityType.SALMON,
-            EntityType.TROPICAL_FISH,
-            EntityType.DOLPHIN,
-            EntityType.SQUID,
-            EntityType.GLOW_SQUID,
-            EntityType.TURTLE,
-            EntityType.FROG,
-            EntityType.TADPOLE
+        List<Pair<EntityType<?>, Item>> aquatics = List.of(
+            Pair.of(EntityType.AXOLOTL, Items.AXOLOTL_SPAWN_EGG),
+            Pair.of(EntityType.COD, Items.COD_SPAWN_EGG),
+            Pair.of(EntityType.PUFFERFISH, Items.PUFFERFISH_SPAWN_EGG),
+            Pair.of(EntityType.SALMON, Items.SALMON_SPAWN_EGG),
+            Pair.of(EntityType.TROPICAL_FISH, Items.TROPICAL_FISH_SPAWN_EGG),
+            Pair.of(EntityType.DOLPHIN, Items.DOLPHIN_SPAWN_EGG),
+            Pair.of(EntityType.SQUID, Items.SQUID_SPAWN_EGG),
+            Pair.of(EntityType.GLOW_SQUID, Items.GLOW_SQUID_SPAWN_EGG),
+            Pair.of(EntityType.TURTLE, Items.TURTLE_SPAWN_EGG),
+            Pair.of(EntityType.FROG, Items.FROG_SPAWN_EGG),
+            Pair.of(EntityType.TADPOLE, Items.TADPOLE_SPAWN_EGG)
         );
 
-        aquatics.forEach(animal ->
+        aquatics.forEach(animalPair ->
         {
+            EntityType<?> animal = animalPair.getFirst();
+
             AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstAquatic).
                     display(
-                        SpawnEggItem.byId(animal),
+                        animalPair.getSecond(),
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
@@ -452,19 +457,23 @@ public interface ModAdvancementProvider
                 ),
             AnimalPen.resourceOf("animal_pen/bird_watcher"));
 
-        List<EntityType<?>> flyers = List.of(EntityType.BEE,
-            EntityType.BAT,
-            EntityType.PARROT,
-            EntityType.HAPPY_GHAST,
-            EntityType.ALLAY);
+        List<Pair<EntityType<?>, Item>> flyers = List.of(
+            Pair.of(EntityType.BEE, Items.BEE_SPAWN_EGG),
+            Pair.of(EntityType.BAT, Items.BAT_SPAWN_EGG),
+            Pair.of(EntityType.PARROT, Items.PARROT_SPAWN_EGG),
+            Pair.of(EntityType.HAPPY_GHAST, Items.HAPPY_GHAST_SPAWN_EGG),
+            Pair.of(EntityType.ALLAY, Items.ALLAY_SPAWN_EGG)
+        );
 
-        flyers.forEach(animal ->
+        flyers.forEach(animalPair ->
         {
+            EntityType<?> animal = animalPair.getFirst();
+
             AdvancementHolder advancement = this.generatePlatformAdvancement(consumer,
                 Advancement.Builder.advancement().
                     parent(firstFlyer).
                     display(
-                        SpawnEggItem.byId(animal),
+                        animalPair.getSecond(),
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),

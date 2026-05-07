@@ -15,7 +15,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
@@ -65,8 +65,11 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
 
 
     @Override
-    public void draw(ItemInfoRecipe recipe, IRecipeSlotsView recipeSlotsView,
-        GuiGraphics guiGraphics, double mouseX, double mouseY)
+    public void draw(ItemInfoRecipe recipe,
+        IRecipeSlotsView recipeSlotsView,
+        GuiGraphicsExtractor guiGraphics,
+        double mouseX,
+        double mouseY)
     {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
@@ -79,7 +82,7 @@ public abstract class AbstractRecipeCategory implements IRecipeCategory<ItemInfo
 
         for (FormattedCharSequence line : lines)
         {
-            guiGraphics.drawString(font, line, TEXT_X, yPos, 0xFF404040, false);
+            guiGraphics.text(font, line, TEXT_X, yPos, 0xFF404040, false);
             yPos += font.lineHeight + 1;
         }
     }

@@ -3,14 +3,13 @@ package lv.id.bonne.animalpen.network.packets;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
-import net.fabricmc.api.EnvType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 
 
 /**
@@ -23,17 +22,17 @@ public record AnimalInteractionSyncStartPacket(int entityCount) implements Custo
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
+     * @param player The packet context.
      */
-    public static void handle(AnimalInteractionSyncStartPacket data, NetworkManager.PacketContext packetContext)
+    public static void handle(AnimalInteractionSyncStartPacket data, Player player)
     {
-        if (packetContext.getEnv() == EnvType.SERVER) return;
-
-        packetContext.queue(() ->
+        if (!player.level().isClientSide())
         {
-            AnimalPenInteractionRegistry.clear();
-            AnimalPenInteractionRegistry.setEntityCount(data.entityCount());
-        });
+            return;
+        }
+
+        AnimalPenInteractionRegistry.clear();
+        AnimalPenInteractionRegistry.setEntityCount(data.entityCount());
     }
 
 
