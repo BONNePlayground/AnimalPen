@@ -5,7 +5,7 @@ import java.util.List;
 
 import lv.id.bonne.animalpen.client.AnimalPenClient;
 import lv.id.bonne.animalpen.client.WaterTankColor;
-import lv.id.bonne.animalpen.events.CommonEvents;
+import lv.id.bonne.animalpen.events.CommonClientEvents;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
@@ -22,6 +22,6 @@ public final class AnimalPenFabricClient implements ClientModInitializer
         BlockColorRegistry.register(List.of(new WaterTankColor()), AnimalPenBlockRegistry.AQUARIUM.get());
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) ->
-            CommonEvents.onRightClickBlock(player, world, hit.getBlockPos()));
+            CommonClientEvents.onRightClickBlock(player, world, hit.getBlockPos()));
     }
 }

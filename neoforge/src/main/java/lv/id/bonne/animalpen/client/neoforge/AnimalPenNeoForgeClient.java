@@ -7,7 +7,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.AnimalPenClient;
 import lv.id.bonne.animalpen.client.WaterTankColor;
 import lv.id.bonne.animalpen.config.screen.AnimalPenConfigScreen;
-import lv.id.bonne.animalpen.events.CommonEvents;
+import lv.id.bonne.animalpen.events.CommonClientEvents;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,7 +43,7 @@ public class AnimalPenNeoForgeClient
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock e)
     {
-        CommonEvents.onRightClickBlock(e.getEntity(), e.getLevel(), e.getPos());
+        CommonClientEvents.onRightClickBlock(e.getEntity(), e.getLevel(), e.getPos());
     }
 
 
