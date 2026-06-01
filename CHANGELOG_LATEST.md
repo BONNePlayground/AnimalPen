@@ -1,5 +1,9 @@
 # Animal Pens 2.4.0
 
+#### Changes:
+- Change Water Animal Container name to Aquatic Jar
+- Change Bird Catcher name to Avian Net
+
 #### Fixes:
 - Fixes incompatibility with mods that overwrite dispenser tool interactions
   Some mods are overwriting how dispenser interacts with items without keeping already existing behaviour, which broke interactions with animal pens.
