@@ -20,6 +20,7 @@ import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -106,7 +107,8 @@ public class VariantScreenSelection extends Screen
         }
 
         // initialize variant buttons.
-        for (int i = 0; i < entityList.size(); i++) {
+        for (int i = 0; i < entityList.size(); i++)
+        {
             // The loop automatically handles vertical spacing using buttonHeight (46)
             int y = this.bodyTopPos + (i * buttonHeight);
             final int index = i;
@@ -263,7 +265,7 @@ public class VariantScreenSelection extends Screen
         this.renderOtherButtons(poseStack, mouseX, mouseY);
         this.renderScrollBar(poseStack, mouseX, mouseY);
         this.renderTextBar(poseStack, mouseX, mouseY, partialTicks);
-        this.renderEntity(poseStack, partialTicks);
+        this.renderEntity(poseStack, mouseX, mouseY, partialTicks);
         this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
 
         this.renderTooltips(poseStack, mouseX, mouseY, partialTicks);
@@ -451,46 +453,37 @@ public class VariantScreenSelection extends Screen
      *
      * @param poseStack The pose stack.
      */
-    private void renderEntity(@NotNull PoseStack poseStack, float partialTicks)
+    private void renderEntity(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
-//        this.enableScissor(
-//            this.leftPos + 73, this.bodyTopPos,
-//            this.leftPos + 73 + 96, this.bodyTopPos + 92
-//        );
+        if (this.displayEntity == null) return;
 
-        // 73 till black box and 48 till the box middle
-        float x = this.leftPos + 73 + 48;
-        // 46 till black box middle
-        float y = this.bodyTopPos + 46;
+        float centerX = this.leftPos + 121.0F;
+        float centerY = this.bodyTopPos + 46.0F;
 
-        this.displayEntity.yBodyRot = 0.0f;
-        this.displayEntity.setYRot(0.0f);
-        this.displayEntity.yHeadRot = 0.0f;
-        this.displayEntity.yHeadRotO = 0.0f;
+        float renderY = centerY;
 
         if (this.displayEntity instanceof WaterAnimal animal)
         {
             animal.setPose(Pose.SWIMMING);
             animal.setSwimming(true);
             ((EntityAccessor) animal).setWasTouchingWater(true);
-            y -= 10;
+            renderY -= 10.0F;
         }
 
-        poseStack.pushPose();
-        poseStack.translate(x, y, 50);
-        poseStack.scale(this.entityScale, this.entityScale, this.entityScale);
-        poseStack.translate(0, this.entityOffset, 0);
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(this.entityRotation));
-        EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
-        MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
-        erd.setRenderShadow(false);
-        erd.render(this.displayEntity, 0, 0, 0, 0, partialTicks, poseStack, immediate, 0xF000F0);
-        erd.setRenderShadow(true);
-        immediate.endBatch();
-        poseStack.popPose();
+        int scale = (int) this.entityScale;
+        int baseY = (int) (renderY + (this.entityOffset * this.entityScale));
 
-//        this.disableScissor();
+        float lookX = (centerX - mouseX) * 4.4F;
+        float lookY = ((baseY - (this.displayEntity.getBbHeight() * scale) / 2.0F) - mouseY) * 4.4F;
+
+        this.enableScissor(
+            this.leftPos + 73, this.bodyTopPos,
+            this.leftPos + 73 + 96, this.bodyTopPos + 92
+        );
+
+        InventoryScreen.renderEntityInInventory((int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
+
+        this.disableScissor();
     }
 
 
