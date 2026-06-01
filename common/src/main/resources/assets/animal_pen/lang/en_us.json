@@ -97,9 +97,13 @@
   "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
 
   "gui.animal_pen.variant_selection_screen.configure.title": "Configure",
-  "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count": "Minimal animal count in block:",
+  "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count": "Min Animals:",
+  "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count.tooltip": "The minimum number of animals that must always remain in the block. \nPrevents accidental harvesting or removal below this amount.",
   "gui.animal_pen.variant_selection_screen.configure.entity_size": "Display Size: %d / %d",
-  "gui.animal_pen.variant_selection_screen.configure.enable_protection": "Toggle protection for block",
+  "gui.animal_pen.variant_selection_screen.configure.entity_size.tooltip": "Adjusts how large the animal appears inside the block.",
+  "gui.animal_pen.variant_selection_screen.configure.entity_size.disabled": "§cOption disabled in config.",
+  "gui.animal_pen.variant_selection_screen.configure.enable_protection": "Block Protection",
+  "gui.animal_pen.variant_selection_screen.configure.enable_protection.tooltip": "When enabled, other players cannot interact with this block or the animals inside.",
   "gui.animal_pen.variant_selection_screen.configure.save": "Save",
   "gui.animal_pen.variant_selection_screen.configure.cancel": "Cancel",
 

@@ -3,6 +3,7 @@
 #### Changes:
 - Change Water Animal Container name to Aquatic Jar
 - Change Bird Catcher name to Avian Net
+- Rework block config screen.
 
 #### Fixes:
 - Fixes incompatibility with mods that overwrite dispenser tool interactions
