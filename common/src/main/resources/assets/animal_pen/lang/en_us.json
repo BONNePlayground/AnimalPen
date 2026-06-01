@@ -87,7 +87,6 @@
   "display.animal_pen.requires_food": "%1$s §cNeeds at least 2 mobs",
 
   "gui.animal_pen.variant_selection_screen": "§8Variant Selection",
-  "gui.animal_pen.variant_selection_screen.select_variant": "Pose %d",
   "gui.animal_pen.variant_selection_screen.fixed_size": "%d",
   "gui.animal_pen.variant_selection_screen.apply_tooltip": "Click to apply this variant",
   "gui.animal_pen.variant_selection_screen.delete_tooltip": "Click to remove this variant",

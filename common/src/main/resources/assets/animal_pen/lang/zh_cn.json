@@ -53,7 +53,6 @@
   "display.animal_pen.apply_ready": "§aUse %1$s §ato apply %2$s effect",
   "display.animal_pen.color_ready": "§aUse %1$s §ato change into %2$s",
   "gui.animal_pen.variant_selection_screen": "§8变种选择",
-  "gui.animal_pen.variant_selection_screen.select_variant": "姿态 %d",
   "gui.animal_pen.variant_selection_screen.fixed_size": "%d",
   "gui.animal_pen.variant_selection_screen.apply_tooltip": "点击应用此变种",
   "gui.animal_pen.variant_selection_screen.delete_tooltip": "点击删除此变种",

@@ -13,6 +13,7 @@ import java.util.List;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
@@ -78,7 +79,7 @@ public class VariantScreenSelection extends Screen
         int buttonPos = this.leftPos + 24;
 
         int buttonWidth = 46;
-        int buttonHeight = 20;
+        int buttonHeight = 46;
 
         // collect variants
 
@@ -105,17 +106,23 @@ public class VariantScreenSelection extends Screen
         }
 
         // initialize variant buttons.
-        for (int i = 0; i < entityList.size(); i++)
-        {
+        for (int i = 0; i < entityList.size(); i++) {
+            // The loop automatically handles vertical spacing using buttonHeight (46)
             int y = this.bodyTopPos + (i * buttonHeight);
             final int index = i;
 
-            this.buttons.add(this.addWidget(new Button(buttonPos,
+            // Extract the specific CompoundTag for this loop iteration
+            CompoundTag entityTag = entityList.getCompound(i);
+
+            // Initialize our custom EntityButton
+            this.buttons.add(this.addWidget(new EntityButton(
+                buttonPos,
                 y,
                 buttonWidth,
                 buttonHeight,
-                new TranslatableComponent(BUTTON_TEXT, (index + 1)),
-                button -> handleVariantButton(button, index))));
+                entityTag,
+                button -> handleVariantButton(button, index)
+            )));
         }
 
         // Delete variant button
@@ -996,7 +1003,7 @@ public class VariantScreenSelection extends Screen
      */
     private void updateButtonPositions()
     {
-        int buttonHeight = 20;
+        int buttonHeight = 46;
 
         // Calculate total content height
         int totalButtonsHeight = this.buttons.size() * buttonHeight;
@@ -1226,11 +1233,6 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component CONFIGURE =
         new TranslatableComponent("gui.animal_pen.variant_selection_screen.configure_tooltip");
-
-    /**
-     * The button text location
-     */
-    private static final String BUTTON_TEXT = "gui.animal_pen.variant_selection_screen.select_variant";
 
     /**
      * The fixed size text location
