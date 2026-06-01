@@ -27,7 +27,6 @@ import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import lv.id.bonne.animalpen.util.ItemTransferUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -42,7 +41,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -56,6 +54,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -497,10 +496,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @param serverLevel the level where interaction happens
      * @param source the interaction source block
+     * @param index the index of item from inventory
      * @param itemInHand the interaction item
      * @return modified item stack if interaction succeeded, or empty if failed.
      */
-    public InteractionResult interactWithPen(ServerLevel serverLevel, BlockSource source, ItemStack itemInHand)
+    public InteractionResult interactWithPen(ServerLevel serverLevel,
+        DispenserBlockEntity source,
+        int index,
+        ItemStack itemInHand)
     {
         if (this.getOwner().isPresent())
         {
@@ -518,13 +521,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        if (!(source.getEntity() instanceof Container container))
+        if (source == null)
         {
             AnimalPen.sendDebug("Interaction success through block without container.");
             return InteractionResult.FAILED;
         }
 
-        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, container, this),
+        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, source, index, this),
             serverLevel,
             itemInHand);
     }
