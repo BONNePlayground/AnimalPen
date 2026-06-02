@@ -3,17 +3,23 @@ package lv.id.bonne.animalpen.client.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import java.util.Objects;
+
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.network.packets.UpdateConfigurationData;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Checkbox;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 
 public class VariantsConfigScreen extends Screen
@@ -102,35 +108,14 @@ public class VariantsConfigScreen extends Screen
         this.addRenderableWidget(this.minimalAnimalCountField);
 
         // Protection Checkbox (built-in inline label)
-        this.protectionCheckbox = new Checkbox(this.leftPos + X_OFFSET_STANDARD,
+        this.protectionCheckbox = new CustomCheckBox(this.leftPos + X_OFFSET_STANDARD,
             this.topPos + Y_OFFSET_CHECKBOX,
             COMPONENT_WIDTH_FULL,
             COMPONENT_HEIGHT,
             PROTECTION,
-            this.enableProtection,
-            false)
-        {
-            @Override
-            public void renderWidget(GuiGraphics graphics, int i, int j, float f)
-            {
-                super.renderWidget(graphics, i, j, f);
+            this.font,
+            this.enableProtection);
 
-                graphics.drawString(VariantsConfigScreen.this.font,
-                    PROTECTION,
-                    this.getX() + 24,
-                    this.getY() + (this.height - 8) / 2,
-                    4210752,
-                    false);
-
-                if (this.isHovered)
-                {
-                    graphics.renderTooltip(VariantsConfigScreen.this.font,
-                        VariantsConfigScreen.this.font.split(PROTECTION_TOOLTIP, TOOLTIP_MAX_WIDTH),
-                        this.getX() + TOOLTIP_OFFSET_X,
-                        this.getY() + this.height + TOOLTIP_OFFSET_Y);
-                }
-            }
-        };
         this.protectionCheckbox.active = canEdit;
         this.addRenderableWidget(this.protectionCheckbox);
 
@@ -338,6 +323,100 @@ public class VariantsConfigScreen extends Screen
         private final int maxValue;
     }
 
+
+    private static class CustomCheckBox extends AbstractButton
+    {
+        private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE =
+            new ResourceLocation("widget/checkbox_selected_highlighted");
+
+        private static final ResourceLocation CHECKBOX_SELECTED_SPRITE =
+            new ResourceLocation("widget/checkbox_selected");
+
+        private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE =
+            new ResourceLocation("widget/checkbox_highlighted");
+
+        private static final ResourceLocation CHECKBOX_SPRITE = new ResourceLocation("widget/checkbox");
+
+        private boolean selected;
+
+        CustomCheckBox(int x, int y, int width, int height, Component component, Font font, boolean selected)
+        {
+            super(x, y, width, height, component);
+            this.selected = selected;
+        }
+
+
+        public void onPress()
+        {
+            this.selected = !this.selected;
+        }
+
+
+        public boolean selected()
+        {
+            return this.selected;
+        }
+
+
+        public void updateWidgetNarration(NarrationElementOutput narrationElementOutput)
+        {
+            narrationElementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+            if (this.active)
+            {
+                if (this.isFocused())
+                {
+                    narrationElementOutput.add(NarratedElementType.USAGE,
+                        Component.translatable("narration.checkbox.usage.focused"));
+                }
+                else
+                {
+                    narrationElementOutput.add(NarratedElementType.USAGE,
+                        Component.translatable("narration.checkbox.usage.hovered"));
+                }
+            }
+        }
+
+
+        public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f)
+        {
+            Minecraft minecraft = Minecraft.getInstance();
+            RenderSystem.enableDepthTest();
+            Font font = minecraft.font;
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+            RenderSystem.enableBlend();
+            ResourceLocation resourceLocation;
+            if (this.selected)
+            {
+                resourceLocation = this.isFocused() ? CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE : CHECKBOX_SELECTED_SPRITE;
+            }
+            else
+            {
+                resourceLocation = this.isFocused() ? CHECKBOX_HIGHLIGHTED_SPRITE : CHECKBOX_SPRITE;
+            }
+
+            int k = 15;
+            Objects.requireNonNull(font);
+            guiGraphics.blitSprite(resourceLocation, this.getX(), this.getY(), k, k);
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            guiGraphics.drawString(font,
+                PROTECTION,
+                this.getX() + k + 4,
+                this.getY() + (this.height - font.lineHeight) / 2,
+                4210752,
+                false);
+
+            if (this.isHovered)
+            {
+                guiGraphics.renderTooltip(font,
+                    font.split(PROTECTION_TOOLTIP, TOOLTIP_MAX_WIDTH),
+                    this.getX() + TOOLTIP_OFFSET_X,
+                    this.getY() + this.height + TOOLTIP_OFFSET_Y);
+            }
+        }
+    }
+
+
     private final int imageWidth;
 
     private final int imageHeight;
@@ -360,7 +439,7 @@ public class VariantsConfigScreen extends Screen
 
     private EditBox minimalAnimalCountField;
 
-    private Checkbox protectionCheckbox;
+    private CustomCheckBox protectionCheckbox;
 
     public static final Component TITLE =
         Component.translatable("gui.animal_pen.variant_selection_screen.configure.title");

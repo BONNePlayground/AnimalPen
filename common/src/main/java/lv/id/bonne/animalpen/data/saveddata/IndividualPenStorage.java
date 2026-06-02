@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -58,7 +55,7 @@ public class IndividualPenStorage
 
         try
         {
-            CompoundTag rootTag = NbtIo.readCompressed(file);
+            CompoundTag rootTag = NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap());
             return rootTag.getList("Variants", Tag.TAG_COMPOUND);
         }
         catch (IOException e)
@@ -86,7 +83,7 @@ public class IndividualPenStorage
 
         try
         {
-            NbtIo.writeCompressed(rootTag, file);
+            NbtIo.writeCompressed(rootTag, file.toPath());
         }
         catch (IOException e)
         {

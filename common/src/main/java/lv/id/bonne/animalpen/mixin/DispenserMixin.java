@@ -70,7 +70,7 @@ public class DispenserMixin
                 ani.interactWithPen(serverLevel, dispenserBlockEntity, i, itemStack);
             ani.triggerUpdate();
 
-            serverLevel.levelEvent(LevelEvent.PARTICLES_SHOOT,
+            serverLevel.levelEvent(LevelEvent.PARTICLES_SHOOT_SMOKE,
                 blockPos,
                 dispenserBlockEntity.getBlockState().getValue(DispenserBlock.FACING).get3DDataValue());
 
