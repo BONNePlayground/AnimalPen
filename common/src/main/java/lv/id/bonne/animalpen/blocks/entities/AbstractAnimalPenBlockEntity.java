@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
@@ -294,12 +295,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     {
                         // Trigger screen Update
                         AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
-                                filter(other ->
-                                    other.distanceToSqr(this.getBlockPos().getX(),
-                                        this.getBlockPos().getY(),
-                                        this.getBlockPos().getZ()) < 50).
+                                filter(other -> other.blockPosition().distSqr(this.getBlockPos()) < 30).
                                 toList(),
-                            new UpdateVariantScreenData(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos(), null));
                     }
 
                     AnimalPen.sendDebug("Deposit animal cage into pen");
@@ -405,7 +403,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                 // Handle animal variants
                 if (newCount > 1 &&
-                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
+                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player))
                 {
                     AnimalPen.sendDebug("Variants could not be merged");
 
@@ -417,7 +415,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
                 else
                 {
-                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
+                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player);
                     itemInHand.setTag(new CompoundTag());
 
                     if (this.level != null && !this.level.isClientSide())
@@ -425,11 +423,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                         // Trigger screen Update
                         AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
-                                    other.distanceToSqr(this.getBlockPos().getX(),
-                                        this.getBlockPos().getY(),
-                                        this.getBlockPos().getZ()) < 50).
+                                    other.blockPosition().distSqr(this.getBlockPos()) < 30).
                                 toList(),
-                            new UpdateVariantScreenData(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos(), this.getEntityVariants()));
                     }
                 }
 
@@ -892,7 +888,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     public ListTag getEntityVariants()
     {
         return this.getStoredAnimal().
-            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack()).orElseGet(ListTag::new)).
+            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack(), this.level).orElseGet(ListTag::new)).
             orElseGet(ListTag::new);
     }
 
@@ -938,11 +934,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 // Trigger update.
                 AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
                         filter(other ->
-                            other.distanceToSqr(this.getBlockPos().getX(),
-                                this.getBlockPos().getY(),
-                                this.getBlockPos().getZ()) < 50).
+                            other.blockPosition().distSqr(this.getBlockPos()) < 30).
                         toList(),
-                    new UpdateVariantScreenData(this.getBlockPos()));
+                    new UpdateVariantScreenData(this.getBlockPos(), null));
             }
         });
     }
@@ -960,19 +954,30 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return;
         }
 
-        this.getEntityVariants().remove(index);
         this.inventory.setChanged();
 
-        if (this.level != null && !this.level.isClientSide())
+        if (this.level instanceof ServerLevel serverLevel)
         {
+            ListTag entityVariants = this.getEntityVariants();
+            entityVariants.remove(index);
+            CompoundTag tag = this.getItemStack().getOrCreateTag();
+
+            if (!tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID))
+            {
+                AnimalPen.sendDebug("Storage not set for item stack");
+                return;
+            }
+
+            IndividualPenStorage.saveVariants(serverLevel,
+                tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID),
+                entityVariants);
+
             // Trigger screen Update
-            AnimalPen.CHANNEL.sendToPlayers(((ServerLevel) this.level).players().stream().
+            AnimalPen.CHANNEL.sendToPlayers(serverLevel.players().stream().
                     filter(other ->
-                        other.distanceToSqr(this.getBlockPos().getX(),
-                            this.getBlockPos().getY(),
-                            this.getBlockPos().getZ()) < 50).
+                        other.blockPosition().distSqr(this.getBlockPos()) < 30).
                     toList(),
-                new UpdateVariantScreenData(this.getBlockPos()));
+                new UpdateVariantScreenData(this.getBlockPos(), this.getEntityVariants()));
 
             AnimalPen.sendDebug("Animal variant removed");
         }

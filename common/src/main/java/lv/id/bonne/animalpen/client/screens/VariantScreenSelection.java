@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
+import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -73,10 +75,6 @@ public class VariantScreenSelection extends Screen
         this.buttons.clear();
 
         this.bodyTopPos = this.topPos + 18;
-        int buttonPos = this.leftPos + 24;
-
-        int buttonWidth = 46;
-        int buttonHeight = 46;
 
         // collect variants
 
@@ -94,34 +92,15 @@ public class VariantScreenSelection extends Screen
 
         this.blockEntityInterface = animalPenEntity;
 
-        ListTag entityList = this.blockEntityInterface.getEntityVariants();
-
-        if (entityList == null)
+        if (!this.hasRequestedData)
         {
-            // Avoid null-pointer
-            entityList = new ListTag();
+            this.cachedVariants = new ListTag();
+            NetworkManager.sendToServer(RequestVariantData.ID,
+                RequestVariantData.encode(this.position));
+            this.hasRequestedData = true;
         }
 
-        // initialize variant buttons.
-        for (int i = 0; i < entityList.size(); i++)
-        {
-            // The loop automatically handles vertical spacing using buttonHeight (46)
-            int y = this.bodyTopPos + (i * buttonHeight);
-            final int index = i;
-
-            // Extract the specific CompoundTag for this loop iteration
-            CompoundTag entityTag = entityList.getCompound(i);
-
-            // Initialize our custom EntityButton
-            this.buttons.add(this.addWidget(new EntityButton(
-                buttonPos,
-                y,
-                buttonWidth,
-                buttonHeight,
-                entityTag,
-                button -> handleVariantButton(button, index)
-            )));
-        }
+        this.rebuildDynamicWidgets(this.leftPos + 24);
 
         // Delete variant button
         this.deleteButton = this.addWidget(new Button(this.leftPos + 157,
@@ -186,6 +165,31 @@ public class VariantScreenSelection extends Screen
 
 
     /**
+     * This method rebuilds animal variant selection buttons.
+     * @param buttonPos The left side of buttons.
+     */
+    private void rebuildDynamicWidgets(int buttonPos)
+    {
+        for (int i = 0; i < this.cachedVariants.size(); i++)
+        {
+            int y = this.bodyTopPos + (i * BUTTON_HEIGHT);
+            final int index = i;
+
+            CompoundTag entityTag = this.cachedVariants.getCompound(i);
+
+            this.buttons.add(this.addWidget(new EntityButton(
+                buttonPos,
+                y,
+                BUTTON_HEIGHT,
+                BUTTON_HEIGHT,
+                entityTag,
+                button -> handleVariantButton(button, index)
+            )));
+        }
+    }
+
+
+    /**
      * This returns position of block that relates to current screen.
      *
      * @return block position.
@@ -199,9 +203,17 @@ public class VariantScreenSelection extends Screen
     /**
      * This inits that update will be triggered after 5 ticks.
      */
-    public void update()
+    public void update(@Nullable ListTag serverVariants)
     {
-        this.needsUpdate = 5;
+        if (serverVariants != null)
+        {
+            this.cachedVariants = serverVariants;
+            this.needsUpdate = 1;
+        }
+        else
+        {
+            this.needsUpdate = 5;
+        }
     }
 
 
@@ -694,7 +706,7 @@ public class VariantScreenSelection extends Screen
     private boolean needsScrollBars()
     {
         // button height and 106 would be better but this works.
-        return this.buttons.size() > 5;
+        return this.buttons.size() > 2;
     }
 
 
@@ -768,11 +780,17 @@ public class VariantScreenSelection extends Screen
                     orElse(true);
         }
 
+        if (this.cachedVariants.size() < this.selectedButton)
+        {
+            // just a small protection
+            return;
+        }
+
         CompoundTag tag;
 
         if (this.selectedButton != -1)
         {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+            tag = (CompoundTag) this.cachedVariants.get(index);
         }
         else
         {
@@ -1177,9 +1195,24 @@ public class VariantScreenSelection extends Screen
     private boolean isSelectingEntity;
 
     /**
+     * The local cache of variants.
+     */
+    private ListTag cachedVariants = new ListTag();
+
+    /**
+     * Indicates if data is requested from server.
+     */
+    private boolean hasRequestedData = false;
+
+    /**
      * This boolean indicates if player screen requires update.
      */
     private int needsUpdate;
+
+    /**
+     * The animal selection button height
+     */
+    private final static int BUTTON_HEIGHT = 46;
 
     /**
      * The title of menu

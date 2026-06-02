@@ -4,7 +4,9 @@ package lv.id.bonne.animalpen.items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.UUID;
 
+import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -27,6 +29,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -374,6 +377,23 @@ public abstract class AbstractAnimalStorageItem extends Item
 // ---------------------------------------------------------------------
 
 
+    @Override
+    public void onDestroyed(ItemEntity itemEntity)
+    {
+        CompoundTag tag = itemEntity.getItem().getTag();
+
+        if (tag != null &&
+            tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
+            itemEntity.getLevel() instanceof ServerLevel serverLevel)
+        {
+            IndividualPenStorage.deleteFile(serverLevel,
+                tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
+        }
+
+        super.onDestroyed(itemEntity);
+    }
+
+
     private void decrementStoredAmount(ItemStack stack, Player player, InteractionHand hand)
     {
         CompoundTag tag = stack.getOrCreateTag();
@@ -385,6 +405,14 @@ public abstract class AbstractAnimalStorageItem extends Item
         {
             // Clear item completely
             stack.setTag(new CompoundTag());
+
+            // Remove deep storage from it
+            if (tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
+                player.getLevel() instanceof ServerLevel serverLevel)
+            {
+                UUID uuid = tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
+                IndividualPenStorage.deleteFile(serverLevel, uuid);
+            }
         }
         else
         {
