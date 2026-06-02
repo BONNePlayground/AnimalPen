@@ -2,7 +2,6 @@ package lv.id.bonne.animalpen.client.screens;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
@@ -76,19 +75,20 @@ public class VariantsConfigScreen extends Screen
             MINIMAL_ANIMAL_COUNT)
         {
             @Override
-            public void renderWidget(PoseStack poseStack, int i, int j, float f)
+            public void renderWidget(GuiGraphics graphics, int i, int j, float f)
             {
-                super.renderWidget(poseStack, i, j, f);
+                super.renderWidget(graphics, i, j, f);
 
-                VariantsConfigScreen.this.font.draw(poseStack,
+                graphics.drawString(VariantsConfigScreen.this.font,
                     MINIMAL_ANIMAL_COUNT,
                     this.getX(),
                     this.getY() - font.lineHeight - LABEL_PADDING_Y,
-                    4210752);
+                    4210752,
+                    false);
 
                 if (this.isHovered)
                 {
-                    VariantsConfigScreen.this.renderTooltip(poseStack,
+                    graphics.renderTooltip(VariantsConfigScreen.this.font,
                         VariantsConfigScreen.this.font.split(MINIMAL_ANIMAL_COUNT_TOOLTIP, TOOLTIP_MAX_WIDTH),
                         this.getX() + TOOLTIP_OFFSET_X,
                         this.getY() + this.height + TOOLTIP_OFFSET_Y);
@@ -111,11 +111,11 @@ public class VariantsConfigScreen extends Screen
             false)
         {
             @Override
-            public void renderWidget(PoseStack poseStack, int i, int j, float f)
+            public void renderWidget(GuiGraphics graphics, int i, int j, float f)
             {
-                super.renderWidget(poseStack, i, j, f);
+                super.renderWidget(graphics, i, j, f);
 
-                VariantsConfigScreen.this.font.draw(poseStack,
+                graphics.drawString(VariantsConfigScreen.this.font,
                     PROTECTION,
                     this.getX() + 24,
                     this.getY() + (this.height - 8) / 2,
@@ -123,7 +123,7 @@ public class VariantsConfigScreen extends Screen
 
                 if (this.isHovered)
                 {
-                    VariantsConfigScreen.this.renderTooltip(poseStack,
+                    graphics.renderTooltip(VariantsConfigScreen.this.font,
                         VariantsConfigScreen.this.font.split(PROTECTION_TOOLTIP, TOOLTIP_MAX_WIDTH),
                         this.getX() + TOOLTIP_OFFSET_X,
                         this.getY() + this.height + TOOLTIP_OFFSET_Y);
@@ -158,8 +158,8 @@ public class VariantsConfigScreen extends Screen
         // Draw title
         graphics.drawCenteredString(this.font,
             this.title,
-            (float) (this.width / 2 - this.font.width(this.title) / 2),
-            (float) (this.topPos + Y_OFFSET_TITLE),
+            (this.width / 2 - this.font.width(this.title) / 2),
+            (this.topPos + Y_OFFSET_TITLE),
             4210752);
     }
 
@@ -170,7 +170,7 @@ public class VariantsConfigScreen extends Screen
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        graphics.blit(this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
 
@@ -275,16 +275,16 @@ public class VariantsConfigScreen extends Screen
 
 
         @Override
-        public void renderWidget(PoseStack poseStack, int i, int j, float f)
+        public void renderWidget(GuiGraphics graphics, int i, int j, float f)
         {
-            super.renderWidget(poseStack, i, j, f);
+            super.renderWidget(graphics, i, j, f);
 
             Component size = Component.translatable(
                 "gui.animal_pen.variant_selection_screen.configure.entity_size",
                 this.getIntValue(),
                 VariantsConfigScreen.this.maxAnimalAmount);
 
-            VariantsConfigScreen.this.font.draw(poseStack,
+            graphics.drawString(VariantsConfigScreen.this.font,
                 size,
                 this.getX(),
                 this.getY() - font.lineHeight - LABEL_PADDING_Y,
@@ -298,7 +298,7 @@ public class VariantsConfigScreen extends Screen
                         append("\n").
                         append(ENTITY_SIZE_DISABLED_TOOLTIP);
 
-                VariantsConfigScreen.this.renderTooltip(poseStack,
+                graphics.renderTooltip(VariantsConfigScreen.this.font,
                     VariantsConfigScreen.this.font.split(component, TOOLTIP_MAX_WIDTH),
                     this.getX() + TOOLTIP_OFFSET_X,
                     this.getY() + this.height + TOOLTIP_OFFSET_Y);

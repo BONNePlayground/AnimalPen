@@ -7,10 +7,9 @@
 package lv.id.bonne.animalpen.client.screens.widget;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.nbt.CompoundTag;
@@ -51,15 +50,15 @@ public class EntityButton extends Button
 
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
         if (!this.visible) return;
 
         // Render background slot container
         int backgroundColor = this.isHoveredOrFocused() ? 0xFF444444 : 0xFF222222;
         int borderColor = 0xFF8B8B8B;
-        fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
-        fill(poseStack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, backgroundColor);
+        graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
+        graphics.fill(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, backgroundColor);
 
         if (this.cachedEntity != null)
         {
@@ -78,7 +77,7 @@ public class EntityButton extends Button
             int centerY = this.getY() + (this.height / 2);
             int baseY = centerY + (int) ((bbHeight * scale) / 2.0F);
 
-            InventoryScreen.renderEntityInInventoryFollowsMouse(poseStack, centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
         }
     }
 }

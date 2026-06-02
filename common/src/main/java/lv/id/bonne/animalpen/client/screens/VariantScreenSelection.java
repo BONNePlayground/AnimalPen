@@ -18,13 +18,11 @@ import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -484,14 +482,14 @@ public class VariantScreenSelection extends Screen
         float lookX = (centerX - mouseX) * 4.4F;
         float lookY = ((baseY - (this.displayEntity.getBbHeight() * scale) / 2.0F) - mouseY) * 4.4F;
 
-        enableScissor(
+        graphics.enableScissor(
             this.leftPos + 73, this.bodyTopPos,
             this.leftPos + 73 + 96, this.bodyTopPos + 92
         );
 
-        InventoryScreen.renderEntityInInventoryFollowsMouse(poseStack, (int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, (int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
 
-        disableScissor();
+        graphics.disableScissor();
     }
 
 

@@ -49,7 +49,7 @@ public class RequestVariantData
                 return;
             }
 
-            BlockEntity blockEntity = player.getLevel().getBlockEntity(blockPos);
+            BlockEntity blockEntity = player.level().getBlockEntity(blockPos);
 
             if (!(blockEntity instanceof AbstractAnimalPenBlockEntity animalPenEntity))
             {

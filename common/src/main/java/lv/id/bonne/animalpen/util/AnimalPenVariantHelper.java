@@ -50,7 +50,7 @@ public class AnimalPenVariantHelper
         }
 
         // File handling requires access to the Server's thread and level
-        if (animal.level.isClientSide() || !(animal.level instanceof ServerLevel serverLevel))
+        if (animal.level().isClientSide() || !(animal.level() instanceof ServerLevel serverLevel))
         {
             return false;
         }

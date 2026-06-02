@@ -382,7 +382,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (tag != null &&
             tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
-            itemEntity.getLevel() instanceof ServerLevel serverLevel)
+            itemEntity.level() instanceof ServerLevel serverLevel)
         {
             IndividualPenStorage.deleteFile(serverLevel,
                 tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
@@ -406,7 +406,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
             // Remove deep storage from it
             if (tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
-                player.getLevel() instanceof ServerLevel serverLevel)
+                player.level() instanceof ServerLevel serverLevel)
             {
                 UUID uuid = tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
                 IndividualPenStorage.deleteFile(serverLevel, uuid);
