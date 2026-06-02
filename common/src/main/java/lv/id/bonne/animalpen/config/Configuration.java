@@ -593,10 +593,10 @@ public class Configuration
     @SerializedName("show_all_interactions_above")
     private Boolean showAllInteractions;
 
-    @JsonComment("Prevents Feeding with dispensers")
-    @JsonComment("Default value = true")
+    @JsonComment("Allows to toggle if dispensers should be block from interacting with animal pens, aviaries, and aquariums")
+    @JsonComment("Default value = false")
     @Expose
-    @SerializedName("prevent_dispenser_feeding")
+    @SerializedName("block_dispenser_interaction")
     private Boolean blockDispenserInteractions;
 
     @JsonComment("Debug code to indicate problems.")
