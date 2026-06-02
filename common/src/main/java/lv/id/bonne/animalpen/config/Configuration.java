@@ -43,7 +43,8 @@ public class Configuration
             this.showCooldownsOnCrouch == null ||
             this.growAviaryMob == null ||
             this.aviaryMobSize == null ||
-            this.aviaryMobSize <= 0;
+            this.aviaryMobSize <= 0 ||
+            this.blockDispenserInteractions == null;
     }
 
 
@@ -110,6 +111,11 @@ public class Configuration
         if (this.showCooldownsOnCrouch == null || init)
         {
             this.showCooldownsOnCrouch = false;
+        }
+
+        if (this.blockDispenserInteractions == null || init)
+        {
+            this.blockDispenserInteractions = false;
         }
 
         if (init)
@@ -292,6 +298,17 @@ public class Configuration
     }
 
 
+    /**
+     * Is prevent dispenser feeding boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isBlockDispenserInteractions()
+    {
+        return this.blockDispenserInteractions;
+    }
+
+
     public static Configuration getDefaultConfig()
     {
         Configuration configuration = new Configuration();
@@ -471,6 +488,17 @@ public class Configuration
     }
 
 
+    /**
+     * Sets prevent dispenser feeding.
+     *
+     * @param blockDispenserInteractions the prevent dispenser feeding
+     */
+    public void setBlockDispenserInteractions(boolean blockDispenserInteractions)
+    {
+        this.blockDispenserInteractions = blockDispenserInteractions;
+    }
+
+
 // ---------------------------------------------------------------------
 // Section: variables
 // ---------------------------------------------------------------------
@@ -564,6 +592,12 @@ public class Configuration
     @Expose
     @SerializedName("show_all_interactions_above")
     private Boolean showAllInteractions;
+
+    @JsonComment("Allows to toggle if dispensers should be block from interacting with animal pens, aviaries, and aquariums")
+    @JsonComment("Default value = false")
+    @Expose
+    @SerializedName("block_dispenser_interaction")
+    private Boolean blockDispenserInteractions;
 
     @JsonComment("Debug code to indicate problems.")
     @Expose
