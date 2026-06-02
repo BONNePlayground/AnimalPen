@@ -43,9 +43,9 @@ public class DispenserMixin
     private void animalPen$customDispenseFromAction(ServerLevel serverLevel,
         BlockPos blockPos,
         CallbackInfo ci,
-        @Local(name = "dispenserBlockEntity") DispenserBlockEntity dispenserBlockEntity,
-        @Local(name = "i") int i,
-        @Local(name = "itemStack") ItemStack itemStack)
+        @Local DispenserBlockEntity dispenserBlockEntity,
+        @Local int i,
+        @Local ItemStack itemStack)
     {
         if (AnimalPen.config().isBlockDispenserInteractions())
         {
