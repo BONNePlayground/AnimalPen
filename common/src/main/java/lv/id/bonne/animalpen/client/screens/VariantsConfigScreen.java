@@ -75,9 +75,9 @@ public class VariantsConfigScreen extends Screen
             MINIMAL_ANIMAL_COUNT)
         {
             @Override
-            public void renderButton(PoseStack poseStack, int i, int j, float f)
+            public void renderWidget(PoseStack poseStack, int i, int j, float f)
             {
-                super.renderButton(poseStack, i, j, f);
+                super.renderWidget(poseStack, i, j, f);
 
                 VariantsConfigScreen.this.font.draw(poseStack,
                     MINIMAL_ANIMAL_COUNT,
@@ -110,9 +110,9 @@ public class VariantsConfigScreen extends Screen
             false)
         {
             @Override
-            public void renderButton(PoseStack poseStack, int i, int j, float f)
+            public void renderWidget(PoseStack poseStack, int i, int j, float f)
             {
-                super.renderButton(poseStack, i, j, f);
+                super.renderWidget(poseStack, i, j, f);
 
                 VariantsConfigScreen.this.font.draw(poseStack,
                     PROTECTION,
@@ -275,9 +275,9 @@ public class VariantsConfigScreen extends Screen
 
 
         @Override
-        public void renderButton(PoseStack poseStack, int i, int j, float f)
+        public void renderWidget(PoseStack poseStack, int i, int j, float f)
         {
-            super.renderButton(poseStack, i, j, f);
+            super.renderWidget(poseStack, i, j, f);
 
             Component size = Component.translatable(
                 "gui.animal_pen.variant_selection_screen.configure.entity_size",

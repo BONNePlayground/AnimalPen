@@ -3,7 +3,6 @@ package lv.id.bonne.animalpen.client.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -377,7 +375,7 @@ public class VariantScreenSelection extends Screen
         }
 
         // Render configure icon.
-        this.blit(poseStack,
+        blit(poseStack,
             this.configureButton.getX(),
             this.configureButton.getY(),
             176,
@@ -481,14 +479,14 @@ public class VariantScreenSelection extends Screen
         float lookX = (centerX - mouseX) * 4.4F;
         float lookY = ((baseY - (this.displayEntity.getBbHeight() * scale) / 2.0F) - mouseY) * 4.4F;
 
-        this.enableScissor(
+        enableScissor(
             this.leftPos + 73, this.bodyTopPos,
             this.leftPos + 73 + 96, this.bodyTopPos + 92
         );
 
-        InventoryScreen.renderEntityInInventory((int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(poseStack, (int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
 
-        this.disableScissor();
+        disableScissor();
     }
 
 

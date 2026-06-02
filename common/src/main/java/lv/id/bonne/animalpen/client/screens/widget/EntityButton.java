@@ -51,7 +51,7 @@ public class EntityButton extends Button
 
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
         if (!this.visible) return;
 
@@ -78,7 +78,7 @@ public class EntityButton extends Button
             int centerY = this.getY() + (this.height / 2);
             int baseY = centerY + (int) ((bbHeight * scale) / 2.0F);
 
-            InventoryScreen.renderEntityInInventory(centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(poseStack, centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
         }
     }
 }
