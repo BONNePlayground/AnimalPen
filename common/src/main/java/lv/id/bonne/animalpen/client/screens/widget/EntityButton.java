@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +29,7 @@ public class EntityButton extends Button
 
     public EntityButton(int x, int y, int width, int height, CompoundTag entityTag, Button.OnPress onPress)
     {
-        super(x, y, width, height, TextComponent.EMPTY, onPress);
+        super(x, y, width, height, Component.empty(), onPress);
 
         // Deserialize and cache the entity strictly on the client side
         if (Minecraft.getInstance().level != null && entityTag != null)
