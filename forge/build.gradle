@@ -73,6 +73,9 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.4"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:0.5.4"))
+
     modImplementation "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${rootProject.jei_version}")

@@ -201,6 +201,16 @@ public class AnimalPenConfigScreen
             build());
 
         general.addEntry(entryBuilder.
+            startBooleanToggle(Component.translatable("option.animal_pen.block_dispenser_interactions"),
+                AnimalPen.config().isBlockDispenserInteractions()).
+            setDefaultValue(false).
+            setTooltip(tooltips("option.animal_pen.block_dispenser_interactions.tooltip")).
+            setRequirement(LOCAL_OR_OP_REQUIREMENT).
+            setSaveConsumer(newValue ->
+                AnimalPen.config().setBlockDispenserInteractions(newValue)).
+            build());
+
+        general.addEntry(entryBuilder.
             startBooleanToggle(Component.translatable("option.animal_pen.debug"),
                 AnimalPen.config().isDebug()).
             setDefaultValue(false).
