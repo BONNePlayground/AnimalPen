@@ -81,16 +81,16 @@ public class VariantsConfigScreen extends Screen
 
                 VariantsConfigScreen.this.font.draw(poseStack,
                     MINIMAL_ANIMAL_COUNT,
-                    this.x,
-                    this.y - font.lineHeight - LABEL_PADDING_Y,
+                    this.getX(),
+                    this.getY() - font.lineHeight - LABEL_PADDING_Y,
                     4210752);
 
                 if (this.isHovered)
                 {
                     VariantsConfigScreen.this.renderTooltip(poseStack,
                         VariantsConfigScreen.this.font.split(MINIMAL_ANIMAL_COUNT_TOOLTIP, TOOLTIP_MAX_WIDTH),
-                        this.x + TOOLTIP_OFFSET_X,
-                        this.y + this.height + TOOLTIP_OFFSET_Y);
+                        this.getX() + TOOLTIP_OFFSET_X,
+                        this.getY() + this.height + TOOLTIP_OFFSET_Y);
                 }
             }
         };
@@ -116,16 +116,16 @@ public class VariantsConfigScreen extends Screen
 
                 VariantsConfigScreen.this.font.draw(poseStack,
                     PROTECTION,
-                    this.x + 24,
-                    this.y + (this.height - 8) / 2,
+                    this.getX() + 24,
+                    this.getY() + (this.height - 8) / 2,
                     4210752);
 
                 if (this.isHovered)
                 {
                     VariantsConfigScreen.this.renderTooltip(poseStack,
                         VariantsConfigScreen.this.font.split(PROTECTION_TOOLTIP, TOOLTIP_MAX_WIDTH),
-                        this.x + TOOLTIP_OFFSET_X,
-                        this.y + this.height + TOOLTIP_OFFSET_Y);
+                        this.getX() + TOOLTIP_OFFSET_X,
+                        this.getY() + this.height + TOOLTIP_OFFSET_Y);
                 }
             }
         };
@@ -143,6 +143,8 @@ public class VariantsConfigScreen extends Screen
             pos(this.leftPos + X_OFFSET_CANCEL_BTN, this.topPos + Y_OFFSET_BUTTONS).
             size(COMPONENT_WIDTH_HALF, COMPONENT_HEIGHT).
             build());
+
+        this.addRenderableWidget(this.displayAnimalAmountSlider);
     }
 
 
@@ -284,8 +286,8 @@ public class VariantsConfigScreen extends Screen
 
             VariantsConfigScreen.this.font.draw(poseStack,
                 size,
-                this.x,
-                this.y - font.lineHeight - LABEL_PADDING_Y,
+                this.getX(),
+                this.getY() - font.lineHeight - LABEL_PADDING_Y,
                 4210752);
 
             if (this.isHovered)
@@ -298,8 +300,8 @@ public class VariantsConfigScreen extends Screen
 
                 VariantsConfigScreen.this.renderTooltip(poseStack,
                     VariantsConfigScreen.this.font.split(component, TOOLTIP_MAX_WIDTH),
-                    this.x + TOOLTIP_OFFSET_X,
-                    this.y + this.height + TOOLTIP_OFFSET_Y);
+                    this.getX() + TOOLTIP_OFFSET_X,
+                    this.getY() + this.height + TOOLTIP_OFFSET_Y);
             }
         }
 

@@ -29,7 +29,7 @@ public class EntityButton extends Button
 
     public EntityButton(int x, int y, int width, int height, CompoundTag entityTag, Button.OnPress onPress)
     {
-        super(x, y, width, height, Component.empty(), onPress);
+        super(x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION);
 
         // Deserialize and cache the entity strictly on the client side
         if (Minecraft.getInstance().level != null && entityTag != null)
@@ -58,8 +58,8 @@ public class EntityButton extends Button
         // Render background slot container
         int backgroundColor = this.isHoveredOrFocused() ? 0xFF444444 : 0xFF222222;
         int borderColor = 0xFF8B8B8B;
-        fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height, borderColor);
-        fill(poseStack, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, backgroundColor);
+        fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
+        fill(poseStack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, backgroundColor);
 
         if (this.cachedEntity != null)
         {
@@ -74,8 +74,8 @@ public class EntityButton extends Button
             float targetSize = 24.0F;
             float scale = targetSize / maxDimension;
 
-            int centerX = this.x + (this.width / 2);
-            int centerY = this.y + (this.height / 2);
+            int centerX = this.getX() + (this.width / 2);
+            int centerY = this.getY() + (this.height / 2);
             int baseY = centerY + (int) ((bbHeight * scale) / 2.0F);
 
             InventoryScreen.renderEntityInInventory(centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
