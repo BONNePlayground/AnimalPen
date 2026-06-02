@@ -56,6 +56,7 @@ public class SheepChangeColor implements EntityFunction
     @Override
     public boolean interactDispenser(ServerLevel serverLevel,
         Container container,
+        int index,
         ItemStack itemConsumed,
         int amount,
         Mob mob,
