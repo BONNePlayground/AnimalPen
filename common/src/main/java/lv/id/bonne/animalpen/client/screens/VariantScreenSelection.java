@@ -487,7 +487,18 @@ public class VariantScreenSelection extends Screen
             this.leftPos + 73 + 96, this.bodyTopPos + 92
         );
 
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, (int) centerX, baseY, scale, lookX, lookY, this.displayEntity);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+            graphics,
+            this.leftPos + 73,
+            this.bodyTopPos,
+            this.leftPos + 73 + 96,
+            this.bodyTopPos + 92,
+            scale,
+            0.0F,
+            mouseX,
+            mouseY,
+            this.displayEntity
+        );
 
         graphics.disableScissor();
     }

@@ -119,7 +119,8 @@ public class VariantsConfigScreen extends Screen
                     PROTECTION,
                     this.getX() + 24,
                     this.getY() + (this.height - 8) / 2,
-                    4210752);
+                    4210752,
+                    false);
 
                 if (this.isHovered)
                 {
@@ -156,17 +157,19 @@ public class VariantsConfigScreen extends Screen
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Draw title
-        graphics.drawCenteredString(this.font,
+        graphics.drawString(this.font,
             this.title,
             (this.width / 2 - this.font.width(this.title) / 2),
             (this.topPos + Y_OFFSET_TITLE),
-            4210752);
+            4210752,
+            false);
     }
 
+
     @Override
-    public void renderBackground(GuiGraphics graphics)
+    public void renderBackground(GuiGraphics graphics, int i, int j, float f)
     {
-        super.renderBackground(graphics);
+        super.renderBackground(graphics, i, j, f);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -288,7 +291,8 @@ public class VariantsConfigScreen extends Screen
                 size,
                 this.getX(),
                 this.getY() - font.lineHeight - LABEL_PADDING_Y,
-                4210752);
+                4210752,
+                false);
 
             if (this.isHovered)
             {

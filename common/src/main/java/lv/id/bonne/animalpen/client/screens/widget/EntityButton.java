@@ -73,11 +73,16 @@ public class EntityButton extends Button
             float targetSize = 24.0F;
             float scale = targetSize / maxDimension;
 
-            int centerX = this.getX() + (this.width / 2);
-            int centerY = this.getY() + (this.height / 2);
-            int baseY = centerY + (int) ((bbHeight * scale) / 2.0F);
-
-            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, centerX, baseY, (int) scale, -45f, 0.0F, this.cachedEntity);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
+                this.getX() + 2,
+                this.getY() + 2,
+                this.getX() + 44,
+                this.getY() + 44,
+                (int) scale,
+                0f,
+                this.getX() + 100,
+                this.getY() + 22,
+                this.cachedEntity);
         }
     }
 }

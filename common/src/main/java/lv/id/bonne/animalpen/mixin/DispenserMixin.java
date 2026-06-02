@@ -41,6 +41,7 @@ public class DispenserMixin
         target = "Lnet/minecraft/world/level/block/DispenserBlock;getDispenseMethod(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/core/dispenser/DispenseItemBehavior;"),
         cancellable = true)
     private void animalPen$customDispenseFromAction(ServerLevel serverLevel,
+        BlockState blockState,
         BlockPos blockPos,
         CallbackInfo ci,
         @Local DispenserBlockEntity dispenserBlockEntity,
@@ -52,7 +53,7 @@ public class DispenserMixin
             return;
         }
 
-        BlockPos targetedPos = blockPos.relative(dispenserBlockEntity.getBlockState().getValue(DispenserBlock.FACING));
+        BlockPos targetedPos = blockPos.relative(blockState.getValue(DispenserBlock.FACING));
         BlockState targetState = serverLevel.getBlockState(targetedPos);
 
         if (!targetState.is(AnimalPenTags.ANIMAL_PEN_BLOCKS) &&
