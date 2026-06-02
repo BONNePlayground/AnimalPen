@@ -21,11 +21,13 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
 
     public DispenserInteractionExecutor(ServerLevel level,
         Container container,
+        int index,
         AbstractAnimalPenBlockEntity blockEntity)
     {
         this.level = level;
         this.container = container;
         this.blockEntity = blockEntity;
+        this.index = index;
     }
 
 
@@ -51,34 +53,16 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     @Override
     public void consume(ItemStack consumedItem, int amount)
     {
-        int removed = amount;
+        // Start with initial item index.
+        int removed = this.removeAndReturnRemining(consumedItem,
+            this.index,
+            amount);
 
         for (int i = 0; i < this.container.getContainerSize() && removed > 0; i++)
         {
-            ItemStack stack = this.container.getItem(i);
-
-            if (ItemStack.isSameItem(stack, consumedItem))
+            if (i != this.index)
             {
-                if (consumedItem.getMaxStackSize() == 1)
-                {
-                    this.container.setItem(i, AnimalPenItemHelper.replacement(stack));
-                    removed--;
-                }
-                else
-                {
-                    if (stack.getCount() < removed)
-                    {
-                        removed -= stack.getCount();
-                        stack = ItemStack.EMPTY;
-                    }
-                    else
-                    {
-                        stack.shrink(removed);
-                        removed = 0;
-                    }
-
-                    this.container.setItem(i, stack);
-                }
+                removed = this.removeAndReturnRemining(consumedItem, i, removed);
             }
         }
     }
@@ -148,6 +132,7 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     {
         return interaction.triggerFunctions(this.level,
             this.container,
+            this.index,
             consumedItem,
             consumedAmount,
             animal,
@@ -163,9 +148,50 @@ public final class DispenserInteractionExecutor implements AnimalInteractionExec
     }
 
 
+    /**
+     * this method removes items from inventory till leftOver is 0.
+     * @param consumedItem the consumed item that need to be removed.
+     * @param index the index of item that is removed from inventory
+     * @param leftOver the left-over amount of items to be removed
+     * @return the remining items that still requires removing from inventory.
+     */
+    private int removeAndReturnRemining(ItemStack consumedItem, int index, int leftOver)
+    {
+        ItemStack stack = this.container.getItem(index);
+
+        if (ItemStack.isSameItem(stack, consumedItem))
+        {
+            if (consumedItem.getMaxStackSize() == 1)
+            {
+                this.container.setItem(index, AnimalPenItemHelper.replacement(stack));
+                leftOver--;
+            }
+            else
+            {
+                if (stack.getCount() < leftOver)
+                {
+                    leftOver -= stack.getCount();
+                    stack = ItemStack.EMPTY;
+                }
+                else
+                {
+                    stack.shrink(leftOver);
+                    leftOver = 0;
+                }
+
+                this.container.setItem(index, stack);
+            }
+        }
+
+        return leftOver;
+    }
+
+
     private final ServerLevel level;
 
     private final Container container;
+
+    private final int index;
 
     private final AbstractAnimalPenBlockEntity blockEntity;
 }
