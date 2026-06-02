@@ -167,6 +167,10 @@
   "option.animal_pen.max_stored_animal_variants.tooltip[1]": "can be stored per item.",
   "option.animal_pen.max_stored_animal_variants.tooltip[2]": "Be aware, this increases NBT data size,",
   "option.animal_pen.max_stored_animal_variants.tooltip[3]": "so not recommended to put infinite amount.",
+  "option.animal_pen.block_dispenser_interactions": "Prevent Dispenser Interactions",
+  "option.animal_pen.block_dispenser_interactions.tooltip[0]": "Allows toggling whether dispensers are",
+  "option.animal_pen.block_dispenser_interactions.tooltip[1]": "prevented from interacting with animals",
+  "option.animal_pen.block_dispenser_interactions.tooltip[2]": "in pens, aviaries, and aquariums.",
   "option.animal_pen.debug": "Debug Output",
   "option.animal_pen.debug.tooltip[0]": "When enabled, displays debug messages in log",
 

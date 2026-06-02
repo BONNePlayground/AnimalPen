@@ -7,17 +7,17 @@
 package lv.id.bonne.animalpen.mixin;
 
 
+import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSourceImpl;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -39,16 +39,19 @@ public class DispenserMixin
 {
     @Inject(method = "dispenseFrom", at = @At(value = "INVOKE",
         target = "Lnet/minecraft/world/level/block/DispenserBlock;getDispenseMethod(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/core/dispenser/DispenseItemBehavior;"),
-        locals = LocalCapture.CAPTURE_FAILSOFT,
         cancellable = true)
-    private static void animalPen$customDispenseFromAction(ServerLevel serverLevel,
+    private void animalPen$customDispenseFromAction(ServerLevel serverLevel,
         BlockPos blockPos,
         CallbackInfo ci,
-        BlockSourceImpl blockSourceImpl,
-        DispenserBlockEntity dispenserBlockEntity,
-        int i,
-        ItemStack itemStack)
+        @Local(name = "dispenserBlockEntity") DispenserBlockEntity dispenserBlockEntity,
+        @Local(name = "i") int i,
+        @Local(name = "itemStack") ItemStack itemStack)
     {
+        if (AnimalPen.config().isBlockDispenserInteractions())
+        {
+            return;
+        }
+
         BlockPos targetedPos = blockPos.relative(dispenserBlockEntity.getBlockState().getValue(DispenserBlock.FACING));
         BlockState targetState = serverLevel.getBlockState(targetedPos);
 
@@ -79,7 +82,10 @@ public class DispenserMixin
                 serverLevel.levelEvent(LevelEvent.SOUND_DISPENSER_FAIL, blockPos, 0);
             }
 
-            ci.cancel();
+            if (ci != null && ci.isCancellable())
+            {
+                ci.cancel();
+            }
         }
     }
 }
