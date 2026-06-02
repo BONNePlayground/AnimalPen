@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Nullable;
 
+import dev.architectury.core.RegistryEntry;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
@@ -58,6 +59,7 @@ public final class EntityFunctionEntry
     public boolean interactDispenser(
         ServerLevel level,
         Container inventory,
+        int index,
         ItemStack item,
         int amount,
         Mob mob,
@@ -66,11 +68,9 @@ public final class EntityFunctionEntry
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
-        return function.interactDispenser(
-            level, inventory, item, amount,
-            mob, mobNBT, pos,
-            dataKey, dataValue
-        );
+        // Try new interaction. If it fails, backup to old one.
+        return this.function.interactDispenser(level, inventory, index, item, amount, mob, mobNBT, pos, dataKey, dataValue)
+            || this.function.interactDispenser(level, inventory, item, amount, mob, mobNBT, pos, dataKey, dataValue);
     }
 
 

@@ -1,6 +1,7 @@
 package lv.id.bonne.animalpen.processing.function.api;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import lv.id.bonne.animalpen.interaction.value.Value;
@@ -60,9 +61,43 @@ public interface EntityFunction
      * @param dataKey The input key for function
      * @param dataValue The input object for function
      * @return {@code true} if interaction changed data and requires update, {@code false} otherwise
+     *
+     * @deprecated Use {@link EntityFunction#interactDispenser(ServerLevel, Container, int, ItemStack, int, Mob, CompoundTag, BlockPos, String, Value)}
+     *             which provides index of item that is consumed by Container.
+     */
+    @Deprecated(forRemoval = true)
+    default boolean interactDispenser(ServerLevel serverLevel,
+        @NotNull Container dispenserInventory,
+        ItemStack itemConsumed,
+        int amount,
+        Mob mob,
+        CompoundTag mobNBT,
+        BlockPos blockPos,
+        @Nullable String dataKey,
+        @Nullable Value dataValue)
+    {
+        return this.processFunction(serverLevel, mob, mobNBT, blockPos, dataKey, dataValue);
+    }
+
+
+    /**
+     * This method manages interaction made by dispenser
+     *
+     * @param serverLevel The server level object
+     * @param dispenserInventory The inventory of dispenser
+     * @param index The index of item interacted by dispenser
+     * @param itemConsumed The consumed item
+     * @param amount The amount of consumed item
+     * @param mob The mob that was interacted with
+     * @param mobNBT The nbt that contains data for entity
+     * @param blockPos The block position
+     * @param dataKey The input key for function
+     * @param dataValue The input object for function
+     * @return {@code true} if interaction changed data and requires update, {@code false} otherwise
      */
     default boolean interactDispenser(ServerLevel serverLevel,
         Container dispenserInventory,
+        int index,
         ItemStack itemConsumed,
         int amount,
         Mob mob,
