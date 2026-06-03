@@ -3,30 +3,31 @@ package lv.id.bonne.animalpen.client.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
+import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -76,10 +77,6 @@ public class VariantScreenSelection extends Screen
         this.buttons.clear();
 
         this.bodyTopPos = this.topPos + 18;
-        int buttonPos = this.leftPos + 24;
-
-        int buttonWidth = 46;
-        int buttonHeight = 20;
 
         // collect variants
 
@@ -97,26 +94,14 @@ public class VariantScreenSelection extends Screen
 
         this.blockEntityInterface = animalPenEntity;
 
-        List<CompoundTag> entityList = this.blockEntityInterface.getEntityVariants();
-
-        if (entityList == null)
+        if (!this.hasRequestedData)
         {
-            // Avoid null-pointer
-            entityList = Collections.emptyList();
+            this.cachedVariants = new ListTag();
+            NetworkManager.sendToServer(new RequestVariantData(this.position));
+            this.hasRequestedData = true;
         }
 
-        // initialize variant buttons.
-        for (int i = 0; i < entityList.size(); i++)
-        {
-            int y = this.bodyTopPos + (i * buttonHeight);
-            final int index = i;
-
-            this.buttons.add(this.addWidget(Button.builder(Component.translatable(BUTTON_TEXT, (index + 1)),
-                    button -> handleVariantButton(button, index)).
-                pos(buttonPos, y).
-                size(buttonWidth, buttonHeight).
-                build()));
-        }
+        this.rebuildDynamicWidgets(this.leftPos + 24);
 
         // Delete variant button
         this.deleteButton = this.addWidget(Button.builder(Component.empty(),
@@ -177,6 +162,37 @@ public class VariantScreenSelection extends Screen
 
 
     /**
+     * This method rebuilds animal variant selection buttons.
+     * @param buttonPos The left side of buttons.
+     */
+    private void rebuildDynamicWidgets(int buttonPos)
+    {
+        for (int i = 0; i < this.cachedVariants.size(); i++)
+        {
+            int y = this.bodyTopPos + (i * BUTTON_HEIGHT);
+            final int index = i;
+
+            CompoundTag entityTag = this.cachedVariants.getCompound(i);
+
+            if (!entityTag.contains("id"))
+            {
+                // Add missing entity id.
+                entityTag.putString("id", this.displayEntity.getEncodeId());
+            }
+
+            this.buttons.add(this.addWidget(new EntityButton(
+                buttonPos,
+                y,
+                BUTTON_HEIGHT,
+                BUTTON_HEIGHT,
+                entityTag,
+                button -> handleVariantButton(button, index)
+            )));
+        }
+    }
+
+
+    /**
      * This returns position of block that relates to current screen.
      *
      * @return block position.
@@ -190,9 +206,17 @@ public class VariantScreenSelection extends Screen
     /**
      * This inits that update will be triggered after 5 ticks.
      */
-    public void update()
+    public void update(@Nullable ListTag serverVariants)
     {
-        this.needsUpdate = 5;
+        if (serverVariants != null)
+        {
+            this.cachedVariants = serverVariants;
+            this.needsUpdate = 1;
+        }
+        else
+        {
+            this.needsUpdate = 5;
+        }
     }
 
 
@@ -253,7 +277,7 @@ public class VariantScreenSelection extends Screen
         this.renderOtherButtons(graphics, mouseX, mouseY);
         this.renderScrollBar(graphics, mouseX, mouseY);
         this.renderTextBar(graphics, mouseX, mouseY, partialTicks);
-        this.renderEntity(graphics, partialTicks);
+        this.renderEntity(graphics, mouseX, mouseY, partialTicks);
         this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
 
         this.renderTooltips(graphics, mouseX, mouseY, partialTicks);
@@ -452,47 +476,38 @@ public class VariantScreenSelection extends Screen
      *
      * @param graphics The pose stack.
      */
-    private void renderEntity(@NotNull GuiGraphics graphics, float partialTicks)
+    private void renderEntity(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-//        this.enableScissor(
-//            this.leftPos + 73, this.bodyTopPos,
-//            this.leftPos + 73 + 96, this.bodyTopPos + 92
-//        );
-
-        // 73 till black box and 48 till the box middle
-        float x = this.leftPos + 73 + 48;
-        // 46 till black box middle
-        float y = this.bodyTopPos + 46;
-
-        this.displayEntity.yBodyRot = 0.0f;
-        this.displayEntity.setYRot(0.0f);
-        this.displayEntity.yHeadRot = 0.0f;
-        this.displayEntity.yHeadRotO = 0.0f;
+        if (this.displayEntity == null) return;
 
         if (this.displayEntity instanceof WaterAnimal animal)
         {
             animal.setPose(Pose.SWIMMING);
             animal.setSwimming(true);
             ((EntityAccessor) animal).setWasTouchingWater(true);
-            y -= 10;
         }
 
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(x, y, 50);
-        poseStack.scale(this.entityScale, this.entityScale, this.entityScale);
-        poseStack.translate(0, this.entityOffset, 0);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-        poseStack.mulPose(Axis.YP.rotationDegrees(this.entityRotation));
-        EntityRenderDispatcher erd = Minecraft.getInstance().getEntityRenderDispatcher();
-        MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
-        erd.setRenderShadow(false);
-        erd.render(this.displayEntity, 0, 0, 0, partialTicks, poseStack, immediate, 0xF000F0);
-        erd.setRenderShadow(true);
-        immediate.endBatch();
-        poseStack.popPose();
+        int scale = (int) this.entityScale;
 
-//        this.disableScissor();
+        graphics.enableScissor(
+            this.leftPos + 73, this.bodyTopPos,
+            this.leftPos + 73 + 96, this.bodyTopPos + 92
+        );
+
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+            graphics,
+            this.leftPos + 73,
+            this.bodyTopPos,
+            this.leftPos + 73 + 96,
+            this.bodyTopPos + 92,
+            scale,
+            0.0F,
+            mouseX,
+            mouseY,
+            this.displayEntity
+        );
+
+        graphics.disableScissor();
     }
 
 
@@ -689,7 +704,7 @@ public class VariantScreenSelection extends Screen
     private boolean needsScrollBars()
     {
         // button height and 106 would be better but this works.
-        return this.buttons.size() > 5;
+        return this.buttons.size() > 2;
     }
 
 
@@ -729,18 +744,17 @@ public class VariantScreenSelection extends Screen
             return;
         }
 
-        // Send message to server
-        List<CompoundTag> entityVariants = this.blockEntityInterface.getEntityVariants();
-
-        if (this.selectedButton >= entityVariants.size())
+        if (this.selectedButton >= this.cachedVariants.size())
         {
             return;
         }
 
+        // Notify server
         NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
             this.selectedButton));
+
         // Update current client gui.
-        this.displayEntity.load(entityVariants.get(this.selectedButton));
+        this.displayEntity.load(this.cachedVariants.getCompound(this.selectedButton));
 
         this.selectedButton = -1;
     }
@@ -774,11 +788,17 @@ public class VariantScreenSelection extends Screen
                     orElse(true);
         }
 
+        if (this.cachedVariants.size() < this.selectedButton)
+        {
+            // just a small protection
+            return;
+        }
+
         CompoundTag tag;
 
         if (this.selectedButton != -1)
         {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+            tag = (CompoundTag) this.cachedVariants.get(index);
         }
         else
         {
@@ -998,7 +1018,7 @@ public class VariantScreenSelection extends Screen
      */
     private void updateButtonPositions()
     {
-        int buttonHeight = 20;
+        int buttonHeight = 46;
 
         // Calculate total content height
         int totalButtonsHeight = this.buttons.size() * buttonHeight;
@@ -1183,9 +1203,24 @@ public class VariantScreenSelection extends Screen
     private boolean isSelectingEntity;
 
     /**
+     * The local cache of variants.
+     */
+    private ListTag cachedVariants = new ListTag();
+
+    /**
+     * Indicates if data is requested from server.
+     */
+    private boolean hasRequestedData = false;
+
+    /**
      * This boolean indicates if player screen requires update.
      */
     private int needsUpdate;
+
+    /**
+     * The animal selection button height
+     */
+    private final static int BUTTON_HEIGHT = 46;
 
     /**
      * The title of menu
@@ -1228,11 +1263,6 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component CONFIGURE =
         Component.translatable("gui.animal_pen.variant_selection_screen.configure_tooltip");
-
-    /**
-     * The button text location
-     */
-    private static final String BUTTON_TEXT = "gui.animal_pen.variant_selection_screen.select_variant";
 
     /**
      * The fixed size text location

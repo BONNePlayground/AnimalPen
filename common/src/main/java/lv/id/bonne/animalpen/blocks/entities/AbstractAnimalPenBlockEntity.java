@@ -14,16 +14,18 @@ import java.util.*;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
-import lv.id.bonne.animalpen.items.component.StoredMobVariants;
+import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.DispenserInteractionExecutor;
 import lv.id.bonne.animalpen.processing.executor.PlayerInteractionExecutor;
+import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -34,7 +36,6 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -56,6 +57,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -310,12 +312,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     {
                         // Trigger screen Update
                         NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                                filter(other ->
-                                    other.distanceToSqr(this.getBlockPos().getX(),
-                                        this.getBlockPos().getY(),
-                                        this.getBlockPos().getZ()) < 50).
+                                filter(other -> other.blockPosition().distSqr(this.getBlockPos()) < 30).
                                 toList(),
-                            new UpdateVariantScreenData(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos(), null));
                     }
 
                     AnimalPen.sendDebug("Deposit animal cage into pen");
@@ -420,7 +419,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                 // Handle animal variants
                 if (newCount > 1 &&
-                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(), itemInHand, player))
+                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player))
                 {
                     AnimalPen.sendDebug("Variants could not be merged");
 
@@ -432,10 +431,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
                 else
                 {
-                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, player);
+                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player);
                     itemInHand.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
                     StoredMobData removedData = itemInHand.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
-                    itemInHand.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
 
                     if (removedData != null && !removedData.cooldowns().isEmpty())
                     {
@@ -455,11 +453,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                         // Trigger screen Update
                         NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
                                 filter(other ->
-                                    other.distanceToSqr(this.getBlockPos().getX(),
-                                        this.getBlockPos().getY(),
-                                        this.getBlockPos().getZ()) < 50).
+                                    other.blockPosition().distSqr(this.getBlockPos()) < 30).
                                 toList(),
-                            new UpdateVariantScreenData(this.getBlockPos()));
+                            new UpdateVariantScreenData(this.getBlockPos(), this.getEntityVariants()));
                     }
                 }
 
@@ -527,10 +523,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @param serverLevel the level where interaction happens
      * @param source the interaction source block
+     * @param index the index of item from inventory
      * @param itemInHand the interaction item
      * @return modified item stack if interaction succeeded, or empty if failed.
      */
-    public InteractionResult interactWithPen(ServerLevel serverLevel, BlockSource source, ItemStack itemInHand)
+    public InteractionResult interactWithPen(ServerLevel serverLevel,
+        DispenserBlockEntity source,
+        int index,
+        ItemStack itemInHand)
     {
         if (this.getOwner().isPresent())
         {
@@ -548,7 +548,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, source.blockEntity(), this),
+        if (source == null)
+        {
+            AnimalPen.sendDebug("Interaction success through block without container.");
+            return InteractionResult.FAILED;
+        }
+
+        return this.performInteraction(new DispenserInteractionExecutor(serverLevel, source, index, this),
             serverLevel,
             itemInHand);
     }
@@ -930,11 +936,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @return List of entity variants in cage.
      */
-    public List<CompoundTag> getEntityVariants()
+    public ListTag getEntityVariants()
     {
-        return this.getStoredAnimal().
-            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack()).orElseGet(Collections::emptyList)).
-            orElseGet(Collections::emptyList);
+        return AnimalPenVariantHelper.getAnimalVariants(this.getItemStack(), this.level).orElse(new ListTag());
     }
 
 
@@ -943,16 +947,23 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @param index a new animal variant index
      */
-    public void updateAnimalVariant(int index)
+    public void updateAnimalVariant(ServerPlayer player, int index)
     {
-        if (this.getStoredAnimal().isEmpty() || index >= this.getEntityVariants().size() || index < 0)
+        if (this.getStoredAnimal().isEmpty())
         {
             return;
         }
 
-        CompoundTag animalVariant = (CompoundTag) this.getEntityVariants().get(index);
+        ListTag entityVariants = this.getEntityVariants();
 
-        if (animalVariant == null || animalVariant.isEmpty())
+        if (index >= entityVariants.size() || index < 0)
+        {
+            return;
+        }
+
+        CompoundTag animalVariant = entityVariants.getCompound(index);
+
+        if (animalVariant.isEmpty())
         {
             // Nothing to update
             return;
@@ -965,6 +976,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // load new variant
             animal.load(animalVariant);
 
+            AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(player);
+
             // Update animal variant in item stack.
             ItemStack itemStack = this.getItemStack();
 
@@ -975,17 +988,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // Apply data
             this.triggerUpdate();
 
-            if (this.level != null && !this.level.isClientSide())
-            {
-                // Trigger update.
-                NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                        filter(other ->
-                            other.distanceToSqr(this.getBlockPos().getX(),
-                                this.getBlockPos().getY(),
-                                this.getBlockPos().getZ()) < 50).
-                        toList(),
-                    new UpdateVariantScreenData(this.getBlockPos()));
-            }
+            NetworkManager.sendToPlayers(player.serverLevel().players().stream().
+                    filter(other ->
+                        other.blockPosition().distSqr(this.getBlockPos()) < 30).
+                    toList(),
+                new UpdateVariantScreenData(this.getBlockPos(), null));
         });
     }
 
@@ -1004,14 +1011,20 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return;
         }
 
-        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()))
+        if (!(this.level instanceof ServerLevel serverLevel))
         {
             return;
         }
 
-        StoredMobVariants storedMobVariants =
-            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
-        List<CompoundTag> variants = storedMobVariants.variants();
+        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()))
+        {
+            AnimalPen.sendDebug("Storage not set for item stack");
+            return;
+        }
+
+        StoredMobVariantKey variantKey =
+            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+        ListTag variants = IndividualPenStorage.loadVariants(serverLevel, variantKey);
 
         if (index >= variants.size())
         {
@@ -1020,25 +1033,18 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         variants.remove(index);
 
-        itemStack.update(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
-            StoredMobVariants.of(new ArrayList<>()),
-            data -> StoredMobVariants.of(variants));
+        IndividualPenStorage.saveVariants(serverLevel,
+            variantKey,
+            variants);
+        itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(),
+            variantKey.withSize(variants.size()));
 
-        this.triggerUpdate();
+        // Trigger screen Update
+        NetworkManager.sendToPlayers(serverLevel.players().stream().
+            filter(other -> other.blockPosition().distSqr(this.getBlockPos()) < 30).toList(),
+            new UpdateVariantScreenData(this.getBlockPos(), variants));
 
-        if (this.level != null && !this.level.isClientSide())
-        {
-            // Trigger screen Update
-            NetworkManager.sendToPlayers(((ServerLevel) this.level).players().stream().
-                    filter(other ->
-                        other.distanceToSqr(this.getBlockPos().getX(),
-                            this.getBlockPos().getY(),
-                            this.getBlockPos().getZ()) < 50).
-                    toList(),
-                new UpdateVariantScreenData(this.getBlockPos()));
-
-            AnimalPen.sendDebug("Animal variant removed");
-        }
+        AnimalPen.sendDebug("Animal variant removed");
     }
 
 
