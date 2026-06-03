@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
@@ -19,7 +21,6 @@ import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -36,6 +37,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -93,6 +95,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         {
             CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
             CompoundTag compoundTag = customData.getUnsafe();
+            int variantAmount = 0;
 
             // Target animal variants
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_VARIANTS))
@@ -104,6 +107,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
                 itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get(),
                     StoredMobVariants.of(variantList));
+                variantAmount = variantList.size();
             }
 
             // Target animal data
@@ -135,6 +139,15 @@ public abstract class AbstractAnimalStorageItem extends Item
                 String entityId = animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID);
                 EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityId));
                 itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(), StoredMob.of(entityType, animal));
+            }
+
+            // Storage id key.
+            if (compoundTag.contains(AnimalPenCompoundTags.TAG_STORAGE_ID))
+            {
+                itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(),
+                    StoredMobVariantKey.of(
+                        compoundTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID),
+                        variantAmount));
             }
 
             itemStack.remove(DataComponents.CUSTOM_DATA);
@@ -216,13 +229,13 @@ public abstract class AbstractAnimalStorageItem extends Item
                     storedMobData.animalCount()).
                 withStyle(ChatFormatting.GRAY));
 
-            if (stack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get()))
+            if (stack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()))
             {
-                StoredMobVariants storedMobVariants =
-                    stack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+                StoredMobVariantKey variantKey =
+                    stack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
 
                 tooltip.add(Component.translatable(this.tooltipKeyBase() + ".variants",
-                        storedMobVariants.variants().size()).
+                        variantKey.amount()).
                     withStyle(ChatFormatting.GRAY));
             }
 
@@ -251,14 +264,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         LivingEntity target,
         InteractionHand hand)
     {
-        InteractionResult interactionResult =
-            super.interactLivingEntity(stack, player, target, hand);
-
-        if (interactionResult == InteractionResult.FAIL)
+        if (super.interactLivingEntity(stack, player, target, hand) == InteractionResult.FAIL)
         {
-            player.displayClientMessage(Component.translatable("item.animal_pen.animal_cage.error.unknown").
-                withStyle(ChatFormatting.DARK_RED), true);
-            return interactionResult;
+            this.error(player, ".error.unknown");
+            return InteractionResult.FAIL;
         }
 
         if (player.level().isClientSide() || !(target instanceof Mob mob))
@@ -432,7 +441,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         }
 
         level.addFreshEntity(mob);
-        this.decrementStoredAmount(stack);
+        this.decrementStoredAmount(stack, level);
 
         AnimalPenCriteriaTriggersRegistry.ANIMAL_ITEM_USE_TRIGGER.get().trigger((ServerPlayer) context.getPlayer(),
             mob,
@@ -448,7 +457,22 @@ public abstract class AbstractAnimalStorageItem extends Item
 // ---------------------------------------------------------------------
 
 
-    private void decrementStoredAmount(ItemStack stack)
+    @Override
+    public void onDestroyed(ItemEntity itemEntity)
+    {
+        StoredMobVariantKey storedKey =
+            itemEntity.getItem().get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+        if (storedKey != null && itemEntity.level() instanceof ServerLevel serverLevel)
+        {
+            IndividualPenStorage.deleteFile(serverLevel, storedKey);
+        }
+
+        super.onDestroyed(itemEntity);
+    }
+
+
+    private void decrementStoredAmount(ItemStack stack, ServerLevel level)
     {
         StoredMobData data = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
@@ -457,6 +481,13 @@ public abstract class AbstractAnimalStorageItem extends Item
             stack.remove(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
             stack.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
             stack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+            StoredMobVariantKey removedKey = stack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+            // Remove deep storage from it
+            if (removedKey != null && level instanceof ServerLevel serverLevel)
+            {
+                IndividualPenStorage.deleteFile(serverLevel, removedKey);
+            }
         }
         else
         {
