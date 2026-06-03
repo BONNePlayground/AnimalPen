@@ -14,7 +14,7 @@
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
-    "accessors.DispenserBlockAccessor",
+    "DispenserMixin",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
   ],
