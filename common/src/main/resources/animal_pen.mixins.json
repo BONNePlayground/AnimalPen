@@ -14,7 +14,7 @@
     "MixinHoneycombItem",
     "MixinLightingBolt",
     "MushroomStewEffectRemove",
-    "accessors.DispenserBlockAccessor",
+    "DispenserMixin",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor",
     "invokers.MobInvoker"
