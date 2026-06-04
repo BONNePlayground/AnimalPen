@@ -3,22 +3,22 @@
   "package": "lv.id.bonne.animalpen.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "client": [
-  ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
+    "DispenserMixin",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
-    "SheepMixin",
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
-    "accessors.DispenserBlockAccessor",
+    "SheepMixin",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+  ]
 }
