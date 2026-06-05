@@ -135,10 +135,28 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             this.storedAnimal = null;
         }
 
-        if (this.getLevel() != null && this.getLevel().isClientSide() && this.storedAnimal != null)
+        if (this.getLevel() != null && this.getLevel().isClientSide())
         {
-            this.storedAnimal.load(this.getItemStack().getOrCreateTag().
-                getCompound(AnimalPenCompoundTags.TAG_ANIMAL));
+            if (this.storedAnimal != null)
+            {
+                // Update client entity
+                this.storedAnimal.load(this.getItemStack().getOrCreateTag().
+                    getCompound(AnimalPenCompoundTags.TAG_ANIMAL));
+            }
+
+            if (!this.getItemStack().isEmpty())
+            {
+                CompoundTag mobNBT = this.getItemStack().getOrCreateTag();
+                CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+                CompoundTag coolDown = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
+
+                Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
+
+                for (String key : allKeys)
+                {
+                    coolDown.putLong(key, coolDown.getLong(key) + this.level.getGameTime());
+                }
+            }
         }
 
         this.setChanged();
@@ -211,33 +229,43 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                 boolean requiresUpdate = false;
 
-                Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
-
-                for (String key : allKeys)
+                if (this.level instanceof ServerLevel serverLevel)
                 {
-                    long time = coolDown.getLong(key);
+                    Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
 
-                    if (--time > 0)
+                    for (String key : allKeys)
                     {
-                        coolDown.putLong(key, time);
-                    }
-                    else
-                    {
-                        coolDown.remove(key);
+                        long time = coolDown.getLong(key);
 
-                        if (this.getLevel() instanceof ServerLevel serverLevel)
+                        if (--time > 0)
                         {
+                            coolDown.putLong(key, time);
+                        }
+                        else
+                        {
+                            coolDown.remove(key);
                             this.triggerEndFunctions(serverLevel, animal, mobNBT, key);
                             requiresUpdate = true;
                         }
                     }
-                }
 
-                // trigger continuous functions
-
-                if (this.getLevel() instanceof ServerLevel serverLevel)
-                {
+                    // trigger continuous functions
                     requiresUpdate |= this.triggerStartFunctions(serverLevel, animal, mobNBT, coolDown);
+                }
+                else
+                {
+                    Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
+
+                    for (String key : allKeys)
+                    {
+                        long time = coolDown.getLong(key);
+
+                        if (time < this.level.getGameTime())
+                        {
+                            // Remove expired cooldowns
+                            coolDown.remove(key);
+                        }
+                    }
                 }
 
                 animalData.put(AnimalPenCompoundTags.TAG_COOLDOWN, coolDown);
@@ -835,64 +863,86 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     private boolean triggerStartFunctions(ServerLevel level, Mob mob, CompoundTag mobNBT, CompoundTag newCooldowns)
     {
-        List<AnimalInteraction> interactions = AnimalPenInteractionRegistry.getInteractions(mob).stream().
-            filter(interaction -> !newCooldowns.contains(interaction.id())).
-            filter(interaction -> interaction.ingredient().isEmpty()).
-            filter(interaction -> interaction.matchAllConditions(mobNBT)).
-            toList();
-
         boolean anyChanges = false;
 
-        for (AnimalInteraction interaction : interactions)
+        // StreamAPI may cause some unneeded garbage collector calls.
+        for (AnimalInteraction animalInteraction : AnimalPenInteractionRegistry.getInteractions(mob))
         {
-            int animalCount = mobNBT.
-                getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-
-            // Apply cooldown
-            if (interaction.cooldown() != null)
+            if (!newCooldowns.contains(animalInteraction.id()) &&
+                animalInteraction.ingredient().isEmpty() &&
+                animalInteraction.matchAllConditions(mobNBT))
             {
-                int cooldownTime = interaction.cooldown().calculateCooldown(animalCount);
-                newCooldowns.putInt(interaction.id(), cooldownTime);
-                anyChanges = true;
-            }
-
-            if (interaction.even() && animalCount % 2 != 0)
-            {
-                animalCount--;
-            }
-
-            // Process loot table
-            List<ItemStack> lootItems = interaction.lootEntry() == null ?
-                Collections.emptyList() :
-                interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
-
-            lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
-                itemStack,
-                this.getBlockPos(),
-                this.dropPosition()));
-
-            // Play sound
-            if (interaction.sound() != null && Registry.SOUND_EVENT.containsKey(interaction.sound()))
-            {
-                level.playSound(null,
-                    this.getBlockPos(),
-                    Registry.SOUND_EVENT.get(interaction.sound()),
-                    SoundSource.NEUTRAL,
-                    1.0F,
-                    Mth.randomBetween(level.getRandom(), 0.8F, 1.2F));
-            }
-
-            // Trigger start functions
-            for (FunctionKey function : interaction.runFunctions())
-            {
-                anyChanges |= function.id().processFunction(level,
+                anyChanges |= this.triggerStartFunction(level,
                     mob,
                     mobNBT,
-                    this.getBlockPos(),
-                    function.key(),
-                    function.value());
+                    newCooldowns,
+                    animalInteraction);
             }
+        }
+
+        return anyChanges;
+    }
+
+
+    /**
+     * This method triggers start functions for interaction without interaction item. It only runs for interaction it
+     * can fulfil conditions
+     */
+    private boolean triggerStartFunction(ServerLevel level,
+        Mob mob,
+        CompoundTag mobNBT,
+        CompoundTag newCooldowns,
+        AnimalInteraction interaction)
+    {
+        boolean anyChanges = false;
+
+        int animalCount = mobNBT.
+            getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
+            getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+
+        // Apply cooldown
+        if (interaction.cooldown() != null)
+        {
+            long cooldownTime = interaction.cooldown().calculateCooldown(animalCount);
+            newCooldowns.putLong(interaction.id(), cooldownTime);
+            anyChanges = true;
+        }
+
+        if (interaction.even() && animalCount % 2 != 0)
+        {
+            animalCount--;
+        }
+
+        // Process loot table
+        List<ItemStack> lootItems = interaction.lootEntry() == null ?
+            Collections.emptyList() :
+            interaction.lootEntry().processLootTable(level, mob, this.getBlockPos(), animalCount, 1);
+
+        lootItems.forEach(itemStack -> ItemTransferUtil.insertBellowOrDrop(level,
+            itemStack,
+            this.getBlockPos(),
+            this.dropPosition()));
+
+        // Play sound
+        if (interaction.sound() != null && Registry.SOUND_EVENT.containsKey(interaction.sound()))
+        {
+            level.playSound(null,
+                this.getBlockPos(),
+                Registry.SOUND_EVENT.get(interaction.sound()),
+                SoundSource.NEUTRAL,
+                1.0F,
+                Mth.randomBetween(level.getRandom(), 0.8F, 1.2F));
+        }
+
+        // Trigger start functions
+        for (FunctionKey function : interaction.runFunctions())
+        {
+            anyChanges |= function.id().processFunction(level,
+                mob,
+                mobNBT,
+                this.getBlockPos(),
+                function.key(),
+                function.value());
         }
 
         return anyChanges;
@@ -1317,17 +1367,15 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                                 case ON_MATCH -> matchConditions;
                             };
 
-                            Pair<ItemStack[], Component> textIconPair = shouldExecute ?
-                                line.animalPenGetLine(animalInteraction.ingredient(),
+                            if (shouldExecute)
+                            {
+                                long reminingTime = cooldown.getLong(animalInteraction.id()) - this.level.getGameTime();
+
+                                textLines.add(line.animalPenGetLine(animalInteraction.ingredient(),
                                     tag,
                                     this.tickCounter,
                                     shortText,
-                                    cooldown.getLong(animalInteraction.id())) :
-                                null;
-
-                            if (textIconPair != null)
-                            {
-                                textLines.add(textIconPair);
+                                    reminingTime));
                             }
                         });
                     }
