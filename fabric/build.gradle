@@ -24,14 +24,21 @@ fabricApi {
 
 loom {
     runs {
-        devClient {
+        client {
             client()
             programArg("--username=Dev")
+            runDir("run/client1")
         }
 
-        dev2Client {
+        client2 {
             client()
             programArg("--username=Dev2")
+            runDir("run/client2")
+        }
+
+        server {
+            server()
+            runDir("run/server/$minecraft_version")
         }
     }
 }
@@ -82,6 +89,9 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+
+    modRuntimeOnly "net.fabricmc:fabric-language-kotlin:1.13.12+kotlin.2.4.0"
+//    modRuntimeOnly "curse.maven:observable-509575:${rootProject.observable_version}"
 }
 
 processResources {
@@ -132,6 +142,8 @@ curseforge {
         addGameVersion "1.19.4"
         addGameVersion "Fabric"
         addGameVersion "Java 17"
+        addGameVersion "Server"
+        addGameVersion "Client"
 
         relations {
             requiredDependency "architectury-api"
