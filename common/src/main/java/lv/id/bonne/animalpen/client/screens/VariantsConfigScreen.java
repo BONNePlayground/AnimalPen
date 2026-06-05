@@ -18,6 +18,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.CommonColors;
 
 
 public class VariantsConfigScreen extends Screen
@@ -87,7 +89,7 @@ public class VariantsConfigScreen extends Screen
                     MINIMAL_ANIMAL_COUNT,
                     this.getX(),
                     this.getY() - font.lineHeight - LABEL_PADDING_Y,
-                    -1,
+                    CommonColors.DARK_GRAY,
                     false);
 
                 if (this.isHovered)
@@ -143,7 +145,7 @@ public class VariantsConfigScreen extends Screen
             this.title,
             (this.width / 2 - this.font.width(this.title) / 2),
             (this.topPos + Y_OFFSET_TITLE),
-            -1,
+            CommonColors.DARK_GRAY,
             false);
     }
 
@@ -270,7 +272,7 @@ public class VariantsConfigScreen extends Screen
                 size,
                 this.getX(),
                 this.getY() - font.lineHeight - LABEL_PADDING_Y,
-                -1,
+                CommonColors.DARK_GRAY,
                 false);
 
             if (this.isHovered)
@@ -393,7 +395,7 @@ public class VariantsConfigScreen extends Screen
                 PROTECTION,
                 this.getX() + k + 4,
                 this.getY() + (this.height - font.lineHeight) / 2,
-                -1,
+                CommonColors.DARK_GRAY,
                 false);
 
             if (this.isHovered)
