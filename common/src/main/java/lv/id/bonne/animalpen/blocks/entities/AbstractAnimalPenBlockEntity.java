@@ -135,6 +135,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             this.storedAnimal = null;
         }
 
+        if (this.getLevel() != null && this.getLevel().isClientSide() && this.storedAnimal != null)
+        {
+            this.storedAnimal.load(this.getItemStack().getOrCreateTag().
+                getCompound(AnimalPenCompoundTags.TAG_ANIMAL));
+        }
+
         this.setChanged();
     }
 
@@ -196,11 +202,6 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     {
         this.tickCounter++;
 
-        if (this.getLevel() == null || this.getLevel().isClientSide())
-        {
-            return;
-        }
-
         boolean updated = this.getStoredAnimal().
             map(animal ->
             {
@@ -208,7 +209,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
                 CompoundTag coolDown = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
 
-                boolean cooldownChange = false;
+                boolean requiresUpdate = false;
 
                 Set<String> allKeys = new HashSet<>(coolDown.getAllKeys());
 
@@ -223,18 +224,25 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     else
                     {
                         coolDown.remove(key);
-                        this.triggerEndFunctions((ServerLevel) this.getLevel(), animal, mobNBT, key);
-                    }
 
-                    cooldownChange = true;
+                        if (this.getLevel() instanceof ServerLevel serverLevel)
+                        {
+                            this.triggerEndFunctions(serverLevel, animal, mobNBT, key);
+                            requiresUpdate = true;
+                        }
+                    }
                 }
 
                 // trigger continuous functions
-                cooldownChange |= this.triggerStartFunctions((ServerLevel) this.getLevel(), animal, mobNBT, coolDown);
+
+                if (this.getLevel() instanceof ServerLevel serverLevel)
+                {
+                    requiresUpdate |= this.triggerStartFunctions(serverLevel, animal, mobNBT, coolDown);
+                }
 
                 animalData.put(AnimalPenCompoundTags.TAG_COOLDOWN, coolDown);
 
-                return cooldownChange;
+                return requiresUpdate;
             }).
             orElse(false);
 
@@ -776,11 +784,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
             ItemStack item = this.getItemStack();
 
-            CompoundTag tag = new CompoundTag();
-
             if (this.getAnimalCount() <= 0)
             {
-                item.setTag(tag);
+                item.setTag(new CompoundTag());
                 Block.popResource(serverLevel, this.getBlockPos().above(), item);
                 this.inventory.setItem(0, ItemStack.EMPTY);
                 AnimalPen.sendDebug("Dropping empty cage");
@@ -1246,13 +1252,8 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         {
             CompoundTag tag = this.getItemStack().getOrCreateTag().getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
 
-            if (new ResourceLocation(tag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
+            if (!new ResourceLocation(tag.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
                 equals(this.storedAnimal.getType().arch$registryName()))
-            {
-                // Load data without removing entity.
-                this.storedAnimal.load(tag);
-            }
-            else
             {
                 this.storedAnimal = null;
             }

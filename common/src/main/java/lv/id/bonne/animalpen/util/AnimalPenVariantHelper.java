@@ -138,6 +138,7 @@ public class AnimalPenVariantHelper
         {
             UUID penId = itemTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
             IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel, penId);
+            itemTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, storage.getVariants().size());
 
             return Optional.of(storage);
         }
@@ -278,7 +279,7 @@ public class AnimalPenVariantHelper
                 break;
             }
 
-            mainStorage.getVariants().add(currentTag.copy());
+            mainStorage.getVariants().add(currentTag);
             iterator.remove(); // Safely remove element from redundant list tracking
         }
 
