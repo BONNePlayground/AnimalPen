@@ -10,6 +10,7 @@ package lv.id.bonne.animalpen.processing.function.core;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.platform.Services;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -24,7 +25,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.level.block.Block;
 
 
 /**
@@ -86,6 +86,7 @@ public class BucketablePickup implements EntityFunction
     @Override
     public boolean interactDispenser(ServerLevel serverLevel,
         Container dispenserInventory,
+        int index,
         ItemStack itemConsumed,
         int amount,
         Mob mob,
@@ -114,7 +115,19 @@ public class BucketablePickup implements EntityFunction
             1.0F,
             Mth.randomBetween(serverLevel.getRandom(), 0.8F, 1.2F));
 
-        Block.popResource(serverLevel, blockPos, bucketItem);
+        // Remove item from container
+        dispenserInventory.setItem(index, ItemStack.EMPTY);
+
+        if (dispenserInventory.canPlaceItem(index, bucketItem))
+        {
+            // Try to place it back into dispenser.
+            dispenserInventory.setItem(index, bucketItem);
+        }
+        else
+        {
+            // Transfer into container bellow or drop
+            Services.ITEM_TRANSFER.insertBellowOrDrop(serverLevel, bucketItem, blockPos, blockPos);
+        }
 
         StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount() - 1;

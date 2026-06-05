@@ -7,6 +7,7 @@
   ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
+    "DispenserMixin",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
@@ -16,7 +17,6 @@
     "MixinLevelChunk",
     "MixinLightingBolt",
     "SheepMixin",
-    "accessors.DispenserBlockAccessor",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
   ],

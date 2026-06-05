@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
-import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
+import lv.id.bonne.animalpen.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -23,29 +23,23 @@ public record UpdateDisplayAnimalData(BlockPos position, int index) implements C
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param player The packet context.
+     * @param serverPlayer The packet context.
      */
-    public static void handle(UpdateDisplayAnimalData data, ServerPlayer player)
+    public static void handle(UpdateDisplayAnimalData data, ServerPlayer serverPlayer)
     {
         int index = data.index();
         BlockPos blockPos = data.position();
-
-        ServerLevel level = player.level();
+        ServerLevel level = serverPlayer.level();
 
         if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
         {
             if (animalPen.getOwner().isPresent() &&
-                !animalPen.getOwner().get().equals(player.getUUID()))
+                !animalPen.getOwner().get().equals(serverPlayer.getUUID()))
             {
                 return;
             }
 
-            if (index >= 0 && index < animalPen.getEntityVariants().size())
-            {
-                AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(player);
-            }
-
-            animalPen.updateAnimalVariant(index);
+            animalPen.updateAnimalVariant(serverPlayer, index);
         }
         else
         {

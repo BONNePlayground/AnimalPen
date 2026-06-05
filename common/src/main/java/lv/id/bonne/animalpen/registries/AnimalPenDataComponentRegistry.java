@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import lv.id.bonne.animalpen.platform.Services;
 import net.minecraft.core.component.DataComponentType;
@@ -42,8 +43,19 @@ public class AnimalPenDataComponentRegistry
                 networkSynchronized(StoredMobData.STREAM_CODEC).build());
 
     /**
+     * Stored variant data key.
+     */
+    public static final Supplier<DataComponentType<StoredMobVariantKey>> MOB_VARIANT_KEY =
+        Services.REGISTRY.registerDataComponent(AnimalPen.resourceOf("mob_variant_key"),
+            () -> DataComponentType.<StoredMobVariantKey>builder().
+                persistent(StoredMobVariantKey.CODEC).
+                networkSynchronized(StoredMobVariantKey.STREAM_CODEC).build());
+
+
+    /**
      * Stores captured entity variants
      */
+    @Deprecated
     public static final Supplier<DataComponentType<StoredMobVariants>> MOB_VARIANT_COMPONENT =
         Services.REGISTRY.registerDataComponent(AnimalPen.resourceOf("mob_variants"),
             () -> DataComponentType.<StoredMobVariants>builder().persistent(StoredMobVariants.CODEC).

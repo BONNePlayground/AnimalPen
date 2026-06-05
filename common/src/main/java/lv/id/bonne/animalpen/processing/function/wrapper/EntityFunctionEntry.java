@@ -57,6 +57,7 @@ public final class EntityFunctionEntry
     public boolean interactDispenser(
         ServerLevel level,
         Container inventory,
+        int index,
         ItemStack item,
         int amount,
         Mob mob,
@@ -65,11 +66,9 @@ public final class EntityFunctionEntry
         @Nullable String dataKey,
         @Nullable Value dataValue)
     {
-        return function.interactDispenser(
-            level, inventory, item, amount,
-            mob, componentHolder, pos,
-            dataKey, dataValue
-        );
+        // Try new interaction. If it fails, backup to old one.
+        return this.function.interactDispenser(level, inventory, index, item, amount, mob, componentHolder, pos, dataKey, dataValue)
+            || this.function.interactDispenser(level, inventory, item, amount, mob, componentHolder, pos, dataKey, dataValue);
     }
 
 
