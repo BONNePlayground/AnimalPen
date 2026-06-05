@@ -262,6 +262,12 @@ public class AnimalPenVariantHelper
 
         UUID redundantId = redundantTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
 
+        if (mainId.equals(redundantId))
+        {
+            // This should happen only if admin commands are in use.
+            return;
+        }
+
         IndividualPenStorage mainStorage = IndividualPenStorage.getOrCreate(serverLevel, mainId);
         IndividualPenStorage redundantStorage = IndividualPenStorage.getOrCreate(serverLevel, redundantId);
 
@@ -287,18 +293,17 @@ public class AnimalPenVariantHelper
 
         // Update the main item's save file
         mainStorage.setDirty();
+        redundantStorage.setDirty();
 
         // Clean up the redundant item's save file
         if (redundantStorage.getVariants().isEmpty())
         {
-            IndividualPenStorage.delete(serverLevel, redundantId);
             redundantTag.remove(AnimalPenCompoundTags.TAG_STORAGE_ID);
             redundantTag.remove(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT);
         }
         else
         {
             // If the pen hit maximum limit, write back whatever remnants didn't fit
-            redundantStorage.setDirty();
             redundantTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT,
                 redundantStorage.getVariants().size());
         }
