@@ -11,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -39,7 +39,7 @@ public class AnimalPenVariantHelper
      * @param player Player that should receive message is it fails to add variant.
      * @return {@code true} if variant was added, {@code false} otherwise
      */
-    public static boolean storeAnimalVariant(ItemStack itemStack, Mob animal, @Nullable Player player)
+    public static boolean storeAnimalVariant(ItemStack itemStack, Mob animal, @Nullable Player player, Consumer<String> onError)
     {
         if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
@@ -73,15 +73,13 @@ public class AnimalPenVariantHelper
         }
 
         // Load variants directly from the item's individual save file
-        ListTag variantList = IndividualPenStorage.loadVariants(serverLevel, penId);
+        IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel, penId);
 
-        if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
+        if (storage.getVariants().size() + 1 > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
-                player.displayClientMessage(
-                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
-                        withStyle(ChatFormatting.DARK_RED), true);
+                onError.accept(".error.too_many_variants");
             }
 
             return false;
@@ -93,11 +91,11 @@ public class AnimalPenVariantHelper
         variant.remove("UUID");
         variant.remove("Pos");
 
-        if (!variantList.contains(variant))
+        if (!storage.getVariants().contains(variant))
         {
-            variantList.add(variant);
-            // Save data back out to disk immediately
-            IndividualPenStorage.saveVariants(serverLevel, penId, variantList);
+            storage.getVariants().add(variant);
+            storage.setDirty();
+            itemTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, storage.getVariants().size());
         }
 
         return true;
@@ -112,7 +110,7 @@ public class AnimalPenVariantHelper
      * @param level The level context (must be server-side).
      * @return Optional list of tags for animal variants.
      */
-    public static Optional<ListTag> getAnimalVariants(ItemStack itemStack, Level level)
+    public static Optional<IndividualPenStorage> getAnimalVariants(ItemStack itemStack, Level level)
     {
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel))
         {
@@ -127,15 +125,23 @@ public class AnimalPenVariantHelper
             ListTag variants = itemTag.getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND);
             UUID uuid = UUID.randomUUID();
             itemTag.putUUID(AnimalPenCompoundTags.TAG_STORAGE_ID, uuid);
-            IndividualPenStorage.saveVariants(serverLevel, uuid, variants);
+            itemTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, variants.size());
+
+            IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel, uuid);
+            storage.setVariants(variants);
+
             itemTag.remove(AnimalPenCompoundTags.TAG_VARIANTS);
+
+            return Optional.of(storage);
         }
 
         if (itemTag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID))
         {
             UUID penId = itemTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
-            ListTag variantList = IndividualPenStorage.loadVariants(serverLevel, penId);
-            return Optional.of(variantList);
+            IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel, penId);
+            itemTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, storage.getVariants().size());
+
+            return Optional.of(storage);
         }
 
         return Optional.empty();
@@ -151,7 +157,11 @@ public class AnimalPenVariantHelper
      * @param player A player instance
      * @return {@code true} if all variants can be added, {@code false} otherwise.
      */
-    public static boolean canMergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, Level level, @Nullable Player player)
+    public static boolean canMergeAnimalVariants(ItemStack mainItem,
+        ItemStack redundantItem,
+        Level level,
+        @Nullable Player player,
+        Consumer<String> onError)
     {
         if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
@@ -177,23 +187,21 @@ public class AnimalPenVariantHelper
 
         if (itemTag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID))
         {
-            mainSize = IndividualPenStorage.loadVariants(serverLevel, itemTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID)).size();
+            mainSize = itemTag.getInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT);
         }
 
         int redundantSize = 0;
 
         if (redundantTag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID))
         {
-            redundantSize = IndividualPenStorage.loadVariants(serverLevel, redundantTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID)).size();
+            redundantSize = redundantTag.getInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT);
         }
 
         if (mainSize + redundantSize > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
-                player.displayClientMessage(
-                    Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
-                        withStyle(ChatFormatting.DARK_RED), true);
+                onError.accept(".error.too_many_variants");
             }
 
             return false;
@@ -211,7 +219,11 @@ public class AnimalPenVariantHelper
      * @param level The level context (must be server-side).
      * @param player A player instance
      */
-    public static void mergeAnimalVariants(ItemStack mainItem, ItemStack redundantItem, Level level, @Nullable Player player)
+    public static void mergeAnimalVariants(ItemStack mainItem,
+        ItemStack redundantItem,
+        Level level,
+        @Nullable Player player,
+        Consumer<String> onError)
     {
         if (AnimalPen.config().getMaxStoredVariants() <= 0)
         {
@@ -251,43 +263,50 @@ public class AnimalPenVariantHelper
 
         UUID redundantId = redundantTag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
 
-        // Load both lists from disk
-        ListTag variantList = IndividualPenStorage.loadVariants(serverLevel, mainId);
-        ListTag redundantList = IndividualPenStorage.loadVariants(serverLevel, redundantId);
+        if (mainId.equals(redundantId))
+        {
+            // This should happen only if admin commands are in use.
+            return;
+        }
+
+        IndividualPenStorage mainStorage = IndividualPenStorage.getOrCreate(serverLevel, mainId);
+        IndividualPenStorage redundantStorage = IndividualPenStorage.getOrCreate(serverLevel, redundantId);
 
         // Safely pull elements out of redundant list and move to main
-        Iterator<Tag> iterator = redundantList.iterator();
+        Iterator<Tag> iterator = redundantStorage.getVariants().iterator();
         while (iterator.hasNext())
         {
             Tag currentTag = iterator.next();
-            if (variantList.size() + 1 > AnimalPen.config().getMaxStoredVariants())
+            if (mainStorage.getVariants().size() + 1 > AnimalPen.config().getMaxStoredVariants())
             {
                 if (player != null)
                 {
-                    player.displayClientMessage(
-                        Component.translatable("item.animal_pen.animal_cage.error.too_many_variants").
-                            withStyle(ChatFormatting.DARK_RED), true);
+                    onError.accept(".error.too_many_variants");
                 }
                 break;
             }
 
-            variantList.add(currentTag.copy());
+            mainStorage.getVariants().add(currentTag);
             iterator.remove(); // Safely remove element from redundant list tracking
         }
 
+        itemTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, mainStorage.getVariants().size());
+
         // Update the main item's save file
-        IndividualPenStorage.saveVariants(serverLevel, mainId, variantList);
+        mainStorage.setDirty();
+        redundantStorage.setDirty();
 
         // Clean up the redundant item's save file
-        if (redundantList.isEmpty())
+        if (redundantStorage.getVariants().isEmpty())
         {
-            IndividualPenStorage.deleteFile(serverLevel, redundantId);
             redundantTag.remove(AnimalPenCompoundTags.TAG_STORAGE_ID);
+            redundantTag.remove(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT);
         }
         else
         {
             // If the pen hit maximum limit, write back whatever remnants didn't fit
-            IndividualPenStorage.saveVariants(serverLevel, redundantId, redundantList);
+            redundantTag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT,
+                redundantStorage.getVariants().size());
         }
     }
 }
