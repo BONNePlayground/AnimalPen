@@ -7,20 +7,22 @@
   ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
+    "DispenserMixin",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
     "MigrateItemStack",
     "MigrateEquipmentSlot",
-    "SheepMixin",
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
-    "accessors.DispenserBlockAccessor",
+    "SheepMixin",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+  ]
 }

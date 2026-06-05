@@ -1,20 +1,17 @@
 package lv.id.bonne.animalpen.network.packets;
 
 
-import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.NotNull;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
-import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 
 
 /**
@@ -34,23 +31,16 @@ public record UpdateDisplayAnimalData(BlockPos position, int index) implements C
 
         packetContext.queue(() ->
         {
-            Level level = packetContext.getPlayer().level();
-
-            if (level.getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
+            if (packetContext.getPlayer() instanceof ServerPlayer serverPlayer &&
+                serverPlayer.level().getBlockEntity(blockPos) instanceof AbstractAnimalPenBlockEntity animalPen)
             {
                 if (animalPen.getOwner().isPresent() &&
-                    !animalPen.getOwner().get().equals(packetContext.getPlayer().getUUID()))
+                    !animalPen.getOwner().get().equals(serverPlayer.getUUID()))
                 {
                     return;
                 }
 
-                if (index >= 0 && index < animalPen.getEntityVariants().size())
-                {
-                    AnimalPenCriteriaTriggersRegistry.ANIMAL_VARIANT_CHANGE_TRIGGER.get().trigger(
-                        (ServerPlayer) packetContext.getPlayer());
-                }
-
-                animalPen.updateAnimalVariant(index);
+                animalPen.updateAnimalVariant(serverPlayer, index);
             }
             else
             {

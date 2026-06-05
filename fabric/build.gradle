@@ -13,6 +13,7 @@ repositories {
         name = "Nucleoid"
         url "https://maven.nucleoid.xyz/"
     }
+    maven { url = "https://api.modrinth.com/maven" }
 }
 
 architectury {
