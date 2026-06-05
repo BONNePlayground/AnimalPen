@@ -12,6 +12,7 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
+import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
 import lv.id.bonne.animalpen.items.component.StoredMobVariants;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -47,8 +48,19 @@ public class AnimalPenDataComponentRegistry
                 networkSynchronized(StoredMobData.STREAM_CODEC).build());
 
     /**
+     * Stored variant data key.
+     */
+    public static final RegistrySupplier<DataComponentType<StoredMobVariantKey>> MOB_VARIANT_KEY =
+        REGISTRY.register(AnimalPen.resourceOf("mob_variant_key"),
+            () -> DataComponentType.<StoredMobVariantKey>builder().
+                persistent(StoredMobVariantKey.CODEC).
+                networkSynchronized(StoredMobVariantKey.STREAM_CODEC).build());
+
+
+    /**
      * Stores captured entity variants
      */
+    @Deprecated
     public static final RegistrySupplier<DataComponentType<StoredMobVariants>> MOB_VARIANT_COMPONENT =
         REGISTRY.register(AnimalPen.resourceOf("mob_variants"),
             () -> DataComponentType.<StoredMobVariants>builder().persistent(StoredMobVariants.CODEC).

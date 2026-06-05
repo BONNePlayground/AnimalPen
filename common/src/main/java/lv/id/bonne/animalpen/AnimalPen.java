@@ -12,21 +12,17 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
-import lv.id.bonne.animalpen.blocks.behaviour.UseToolsBehaviour;
 import lv.id.bonne.animalpen.commands.AnimalPenCommands;
 import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionReloadListener;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
-import lv.id.bonne.animalpen.mixin.accessors.DispenserBlockAccessor;
 import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.DispenserBlock;
 
 
 public final class AnimalPen
@@ -47,21 +43,6 @@ public final class AnimalPen
         CommandRegistrationEvent.EVENT.register(
             (dispatcher, registry, selection) -> AnimalPenCommands.register(dispatcher));
 
-        // Dispenser interaction
-        DispenserBlock.registerBehavior(Items.SHEARS,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.SHEARS)));
-
-        DispenserBlock.registerBehavior(Items.GLASS_BOTTLE,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.GLASS_BOTTLE)));
-        DispenserBlock.registerBehavior(Items.BUCKET,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BUCKET)));
-        DispenserBlock.registerBehavior(Items.BOWL,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BOWL)));
-        DispenserBlock.registerBehavior(Items.WATER_BUCKET,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.WATER_BUCKET)));
-        DispenserBlock.registerBehavior(Items.BRUSH,
-            new UseToolsBehaviour(DispenserBlockAccessor.getDispenserRegistry().get(Items.BRUSH)));
-
         // Networking
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S,
@@ -78,6 +59,11 @@ public final class AnimalPen
             UpdateConfigurationData.ID,
             UpdateConfigurationData.STREAM_CODEC,
             UpdateConfigurationData::handle);
+
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S,
+            RequestVariantData.ID,
+            RequestVariantData.STREAM_CODEC,
+            RequestVariantData::handle);
 
         // register the listener
         ReloadListenerRegistry.register(PackType.SERVER_DATA,

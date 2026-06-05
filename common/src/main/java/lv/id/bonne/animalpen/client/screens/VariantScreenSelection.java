@@ -4,33 +4,32 @@ package lv.id.bonne.animalpen.client.screens;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
+import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
@@ -81,10 +80,6 @@ public class VariantScreenSelection extends Screen
         this.buttons.clear();
 
         this.bodyTopPos = this.topPos + 18;
-        int buttonPos = this.leftPos + 24;
-
-        int buttonWidth = 46;
-        int buttonHeight = 20;
 
         // collect variants
 
@@ -102,26 +97,14 @@ public class VariantScreenSelection extends Screen
 
         this.blockEntityInterface = animalPenEntity;
 
-        List<CompoundTag> entityList = this.blockEntityInterface.getEntityVariants();
-
-        if (entityList == null)
+        if (!this.hasRequestedData)
         {
-            // Avoid null-pointer
-            entityList = Collections.emptyList();
+            this.cachedVariants = new ListTag();
+            NetworkManager.sendToServer(new RequestVariantData(this.position));
+            this.hasRequestedData = true;
         }
 
-        // initialize variant buttons.
-        for (int i = 0; i < entityList.size(); i++)
-        {
-            int y = this.bodyTopPos + (i * buttonHeight);
-            final int index = i;
-
-            this.buttons.add(this.addWidget(Button.builder(Component.translatable(BUTTON_TEXT, (index + 1)),
-                    button -> handleVariantButton(button, index)).
-                pos(buttonPos, y).
-                size(buttonWidth, buttonHeight).
-                build()));
-        }
+        this.rebuildDynamicWidgets(this.leftPos + 24);
 
         // Delete variant button
         this.deleteButton = this.addWidget(Button.builder(Component.empty(),
@@ -194,6 +177,37 @@ public class VariantScreenSelection extends Screen
 
 
     /**
+     * This method rebuilds animal variant selection buttons.
+     * @param buttonPos The left side of buttons.
+     */
+    private void rebuildDynamicWidgets(int buttonPos)
+    {
+        for (int i = 0; i < this.cachedVariants.size(); i++)
+        {
+            int y = this.bodyTopPos + (i * BUTTON_HEIGHT);
+            final int index = i;
+
+            CompoundTag entityTag = this.cachedVariants.getCompoundOrEmpty(i);
+
+            if (!entityTag.contains("id"))
+            {
+                // Add missing entity id.
+                entityTag.putString("id", this.displayEntity.getEncodeId());
+            }
+
+            this.buttons.add(this.addWidget(new EntityButton(
+                buttonPos,
+                y,
+                BUTTON_HEIGHT,
+                BUTTON_HEIGHT,
+                entityTag,
+                button -> handleVariantButton(button, index)
+            )));
+        }
+    }
+
+
+    /**
      * This returns position of block that relates to current screen.
      *
      * @return block position.
@@ -207,9 +221,17 @@ public class VariantScreenSelection extends Screen
     /**
      * This inits that update will be triggered after 5 ticks.
      */
-    public void update()
+    public void update(@Nullable ListTag serverVariants)
     {
-        this.needsUpdate = 5;
+        if (serverVariants != null)
+        {
+            this.cachedVariants = serverVariants;
+            this.needsUpdate = 1;
+        }
+        else
+        {
+            this.needsUpdate = 5;
+        }
     }
 
 
@@ -256,12 +278,13 @@ public class VariantScreenSelection extends Screen
         this.updateButtonPositions();
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
         this.renderOtherButtons(graphics, mouseX, mouseY);
         this.renderScrollBar(graphics, mouseX, mouseY);
         this.renderTextBar(graphics, mouseX, mouseY, partialTicks);
-        this.renderEntity(graphics, partialTicks);
+        this.renderEntity(graphics, mouseX, mouseY, partialTicks);
         this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
+        this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
+
 
         // Render title of the menu.
         graphics.drawString(this.font,
@@ -475,53 +498,38 @@ public class VariantScreenSelection extends Screen
      *
      * @param graphics The pose stack.
      */
-    private void renderEntity(@NotNull GuiGraphics graphics, float partialTicks)
+    private void renderEntity(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        // Calculate screen coordinates for rendering
-        int x = this.leftPos + 73;
-        int y = this.bodyTopPos;
-
-        // Reset entity rotation before rendering
-        this.displayEntity.yBodyRot = 0.0f;
-        this.displayEntity.setYRot(0.0f);
-        this.displayEntity.yHeadRot = 0.0f;
-        this.displayEntity.yHeadRotO = 0.0f;
+        if (this.displayEntity == null) return;
 
         if (this.displayEntity instanceof WaterAnimal animal)
         {
             animal.setPose(Pose.SWIMMING);
             animal.setSwimming(true);
             ((EntityAccessor) animal).setWasTouchingWater(true);
-            y -= 10;
         }
 
-        // Create quaternion for base Z rotation (face forward)
-        Quaternionf baseRotation = new Quaternionf().rotateZ((float) Math.PI);
-        Quaternionf yawRotation = new Quaternionf().rotateY((float) Math.toRadians(this.entityRotation));
+        int scale = (int) this.entityScale;
 
-        // Combine rotations
-        baseRotation.mul(yawRotation);
-
-        // Get EntityRenderer and RenderState
-        EntityRenderer<? super LivingEntity, ?> renderer =
-            Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(this.displayEntity);
-        EntityRenderState renderState = renderer.createRenderState(this.displayEntity, 1.0F);
-
-        // Create vertical offset (Y axis)
-        Vector3f offset = new Vector3f(0.0F,
-            this.displayEntity.getBbHeight() / 2.0F + 0.0625F * this.displayEntity.getScale(),
-            0.0F);
-
-        // Submit entity for rendering via GuiGraphics
-        graphics.submitEntityRenderState(
-            renderState,
-            this.entityScale,
-            offset,
-            baseRotation,
-            null,
-            x, y,
-            x + 96, y + 92
+        graphics.enableScissor(
+            this.leftPos + 73, this.bodyTopPos,
+            this.leftPos + 73 + 96, this.bodyTopPos + 92
         );
+
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+            graphics,
+            this.leftPos + 73,
+            this.bodyTopPos,
+            this.leftPos + 73 + 96,
+            this.bodyTopPos + 92,
+            scale,
+            0.0F,
+            mouseX,
+            mouseY,
+            this.displayEntity
+        );
+
+        graphics.disableScissor();
     }
 
 
@@ -717,7 +725,7 @@ public class VariantScreenSelection extends Screen
     private boolean needsScrollBars()
     {
         // button height and 106 would be better but this works.
-        return this.buttons.size() > 5;
+        return this.buttons.size() > 2;
     }
 
 
@@ -752,20 +760,18 @@ public class VariantScreenSelection extends Screen
      */
     private void handleApplyButton(Button button)
     {
-        List<CompoundTag> variants = this.blockEntityInterface.getEntityVariants();
-
-        if (this.selectedButton < 0 || this.selectedButton >= variants.size())
+        if (this.selectedButton < 0 || this.selectedButton >= this.cachedVariants.size())
         {
             return;
         }
 
-        CompoundTag variantTag = variants.get(this.selectedButton);
-
-        // Send message to server
-        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position, this.selectedButton));
+        // Notify server
+        NetworkManager.sendToServer(new UpdateDisplayAnimalData(this.position,
+            this.selectedButton));
 
         // Update current client gui.
-        AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag);
+        this.cachedVariants.getCompound(this.selectedButton).ifPresent(variantTag ->
+            AnimalPenVariantHelper.loadMob((Mob) this.displayEntity, variantTag));
 
         this.selectedButton = -1;
     }
@@ -799,11 +805,17 @@ public class VariantScreenSelection extends Screen
                     orElse(true);
         }
 
+        if (this.cachedVariants.size() < this.selectedButton)
+        {
+            // just a small protection
+            return;
+        }
+
         CompoundTag tag;
 
         if (this.selectedButton != -1)
         {
-            tag = (CompoundTag) this.blockEntityInterface.getEntityVariants().get(index);
+            tag = (CompoundTag) this.cachedVariants.get(index);
         }
         else
         {
@@ -1039,7 +1051,7 @@ public class VariantScreenSelection extends Screen
      */
     private void updateButtonPositions()
     {
-        int buttonHeight = 20;
+        int buttonHeight = 46;
 
         // Calculate total content height
         int totalButtonsHeight = this.buttons.size() * buttonHeight;
@@ -1219,9 +1231,24 @@ public class VariantScreenSelection extends Screen
     private boolean isSelectingEntity;
 
     /**
+     * The local cache of variants.
+     */
+    private ListTag cachedVariants = new ListTag();
+
+    /**
+     * Indicates if data is requested from server.
+     */
+    private boolean hasRequestedData = false;
+
+    /**
      * This boolean indicates if player screen requires update.
      */
     private int needsUpdate;
+
+    /**
+     * The animal selection button height
+     */
+    private final static int BUTTON_HEIGHT = 46;
 
     /**
      * The title of menu
@@ -1264,11 +1291,6 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component CONFIGURE =
         Component.translatable("gui.animal_pen.variant_selection_screen.configure_tooltip");
-
-    /**
-     * The button text location
-     */
-    private static final String BUTTON_TEXT = "gui.animal_pen.variant_selection_screen.select_variant";
 
     /**
      * The fixed size text location
