@@ -11,12 +11,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.interaction.function.FunctionKey;
 import lv.id.bonne.animalpen.interaction.ingredient.ConsumerEntry;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.items.AbstractAnimalStorageItem;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.network.packets.UpdateVariantScreenData;
 import lv.id.bonne.animalpen.processing.executor.AnimalInteractionExecutor;
@@ -401,9 +403,21 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                     return false;
                 }
 
+                Consumer<String> errorSender = error ->
+                {
+                    if (this.getItemStack().getItem() instanceof AbstractAnimalStorageItem item)
+                    {
+                        item.error(player, error);
+                    }
+                };
+
                 // Handle animal variants
                 if (newCount > 1 &&
-                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player))
+                    !AnimalPenVariantHelper.canMergeAnimalVariants(this.getItemStack(),
+                        itemInHand,
+                        this.level,
+                        player,
+                        errorSender))
                 {
                     AnimalPen.sendDebug("Variants could not be merged");
 
@@ -415,7 +429,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
                 else
                 {
-                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(), itemInHand, this.level, player);
+                    AnimalPenVariantHelper.mergeAnimalVariants(this.getItemStack(),
+                        itemInHand,
+                        this.level,
+                        player,
+                        errorSender);
                     itemInHand.setTag(new CompoundTag());
 
                     if (this.level != null && !this.level.isClientSide())
@@ -888,7 +906,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     public ListTag getEntityVariants()
     {
         return this.getStoredAnimal().
-            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack(), this.level).orElseGet(ListTag::new)).
+            map(animal -> AnimalPenVariantHelper.getAnimalVariants(this.getItemStack(), this.level).
+                map(IndividualPenStorage::getVariants).
+                orElseGet(ListTag::new)).
             orElseGet(ListTag::new);
     }
 
@@ -900,12 +920,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     public void updateAnimalVariant(int index)
     {
-        if (this.getStoredAnimal().isEmpty() || index >= this.getEntityVariants().size() || index < 0)
+        if (this.getStoredAnimal().isEmpty())
         {
             return;
         }
 
-        CompoundTag animalVariant = (CompoundTag) this.getEntityVariants().get(index);
+        ListTag entityVariants = this.getEntityVariants();
+
+        if ( index >= entityVariants.size() || index < 0)
+        {
+            return;
+        }
+
+        CompoundTag animalVariant = (CompoundTag) entityVariants.get(index);
 
         if (animalVariant == null || animalVariant.isEmpty())
         {
@@ -949,17 +976,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      */
     public void removeAnimalVariant(int index)
     {
-        if (this.getStoredAnimal().isEmpty() || this.getEntityVariants().size() <= index)
+        if (this.getStoredAnimal().isEmpty())
         {
             return;
         }
 
-        this.inventory.setChanged();
-
         if (this.level instanceof ServerLevel serverLevel)
         {
-            ListTag entityVariants = this.getEntityVariants();
-            entityVariants.remove(index);
             CompoundTag tag = this.getItemStack().getOrCreateTag();
 
             if (!tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID))
@@ -968,16 +991,38 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 return;
             }
 
-            IndividualPenStorage.saveVariants(serverLevel,
-                tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID),
-                entityVariants);
+            IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel,
+                tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
+
+            if (index < 0 || index >= storage.getVariants().size())
+            {
+                AnimalPen.sendDebug("Out of bounds variant deletion");
+                return;
+            }
+
+            storage.getVariants().remove(index);
+
+            if (storage.getVariants().isEmpty())
+            {
+                IndividualPenStorage.delete(serverLevel,
+                    tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
+                tag.remove(AnimalPenCompoundTags.TAG_STORAGE_ID);
+                tag.remove(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT);
+
+            }
+            else
+            {
+                storage.setDirty();
+                tag.putInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, storage.getVariants().size());
+            }
+
 
             // Trigger screen Update
             AnimalPen.CHANNEL.sendToPlayers(serverLevel.players().stream().
                     filter(other ->
                         other.blockPosition().distSqr(this.getBlockPos()) < 30).
                     toList(),
-                new UpdateVariantScreenData(this.getBlockPos(), this.getEntityVariants()));
+                new UpdateVariantScreenData(this.getBlockPos(), storage.getVariants()));
 
             AnimalPen.sendDebug("Animal variant removed");
         }

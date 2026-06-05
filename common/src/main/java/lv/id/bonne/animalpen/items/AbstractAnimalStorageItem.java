@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+import lv.id.bonne.animalpen.client.screens.VariantsConfigScreen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
@@ -154,10 +155,10 @@ public abstract class AbstractAnimalStorageItem extends Item
                     withStyle(ChatFormatting.GRAY));
             }
 
-            if (stack.getTag().contains(AnimalPenCompoundTags.TAG_VARIANTS))
+            if (stack.getTag().contains(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT, Tag.TAG_INT))
             {
                 tooltip.add(new TranslatableComponent(this.tooltipKeyBase() + ".variants",
-                    stack.getTag().getList(AnimalPenCompoundTags.TAG_VARIANTS, Tag.TAG_COMPOUND).size()).
+                    stack.getTag().getInt(AnimalPenCompoundTags.TAG_STORAGE_AMOUNT)).
                     withStyle(ChatFormatting.GRAY));
             }
 
@@ -314,7 +315,7 @@ public abstract class AbstractAnimalStorageItem extends Item
         tag.put(AnimalPenCompoundTags.TAG_ANIMAL_DATA, data);
         stack.setTag(tag);
 
-        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player);
+        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player, message -> this.error(player, message));
 
         mob.remove(Entity.RemovalReason.DISCARDED);
         player.setItemInHand(hand, stack);
@@ -386,7 +387,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
             itemEntity.getLevel() instanceof ServerLevel serverLevel)
         {
-            IndividualPenStorage.deleteFile(serverLevel,
+            IndividualPenStorage.delete(serverLevel,
                 tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
         }
 
@@ -410,8 +411,8 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
                 player.getLevel() instanceof ServerLevel serverLevel)
             {
-                UUID uuid = tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID);
-                IndividualPenStorage.deleteFile(serverLevel, uuid);
+                IndividualPenStorage.delete(serverLevel,
+                    tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
             }
         }
         else
@@ -468,7 +469,7 @@ public abstract class AbstractAnimalStorageItem extends Item
     }
 
 
-    private void error(Player player, String suffix)
+    public void error(Player player, String suffix)
     {
         player.displayClientMessage(
             new TranslatableComponent(tooltipKeyBase() + suffix).
