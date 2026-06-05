@@ -251,6 +251,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                     // trigger continuous functions
                     requiresUpdate |= this.triggerStartFunctions(serverLevel, animal, mobNBT, coolDown);
+
+                    if (!requiresUpdate && !allKeys.isEmpty() && this.tickCounter % 100 == 0)
+                    {
+                        // Trigger update every 5 seconds if there are cooldowns, as clients that visits
+                        // area may not have cooldowns loaded.
+                        requiresUpdate = true;
+                    }
                 }
                 else
                 {
