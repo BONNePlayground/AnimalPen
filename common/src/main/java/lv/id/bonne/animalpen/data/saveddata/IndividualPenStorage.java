@@ -56,7 +56,7 @@ public class IndividualPenStorage extends SavedData
 
     public static IndividualPenStorage getOrCreate(ServerLevel level, UUID penId)
     {
-        return level.getDataStorage().computeIfAbsent(type(penId));
+        return level.getServer().getDataStorage().computeIfAbsent(type(penId));
     }
 
 
