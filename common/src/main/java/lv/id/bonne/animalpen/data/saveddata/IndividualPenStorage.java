@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -95,7 +96,7 @@ public class IndividualPenStorage extends SavedData
         return new SavedData.Factory<>(
             () -> new IndividualPenStorage(penId),
             tag -> load(tag, penId),
-            null
+            DataFixTypes.LEVEL
         );
     }
 
