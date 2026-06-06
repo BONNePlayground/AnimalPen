@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
+import lv.id.bonne.animalpen.client.screens.VariantsConfigScreen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
@@ -111,7 +112,12 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA))
             {
                 CompoundTag animalData = compoundTag.getCompoundOrEmpty(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-                long animalCount = animalData.getLongOr(AnimalPenCompoundTags.TAG_AMOUNT, 0);
+                long animalCount = animalData.getLongOr(AnimalPenCompoundTags.TAG_AMOUNT, 0L);
+                CompoundTag cooldowns = animalData.getCompoundOrEmpty(AnimalPenCompoundTags.TAG_COOLDOWN);
+
+                Map<String, Long> cooldownMap = new HashMap<>(cooldowns.size());
+                cooldowns.entrySet().forEach(key ->
+                    cooldownMap.put(key.getKey(), cooldowns.getLongOr(key.getKey(), 0L)));
 
                 animalData.remove(AnimalPenCompoundTags.TAG_AMOUNT);
                 animalData.remove(AnimalPenCompoundTags.TAG_COOLDOWN);
@@ -173,7 +179,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_AMOUNT))
             {
                 long animalCount = compoundTag.getLongOr(AnimalPenCompoundTags.TAG_AMOUNT, 0);
-                Map<String, Integer> cooldownMap = new HashMap<>(0);
+                Map<String, Long> cooldownMap = new HashMap<>(0);
                 compoundTag.remove(AnimalPenCompoundTags.TAG_AMOUNT);
                 Map<String, Integer> propertiesMap = new HashMap<>(0);
                 itemStack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
@@ -376,7 +382,7 @@ public abstract class AbstractAnimalStorageItem extends Item
                 data.cooldowns())
         );
 
-        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player);
+        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player, message -> this.error(player, message));
 
         mob.remove(Entity.RemovalReason.DISCARDED);
         player.setItemInHand(hand, stack);
@@ -453,7 +459,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (storedKey != null && itemEntity.level() instanceof ServerLevel serverLevel)
         {
-            IndividualPenStorage.deleteFile(serverLevel, storedKey);
+            IndividualPenStorage.delete(serverLevel, storedKey.key());
         }
 
         super.onDestroyed(itemEntity);
@@ -474,7 +480,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             // Remove deep storage from it
             if (removedKey != null && level instanceof ServerLevel serverLevel)
             {
-                IndividualPenStorage.deleteFile(serverLevel, removedKey);
+                IndividualPenStorage.delete(serverLevel, removedKey.key());
             }
         }
         else
@@ -518,7 +524,7 @@ public abstract class AbstractAnimalStorageItem extends Item
     }
 
 
-    private void error(Player player, String suffix)
+    public void error(Player player, String suffix)
     {
         player.displayClientMessage(
             Component.translatable(tooltipKeyBase() + suffix).
