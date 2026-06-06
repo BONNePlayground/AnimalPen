@@ -71,7 +71,7 @@ public record TextEntry(
             if ("[cooldown]".equals(parameter))
             {
                 variables[2 + i] = LocalTime.of(0, 0, 0).
-                    plusSeconds(cooldown / 20).format(TextEntry.DATE_FORMATTER);
+                    plusSeconds(Math.divideExact(cooldown, 20)).format(TextEntry.DATE_FORMATTER);
             }
             else if (properties.containsKey(format))
             {
