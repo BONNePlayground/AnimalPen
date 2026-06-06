@@ -93,7 +93,7 @@ public class AnimalPenItemHelper
      * @param componentHolder - the data component holder.
      * @return Map of stored cooldowns.
      */
-    public static Map<String, Integer> getCooldowns(DataComponentHolder componentHolder)
+    public static Map<String, Long> getCooldowns(DataComponentHolder componentHolder)
     {
         return componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ?
             componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()).cooldowns() :
