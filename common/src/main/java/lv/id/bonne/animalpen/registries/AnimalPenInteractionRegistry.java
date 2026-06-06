@@ -92,7 +92,7 @@ public class AnimalPenInteractionRegistry
             return Optional.empty();
         }
 
-        Map<String, Integer> cooldowns = AnimalPenItemHelper.getCooldowns(componentHolder);
+        Map<String, Long> cooldowns = AnimalPenItemHelper.getCooldowns(componentHolder);
 
         List<AnimalInteraction> interactions = DATA.get(key);
 

@@ -16,7 +16,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 
-public record StoredMobData(long animalCount, Map<String, Integer> properties, Map<String, Integer> cooldowns)
+public record StoredMobData(long animalCount, Map<String, Integer> properties, Map<String, Long> cooldowns)
 {
     public StoredMobData
     {
@@ -27,7 +27,7 @@ public record StoredMobData(long animalCount, Map<String, Integer> properties, M
 
     public static StoredMobData of(long animalCount,
         Map<String, Integer> propertiesMap,
-        Map<String, Integer> cooldownMap)
+        Map<String, Long> cooldownMap)
     {
         return new StoredMobData(animalCount, propertiesMap, cooldownMap);
     }
@@ -48,7 +48,7 @@ public record StoredMobData(long animalCount, Map<String, Integer> properties, M
             Codec.unboundedMap(Codec.STRING, Codec.INT).
                 optionalFieldOf("properties", Map.of()).
                 forGetter(StoredMobData::properties),
-            Codec.unboundedMap(Codec.STRING, Codec.INT).
+            Codec.unboundedMap(Codec.STRING, Codec.LONG).
                 optionalFieldOf("cooldowns", Map.of()).
                 forGetter(StoredMobData::cooldowns)
         ).apply(instance, StoredMobData::new)
@@ -70,7 +70,7 @@ public record StoredMobData(long animalCount, Map<String, Integer> properties, M
             ByteBufCodecs.map(
                 HashMap::new,
                 ByteBufCodecs.STRING_UTF8,
-                ByteBufCodecs.VAR_INT
+                ByteBufCodecs.VAR_LONG
             ),
             StoredMobData::cooldowns,
             StoredMobData::new
