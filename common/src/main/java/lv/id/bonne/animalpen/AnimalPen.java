@@ -10,7 +10,6 @@ import lv.id.bonne.animalpen.registries.*;
 import net.minecraft.resources.Identifier;
 
 
-
 public final class AnimalPen
 {
     public static void init()

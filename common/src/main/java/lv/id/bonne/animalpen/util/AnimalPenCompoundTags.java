@@ -36,4 +36,6 @@ public class AnimalPenCompoundTags
     public static final String TAG_LAST_FEEDING_AMOUNT = "last_feeding_increment";
 
     public static final String TAG_STORAGE_ID = "variant_storage_id";
+
+    public static final String TAG_STORAGE_AMOUNT = "variant_storage_amount";
 }

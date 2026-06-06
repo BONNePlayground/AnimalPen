@@ -1,114 +1,101 @@
 package lv.id.bonne.animalpen.data.saveddata;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 
 /**
  * This class manages animal pen data accessing, storing and deleting.
  */
-public class IndividualPenStorage
+public class IndividualPenStorage extends SavedData
 {
-    /**
-     * This method returns directory for stored animal data.
-     */
-    private static File getStorageDirectory(ServerLevel level)
+    private final UUID penId;
+    private ListTag variants;
+
+    public IndividualPenStorage(UUID penId)
     {
-        Path worldRoot = level.getServer().getWorldPath(LevelResource.ROOT);
-        File dir = worldRoot.resolve("data").resolve(FOLDER_NAME).toFile();
-        if (!dir.exists())
-        {
-            dir.mkdirs();
-        }
-        return dir;
+        this.penId = penId;
+        this.variants = new ListTag();
+    }
+
+    private IndividualPenStorage(UUID penId, ListTag variants)
+    {
+        this.penId = penId;
+        this.variants = variants;
+    }
+
+    public ListTag getVariants()
+    {
+        return this.variants;
     }
 
 
-    /**
-     * This method creates new data file with given id.
-     */
-    private static File getFileForPen(ServerLevel level, UUID penId)
+    public void setVariants(List<CompoundTag> variants)
     {
-        return new File(getStorageDirectory(level), penId.toString() + ".dat");
+        ListTag tag = new ListTag();
+        tag.addAll(variants);
+
+        this.variants = tag;
+        this.setDirty();
     }
 
 
-    /**
-     * Loads the ListTag from the specific item's file
-     */
-    public static ListTag loadVariants(ServerLevel level, StoredMobVariantKey key)
+    public static IndividualPenStorage getOrCreate(ServerLevel level, UUID penId)
     {
-        File file = getFileForPen(level, key.key());
-        if (!file.exists())
-        {
-            return new ListTag();
-        }
-
-        try
-        {
-            CompoundTag rootTag = NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap());
-            return rootTag.getList("Variants").orElse(new ListTag());
-        }
-        catch (IOException e)
-        {
-            AnimalPen.LOGGER.error("Failed to load animal pen data for " + key.key(), e);
-            return new ListTag();
-        }
+        return level.getDataStorage().computeIfAbsent(type(penId));
     }
 
 
-    public static void saveVariants(ServerLevel level, StoredMobVariantKey key, List<CompoundTag> variants)
+    public static void delete(ServerLevel level, UUID penId)
     {
-        ListTag convert = new ListTag();
-        convert.addAll(variants);
+        IndividualPenStorage data = getOrCreate(level, penId);
+        data.variants.clear();
+        data.setDirty();
+    }
 
-        IndividualPenStorage.saveVariants(level, key, convert);
+    private static SavedDataType<IndividualPenStorage> type(UUID penId)
+    {
+        return new SavedDataType<>(
+            AnimalPen.resourceOf( penId.toString()),
+            () -> new IndividualPenStorage(penId),
+            CODEC(penId),
+            DataFixTypes.LEVEL
+        );
+    }
+
+    static List<CompoundTag> toList(ListTag listTag)
+    {
+        List<CompoundTag> converted = new ArrayList<>(listTag.size());
+        listTag.forEach(tag -> converted.add((CompoundTag) tag));
+        return converted;
     }
 
 
-    public static void saveVariants(ServerLevel level, StoredMobVariantKey key, ListTag variants)
+    private static Codec<IndividualPenStorage> CODEC(UUID penId)
     {
-        if (key == null)
-        {
-            // UUID is null.
-            return;
-        }
+        return RecordCodecBuilder.create(instance -> instance.group(
+            CompoundTag.CODEC.listOf()
+                .fieldOf("Variants")
+                .forGetter(storage -> toList(storage.getVariants()))
+        ).apply(instance, variants -> {
+            ListTag listTag = new ListTag();
+            listTag.addAll(variants);
 
-        File file = getFileForPen(level, key.key());
-        CompoundTag rootTag = new CompoundTag();
-        rootTag.put("Variants", variants);
-
-        try
-        {
-            NbtIo.writeCompressed(rootTag, file.toPath());
-        }
-        catch (IOException e)
-        {
-            AnimalPen.LOGGER.error("Failed to save animal pen data for " + key.key(), e);
-        }
+            return new IndividualPenStorage(penId, listTag);
+        }));
     }
-
-
-    public static void deleteFile(ServerLevel level, StoredMobVariantKey key)
-    {
-        File file = getFileForPen(level, key.key());
-
-        if (file.exists())
-        {
-            file.delete();
-        }
-    }
-
-
-    private static final String FOLDER_NAME = "animal_pens";
 }

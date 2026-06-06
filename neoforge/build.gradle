@@ -32,7 +32,12 @@ neoForge {
         }
         client {
             client()
-            gameDirectory = this.mkdir(this.file("run/client"))
+            gameDirectory = this.mkdir(this.file("run/client1"))
+        }
+        client2 {
+            client()
+            gameDirectory = this.mkdir(this.file("run/client2"))
+            programArguments.addAll '--username', 'Dev2'
         }
         data {
             serverData()
@@ -43,8 +48,8 @@ neoForge {
         }
         server {
             server()
-            this.file("run/server").createParentDirectories()
-            gameDirectory = this.mkdir(this.file("run/server"))
+            this.file("run/server/$minecraft_version").createParentDirectories()
+            gameDirectory = this.mkdir(this.file("run/server/$minecraft_version"))
         }
     }
     mods {
@@ -109,6 +114,8 @@ curseforge {
         addGameVersion "26.1.2"
         addGameVersion "NeoForge"
         addGameVersion "Java 25"
+        addGameVersion "Server"
+        addGameVersion "Client"
 
         relations {
             optionalDependency "patchouli"

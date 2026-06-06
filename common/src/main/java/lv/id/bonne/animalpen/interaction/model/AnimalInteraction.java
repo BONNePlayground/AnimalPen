@@ -102,8 +102,8 @@ public record AnimalInteraction(@NotNull String id,
         }
 
         StoredMobData storedMobData = mobNBT.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
-        Map<String, Integer> cooldowns = storedMobData.cooldowns();
-        cooldowns.put(this.id, (int) this.cooldown.calculateCooldown(mobCount));
+        Map<String, Long> cooldowns = storedMobData.cooldowns();
+        cooldowns.put(this.id, this.cooldown.calculateCooldown(mobCount));
 
         // Need to put if it was missing before.
         mobNBT.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
