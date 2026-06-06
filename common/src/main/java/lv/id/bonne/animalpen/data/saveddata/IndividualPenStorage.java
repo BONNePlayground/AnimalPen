@@ -21,7 +21,7 @@ import net.minecraft.world.level.storage.LevelResource;
  */
 public class IndividualPenStorage extends SavedData
 {
-    private IndividualPenStorage(UUID penId)
+    public IndividualPenStorage(UUID penId)
     {
         this.penId = penId;
         this.variants = new ListTag();
@@ -61,14 +61,14 @@ public class IndividualPenStorage extends SavedData
 
 
     @Override
-    public void save(File file)
+    public void save(File file, HolderLookup.Provider provider)
     {
         if (!file.getParentFile().exists())
         {
             file.getParentFile().mkdirs();
         }
 
-        super.save(file);
+        super.save(file, provider);
     }
 
 
