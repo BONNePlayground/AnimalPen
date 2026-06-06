@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lv.id.bonne.animalpen.client.screens.VariantsConfigScreen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.items.component.StoredMob;
@@ -117,9 +118,9 @@ public abstract class AbstractAnimalStorageItem extends Item
                 long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
                 CompoundTag cooldowns = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
 
-                Map<String, Integer> cooldownMap = new HashMap<>(cooldowns.size());
+                Map<String, Long> cooldownMap = new HashMap<>(cooldowns.size());
                 cooldowns.getAllKeys().forEach(key ->
-                    cooldownMap.put(key, cooldowns.getInt(key)));
+                    cooldownMap.put(key, cooldowns.getLong(key)));
 
                 animalData.remove(AnimalPenCompoundTags.TAG_AMOUNT);
                 animalData.remove(AnimalPenCompoundTags.TAG_COOLDOWN);
@@ -180,7 +181,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             if (compoundTag.contains(AnimalPenCompoundTags.TAG_AMOUNT))
             {
                 long animalCount = compoundTag.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
-                Map<String, Integer> cooldownMap = new HashMap<>(0);
+                Map<String, Long> cooldownMap = new HashMap<>(0);
                 compoundTag.remove(AnimalPenCompoundTags.TAG_AMOUNT);
                 Map<String, Integer> propertiesMap = new HashMap<>(0);
                 itemStack.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
@@ -393,7 +394,7 @@ public abstract class AbstractAnimalStorageItem extends Item
                 data.cooldowns())
         );
 
-        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player);
+        AnimalPenVariantHelper.storeAnimalVariant(stack, mob, player, message -> this.error(player, message));
 
         mob.remove(Entity.RemovalReason.DISCARDED);
         player.setItemInHand(hand, stack);
@@ -470,7 +471,7 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         if (storedKey != null && itemEntity.level() instanceof ServerLevel serverLevel)
         {
-            IndividualPenStorage.deleteFile(serverLevel, storedKey);
+            IndividualPenStorage.delete(serverLevel, storedKey.key());
         }
 
         super.onDestroyed(itemEntity);
@@ -491,7 +492,7 @@ public abstract class AbstractAnimalStorageItem extends Item
             // Remove deep storage from it
             if (removedKey != null && level instanceof ServerLevel serverLevel)
             {
-                IndividualPenStorage.deleteFile(serverLevel, removedKey);
+                IndividualPenStorage.delete(serverLevel, removedKey.key());
             }
         }
         else
@@ -535,7 +536,7 @@ public abstract class AbstractAnimalStorageItem extends Item
     }
 
 
-    private void error(Player player, String suffix)
+    public void error(Player player, String suffix)
     {
         player.displayClientMessage(
             Component.translatable(tooltipKeyBase() + suffix).
