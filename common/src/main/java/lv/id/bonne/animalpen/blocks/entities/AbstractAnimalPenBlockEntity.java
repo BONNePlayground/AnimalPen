@@ -1377,11 +1377,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                             {
                                 long reminingTime = cooldown.getLong(animalInteraction.id()) - this.level.getGameTime();
 
-                                textLines.add(line.animalPenGetLine(animalInteraction.ingredient(),
-                                    tag,
-                                    this.tickCounter,
-                                    shortText,
-                                    reminingTime));
+                                Pair<ItemStack[], Component> componentPair =
+                                    line.animalPenGetLine(animalInteraction.ingredient(),
+                                        tag,
+                                        this.tickCounter,
+                                        shortText,
+                                        reminingTime);
+
+                                if (componentPair != null)
+                                {
+                                    textLines.add(componentPair);
+                                }
                             }
                         });
                     }
