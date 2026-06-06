@@ -53,6 +53,19 @@ public class IndividualPenStorage extends SavedData
         return tag;
     }
 
+
+    @Override
+    public void save(File file)
+    {
+        if (!file.getParentFile().exists())
+        {
+            file.getParentFile().mkdirs();
+        }
+
+        super.save(file);
+    }
+
+
 // -------------------------------------------------------------------------
 // WorldSavedData contract
 // -------------------------------------------------------------------------
