@@ -16,14 +16,21 @@ loom {
             programArg(file('src/main/resources/').absolutePath)
         }
 
-        devClient {
+        client {
             client()
             programArg("--username=Dev")
+            runDir("run/client1")
         }
 
-        dev2Client {
+        client2 {
             client()
             programArg("--username=Dev2")
+            runDir("run/client2")
+        }
+
+        server {
+            server()
+            runDir("run/server/$minecraft_version")
         }
     }
 }
@@ -129,6 +136,8 @@ curseforge {
         addGameVersion "1.21.10"
         addGameVersion "NeoForge"
         addGameVersion "Java 21"
+        addGameVersion "Server"
+        addGameVersion "Client"
 
         relations {
             requiredDependency "architectury-api"

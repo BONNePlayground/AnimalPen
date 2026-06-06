@@ -3,10 +3,12 @@ package lv.id.bonne.animalpen;
 
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -23,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.storage.LevelResource;
 
 
 public final class AnimalPen
@@ -71,6 +74,18 @@ public final class AnimalPen
             AnimalPen.resourceOf("animal_interactions"));
 
         EnvExecutor.runInEnv(Env.SERVER, () -> AnimalPen::initializeServer);
+
+        // Create missing server data dir:
+        LifecycleEvent.SERVER_BEFORE_START.register(server ->
+        {
+            File worldDir = server.getWorldPath(LevelResource.ROOT).resolve("data").toFile();
+            File customDir = new File(worldDir, "animal_pens");
+
+            if (!customDir.exists())
+            {
+                customDir.mkdirs();
+            }
+        });
     }
 
 
