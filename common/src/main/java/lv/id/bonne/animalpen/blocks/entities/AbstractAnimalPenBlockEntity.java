@@ -1392,11 +1392,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                                     cooldowns.getOrDefault(animalInteraction.id(), this.level.getGameTime()) -
                                     this.level.getGameTime();
 
-                                textLines.add(line.animalPenGetLine(animalInteraction.ingredient(),
-                                    properties,
-                                    this.tickCounter,
-                                    shortText,
-                                    reminingTime));
+                                Pair<ItemStack[], Component> componentPair =
+                                    line.animalPenGetLine(animalInteraction.ingredient(),
+                                        properties,
+                                        this.tickCounter,
+                                        shortText,
+                                        reminingTime);
+
+                                if (componentPair != null)
+                                {
+                                    textLines.add(componentPair);
+                                }
                             }
                         });
                     }
