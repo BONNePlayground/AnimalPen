@@ -23,7 +23,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() == right.getAsInt();
+                return left.getAsLong() == right.getAsLong();
             }
         },
     NE("!=")
@@ -31,7 +31,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() != right.getAsInt();
+                return left.getAsLong() != right.getAsLong();
             }
         },
     LT("<")
@@ -39,7 +39,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() < right.getAsInt();
+                return left.getAsLong() < right.getAsLong();
             }
         },
     LTE("<=")
@@ -47,7 +47,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() <= right.getAsInt();
+                return left.getAsLong() <= right.getAsLong();
             }
         },
     GT(">")
@@ -55,7 +55,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() > right.getAsInt();
+                return left.getAsLong() > right.getAsLong();
             }
         },
     GTE(">=")
@@ -63,7 +63,7 @@ public enum Operator
             @Override
             public boolean test(Value left, Value right)
             {
-                return left.getAsInt() >= right.getAsInt();
+                return left.getAsLong() >= right.getAsLong();
             }
         },
     MATCH("match")

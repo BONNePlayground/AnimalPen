@@ -94,11 +94,29 @@ public class Feeding implements EntityFunction
         BlockPos blockPos)
     {
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+        long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+
+        long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
+
+        if (animalCount > maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            return;
+        }
+
+        if (animalCount + amount / 2 > maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, maximalAnimalCount);
+            amount = (int) (maximalAnimalCount - animalCount);
+        }
+        else
+        {
+            animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+        }
 
         // Save last increment into animal data
-        animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, animalCount / 2);
+        animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, amount / 2);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
