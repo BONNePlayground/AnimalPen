@@ -184,6 +184,7 @@ public class AnimalInteractionProvider implements DataProvider
             even(true).
             consume(new ConsumerEntry.Consume(stackLimit)).
             conditions(new ConditionEntry.AmountCondition(Operator.GTE, 2)).
+            conditions(new ConditionEntry.AmountCondition(Operator.LT, -1)).
             runFunctions(FunctionKey.of(AnimalPenFunctionRegistry.FEEDING.get())).
             finishFunctions(finishFunctions).
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
