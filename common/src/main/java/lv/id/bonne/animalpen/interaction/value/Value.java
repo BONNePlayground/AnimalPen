@@ -21,6 +21,15 @@ public interface Value
 
 
     /**
+     * @return instance value as long
+     */
+    default long getAsLong() throws IllegalStateException, NumberFormatException
+    {
+        return this.getAsInt();
+    }
+
+
+    /**
      * @return instance value as boolean
      */
     default boolean getAsBoolean() throws IllegalStateException
@@ -39,28 +48,34 @@ public interface Value
 
 
     Codec<Value> CODEC =
-        Codec.either(IntValue.CODEC, Codec.either(BoolValue.CODEC, StringValue.CODEC)).
+        Codec.either(LongValue.CODEC, Codec.either(IntValue.CODEC, Codec.either(BoolValue.CODEC, StringValue.CODEC))).
             flatXmap(
-                either -> DataResult.success(either.map(v -> v,
-                    e2 -> e2.map(v -> v, v -> (Value) v))),
-                value ->
+            either -> DataResult.success(either.map(v -> v,
+                e1 -> e1.map(v -> v,
+                    e2 -> e2.map(v -> v, v -> (Value) v)))),
+            value ->
+            {
+                if (value instanceof LongValue l)
                 {
-                    if (value instanceof IntValue i)
-                    {
-                        return DataResult.success(Either.left(i));
-                    }
-
-                    if (value instanceof BoolValue b)
-                    {
-                        return DataResult.success(Either.right(Either.left(b)));
-                    }
-
-                    if (value instanceof StringValue s)
-                    {
-                        return DataResult.success(Either.right(Either.right(s)));
-                    }
-
-                    return DataResult.error("Unknown Value type: " + value);
+                    return DataResult.success(Either.left(l));
                 }
-            );
+
+                if (value instanceof IntValue i)
+                {
+                    return DataResult.success(Either.right(Either.left(i)));
+                }
+
+                if (value instanceof BoolValue b)
+                {
+                    return DataResult.success(Either.right(Either.right(Either.left(b))));
+                }
+
+                if (value instanceof StringValue s)
+                {
+                    return DataResult.success(Either.right(Either.right(Either.right(s))));
+                }
+
+                return DataResult.error("Unknown Value type: " + value);
+            }
+        );
 }

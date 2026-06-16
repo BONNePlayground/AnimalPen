@@ -20,7 +20,7 @@ public interface CooldownEntry
      * @param animalCount The animal count.
      * @return The cooldown in ticks calculated by cooldown entry.
      */
-    int calculateCooldown(int animalCount);
+    int calculateCooldown(long animalCount);
 
 
     /**
@@ -33,13 +33,13 @@ public interface CooldownEntry
     record Linear(int base, int delta, int limit) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public int calculateCooldown(long animalCount)
         {
-            int value = this.base + animalCount * this.delta;
+            long value = this.base + animalCount * this.delta;
 
             return this.delta >= 0 ?
-                Mth.clamp(value, this.base, this.limit) :
-                Mth.clamp(value, this.limit, this.base);
+                (int) Mth.clamp(value, this.base, this.limit) :
+                (int) Mth.clamp(value, this.limit, this.base);
         }
 
 
@@ -60,7 +60,7 @@ public interface CooldownEntry
     record Static(int base) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public int calculateCooldown(long animalCount)
         {
             return this.base;
         }
@@ -82,7 +82,7 @@ public interface CooldownEntry
     record Randomized(int min, int max) implements CooldownEntry
     {
         @Override
-        public int calculateCooldown(int animalCount)
+        public int calculateCooldown(long animalCount)
         {
             return this.min + Randomized.RANDOM.nextInt(this.max - this.min + 1);
         }
