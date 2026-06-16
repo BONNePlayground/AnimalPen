@@ -207,15 +207,15 @@ public class AnimalInteractionProvider implements DataProvider
 // ---------------------------------------------------------------------
 
 
-    public AnimalInteraction generateFood(CustomIngredient food, FunctionKey... finishFunctions)
+    public List<AnimalInteraction> generateFood(CustomIngredient food, FunctionKey... finishFunctions)
     {
         return this.generateFood(food, true, finishFunctions);
     }
 
 
-    public AnimalInteraction generateFood(CustomIngredient food, boolean stackLimit, FunctionKey... finishFunctions)
+    public List<AnimalInteraction> generateFood(CustomIngredient food, boolean stackLimit, FunctionKey... finishFunctions)
     {
-        return AnimalInteractionBuilder.create("feeding").
+        return List.of(AnimalInteractionBuilder.create("feeding").
             ingredient(food).
             even(true).
             consume(new ConsumerEntry.Consume(stackLimit)).
@@ -226,14 +226,28 @@ public class AnimalInteractionProvider implements DataProvider
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
             textLines(TextEntry.ready("display.animal_pen.food_ready", food)).
             textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
-            textLines(new TextEntry("",
-                "display.animal_pen.requires_food",
-                CustomIngredient.EMPTY,
-                food,
-                TextEntryVisibility.NOT_MATCH,
-                "2")).
             redstoneBit(1).
-            build();
+            build(),
+            AnimalInteractionBuilder.create("feeding_need_2").
+                ingredient(food).
+                conditions(new ConditionEntry.AmountCondition(Operator.LT, 2)).
+                textLines(new TextEntry("",
+                    "display.animal_pen.requires_food",
+                    CustomIngredient.EMPTY,
+                    food,
+                    TextEntryVisibility.ON_MATCH,
+                    "2")).
+                build(),
+            AnimalInteractionBuilder.create("feeding_max_reached").
+                ingredient(food).
+                conditions(new ConditionEntry.AmountCondition(Operator.GTE, -1)).
+                textLines(new TextEntry("",
+                    "display.animal_pen.reached_max",
+                    CustomIngredient.EMPTY,
+                    food,
+                    TextEntryVisibility.ON_MATCH)).
+                build()
+        );
     }
 
 
@@ -316,9 +330,12 @@ public class AnimalInteractionProvider implements DataProvider
         boolean withStackLimit,
         SoundEvent soundEvent)
     {
+        List<AnimalInteraction> interactions = new ArrayList<>(4);
+        interactions.addAll(this.generateFood(foodItem, withStackLimit));
+        interactions.add(this.generateAmbientSound(soundEvent));
+
         JsonElement json = AnimalInteractionEntry.CODEC.
-            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(),
-                List.of(this.generateFood(foodItem, withStackLimit), this.generateAmbientSound(soundEvent)))).
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType.builtInRegistryHolder().key(), interactions)).
             getOrThrow();
 
         Path file = this.pathProvider.json(entityType.builtInRegistryHolder().key());
@@ -332,7 +349,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(3);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.AXOLOTL_FOOD),
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.AXOLOTL_FOOD),
             false));
         // Water Pickup
         interactions.add(this.generateBucketable(Items.WATER_BUCKET, Items.AXOLOTL_BUCKET, 2));
@@ -355,7 +372,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.CHICKEN_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.CHICKEN_FOOD)));
 
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
@@ -389,7 +406,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.BEE_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.BEE_FOOD)));
 
         // Shears
         interactions.add(AnimalInteractionBuilder.create("shearing").
@@ -481,7 +498,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -512,7 +529,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.COW_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -576,7 +593,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.GOAT_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.GOAT_FOOD)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -608,7 +625,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(18);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.SHEEP_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.SHEEP_FOOD)));
 
         // Shearing
         for (DyeColor value : DyeColor.values())
@@ -661,7 +678,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.TURTLE_FOOD),
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.TURTLE_FOOD),
             FunctionKey.of(AnimalPenFunctionRegistry.TURTLE_DROP_SCUTE.get())));
 
         // Egg Dropping
@@ -696,9 +713,8 @@ public class AnimalInteractionProvider implements DataProvider
         // Food
         if (entityType != EntityType.TADPOLE)
         {
-            interactions.add(this.generateFood(CustomIngredient.of(Items.KELP, Items.SEAGRASS)));
+            interactions.addAll(this.generateFood(CustomIngredient.of(Items.KELP, Items.SEAGRASS)));
         }
-
         // Water Pickup
         interactions.add(this.generateBucketable(Items.WATER_BUCKET, resultItem, 2));
 
@@ -740,7 +756,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(5);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(ItemTags.FROG_FOOD)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(ItemTags.FROG_FOOD)));
 
         // Froglight
         interactions.add(AnimalInteractionBuilder.create("froglight").
@@ -826,6 +842,26 @@ public class AnimalInteractionProvider implements DataProvider
             sound(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.AMETHYST_BLOCK_CHIME)).
             redstoneBit(1).
             build());
+        interactions.add(AnimalInteractionBuilder.create("feeding_need_2").
+            ingredient(food).
+            conditions(new ConditionEntry.AmountCondition(Operator.LT, 2)).
+            textLines(new TextEntry("",
+                "display.animal_pen.requires_food",
+                CustomIngredient.EMPTY,
+                food,
+                TextEntryVisibility.ON_MATCH,
+                "2")).
+            build());
+        interactions.add(
+            AnimalInteractionBuilder.create("feeding_max_reached").
+                ingredient(food).
+                conditions(new ConditionEntry.AmountCondition(Operator.GTE, -1)).
+                textLines(new TextEntry("",
+                    "display.animal_pen.reached_max",
+                    CustomIngredient.EMPTY,
+                    food,
+                    TextEntryVisibility.ON_MATCH)).
+                build());
 
         // ambient
         interactions.add(this.generateAmbientSound(SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM));
@@ -847,7 +883,7 @@ public class AnimalInteractionProvider implements DataProvider
 
         // Food
         CustomIngredient food = CustomIngredient.of(ItemTags.SNIFFER_FOOD);
-        interactions.add(this.generateFood(food));
+        interactions.addAll(this.generateFood(food));
         // Egg Dropping
         interactions.add(AnimalInteractionBuilder.create("eggs").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -889,7 +925,7 @@ public class AnimalInteractionProvider implements DataProvider
 
         // Food
         CustomIngredient food = CustomIngredient.of(ItemTags.ARMADILLO_FOOD);
-        interactions.add(this.generateFood(food));
+        interactions.addAll(this.generateFood(food));
         // Brushing
         interactions.add(AnimalInteractionBuilder.create("brush").
             ingredient(CustomIngredient.merge(CustomIngredient.of(Items.BRUSH),
@@ -913,8 +949,8 @@ public class AnimalInteractionProvider implements DataProvider
 
         return DataProvider.saveStable(cache, json, file);
     }
-    
-    
+
+
 // ---------------------------------------------------------------------
 // Section: Variables
 // ---------------------------------------------------------------------

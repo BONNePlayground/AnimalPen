@@ -22,7 +22,6 @@ public record RequestVariantData(BlockPos blockPos) implements CustomPacketPaylo
     /**
      * This method handles incoming packet on server.
      * @param data The incoming packet.
-     * @param packetContext The packet context.
      */
     public static void handle(RequestVariantData data, ServerPlayer player)
     {

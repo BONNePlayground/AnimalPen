@@ -106,8 +106,6 @@ curseforge {
         addGameVersion "26.1.2"
         addGameVersion "Fabric"
         addGameVersion "Java 25"
-        addGameVersion "Server"
-        addGameVersion "Client"
 
         relations {
             requiredDependency "fabric-api"
