@@ -94,8 +94,9 @@ public class Feeding implements EntityFunction
         BlockPos blockPos)
     {
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+        long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT,
+            Math.max(animalCount + amount / 2, AnimalPen.config().getMaximalAnimalCountNormalized()));
 
         // Save last increment into animal data
         animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, amount / 2);
