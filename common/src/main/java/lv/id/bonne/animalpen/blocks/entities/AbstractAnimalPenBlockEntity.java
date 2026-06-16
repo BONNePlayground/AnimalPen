@@ -734,9 +734,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         }
 
         AnimalInteraction interaction = interactionOptional.get();
-        int animalCount = interaction.normalizeMobCount(
+        long animalCount = interaction.normalizeMobCount(
             mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-                getInt(AnimalPenCompoundTags.TAG_AMOUNT));
+                getLong(AnimalPenCompoundTags.TAG_AMOUNT));
 
         // Indication data has been changed.
         boolean dataUpdate = false;
@@ -896,9 +896,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
     {
         boolean anyChanges = false;
 
-        int animalCount = mobNBT.
+        long animalCount = mobNBT.
             getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
-            getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+            getLong(AnimalPenCompoundTags.TAG_AMOUNT);
 
         // Apply cooldown
         if (interaction.cooldown() != null)
@@ -1179,7 +1179,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
      *
      * @return The animal count in pen.
      */
-    public int getAnimalCount()
+    public long getAnimalCount()
     {
         if (!this.validateItemStack())
         {
@@ -1191,7 +1191,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (!itemStack.hasTag())
         {
-            return 0;
+            return 0L;
         }
 
         // getOrCreate to not write null-pointer check
@@ -1199,10 +1199,10 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         if (!itemStackTag.contains(AnimalPenCompoundTags.TAG_ANIMAL_DATA, Tag.TAG_COMPOUND))
         {
-            return 0;
+            return 0L;
         }
 
-        return itemStackTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+        return itemStackTag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).getLong(AnimalPenCompoundTags.TAG_AMOUNT);
     }
 
 
@@ -1241,9 +1241,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return false;
         }
 
-        long maxCount = AnimalPen.config().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCountNormalized();
 
-        if (maxCount > 0 && animalCount + change > maxCount)
+        if (animalCount + change > maxCount)
         {
             return false;
         }
@@ -1332,19 +1332,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         CompoundTag tag = this.getItemStack().getTag();
         CompoundTag cooldown;
-        int animalCount;
+        long animalCount;
 
         if (tag != null)
         {
             CompoundTag animalData = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
             cooldown = animalData.getCompound(AnimalPenCompoundTags.TAG_COOLDOWN);
-            animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
+            animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
         }
         else
         {
             // Empty tag.
             cooldown = new CompoundTag();
-            animalCount = 0;
+            animalCount = 0L;
         }
 
         this.getStoredAnimal().ifPresent(animal ->
