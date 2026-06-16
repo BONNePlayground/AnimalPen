@@ -171,15 +171,15 @@ public class AnimalInteractionProvider implements DataProvider
 // ---------------------------------------------------------------------
 
 
-    public AnimalInteraction generateFood(CustomIngredient food, FunctionKey... finishFunctions)
+    public List<AnimalInteraction> generateFood(CustomIngredient food, FunctionKey... finishFunctions)
     {
         return this.generateFood(food, true, finishFunctions);
     }
 
 
-    public AnimalInteraction generateFood(CustomIngredient food, boolean stackLimit, FunctionKey... finishFunctions)
+    public List<AnimalInteraction> generateFood(CustomIngredient food, boolean stackLimit, FunctionKey... finishFunctions)
     {
-        return AnimalInteractionBuilder.create("feeding").
+        return List.of(AnimalInteractionBuilder.create("feeding").
             ingredient(food).
             even(true).
             consume(new ConsumerEntry.Consume(stackLimit)).
@@ -190,14 +190,28 @@ public class AnimalInteractionProvider implements DataProvider
             cooldown(new CooldownEntry.Linear(1160, 20, 6000)).
             textLines(TextEntry.ready("display.animal_pen.food_ready", food)).
             textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
-            textLines(new TextEntry("",
-                "display.animal_pen.requires_food",
-                CustomIngredient.EMPTY,
-                food,
-                TextEntryVisibility.NOT_MATCH,
-                "2")).
             redstoneBit(1).
-            build();
+            build(),
+            AnimalInteractionBuilder.create("feeding").
+                ingredient(food).
+                conditions(new ConditionEntry.AmountCondition(Operator.LT, 2)).
+                textLines(new TextEntry("",
+                    "display.animal_pen.requires_food",
+                    CustomIngredient.EMPTY,
+                    food,
+                    TextEntryVisibility.ON_MATCH,
+                    "2")).
+                build(),
+            AnimalInteractionBuilder.create("feeding").
+                ingredient(food).
+                conditions(new ConditionEntry.AmountCondition(Operator.GTE, -1)).
+                textLines(new TextEntry("",
+                    "display.animal_pen.reached_max",
+                    CustomIngredient.EMPTY,
+                    food,
+                    TextEntryVisibility.ON_MATCH)).
+                build()
+        );
     }
 
 
@@ -274,9 +288,12 @@ public class AnimalInteractionProvider implements DataProvider
         SoundEvent soundEvent)
         throws IOException
     {
+        List<AnimalInteraction> interactions = new ArrayList<>(4);
+        interactions.addAll(this.generateFood(foodItem));
+        interactions.add(this.generateAmbientSound(soundEvent));
+
         JsonElement json = AnimalInteractionEntry.CODEC.
-            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType,
-                List.of(this.generateFood(foodItem), this.generateAmbientSound(soundEvent)))).
+            encodeStart(JsonOps.INSTANCE, AnimalInteractionEntry.of(entityType, interactions)).
             getOrThrow(false, IllegalStateException::new);
 
         Path file = basePath.resolve(entityType.arch$registryName().getPath() + ".json");
@@ -290,7 +307,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(3);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items")), false));
+        interactions.addAll(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("axolotl_tempt_items")), false));
         // Water Pickup
         interactions.add(this.generateBucketable(Items.WATER_BUCKET, Items.AXOLOTL_BUCKET, 2));
         // ambient
@@ -311,7 +328,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.WHEAT_SEEDS,
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.WHEAT_SEEDS,
             Items.MELON_SEEDS,
             Items.PUMPKIN_SEEDS,
             Items.BEETROOT_SEEDS)));
@@ -345,7 +362,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))));
+        interactions.addAll(this.generateFood(CustomIngredient.of(AnimalPenItemHelper.itemTag("small_flowers"))));
 
         // Shears
         interactions.add(AnimalInteractionBuilder.create("shearing").
@@ -437,7 +454,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.WHEAT)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.WHEAT)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -466,7 +483,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.WHEAT)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.WHEAT)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -528,7 +545,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.WHEAT)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.WHEAT)));
         // Milk Pickup
         interactions.add(AnimalInteractionBuilder.create("milk").
             ingredient(CustomIngredient.of(Items.BUCKET)).
@@ -559,7 +576,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(18);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.WHEAT)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.WHEAT)));
 
         // Shearing
         for (DyeColor value : DyeColor.values())
@@ -626,7 +643,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.SEAGRASS),
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.SEAGRASS),
             FunctionKey.of(AnimalPenFunctionRegistry.TURTLE_DROP_SCUTE.get())));
 
         // Egg Dropping
@@ -658,7 +675,7 @@ public class AnimalInteractionProvider implements DataProvider
         List<AnimalInteraction> interactions = new ArrayList<>(2);
 
         // Food
-        interactions.add(this.generateFood(CustomIngredient.of(Items.KELP, Items.SEAGRASS)));
+        interactions.addAll(this.generateFood(CustomIngredient.of(Items.KELP, Items.SEAGRASS)));
         // Water Pickup
         interactions.add(this.generateBucketable(Items.WATER_BUCKET, resultItem, 2));
 
