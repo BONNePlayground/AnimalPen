@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 
 
@@ -26,6 +27,19 @@ public record TagValue(@Nullable Tag value) implements Value
         }
 
         return ((IntTag) this.value).getAsInt();
+    }
+
+
+    @Override
+    public long getAsLong()
+    {
+        if (this.value == null || this.value.getType() != LongTag.TYPE)
+        {
+            AnimalPen.sendDebug("Tag cannot be converted into long, as value is not set.");
+            return 0;
+        }
+
+        return ((LongTag) this.value).getAsLong();
     }
 
 
