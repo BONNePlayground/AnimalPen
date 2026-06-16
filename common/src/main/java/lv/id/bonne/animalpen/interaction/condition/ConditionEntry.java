@@ -5,10 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import lv.id.bonne.animalpen.interaction.value.BoolValue;
-import lv.id.bonne.animalpen.interaction.value.IntValue;
-import lv.id.bonne.animalpen.interaction.value.TagValue;
-import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.interaction.value.*;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -60,7 +57,7 @@ public interface ConditionEntry
     /**
      * This condition uses `animal_count` to apply `operator` with given `value`
      */
-    public record AmountCondition(Operator operator, int value) implements ConditionEntry
+    public record AmountCondition(Operator operator, long value) implements ConditionEntry
     {
         @Override
         public boolean matchCondition(CompoundTag tag)
@@ -73,13 +70,13 @@ public interface ConditionEntry
             long animalCount = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
                 getLong(AnimalPenCompoundTags.TAG_AMOUNT);
 
-            return operator.test(new IntValue((int) animalCount), new IntValue(this.value));
+            return operator.test(new LongValue(animalCount), new LongValue(this.value));
         }
 
 
         public static final Codec<AmountCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             Operator.CODEC.fieldOf("operator").forGetter(AmountCondition::operator),
-            Codec.INT.fieldOf("value").forGetter(AmountCondition::value)
+            Codec.LONG.fieldOf("value").forGetter(AmountCondition::value)
         ).apply(inst, AmountCondition::new));
     }
 
