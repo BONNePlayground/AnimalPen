@@ -14,6 +14,13 @@ public record StringValue(String value) implements Value
 
 
     @Override
+    public long getAsLong()
+    {
+        return Long.parseLong(this.value());
+    }
+
+
+    @Override
     public boolean getAsBoolean()
     {
         return Boolean.getBoolean(this.value());

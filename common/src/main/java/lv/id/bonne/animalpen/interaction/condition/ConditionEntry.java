@@ -6,10 +6,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import lv.id.bonne.animalpen.interaction.value.BoolValue;
-import lv.id.bonne.animalpen.interaction.value.IntValue;
-import lv.id.bonne.animalpen.interaction.value.TagValue;
-import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.interaction.value.*;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
@@ -70,7 +68,7 @@ public sealed interface ConditionEntry permits
     /**
      * This condition uses `animal_count` to apply `operator` with given `value`
      */
-    public record AmountCondition(Operator operator, int value) implements ConditionEntry
+    public record AmountCondition(Operator operator, long value) implements ConditionEntry
     {
         @Override
         public boolean matchCondition(DataComponentHolder dataHolder)
@@ -82,14 +80,18 @@ public sealed interface ConditionEntry permits
 
             StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
-            return operator.test(new IntValue((int) storedMobData.animalCount()), new IntValue(this.value));
+            long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
+            long currentValue = this.value > 0 ? this.value : Long.MAX_VALUE - 1;
+
+            return operator.test(new LongValue(storedMobData.animalCount()),
+                new LongValue(Math.min(currentValue, maximalAnimalCount)));
         }
 
 
         public static final MapCodec<AmountCondition> CODEC =
             RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Operator.CODEC.fieldOf("operator").forGetter(AmountCondition::operator),
-                Codec.INT.fieldOf("value").forGetter(AmountCondition::value)
+                Codec.LONG.fieldOf("value").forGetter(AmountCondition::value)
             ).apply(inst, AmountCondition::new));
     }
 
