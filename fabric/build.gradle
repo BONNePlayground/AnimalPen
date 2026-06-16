@@ -143,8 +143,6 @@ curseforge {
         addGameVersion "1.19.2"
         addGameVersion "Fabric"
         addGameVersion "Java 17"
-        addGameVersion "Server"
-        addGameVersion "Client"
 
         relations {
             requiredDependency "architectury-api"
