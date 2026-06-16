@@ -24,7 +24,7 @@ public interface ConsumerEntry
 
     int calculateConsumption(AnimalInteractionExecutor executor,
         ItemStack itemStack,
-        int animalCount,
+        long animalCount,
         boolean evenCount);
 
 
@@ -49,7 +49,7 @@ public interface ConsumerEntry
 
         public int calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;
@@ -90,7 +90,7 @@ public interface ConsumerEntry
         @Override
         public int calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;
@@ -142,10 +142,10 @@ public interface ConsumerEntry
         @Override
         public int calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
-            int consumedAmount;
+            long consumedAmount;
 
             if (!this.limitToStack)
             {
@@ -163,7 +163,7 @@ public interface ConsumerEntry
                 consumedAmount--;
             }
 
-            return consumedAmount;
+            return (int) Math.min(consumedAmount, Integer.MAX_VALUE);
         }
 
 
@@ -202,7 +202,7 @@ public interface ConsumerEntry
         @Override
         public int calculateConsumption(AnimalInteractionExecutor executor,
             ItemStack itemStack,
-            int animalCount,
+            long animalCount,
             boolean evenCount)
         {
             return 1;

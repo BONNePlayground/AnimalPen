@@ -64,8 +64,8 @@ public class BucketablePickup implements EntityFunction
         player.setItemInHand(interactionHand,
             ItemUtils.createFilledResult(itemInHand, player, bucketItem, false));
 
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
+        long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
 
         if (AnimalPen.config().isTriggerAdvancements())
         {
@@ -120,8 +120,8 @@ public class BucketablePickup implements EntityFunction
             ItemTransferUtil.insertBellowOrDrop(serverLevel, bucketItem, blockPos, blockPos);
         }
 
-        int animalCount = animalData.getInt(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
+        long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
+        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, animalCount - 1);
 
         return true;
     }
