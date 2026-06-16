@@ -98,7 +98,7 @@ public class Feeding implements EntityFunction
         animalData.putInt(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
 
         // Save last increment into animal data
-        animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, animalCount / 2);
+        animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, amount / 2);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,
