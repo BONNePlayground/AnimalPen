@@ -74,7 +74,7 @@ public record AnimalInteraction(@NotNull String id,
      * @param mobCount the input animal count
      * @return normalized animal count value
      */
-    public int normalizeMobCount(int mobCount)
+    public long normalizeMobCount(long mobCount)
     {
         if (this.even && (mobCount & 1) == 1)
         {
@@ -92,7 +92,7 @@ public record AnimalInteraction(@NotNull String id,
      * @param mobCount The mob count for cooldown calculations
      * @return {@code true} if cooldown was applied, {@code false} otherwise
      */
-    public boolean applyCooldown(CompoundTag mobNBT, int mobCount)
+    public boolean applyCooldown(CompoundTag mobNBT, long mobCount)
     {
         if (this.cooldown == null)
         {
