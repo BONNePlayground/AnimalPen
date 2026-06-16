@@ -95,8 +95,25 @@ public class Feeding implements EntityFunction
     {
         CompoundTag animalData = mobNBT.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
         long animalCount = animalData.getLong(AnimalPenCompoundTags.TAG_AMOUNT);
-        animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT,
-            Math.max(animalCount + amount / 2, AnimalPen.config().getMaximalAnimalCountNormalized()));
+
+        long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
+
+        if (animalCount > maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            return;
+        }
+
+        if (animalCount + amount / 2 > maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, maximalAnimalCount);
+            amount = (int) (maximalAnimalCount - animalCount);
+        }
+        else
+        {
+            animalData.putLong(AnimalPenCompoundTags.TAG_AMOUNT, animalCount + amount / 2);
+        }
 
         // Save last increment into animal data
         animalData.putInt(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, amount / 2);
