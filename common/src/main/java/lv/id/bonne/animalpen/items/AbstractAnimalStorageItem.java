@@ -6,9 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-import lv.id.bonne.animalpen.client.screens.VariantsConfigScreen;
-import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
@@ -305,6 +304,12 @@ public abstract class AbstractAnimalStorageItem extends Item
             return InteractionResult.FAIL;
         }
 
+        if (this.isFull(stack))
+        {
+            this.error(player, ".error.full");
+            return InteractionResult.FAIL;
+        }
+
         this.captureMob(stack, player, mob, hand);
 
         return InteractionResult.SUCCESS;
@@ -521,6 +526,24 @@ public abstract class AbstractAnimalStorageItem extends Item
 
         return entity.getType() ==
             stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()).entityType();
+    }
+
+
+    private boolean isFull(ItemStack stack)
+    {
+        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        {
+            return false;
+        }
+
+        StoredMobData storedMobData = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
+        {
+            return false;
+        }
+
+        return storedMobData.animalCount() >= AnimalPen.config().getMaximalAnimalCountNormalized();
     }
 
 
