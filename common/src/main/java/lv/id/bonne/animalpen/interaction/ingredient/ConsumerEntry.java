@@ -167,7 +167,7 @@ public sealed interface ConsumerEntry permits
                 consumedAmount--;
             }
 
-            return consumedAmount;
+            return (int) Math.min(consumedAmount, Integer.MAX_VALUE);
         }
 
 
