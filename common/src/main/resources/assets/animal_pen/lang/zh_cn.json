@@ -25,7 +25,6 @@
   "item.animal_pen.water_animal_container.error.too_many_variants": "变种存储已达上限",
   "item.animal_pen.water_animal_container.error.tame": "Cannot pickup tamed water animals",
   "item.animal_pen.water_animal_container.error.chested": "Cannot pickup animals with chests equipped",
-  "item.animal_pen.water_animal_container.error.not_mob": "Only mobs can be picked up",
   "category.animal_pen.items": "动物围栏物品",
   "tag.item.animal_pen.animal_pens": "动物围栏",
   "tag.item.animal_pen.can_attack_aquarium": "可攻击水族箱的物品",
@@ -68,7 +67,6 @@
   "gui.animal_pen.variant_selection_screen.select_to_delete_tooltip": "选择要删除的变种",
   "gui.animal_pen.variant_selection_screen.cooldown_open_tooltip": "点击查看冷却时间",
   "gui.animal_pen.variant_selection_screen.cooldown_close_tooltip": "点击隐藏冷却时间",
-  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
 
   "gui.animal_pen.variant_selection_screen.configure.title": "Configure",
   "gui.animal_pen.variant_selection_screen.configure.minimal_animal_count": "Minimal animal count in block:",
@@ -286,6 +284,9 @@
   "gui.animal_pen.variant_selection_screen.configure.entity_size.tooltip": "Adjusts how large the animal appears inside the block.",
   "gui.animal_pen.variant_selection_screen.configure.entity_size.disabled": "§cOption disabled in config.",
   "gui.animal_pen.variant_selection_screen.configure.enable_protection.tooltip": "When enabled, other players cannot interact with this block or the animals inside.",
+  "item.animal_pen.animal_cage.error.full": "Animal Cage is full",
+  "item.animal_pen.water_animal_container.error.full": "Aquatic Jar is full",
+  "item.animal_pen.bird_catcher.error.full": "Avian Net is full",
   "option.animal_pen.block_dispenser_interactions": "Prevent Dispenser Interactions",
   "option.animal_pen.block_dispenser_interactions.tooltip[0]": "Allows toggling whether dispensers are",
   "option.animal_pen.block_dispenser_interactions.tooltip[1]": "prevented from interacting with animals",
@@ -300,7 +301,6 @@
   "advancements.animal_pen.entity.minecraft.tadpole_water_bucket.description": "Use a water bucket on an Aquarium to pick it up",
   "advancements.animal_pen.entity.minecraft.allay.title": "Useful Helper",
   "advancements.animal_pen.entity.minecraft.allay.description": "Catch an Allay",
-  "category.animal_pen.items": "Animal Pen Items",
   "advancements.animal_pen.entity.minecraft.camel.title": "Desert Rider",
   "advancements.animal_pen.entity.minecraft.camel.description": "Catch a Camel",
   "advancements.animal_pen.entity.minecraft.sniffer.title": "Ancient Monster",
@@ -308,5 +308,10 @@
   "advancements.animal_pen.entity.minecraft.sniffer_bucket.title": "Ancient Eggs",
   "advancements.animal_pen.entity.minecraft.sniffer_bucket.description": "Use bucket on a Sniffer to collect eggs",
   "advancements.animal_pen.entity.minecraft.sniffer_bowl.title": "Ancient Plants",
-  "advancements.animal_pen.entity.minecraft.sniffer_bowl.description": "Use bowl on a Sniffer to collect ancient seeds"
+  "advancements.animal_pen.entity.minecraft.sniffer_bowl.description": "Use bowl on a Sniffer to collect ancient seeds",
+  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
+  "advancements.animal_pen.entity.minecraft.armadillo.title": "Small Roller",
+  "advancements.animal_pen.entity.minecraft.armadillo.description": "Catch an Armadillo",
+  "advancements.animal_pen.entity.minecraft.armadillo_brush.title": "Scratch an Armadillo",
+  "advancements.animal_pen.entity.minecraft.armadillo_brush.description": "Brush an Armadillo to collect scutes"
 }

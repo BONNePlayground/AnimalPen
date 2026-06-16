@@ -43,8 +43,8 @@ public sealed interface CooldownEntry permits
             long value = this.base + animalCount * this.delta;
 
             return this.delta >= 0 ?
-                Mth.clamp(value, this.base, this.limit) :
-                Mth.clamp(value, this.limit, this.base);
+                (int) Mth.clamp(value, this.base, this.limit) :
+                (int) Mth.clamp(value, this.limit, this.base);
         }
 
 

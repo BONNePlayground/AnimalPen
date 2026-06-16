@@ -120,7 +120,7 @@ public class Configuration
 
         if (init)
         {
-            this.maximalAnimalCount = Integer.MAX_VALUE;
+            this.maximalAnimalCount = 0;
 
             this.growAnimalPenMob = false;
             this.growAquariumMob = false;
@@ -141,6 +141,15 @@ public class Configuration
     public long getMaximalAnimalCount()
     {
         return this.maximalAnimalCount;
+    }
+
+
+    /**
+     * @return normalized maximal animal count value, that is always larger than 0.
+     */
+    public long getMaximalAnimalCountNormalized()
+    {
+        return this.maximalAnimalCount <= 0 ? Long.MAX_VALUE - 1 : this.maximalAnimalCount;
     }
 
 
@@ -512,9 +521,10 @@ public class Configuration
 
     @JsonComment("Allows to set maximal amount of animals in the pen.")
     @JsonComment("Setting 0 will remove any limit.")
+    @JsonComment("Default 0")
     @Expose
     @SerializedName("animal_limit_in_pen")
-    private long maximalAnimalCount = Integer.MAX_VALUE;
+    private long maximalAnimalCount = 0;
 
     @JsonComment("Allows to enable mob growing in animal pen.")
     @JsonComment("The more animals are inside it, the larger it will be.")
