@@ -117,11 +117,29 @@ public class Feeding implements EntityFunction
 
         StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount();
-        animalCount += amount;
+
+        long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
+
+        if (animalCount >= maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            return;
+        }
+
+        if (animalCount + amount > maximalAnimalCount)
+        {
+            // Yeah, food is consumed but well... I do not know how to do it.
+            amount = (int) (maximalAnimalCount - animalCount);
+            animalCount = maximalAnimalCount;
+        }
+        else
+        {
+            animalCount += amount;
+        }
 
         // Save last increment into animal data
         Map<String, Integer> properties = storedMobData.properties();
-        properties.put(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, (int) animalCount / 2);
+        properties.put(AnimalPenCompoundTags.TAG_LAST_FEEDING_AMOUNT, amount);
 
         serverLevel.sendParticles(
             ParticleTypes.HEART,

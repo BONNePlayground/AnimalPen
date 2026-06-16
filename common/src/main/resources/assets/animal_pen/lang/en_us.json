@@ -12,6 +12,7 @@
   "item.animal_pen.animal_cage.error.not_allowed": "This animal cannot be caught with an Animal Cage",
   "item.animal_pen.animal_cage.error.too_many_variants": "Cannot store another variant. The cage is full",
   "item.animal_pen.animal_cage.error.chested": "Cannot catch animals carrying chests",
+  "item.animal_pen.animal_cage.error.full": "Animal Cage is full",
 
   "item.animal_pen.water_animal_container": "Aquatic Jar",
   "item.animal_pen.water_animal_container.entity": "Entity: %s",
@@ -26,6 +27,7 @@
   "item.animal_pen.water_animal_container.error.too_many_variants": "Cannot store another variant. The jar is full",
   "item.animal_pen.water_animal_container.error.tame": "Cannot capture tamed aquatic animals",
   "item.animal_pen.water_animal_container.error.chested": "Cannot capture animals carrying chests",
+  "item.animal_pen.water_animal_container.error.full": "Aquatic Jar is full",
 
   "item.animal_pen.bird_catcher": "Avian Net",
   "item.animal_pen.bird_catcher.entity": "Entity: %s",
@@ -40,6 +42,7 @@
   "item.animal_pen.bird_catcher.error.too_many_variants": "Cannot store another variant. The net is full",
   "item.animal_pen.bird_catcher.error.tame": "Cannot capture tamed flying animals",
   "item.animal_pen.bird_catcher.error.chested": "Cannot capture animals carrying chests",
+  "item.animal_pen.bird_catcher.error.full": "Avian Net is full",
 
   "category.animal_pen.items": "Animal Pen Items",
 

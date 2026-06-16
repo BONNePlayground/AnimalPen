@@ -28,6 +28,19 @@ public record TagValue(@Nullable Tag value) implements Value
 
 
     @Override
+    public long getAsLong()
+    {
+        if (this.value == null || this.value.asLong().isEmpty())
+        {
+            AnimalPen.sendDebug("Tag cannot be converted into long, as value is not set.");
+            return 0;
+        }
+
+        return this.value.asLong().orElse(0L);
+    }
+
+
+    @Override
     public boolean getAsBoolean()
     {
         if (this.value == null || this.value.asBoolean().isEmpty())

@@ -1229,9 +1229,9 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return false;
         }
 
-        long maxCount = AnimalPen.config().getMaximalAnimalCount();
+        long maxCount = AnimalPen.config().getMaximalAnimalCountNormalized();
 
-        if (maxCount > 0 && animalCount + change > maxCount)
+        if (animalCount + change > maxCount)
         {
             return false;
         }
@@ -1339,7 +1339,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         else
         {
             // Should not run into
-            animalCount = 0;
+            animalCount = 0L;
             cooldowns = Collections.emptyMap();
             properties = Collections.emptyMap();
         }
