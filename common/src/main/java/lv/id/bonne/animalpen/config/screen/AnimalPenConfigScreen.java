@@ -184,7 +184,7 @@ public class AnimalPenConfigScreen
         general.addEntry(entryBuilder.
             startLongField(new TranslatableComponent("option.animal_pen.animal_limit_in_pen"),
                 AnimalPen.config().getMaximalAnimalCount()).
-            setDefaultValue(Integer.MAX_VALUE).
+            setDefaultValue(0).
             setTooltip(tooltips("option.animal_pen.animal_limit_in_pen.tooltip")).
             setRequirement(LOCAL_OR_OP_REQUIREMENT).
             setSaveConsumer(newValue ->

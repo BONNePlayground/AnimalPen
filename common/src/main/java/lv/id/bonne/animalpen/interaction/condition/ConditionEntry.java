@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.*;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import net.minecraft.nbt.CompoundTag;
@@ -70,7 +71,11 @@ public interface ConditionEntry
             long animalCount = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA).
                 getLong(AnimalPenCompoundTags.TAG_AMOUNT);
 
-            return operator.test(new LongValue(animalCount), new LongValue(this.value));
+            long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
+            long currentValue = this.value > 0 ? this.value : Long.MAX_VALUE - 1;
+
+            return operator.test(new LongValue(animalCount),
+                new LongValue(Math.min(currentValue, maximalAnimalCount)));
         }
 
 
