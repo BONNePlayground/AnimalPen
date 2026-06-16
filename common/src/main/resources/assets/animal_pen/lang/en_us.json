@@ -90,6 +90,7 @@
 
   "display.animal_pen.requires_pollen": "%1$s §cNeeds at least §2%3$d §cpollen",
   "display.animal_pen.requires_food": "%1$s §cNeeds at least 2 mobs",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
 
   "gui.animal_pen.variant_selection_screen": "§8Variant Selection",
   "gui.animal_pen.variant_selection_screen.fixed_size": "%d",
