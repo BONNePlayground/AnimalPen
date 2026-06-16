@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.screens.VariantsConfigScreen;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.mixin.invokers.MobInvoker;
@@ -229,6 +231,12 @@ public abstract class AbstractAnimalStorageItem extends Item
         if (!this.matchEntity(stack, mob))
         {
             this.error(player, ".error.wrong");
+            return InteractionResult.FAIL;
+        }
+
+        if (this.isFull(stack))
+        {
+            this.error(player, ".error.full");
             return InteractionResult.FAIL;
         }
 
@@ -464,6 +472,33 @@ public abstract class AbstractAnimalStorageItem extends Item
         return new ResourceLocation(
             animal.getString(AnimalPenCompoundTags.TAG_ENTITY_ID)).
             equals(entity.getType().arch$registryName());
+    }
+
+
+    private boolean isFull(ItemStack stack)
+    {
+        CompoundTag tag = stack.getTag();
+
+        if (tag == null)
+        {
+            return false;
+        }
+
+        CompoundTag animal = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL);
+
+        if (!animal.contains(AnimalPenCompoundTags.TAG_ENTITY_ID))
+        {
+            return false;
+        }
+
+        CompoundTag data = tag.getCompound(AnimalPenCompoundTags.TAG_ANIMAL_DATA);
+
+        if (!data.contains(AnimalPenCompoundTags.TAG_AMOUNT))
+        {
+            return false;
+        }
+
+        return data.getLong(AnimalPenCompoundTags.TAG_AMOUNT) >= AnimalPen.config().getMaximalAnimalCountNormalized();
     }
 
 
