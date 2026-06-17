@@ -202,22 +202,20 @@ public class AnimalInteractionProvider implements DataProvider
             textLines(TextEntry.cooldown("display.animal_pen.food_cooldown", food)).
             redstoneBit(1).
             build(),
-            AnimalInteractionBuilder.create("feeding_need_2").
-                ingredient(food).
+            AnimalInteractionBuilder.create("feeding_not_enough").
                 conditions(new ConditionEntry.AmountCondition(Operator.LT, 2)).
                 textLines(new TextEntry("",
                     "display.animal_pen.requires_food",
-                    CustomIngredient.EMPTY,
+                    food,
                     food,
                     TextEntryVisibility.ON_MATCH,
                     "2")).
                 build(),
             AnimalInteractionBuilder.create("feeding_max_reached").
-                ingredient(food).
                 conditions(new ConditionEntry.AmountCondition(Operator.GTE, -1)).
                 textLines(new TextEntry("",
                     "display.animal_pen.reached_max",
-                    CustomIngredient.EMPTY,
+                    food,
                     food,
                     TextEntryVisibility.ON_MATCH)).
                 build()
