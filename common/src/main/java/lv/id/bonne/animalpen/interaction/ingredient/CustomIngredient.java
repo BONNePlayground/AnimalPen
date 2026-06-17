@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -75,9 +76,29 @@ public final class CustomIngredient implements Predicate<ItemStack>
             }
             else
             {
-                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> checkStack.is(itemStack.getItem()));
+                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> isSameIgnoreDurability(checkStack, itemStack));
             }
         }
+    }
+
+
+    public static boolean isSameIgnoreDurability(ItemStack stack1, ItemStack stack2)
+    {
+        if (stack1 == stack2) return true;
+        if (stack1.isEmpty() || stack2.isEmpty()) return false;
+        if (!stack1.is(stack2.getItem())) return false;
+        if (!stack1.hasTag()) return true;
+        if (!stack1.hasTag() && !stack2.hasTag()) return true;
+
+        // Copy tags so we don't accidentally repair the item in-game!
+        CompoundTag nbt1 = stack1.getTag() != null ? stack1.getTag().copy() : null;
+        CompoundTag nbt2 = stack2.getTag() != null ? stack2.getTag().copy() : null;
+
+        // Explicitly strip away ONLY the durability tag
+        if (nbt1 != null) nbt1.remove(ItemStack.TAG_DAMAGE);
+        if (nbt2 != null) nbt2.remove(ItemStack.TAG_DAMAGE);
+
+        return nbt1 != null && nbt1.isEmpty() || Objects.equals(nbt1, nbt2);
     }
 
 
@@ -136,6 +157,19 @@ public final class CustomIngredient implements Predicate<ItemStack>
                 if (item.item.getCount() == 1 && !item.item.hasTag())
                 {
                     return Either.left(value);
+                }
+
+                CompoundTag tag = item.item.getTag();
+
+                if (tag != null)
+                {
+                    tag.remove(ItemStack.TAG_DAMAGE);
+
+                    if (tag.isEmpty())
+                    {
+                        // Vanilla items adds damage by default. If tag is empty do not save it.
+                        return Either.left(value);
+                    }
                 }
 
                 return Either.right(item);
