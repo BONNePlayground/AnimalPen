@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -74,7 +75,7 @@ public final class CustomIngredient implements Predicate<ItemStack>
             }
             else
             {
-                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> checkStack.is(itemStack.getItem()));
+                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> ItemStack.isSameIgnoreDurability(checkStack, itemStack));
             }
         }
     }
@@ -135,6 +136,19 @@ public final class CustomIngredient implements Predicate<ItemStack>
                 if (item.item.getCount() == 1 && !item.item.hasTag())
                 {
                     return Either.left(value);
+                }
+
+                CompoundTag tag = item.item.getTag();
+
+                if (tag != null)
+                {
+                    tag.remove(ItemStack.TAG_DAMAGE);
+
+                    if (tag.isEmpty())
+                    {
+                        // Vanilla items adds damage by default. If tag is empty do not save it.
+                        return Either.left(value);
+                    }
                 }
 
                 return Either.right(item);
