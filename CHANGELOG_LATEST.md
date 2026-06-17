@@ -1,6 +1,5 @@
-# Animal Pens 2.4.1
+# Animal Pens 2.4.2
 
 #### Changes:
-- Fixes `animal_limit_in_pen` config option (it was not used)
-- Fixes wrong stored value for `last_feeding_increment` 
-- Adds amount condition to rely on `animal_limit_in_pen` value.
+- Fixes `item-stack` durability checks
+- Fixes `int-tag` conversions that prevented detection of `pollen` level
