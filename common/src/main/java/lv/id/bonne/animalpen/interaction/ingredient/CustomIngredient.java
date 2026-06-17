@@ -77,28 +77,31 @@ public final class CustomIngredient implements Predicate<ItemStack>
             }
             else
             {
-                return Arrays.stream(this.itemStacks).anyMatch(checkStack ->
-                {
-                    // Null-check
-                    if (checkStack == null) return false;
-
-                    // Not an item from stack.
-                    if (!checkStack.is(itemStack.getItem())) return false;
-
-                    // Allow any components from items.
-                    if (checkStack.getComponentsPatch().isEmpty()) return true;
-
-                    // Build component patches without damage
-                    DataComponentPatch checkPatch = checkStack.getComponentsPatch().
-                        forget(c -> c == DataComponents.DAMAGE);
-
-                    DataComponentPatch incomingPatch = itemStack.getComponentsPatch().
-                        forget(c -> c == DataComponents.DAMAGE);
-
-                    return checkPatch.equals(incomingPatch);
-                });
+                return Arrays.stream(this.itemStacks).anyMatch(checkStack -> isSameIgnoreDurability(checkStack, itemStack));
             }
         }
+    }
+
+
+    public static boolean isSameIgnoreDurability(ItemStack itemStack, ItemStack itemStack1)
+    {
+        // Null-check
+        if (itemStack == null) return false;
+
+        // Not an item from stack.
+        if (!itemStack.is(itemStack1.getItem())) return false;
+
+        // Allow any components from items.
+        if (itemStack.getComponentsPatch().isEmpty()) return true;
+
+        // Build component patches without damage
+        DataComponentPatch checkPatch = itemStack.getComponentsPatch().
+            forget(c -> c == DataComponents.DAMAGE);
+
+        DataComponentPatch incomingPatch = itemStack1.getComponentsPatch().
+            forget(c -> c == DataComponents.DAMAGE);
+
+        return checkPatch.equals(incomingPatch);
     }
 
 
