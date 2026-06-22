@@ -35,10 +35,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -96,14 +93,15 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         // Summon entity per death on client and remove it once render state is created.
         blockEntity.getDeathTicker().forEach(tick ->
         {
-            Entity clone = animal.getType().create(blockEntity.getLevel(), EntitySpawnReason.TRIGGERED);
+            Entity clone = animal.getType().create(blockEntity.getLevel(), new EntitySpawnRequest(EntitySpawnReason.LOAD, true));
 
             if (clone instanceof Mob mob)
             {
                 AnimalPenVariantHelper.loadMob(mob, animalTag);
                 mob.setPose(Pose.DYING);
-
-                mob.setPose(Pose.DYING);
+                // Id cannot be 0, and I do not want to assign real value from other entities.
+                // Hope this does not create issues.
+                mob.setId(-1);
                 mob.deathTime = tick;
 
                 EntityRenderState entityRenderState =

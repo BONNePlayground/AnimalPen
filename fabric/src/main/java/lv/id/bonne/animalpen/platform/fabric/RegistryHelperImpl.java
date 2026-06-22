@@ -10,7 +10,7 @@ import lv.id.bonne.animalpen.processing.function.wrapper.EntityFunctionEntry;
 import lv.id.bonne.animalpen.registries.AnimalPenRegistry;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;

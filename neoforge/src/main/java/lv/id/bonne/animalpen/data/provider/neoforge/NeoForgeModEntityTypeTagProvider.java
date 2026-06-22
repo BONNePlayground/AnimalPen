@@ -39,7 +39,7 @@ public class NeoForgeModEntityTypeTagProvider extends EntityTypeTagsProvider imp
 
             @Override
             public SimpleTagAppender<EntityType<?>> add(EntityType<?> value) {
-                builder.add(value);
+                builder.add(value.builtInRegistryHolder().key());
                 return this;
             }
         };

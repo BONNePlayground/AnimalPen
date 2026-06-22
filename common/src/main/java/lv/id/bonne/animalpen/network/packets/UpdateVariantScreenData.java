@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -51,7 +50,7 @@ public record UpdateVariantScreenData(@NotNull BlockPos position, @Nullable List
             return;
         }
 
-        if (!(Minecraft.getInstance().screen instanceof VariantScreenSelection screenSelection))
+        if (!(Minecraft.getInstance().gui.screen() instanceof VariantScreenSelection screenSelection))
         {
             // only if player has opened selection screen
             return;

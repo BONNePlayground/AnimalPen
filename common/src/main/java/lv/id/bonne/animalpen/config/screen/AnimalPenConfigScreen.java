@@ -20,7 +20,7 @@ import me.shedaniel.clothconfig2.api.Requirement;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 
 
@@ -244,8 +244,8 @@ public class AnimalPenConfigScreen
     private static Optional<Component[]> tooltips(String key)
     {
         List<Component> lines = new ArrayList<>(10);
-        
-        if (I18n.exists(key))
+
+        if (Language.getInstance().has(key))
         {
             
             lines.add(Component.translatable(key));
@@ -255,7 +255,7 @@ public class AnimalPenConfigScreen
         {
             String subLine = key + "[" + i + "]";
             
-            if (I18n.exists(subLine))
+            if (Language.getInstance().has(subLine))
             {
                 lines.add(Component.translatable(subLine));
             }

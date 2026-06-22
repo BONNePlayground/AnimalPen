@@ -114,21 +114,21 @@ public class AnimalPenItemHelper
      */
     public static final Map<DyeColor, ItemLike> ITEM_BY_DYE = Util.make(Maps.newEnumMap(DyeColor.class), (enumMap) ->
     {
-        enumMap.put(DyeColor.WHITE, Items.WHITE_WOOL);
-        enumMap.put(DyeColor.ORANGE, Items.ORANGE_WOOL);
-        enumMap.put(DyeColor.MAGENTA, Items.MAGENTA_WOOL);
-        enumMap.put(DyeColor.LIGHT_BLUE, Items.LIGHT_BLUE_WOOL);
-        enumMap.put(DyeColor.YELLOW, Items.YELLOW_WOOL);
-        enumMap.put(DyeColor.LIME, Items.LIME_WOOL);
-        enumMap.put(DyeColor.PINK, Items.PINK_WOOL);
-        enumMap.put(DyeColor.GRAY, Items.GRAY_WOOL);
-        enumMap.put(DyeColor.LIGHT_GRAY, Items.LIGHT_GRAY_WOOL);
-        enumMap.put(DyeColor.CYAN, Items.CYAN_WOOL);
-        enumMap.put(DyeColor.PURPLE, Items.PURPLE_WOOL);
-        enumMap.put(DyeColor.BLUE, Items.BLUE_WOOL);
-        enumMap.put(DyeColor.BROWN, Items.BROWN_WOOL);
-        enumMap.put(DyeColor.GREEN, Items.GREEN_WOOL);
-        enumMap.put(DyeColor.RED, Items.RED_WOOL);
-        enumMap.put(DyeColor.BLACK, Items.BLACK_WOOL);
+        enumMap.put(DyeColor.WHITE, Items.WOOL.white());
+        enumMap.put(DyeColor.ORANGE, Items.WOOL.orange());
+        enumMap.put(DyeColor.MAGENTA, Items.WOOL.magenta());
+        enumMap.put(DyeColor.LIGHT_BLUE, Items.WOOL.lightBlue());
+        enumMap.put(DyeColor.YELLOW, Items.WOOL.yellow());
+        enumMap.put(DyeColor.LIME, Items.WOOL.lime());
+        enumMap.put(DyeColor.PINK, Items.WOOL.pink());
+        enumMap.put(DyeColor.GRAY, Items.WOOL.gray());
+        enumMap.put(DyeColor.LIGHT_GRAY, Items.WOOL.lightGray());
+        enumMap.put(DyeColor.CYAN, Items.WOOL.cyan());
+        enumMap.put(DyeColor.PURPLE, Items.WOOL.purple());
+        enumMap.put(DyeColor.BLUE, Items.WOOL.blue());
+        enumMap.put(DyeColor.BROWN, Items.WOOL.brown());
+        enumMap.put(DyeColor.GREEN, Items.WOOL.green());
+        enumMap.put(DyeColor.RED, Items.WOOL.red());
+        enumMap.put(DyeColor.BLACK, Items.WOOL.black());
     });
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import lv.id.bonne.animalpen.data.provider.AnimalPenLootProvider;
 import lv.id.bonne.animalpen.data.provider.loottable.neoforge.NeoForgeModBlockLootProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -22,7 +23,8 @@ public class NeoForgeModLootTableProvider extends LootTableProvider
 {
     public NeoForgeModLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, Set.of(), List.of(
-            new SubProviderEntry(NeoForgeModBlockLootProvider::new, LootContextParamSets.BLOCK)
+            new SubProviderEntry(NeoForgeModBlockLootProvider::new, LootContextParamSets.BLOCK),
+            new SubProviderEntry(AnimalPenLootProvider::new, LootContextParamSets.GIFT)
         ), lookupProvider);
     }
 }

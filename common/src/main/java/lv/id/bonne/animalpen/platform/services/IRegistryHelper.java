@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import lv.id.bonne.animalpen.processing.function.wrapper.EntityFunctionEntry;
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.Identifier;

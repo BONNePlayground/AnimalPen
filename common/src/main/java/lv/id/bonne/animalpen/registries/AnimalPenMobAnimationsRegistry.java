@@ -13,6 +13,7 @@ import java.util.Map;
 import lv.id.bonne.animalpen.blocks.renderer.MobDisplayAnimator;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.squid.Squid;
@@ -63,10 +64,10 @@ public class AnimalPenMobAnimationsRegistry
             }
         };
 
-        AQUARIUM_ANIMATIONS.put(EntityType.SQUID, squidAnimation);
-        AQUARIUM_ANIMATIONS.put(EntityType.GLOW_SQUID, squidAnimation);
+        AQUARIUM_ANIMATIONS.put(EntityTypes.SQUID, squidAnimation);
+        AQUARIUM_ANIMATIONS.put(EntityTypes.GLOW_SQUID, squidAnimation);
 
-        AQUARIUM_ANIMATIONS.put(EntityType.FROG, mob ->
+        AQUARIUM_ANIMATIONS.put(EntityTypes.FROG, mob ->
         {
             if (mob instanceof Frog frog)
             {
@@ -74,7 +75,7 @@ public class AnimalPenMobAnimationsRegistry
             }
         });
 
-        AQUARIUM_ANIMATIONS.put(EntityType.TURTLE, mob ->
+        AQUARIUM_ANIMATIONS.put(EntityTypes.TURTLE, mob ->
         {
             if (mob instanceof Turtle turtle)
             {
@@ -82,7 +83,7 @@ public class AnimalPenMobAnimationsRegistry
             }
         });
 
-        AQUARIUM_ANIMATIONS.put(EntityType.AXOLOTL, mob ->
+        AQUARIUM_ANIMATIONS.put(EntityTypes.AXOLOTL, mob ->
         {
             if (mob instanceof Axolotl axolotl)
             {
@@ -92,7 +93,7 @@ public class AnimalPenMobAnimationsRegistry
         });
 
         // Parrots also have some animation requirements
-        AVIARY_ANIMATIONS.put(EntityType.PARROT, mob ->
+        AVIARY_ANIMATIONS.put(EntityTypes.PARROT, mob ->
         {
             if (mob instanceof Parrot parrot)
             {
@@ -106,7 +107,7 @@ public class AnimalPenMobAnimationsRegistry
             }
         });
 
-        AVIARY_ANIMATIONS.put(EntityType.BAT, mob ->
+        AVIARY_ANIMATIONS.put(EntityTypes.BAT, mob ->
         {
             if (mob instanceof Bat bat)
             {

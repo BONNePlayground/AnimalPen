@@ -31,11 +31,14 @@ public class EntityButton extends Button
         if (Minecraft.getInstance().level != null && entityTag != null)
         {
             EntityType.loadEntityRecursive(entityTag,
-                Minecraft.getInstance().level, EntitySpawnReason.TRIGGERED, entity ->
+                Minecraft.getInstance().level, new EntitySpawnRequest(EntitySpawnReason.LOAD, true), entity ->
                 {
                     if (entity instanceof LivingEntity livingEntity)
                     {
                         this.cachedEntity = livingEntity;
+                        // Id cannot be 0, and I do not want to assign real value from other entities.
+                        // Hope this does not create issues.
+                        this.cachedEntity.setId(-1);
 
                         if (livingEntity instanceof WaterAnimal animal)
                         {

@@ -81,7 +81,7 @@ modrinth {
     versionName = "${rootProject.version}-${rootProject.minecraft_version}-Fabric"
     versionType = "release"
     uploadFile = tasks.named("jar").get().archiveFile.get().asFile
-    gameVersions = ["26.1", "26.1.1", "26.1.2"]
+    gameVersions = ["26.2"]
     loaders = ["fabric"]
     dependencies {
         required.project "fabric-api"
@@ -101,9 +101,7 @@ curseforge {
         changelog = rootProject.file("CHANGELOG_LATEST.md").text
         changelogType = "text"
         releaseType = "release"
-        addGameVersion "26.1"
-        addGameVersion "26.1.1"
-        addGameVersion "26.1.2"
+        addGameVersion "26.2"
         addGameVersion "Fabric"
         addGameVersion "Java 25"
 

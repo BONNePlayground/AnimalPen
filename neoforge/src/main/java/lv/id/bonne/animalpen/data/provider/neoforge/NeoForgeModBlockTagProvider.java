@@ -39,7 +39,7 @@ public class NeoForgeModBlockTagProvider extends BlockTagsProvider implements Mo
 
             @Override
             public SimpleTagAppender<Block> add(Block value) {
-                builder.add(value);
+                builder.add(value.builtInRegistryHolder().key());
                 return this;
             }
         };

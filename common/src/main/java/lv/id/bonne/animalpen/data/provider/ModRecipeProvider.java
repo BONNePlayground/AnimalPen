@@ -9,20 +9,19 @@ package lv.id.bonne.animalpen.data.provider;
 
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
@@ -34,7 +33,7 @@ public interface ModRecipeProvider
         HolderGetter<Item> holder = provider.lookupOrThrow(Registries.ITEM);
 
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC, AnimalPensItemRegistry.ANIMAL_CAGE.get()).
-            define('B', ItemTags.BARS).
+            define('B', BlockItemTags.BARS.item()).
             define('G', Items.GLASS).
             pattern("BBB").
             pattern("BGB").
@@ -112,7 +111,7 @@ public interface ModRecipeProvider
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.UNAFFECTED).get()).
             group("aviaries").
-            define('F', Ingredient.of(Items.COPPER_CHAIN.unaffected(), Items.COPPER_CHAIN.waxed())).
+            define('F', Ingredient.of(Items.COPPER_CHAIN.weathering().unaffected(), Items.COPPER_CHAIN.waxed().unaffected())).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
             pattern("F F").
@@ -124,7 +123,7 @@ public interface ModRecipeProvider
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.EXPOSED).get()).
             group("aviaries").
-            define('F', Ingredient.of(Items.COPPER_CHAIN.exposed(), Items.COPPER_CHAIN.waxedExposed())).
+            define('F', Ingredient.of(Items.COPPER_CHAIN.weathering().exposed(), Items.COPPER_CHAIN.waxed().exposed())).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
             pattern("F F").
@@ -136,7 +135,7 @@ public interface ModRecipeProvider
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.WEATHERED).get()).
             group("aviaries").
-            define('F', Ingredient.of(Items.COPPER_CHAIN.weathered(), Items.COPPER_CHAIN.waxedWeathered())).
+            define('F', Ingredient.of(Items.COPPER_CHAIN.weathering().weathered(), Items.COPPER_CHAIN.waxed().weathered())).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
             pattern("F F").
@@ -148,7 +147,7 @@ public interface ModRecipeProvider
         ShapedRecipeBuilder.shaped(holder, RecipeCategory.MISC,
                 AnimalPenBlockRegistry.COPPER_AVIARIES.get(WeatheringCopper.WeatherState.OXIDIZED).get()).
             group("aviaries").
-            define('F', Ingredient.of(Items.COPPER_CHAIN.oxidized(), Items.COPPER_CHAIN.waxedOxidized())).
+            define('F', Ingredient.of(Items.COPPER_CHAIN.weathering().oxidized(), Items.COPPER_CHAIN.waxed().oxidized())).
             define('S', Items.SMOOTH_STONE_SLAB).
             pattern("FFF").
             pattern("F F").

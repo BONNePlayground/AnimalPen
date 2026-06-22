@@ -20,14 +20,15 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -81,32 +82,32 @@ public interface ModAdvancementProvider
             AnimalPen.resourceOf("animal_pen/first_catch"));
 
         List<Pair<EntityType<?>, Item>> animals = List.of(
-            Pair.of(EntityType.ARMADILLO, Items.ARMADILLO_SPAWN_EGG),
-            Pair.of(EntityType.CAMEL, Items.CAMEL_SPAWN_EGG),
-            Pair.of(EntityType.CAT, Items.CAT_SPAWN_EGG),
-            Pair.of(EntityType.CHICKEN, Items.CHICKEN_SPAWN_EGG),
-            Pair.of(EntityType.COW, Items.COW_SPAWN_EGG),
-            Pair.of(EntityType.DONKEY, Items.DONKEY_SPAWN_EGG),
-            Pair.of(EntityType.FOX, Items.FOX_SPAWN_EGG),
-            Pair.of(EntityType.FROG, Items.FROG_SPAWN_EGG),
-            Pair.of(EntityType.GOAT, Items.GOAT_SPAWN_EGG),
-            Pair.of(EntityType.HOGLIN, Items.HOGLIN_SPAWN_EGG),
-            Pair.of(EntityType.HORSE, Items.HORSE_SPAWN_EGG),
-            Pair.of(EntityType.LLAMA, Items.LLAMA_SPAWN_EGG),
-            Pair.of(EntityType.MOOSHROOM, Items.MOOSHROOM_SPAWN_EGG),
-            Pair.of(EntityType.MULE, Items.MULE_SPAWN_EGG),
-            Pair.of(EntityType.OCELOT, Items.OCELOT_SPAWN_EGG),
-            Pair.of(EntityType.PANDA, Items.PANDA_SPAWN_EGG),
-            Pair.of(EntityType.PIG, Items.PIG_SPAWN_EGG),
-            Pair.of(EntityType.POLAR_BEAR, Items.POLAR_BEAR_SPAWN_EGG),
-            Pair.of(EntityType.RABBIT, Items.RABBIT_SPAWN_EGG),
-            Pair.of(EntityType.SHEEP, Items.SHEEP_SPAWN_EGG),
-            Pair.of(EntityType.SKELETON_HORSE, Items.SKELETON_HORSE_SPAWN_EGG),
-            Pair.of(EntityType.SNIFFER, Items.SNIFFER_SPAWN_EGG),
-            Pair.of(EntityType.STRIDER, Items.STRIDER_SPAWN_EGG),
-            Pair.of(EntityType.TRADER_LLAMA, Items.TRADER_LLAMA_SPAWN_EGG),
-            Pair.of(EntityType.WOLF, Items.WOLF_SPAWN_EGG),
-            Pair.of(EntityType.ZOMBIE_HORSE, Items.ZOMBIE_HORSE_SPAWN_EGG)
+            Pair.of(EntityTypes.ARMADILLO, Items.ARMADILLO_SPAWN_EGG),
+            Pair.of(EntityTypes.CAMEL, Items.CAMEL_SPAWN_EGG),
+            Pair.of(EntityTypes.CAT, Items.CAT_SPAWN_EGG),
+            Pair.of(EntityTypes.CHICKEN, Items.CHICKEN_SPAWN_EGG),
+            Pair.of(EntityTypes.COW, Items.COW_SPAWN_EGG),
+            Pair.of(EntityTypes.DONKEY, Items.DONKEY_SPAWN_EGG),
+            Pair.of(EntityTypes.FOX, Items.FOX_SPAWN_EGG),
+            Pair.of(EntityTypes.FROG, Items.FROG_SPAWN_EGG),
+            Pair.of(EntityTypes.GOAT, Items.GOAT_SPAWN_EGG),
+            Pair.of(EntityTypes.HOGLIN, Items.HOGLIN_SPAWN_EGG),
+            Pair.of(EntityTypes.HORSE, Items.HORSE_SPAWN_EGG),
+            Pair.of(EntityTypes.LLAMA, Items.LLAMA_SPAWN_EGG),
+            Pair.of(EntityTypes.MOOSHROOM, Items.MOOSHROOM_SPAWN_EGG),
+            Pair.of(EntityTypes.MULE, Items.MULE_SPAWN_EGG),
+            Pair.of(EntityTypes.OCELOT, Items.OCELOT_SPAWN_EGG),
+            Pair.of(EntityTypes.PANDA, Items.PANDA_SPAWN_EGG),
+            Pair.of(EntityTypes.PIG, Items.PIG_SPAWN_EGG),
+            Pair.of(EntityTypes.POLAR_BEAR, Items.POLAR_BEAR_SPAWN_EGG),
+            Pair.of(EntityTypes.RABBIT, Items.RABBIT_SPAWN_EGG),
+            Pair.of(EntityTypes.SHEEP, Items.SHEEP_SPAWN_EGG),
+            Pair.of(EntityTypes.SKELETON_HORSE, Items.SKELETON_HORSE_SPAWN_EGG),
+            Pair.of(EntityTypes.SNIFFER, Items.SNIFFER_SPAWN_EGG),
+            Pair.of(EntityTypes.STRIDER, Items.STRIDER_SPAWN_EGG),
+            Pair.of(EntityTypes.TRADER_LLAMA, Items.TRADER_LLAMA_SPAWN_EGG),
+            Pair.of(EntityTypes.WOLF, Items.WOLF_SPAWN_EGG),
+            Pair.of(EntityTypes.ZOMBIE_HORSE, Items.ZOMBIE_HORSE_SPAWN_EGG)
         );
 
         animals.forEach(animalPair ->
@@ -132,7 +133,7 @@ public interface ModAdvancementProvider
                             AnimalPensItemRegistry.ANIMAL_CAGE.get())),
                 AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_catch"));
 
-            if (animal == EntityType.CHICKEN || animal == EntityType.COW || animal == EntityType.MOOSHROOM || animal == EntityType.GOAT || animal == EntityType.SNIFFER)
+            if (animal == EntityTypes.CHICKEN || animal == EntityTypes.COW || animal == EntityTypes.MOOSHROOM || animal == EntityTypes.GOAT || animal == EntityTypes.SNIFFER)
             {
                 // Interact with bucket
                 this.generatePlatformAdvancement(consumer,
@@ -155,7 +156,7 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bucket"));
             }
 
-            if (animal == EntityType.MOOSHROOM)
+            if (animal == EntityTypes.MOOSHROOM)
             {
                 // Interact with bowl
                 this.generatePlatformAdvancement(consumer,
@@ -193,11 +194,11 @@ public interface ModAdvancementProvider
                         ).
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
-                                ItemTags.SMALL_FLOWERS)),
+                                BlockItemTags.SMALL_FLOWERS.item())),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_flower"));
             }
 
-            if (animal == EntityType.SHEEP)
+            if (animal == EntityTypes.SHEEP)
             {
                 // Shearing
                 this.generatePlatformAdvancement(consumer,
@@ -223,7 +224,7 @@ public interface ModAdvancementProvider
                     Advancement.Builder.advancement().
                         parent(advancement).
                         display(
-                            Items.WHITE_DYE,
+                            Items.DYE.white(),
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_dye.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_dye.description"),
@@ -235,14 +236,14 @@ public interface ModAdvancementProvider
                         ).
                         addCriterion(animal.getDescriptionId(),
                             AnimalInteractTrigger.TriggerInstance.interactAnimalWithItem(provider, animal,
-                                Items.WHITE_DYE, Items.ORANGE_DYE, Items.MAGENTA_DYE, Items.LIGHT_BLUE_DYE,
-                                Items.YELLOW_DYE, Items.LIME_DYE, Items.PINK_DYE, Items.GRAY_DYE, Items.LIGHT_GRAY_DYE,
-                                Items.CYAN_DYE, Items.PURPLE_DYE, Items.BLUE_DYE, Items.BROWN_DYE, Items.GREEN_DYE,
-                                Items.RED_DYE, Items.BLACK_DYE)),
+                                Items.DYE.white(), Items.DYE.orange(), Items.DYE.magenta(), Items.DYE.lightBlue(),
+                                Items.DYE.yellow(), Items.DYE.lime(), Items.DYE.pink(), Items.DYE.gray(), Items.DYE.lightGray(),
+                                Items.DYE.cyan(), Items.DYE.purple(), Items.DYE.blue(), Items.DYE.brown(), Items.DYE.green(),
+                                Items.DYE.red(), Items.DYE.black())),
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_dye"));
             }
 
-            if (animal == EntityType.FROG)
+            if (animal == EntityTypes.FROG)
             {
                 // Froglight
                 this.generatePlatformAdvancement(consumer,
@@ -265,7 +266,7 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_froglight"));
             }
 
-            if (animal == EntityType.SNIFFER)
+            if (animal == EntityTypes.SNIFFER)
             {
                 // Shearing
                 this.generatePlatformAdvancement(consumer,
@@ -288,7 +289,7 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/animal_cage/" + animal.getDescriptionId() + "_bowl"));
             }
 
-            if (animal == EntityType.ARMADILLO)
+            if (animal == EntityTypes.ARMADILLO)
             {
                 // Brush
                 this.generatePlatformAdvancement(consumer,
@@ -333,17 +334,17 @@ public interface ModAdvancementProvider
             AnimalPen.resourceOf("animal_pen/aquatic_keeper"));
 
         List<Pair<EntityType<?>, Item>> aquatics = List.of(
-            Pair.of(EntityType.AXOLOTL, Items.AXOLOTL_SPAWN_EGG),
-            Pair.of(EntityType.COD, Items.COD_SPAWN_EGG),
-            Pair.of(EntityType.PUFFERFISH, Items.PUFFERFISH_SPAWN_EGG),
-            Pair.of(EntityType.SALMON, Items.SALMON_SPAWN_EGG),
-            Pair.of(EntityType.TROPICAL_FISH, Items.TROPICAL_FISH_SPAWN_EGG),
-            Pair.of(EntityType.DOLPHIN, Items.DOLPHIN_SPAWN_EGG),
-            Pair.of(EntityType.SQUID, Items.SQUID_SPAWN_EGG),
-            Pair.of(EntityType.GLOW_SQUID, Items.GLOW_SQUID_SPAWN_EGG),
-            Pair.of(EntityType.TURTLE, Items.TURTLE_SPAWN_EGG),
-            Pair.of(EntityType.FROG, Items.FROG_SPAWN_EGG),
-            Pair.of(EntityType.TADPOLE, Items.TADPOLE_SPAWN_EGG)
+            Pair.of(EntityTypes.AXOLOTL, Items.AXOLOTL_SPAWN_EGG),
+            Pair.of(EntityTypes.COD, Items.COD_SPAWN_EGG),
+            Pair.of(EntityTypes.PUFFERFISH, Items.PUFFERFISH_SPAWN_EGG),
+            Pair.of(EntityTypes.SALMON, Items.SALMON_SPAWN_EGG),
+            Pair.of(EntityTypes.TROPICAL_FISH, Items.TROPICAL_FISH_SPAWN_EGG),
+            Pair.of(EntityTypes.DOLPHIN, Items.DOLPHIN_SPAWN_EGG),
+            Pair.of(EntityTypes.SQUID, Items.SQUID_SPAWN_EGG),
+            Pair.of(EntityTypes.GLOW_SQUID, Items.GLOW_SQUID_SPAWN_EGG),
+            Pair.of(EntityTypes.TURTLE, Items.TURTLE_SPAWN_EGG),
+            Pair.of(EntityTypes.FROG, Items.FROG_SPAWN_EGG),
+            Pair.of(EntityTypes.TADPOLE, Items.TADPOLE_SPAWN_EGG)
         );
 
         aquatics.forEach(animalPair ->
@@ -369,7 +370,7 @@ public interface ModAdvancementProvider
                             AnimalPensItemRegistry.ANIMAL_CONTAINER.get())),
                 AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_catch"));
 
-            if (animal == EntityType.TURTLE)
+            if (animal == EntityTypes.TURTLE)
             {
                 // Interact with bucket
                 this.generatePlatformAdvancement(consumer,
@@ -392,8 +393,8 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_bucket"));
             }
 
-            if (animal == EntityType.AXOLOTL || animal == EntityType.COD || animal == EntityType.PUFFERFISH ||
-                animal == EntityType.TROPICAL_FISH || animal == EntityType.SALMON || animal == EntityType.TADPOLE)
+            if (animal == EntityTypes.AXOLOTL || animal == EntityTypes.COD || animal == EntityTypes.PUFFERFISH ||
+                animal == EntityTypes.TROPICAL_FISH || animal == EntityTypes.SALMON || animal == EntityTypes.TADPOLE)
             {
                 // Interact with water bucket
                 this.generatePlatformAdvancement(consumer,
@@ -416,7 +417,7 @@ public interface ModAdvancementProvider
                     AnimalPen.resourceOf("animal_pen/water_container/" + animal.getDescriptionId() + "_water_bucket"));
             }
 
-            if (animal == EntityType.FROG)
+            if (animal == EntityTypes.FROG)
             {
                 // Froglight
                 this.generatePlatformAdvancement(consumer,
@@ -458,11 +459,11 @@ public interface ModAdvancementProvider
             AnimalPen.resourceOf("animal_pen/bird_watcher"));
 
         List<Pair<EntityType<?>, Item>> flyers = List.of(
-            Pair.of(EntityType.BEE, Items.BEE_SPAWN_EGG),
-            Pair.of(EntityType.BAT, Items.BAT_SPAWN_EGG),
-            Pair.of(EntityType.PARROT, Items.PARROT_SPAWN_EGG),
-            Pair.of(EntityType.HAPPY_GHAST, Items.HAPPY_GHAST_SPAWN_EGG),
-            Pair.of(EntityType.ALLAY, Items.ALLAY_SPAWN_EGG)
+            Pair.of(EntityTypes.BEE, Items.BEE_SPAWN_EGG),
+            Pair.of(EntityTypes.BAT, Items.BAT_SPAWN_EGG),
+            Pair.of(EntityTypes.PARROT, Items.PARROT_SPAWN_EGG),
+            Pair.of(EntityTypes.HAPPY_GHAST, Items.HAPPY_GHAST_SPAWN_EGG),
+            Pair.of(EntityTypes.ALLAY, Items.ALLAY_SPAWN_EGG)
         );
 
         flyers.forEach(animalPair ->
@@ -488,7 +489,7 @@ public interface ModAdvancementProvider
                             AnimalPensItemRegistry.BIRD_CATCHER.get())),
                 AnimalPen.resourceOf("animal_pen/bird_catcher/" + animal.getDescriptionId() + "_catch"));
 
-            if (animal == EntityType.BEE)
+            if (animal == EntityTypes.BEE)
             {
                 // Shearing
                 this.generatePlatformAdvancement(consumer,

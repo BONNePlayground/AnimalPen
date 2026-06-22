@@ -8,7 +8,7 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.platform.services.IRegistryHelper;
 import lv.id.bonne.animalpen.processing.function.wrapper.EntityFunctionEntry;
 import lv.id.bonne.animalpen.registries.AnimalPenRegistry;
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;

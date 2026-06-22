@@ -151,11 +151,14 @@ public class VariantScreenSelection extends Screen
                     storedAnimal.registryAccess(),
                     tagValueOutput.buildResult());
 
-                EntityType.create(valueInput, this.minecraft.level, EntitySpawnReason.TRIGGERED).
+                EntityType.create(valueInput, this.minecraft.level, new EntitySpawnRequest(EntitySpawnReason.LOAD, true)).
                     map(entity -> (LivingEntity) entity).
                     ifPresent(entity ->
                     {
                         this.displayEntity = entity;
+                        // Id cannot be 0, and I do not want to assign real value from other entities.
+                        // Hope this does not create issues.
+                        this.displayEntity.setId(-1);
 
                         float width = this.displayEntity.getBbWidth();
                         float height = this.displayEntity.getBbHeight();
@@ -252,7 +255,7 @@ public class VariantScreenSelection extends Screen
             this.blockEntityInterface.getStoredAnimal().isEmpty())
         {
             // close screen
-            this.minecraft.setScreen(null);
+            this.minecraft.setScreenAndShow(null);
             return;
         }
 
@@ -851,7 +854,7 @@ public class VariantScreenSelection extends Screen
      */
     private void handleConfigureButton(Button button)
     {
-        this.minecraft.setScreen(new VariantsConfigScreen(this));
+        this.minecraft.setScreenAndShow(new VariantsConfigScreen(this));
     }
 
 

@@ -33,15 +33,13 @@ import lv.id.bonne.animalpen.registries.AnimalPenInteractionRegistry;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
 import lv.id.bonne.animalpen.util.AnimalPenVariantHelper;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -1293,12 +1291,19 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
 
                 StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-                Entity entity = storedMob.entityType().create(this.level, EntitySpawnReason.TRIGGERED);
+                Entity entity = storedMob.entityType().create(this.level, new EntitySpawnRequest(EntitySpawnReason.LOAD, true));
 
                 if (entity instanceof Mob mob)
                 {
                     AnimalPenVariantHelper.loadMob(mob, storedMob.tag());
                     this.storedAnimal = mob;
+
+                    if (this.level.isClientSide())
+                    {
+                        // Id cannot be 0, and I do not want to assign real value from other entities.
+                        // Hope this does not create issues.
+                        this.storedAnimal.setId(-1);
+                    }
                 }
             }
             else if (this.storedAnimal != null && itemStack.isEmpty())

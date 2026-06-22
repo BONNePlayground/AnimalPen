@@ -210,14 +210,14 @@ public class VariantsConfigScreen extends Screen
         }
 
         // Close the screen
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 
 
     private void onCancel(Button button)
     {
         // Close without saving
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 
 
@@ -240,7 +240,7 @@ public class VariantsConfigScreen extends Screen
     @Override
     public void onClose()
     {
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 
 

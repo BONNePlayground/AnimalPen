@@ -35,13 +35,13 @@ public class NeoForgeModItemTagProvider extends ItemTagsProvider implements ModI
     @Override
     public SimpleItemTagAppender modTag(TagKey<Item> tag)
     {
-        TagAppender<Item, Item> builder = this.tag(tag);
+        TagAppender<Item> builder = this.tag(tag);
 
         return new SimpleItemTagAppender() {
 
             @Override
             public SimpleItemTagAppender add(Item value) {
-                builder.add(value);
+                builder.add(value.builtInRegistryHolder().key());
                 return this;
             }
 
