@@ -2,6 +2,7 @@ package lv.id.bonne.animalpen.registries;
 
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
 import lv.id.bonne.animalpen.util.AnimalPenCompoundTags;
@@ -68,7 +69,20 @@ public class AnimalPenInteractionRegistry
      */
     public static Map<EntityType<?>, List<AnimalInteraction>> getAll()
     {
-        return Collections.unmodifiableMap(DATA);
+        Map<EntityType<?>, List<AnimalInteraction>> snapshot = new HashMap<>();
+
+        for (var entry : DATA.entrySet())
+        {
+            snapshot.put(entry.getKey(), List.copyOf(entry.getValue()));
+        }
+
+        return Collections.unmodifiableMap(snapshot);
+    }
+
+
+    public static int getAmount()
+    {
+        return DATA.size();
     }
 
 
@@ -143,5 +157,5 @@ public class AnimalPenInteractionRegistry
     /**
      * The registry of animal interactions.
      */
-    private static final Map<EntityType<?>, List<AnimalInteraction>> DATA = new HashMap<>();
+    private static final Map<EntityType<?>, List<AnimalInteraction>> DATA = new ConcurrentHashMap<>();
 }

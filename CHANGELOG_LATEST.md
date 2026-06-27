@@ -1,5 +1,5 @@
-# Animal Pens 2.4.2
+# Animal Pens 2.4.3
 
 #### Changes:
-- Fixes `item-stack` durability checks
-- Fixes `int-tag` conversions that prevented detection of `pollen` level
+- Fixes rare race condition error on player joining server while resources are still loading
+- 
