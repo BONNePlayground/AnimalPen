@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
@@ -62,9 +63,15 @@ public class MooshroomEffectRemove implements EntityFunction
     {
         if (mob instanceof MushroomCowAccessor mushroomCow)
         {
-            mushroomCow.setStewEffects(null);
-
             StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
+            {
+                AnimalPen.LOGGER.error("FAILED to process mooshroom effect remove as data is missing.");
+                return false;
+            }
+
+            mushroomCow.setStewEffects(null);
 
             CompoundTag animalTag = new CompoundTag();
             mob.saveWithoutId(animalTag);

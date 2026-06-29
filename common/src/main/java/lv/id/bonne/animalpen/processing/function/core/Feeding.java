@@ -106,7 +106,9 @@ public class Feeding implements EntityFunction
         ItemStack componentHolder,
         BlockPos blockPos)
     {
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
         {
             AnimalPen.LOGGER.error("FAILED to feed animal as data is missing.");
             return;
@@ -117,7 +119,6 @@ public class Feeding implements EntityFunction
             amount = amount / 2;
         }
 
-        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount();
 
         long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
