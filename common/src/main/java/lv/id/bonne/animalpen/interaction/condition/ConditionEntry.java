@@ -40,12 +40,12 @@ public sealed interface ConditionEntry permits
         @Override
         public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+            StoredMob storedMob = dataHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
             {
                 return false;
             }
-
-            StoredMob storedMob = dataHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
 
             // Operator has checks if key exists. Need to use contains.
             Value dataValue = this.operator == Operator.HAS ?
@@ -73,12 +73,12 @@ public sealed interface ConditionEntry permits
         @Override
         public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+            if (storedMobData == null)
             {
                 return false;
             }
-
-            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
             long maximalAnimalCount = AnimalPen.config().getMaximalAnimalCountNormalized();
             long currentValue = this.value > 0 ? this.value : Long.MAX_VALUE - 1;
@@ -104,12 +104,12 @@ public sealed interface ConditionEntry permits
         @Override
         public boolean matchCondition(DataComponentHolder dataHolder)
         {
-            if (!dataHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+            if (storedMobData == null)
             {
                 return false;
             }
-
-            StoredMobData storedMobData = dataHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
             return operator.test(new IntValue(storedMobData.properties().getOrDefault(key, 0)), this.value);
         }

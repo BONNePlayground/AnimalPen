@@ -26,13 +26,9 @@ tasks.register("generateDatapack", Zip) {
     // ── shared resources from common ─────────────────────────────────────
     if (findProject(":common") != null) {
 
-        from("${project(":common").projectDir}/src/main/resources") {
-            include "data/animal_pen/loot_table/animal_interactions/**"
-            duplicatesStrategy = DuplicatesStrategy.WARN
-        }
-
         from("${project(":common").projectDir}/src/main/generated") {
             include "data/minecraft/**"
+            include "data/animal_pen/loot_table/animal_interactions/**"
             include "data/animal_pen/tags/entity_type/**"
             include "data/animal_pen/tags/item/**"
             exclude "data/animal_pen/tags/item/animal_pens.json"

@@ -66,9 +66,16 @@ public class MooshroomEffectRemove implements EntityFunction
     {
         if (mob instanceof MushroomCowAccessor mushroomCow)
         {
+            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
+            {
+                AnimalPen.LOGGER.error("FAILED to process mooshroom effect remove as data is missing.");
+                return false;
+            }
+
             mushroomCow.setStewEffects(null);
 
-            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
             CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
             componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                 StoredMob.of(storedMob.entityType(), animalTag));
