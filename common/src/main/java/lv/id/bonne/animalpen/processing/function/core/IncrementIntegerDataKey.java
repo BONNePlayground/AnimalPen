@@ -11,6 +11,7 @@ import java.util.Map;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
+import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.items.component.StoredMobData;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
 import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
@@ -33,7 +34,9 @@ public class IncrementIntegerDataKey implements EntityFunction.ProcessEntityFunc
         String dataKey,
         Value dataValue)
     {
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        var storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
         {
             AnimalPen.LOGGER.error("FAILED to increment data key as data is missing.");
             return false;
@@ -44,7 +47,6 @@ public class IncrementIntegerDataKey implements EntityFunction.ProcessEntityFunc
             return false;
         }
 
-        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         int value = dataValue == null ? 1 : dataValue.getAsInt();
 
         Map<String, Integer> properties = storedMobData.properties();

@@ -7,6 +7,7 @@
 package lv.id.bonne.animalpen.processing.function.core;
 
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.processing.function.api.EntityFunction;
@@ -63,9 +64,15 @@ public class SheepChangeColor implements EntityFunction
     {
         if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
         {
-            sheep.setColor(dye.getDyeColor());
-
             StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
+            {
+                AnimalPen.LOGGER.error("FAILED to process sheep color change as data is missing.");
+                return false;
+            }
+
+            sheep.setColor(dye.getDyeColor());
 
             CompoundTag animalTag = new CompoundTag();
             mob.saveWithoutId(animalTag);

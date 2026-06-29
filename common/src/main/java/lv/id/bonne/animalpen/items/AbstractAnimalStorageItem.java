@@ -88,9 +88,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         super.verifyComponentsAfterLoad(itemStack);
 
         // Minecraft 1.20.4 < upgrade to 1.20.5+
-        if (itemStack.has(DataComponents.CUSTOM_DATA))
+        CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+
+        if (customData != null)
         {
-            CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
             CompoundTag compoundTag = customData.getUnsafe();
             int variantAmount = 0;
 
@@ -155,9 +156,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         }
 
         // Animal Pens 1.6 to 2.0 upgrade
-        if (itemStack.has(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get()))
+        customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
+
+        if (customData != null)
         {
-            CustomData customData = itemStack.get(AnimalPenDataComponentRegistry.ENTITY_VARIANTS.get());
             ListTag nbtVariants = customData.getUnsafe().getListOrEmpty("animal_variants");
             List<CompoundTag> variantList = new ArrayList<>(nbtVariants.size());
             nbtVariants.forEach(tag -> variantList.add((CompoundTag) tag));
@@ -169,9 +171,10 @@ public abstract class AbstractAnimalStorageItem extends Item
         }
 
         // Move from entity data to my custom mob storage.
-        if (itemStack.has(DataComponents.ENTITY_DATA))
+        customData = itemStack.get(DataComponents.ENTITY_DATA);
+
+        if (customData != null)
         {
-            CustomData customData = itemStack.get(DataComponents.ENTITY_DATA);
             CompoundTag compoundTag = customData.getUnsafe();
 
             // Target animal count as other data is lost (cooldowns are not worth the effort)
@@ -214,12 +217,11 @@ public abstract class AbstractAnimalStorageItem extends Item
     {
         super.appendHoverText(stack, tooltipContext, tooltipDisplay, tooltip, tooltipFlag);
 
-        if (stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) &&
-            stack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
-        {
-            StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-            StoredMobData storedMobData = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+        StoredMobData storedMobData = stack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
+        if (storedMob != null && storedMobData != null)
+        {
             tooltip.accept(Component.translatable(this.tooltipKeyBase() + ".entity",
                     storedMob.entityType().getDescription()).
                 withStyle(ChatFormatting.GRAY));
@@ -228,11 +230,11 @@ public abstract class AbstractAnimalStorageItem extends Item
                     storedMobData.animalCount()).
                 withStyle(ChatFormatting.GRAY));
 
-            if (stack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()))
-            {
-                StoredMobVariantKey variantKey =
-                    stack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+            StoredMobVariantKey variantKey =
+                stack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
 
+            if (variantKey != null)
+            {
                 tooltip.accept(Component.translatable(this.tooltipKeyBase() + ".variants",
                         variantKey.amount()).
                     withStyle(ChatFormatting.GRAY));
@@ -408,9 +410,11 @@ public abstract class AbstractAnimalStorageItem extends Item
     {
         ItemStack stack = context.getItemInHand();
 
-        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+        if (storedMob == null)
         {
-            // Empty container
+            AnimalPen.LOGGER.error("Cannot release animal without data");
             return InteractionResult.PASS;
         }
 
@@ -423,7 +427,6 @@ public abstract class AbstractAnimalStorageItem extends Item
         pos.add(DoubleTag.valueOf(releaseBlock.getY()));
         pos.add(DoubleTag.valueOf(releaseBlock.getZ() + 0.5));
 
-        StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
         CompoundTag animal = storedMob.tag();
 
         animal.put("Pos", pos);
@@ -524,13 +527,14 @@ public abstract class AbstractAnimalStorageItem extends Item
 
     private boolean matchEntity(ItemStack stack, LivingEntity entity)
     {
-        if (!stack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        StoredMob storedMob = stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+        if (storedMob == null)
         {
             return true;
         }
 
-        return entity.getType() ==
-            stack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()).entityType();
+        return entity.getType() == storedMob.entityType();
     }
 
 

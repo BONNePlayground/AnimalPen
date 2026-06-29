@@ -141,7 +141,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             // Load stored mob data into client to update server changes.
             StoredMob storedMob = this.getItemStack().
                 get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-            this.storedAnimal.load(storedMob.tag());
+
+            if (storedMob != null)
+            {
+                this.storedAnimal.load(storedMob.tag());
+            }
         }
 
         this.setChanged();
@@ -394,7 +398,7 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
                 StoredMob storedMob = itemInHand.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
 
-                if ((animal == null) || !animal.getType().equals(storedMob.entityType()))
+                if (animal == null || storedMob == null || !animal.getType().equals(storedMob.entityType()))
                 {
                     AnimalPen.sendDebug("Different animals");
 
@@ -725,15 +729,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return InteractionResult.FAILED;
         }
 
-        if (!mobItemStack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ||
-            !mobItemStack.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        StoredMob storedMob = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+        StoredMobData storedMobData = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMob == null || storedMobData == null)
         {
             AnimalPen.sendDebug("Interaction with " + this.getBlockPos() + " cannot be success as data is missing.");
             return InteractionResult.FAILED;
         }
-
-        StoredMob storedMob = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
-        StoredMobData storedMobData = mobItemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
         AnimalInteraction interaction = interactionOptional.get();
         long animalCount = interaction.normalizeMobCount(storedMobData.animalCount());
@@ -1021,6 +1024,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             ItemStack itemStack = this.getItemStack();
 
             StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
+            {
+                // This should never happen but just in case.
+                return;
+            }
+
             itemStack.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                 StoredMob.of(storedMob.entityType(), animalVariant));
 
@@ -1055,14 +1065,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             return;
         }
 
-        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()))
+        StoredMobVariantKey variantKey =
+            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+        if (variantKey == null)
         {
             AnimalPen.sendDebug("Storage not set for item stack");
             return;
         }
-
-        StoredMobVariantKey variantKey =
-            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
 
         IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel,
             variantKey.key());
@@ -1213,12 +1223,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
         ItemStack itemStack = this.getItemStack();
 
-        if (!itemStack.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        StoredMobData data = itemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (data == null)
         {
             return false;
         }
 
-        StoredMobData data = itemStack.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = data.animalCount();
 
         if (change < 0 && animalCount + change < 0)
@@ -1287,6 +1298,12 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                 }
 
                 StoredMob storedMob = itemStack.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+                if (storedMob == null)
+                {
+                    return Optional.empty();
+                }
+
                 Entity entity = storedMob.entityType().create(this.level, EntitySpawnReason.TRIGGERED);
 
                 if (entity instanceof Mob mob)
@@ -1324,11 +1341,11 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         Map<String, Long> cooldowns;
         Map<String, Integer> properties;
 
-        if (this.getItemStack().has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
-        {
-            StoredMobData storedMobData =
-                this.getItemStack().get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        StoredMobData storedMobData =
+            this.getItemStack().get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
 
+        if (storedMobData != null)
+        {
             animalCount = storedMobData.animalCount();
             cooldowns = storedMobData.cooldowns();
             properties = storedMobData.properties();
