@@ -457,6 +457,14 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
                             data -> StoredMobData.of(data.animalCount(), data.properties(), cooldowns));
                     }
 
+                    StoredMobVariantKey removedVariant =
+                        itemInHand.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+                    if (removedVariant != null && this.level instanceof ServerLevel serverLevel)
+                    {
+                        IndividualPenStorage.delete(serverLevel, removedVariant.key());
+                    }
+
                     if (this.level != null && !this.level.isClientSide())
                     {
                         // Trigger screen Update

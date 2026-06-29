@@ -273,6 +273,7 @@ public class AnimalPenVariantHelper
         // Clean up the redundant item's save file
         if (redundantStorage.getVariants().isEmpty())
         {
+            IndividualPenStorage.delete(serverLevel, redundantKey.key());
             redundantItem.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
         }
         else
