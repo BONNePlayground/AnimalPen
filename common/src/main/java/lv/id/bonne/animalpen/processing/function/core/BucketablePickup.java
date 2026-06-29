@@ -43,8 +43,11 @@ public class BucketablePickup implements EntityFunction
         String dataKey,
         Value dataValue)
     {
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
         {
+            AnimalPen.LOGGER.error("FAILED to use player bucket as data is missing.");
             return false;
         }
 
@@ -68,7 +71,6 @@ public class BucketablePickup implements EntityFunction
         player.setItemInHand(interactionHand,
             ItemUtils.createFilledResult(itemInHand, player, bucketItem, false));
 
-        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount() - 1;
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
             StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));
@@ -95,8 +97,11 @@ public class BucketablePickup implements EntityFunction
         String dataKey,
         Value dataValue)
     {
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
         {
+            AnimalPen.LOGGER.error("FAILED to use dispenser bucket as data is missing.");
             return false;
         }
 
@@ -129,7 +134,6 @@ public class BucketablePickup implements EntityFunction
             ItemTransferUtil.insertBellowOrDrop(serverLevel, bucketItem, blockPos, blockPos);
         }
 
-        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         long animalCount = storedMobData.animalCount() - 1;
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get(),
             StoredMobData.of(animalCount, storedMobData.properties(), storedMobData.cooldowns()));

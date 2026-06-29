@@ -112,7 +112,7 @@ loaders.each { loader ->
         // ── common data files (shared base) ─────────────────────────────────
         if (findProject(":common") != null) {
             from("${project(":common").projectDir}/src/main/resources") {
-                include "data/animal_pen/loot_tables/animal_interactions/**"
+                include "data/animal_pen/loot_table/animal_interactions/**"
                 duplicatesStrategy = DuplicatesStrategy.WARN
             }
         }
@@ -120,10 +120,10 @@ loaders.each { loader ->
         // ── loader-specific data files (override/extend common) ──────────────
         from("${project(":${loader}").projectDir}/src/main/generated") {
             include "data/minecraft/**"
-            include "data/animal_pen/tags/entity_types/**"
-            include "data/animal_pen/tags/items/**"
-            exclude "data/animal_pen/tags/items/animal_pens.json"
-            exclude "data/animal_pen/tags/items/aviaries.json"
+            include "data/animal_pen/tags/entity_type/**"
+            include "data/animal_pen/tags/item/**"
+            exclude "data/animal_pen/tags/item/animal_pens.json"
+            exclude "data/animal_pen/tags/item/aviaries.json"
             duplicatesStrategy = DuplicatesStrategy.WARN
         }
 
