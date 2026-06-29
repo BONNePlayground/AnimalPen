@@ -95,17 +95,15 @@ public class AnimalPenItemHelper
      */
     public static Map<String, Long> getCooldowns(DataComponentHolder componentHolder)
     {
-        return componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ?
-            componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()).cooldowns() :
-            Collections.emptyMap();
+        var component = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        return component != null ? component.cooldowns() : Collections.emptyMap();
     }
 
 
     public static long getMobCount(DataComponentHolder componentHolder)
     {
-        return componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()) ?
-            componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()).animalCount() :
-            0;
+        var component = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+        return component != null ? component.animalCount() : 0L;
     }
 
 

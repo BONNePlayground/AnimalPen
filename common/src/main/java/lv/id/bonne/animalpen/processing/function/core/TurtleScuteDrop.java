@@ -47,13 +47,14 @@ public class TurtleScuteDrop implements EntityFunction.ProcessEntityFunction
             return false;
         }
 
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get()))
+        var storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
+
+        if (storedMobData == null)
         {
             AnimalPen.LOGGER.error("FAILED to process turtle scutes as data is missing.");
             return false;
         }
 
-        StoredMobData storedMobData = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
         Map<String, Integer> properties = storedMobData.properties();
 
         int count;

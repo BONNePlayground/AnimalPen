@@ -9,6 +9,7 @@ package lv.id.bonne.animalpen.processing.function.core;
 
 import java.util.Optional;
 
+import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.interaction.value.Value;
 import lv.id.bonne.animalpen.items.component.StoredMob;
 import lv.id.bonne.animalpen.mixin.accessors.MushroomCowAccessor;
@@ -56,8 +57,11 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
             return false;
         }
 
-        if (!componentHolder.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
+        StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+        if (storedMob == null)
         {
+            AnimalPen.LOGGER.error("FAILED to process mooshroom effect setting as data is missing.");
             return false;
         }
 
@@ -74,7 +78,6 @@ public class MooshroomEffectApply implements EntityFunction.PlayerEntityFunction
 
         mushroomCow.setStewEffects(effectFromItemStack.get());
 
-        StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
         CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
         componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
             StoredMob.of(storedMob.entityType(), animalTag));

@@ -67,9 +67,16 @@ public class SheepChangeColor implements EntityFunction
     {
         if (mob instanceof Sheep sheep && itemConsumed.getItem() instanceof DyeItem dye)
         {
+            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
+
+            if (storedMob == null)
+            {
+                AnimalPen.LOGGER.error("FAILED to process sheep color change as data is missing.");
+                return false;
+            }
+
             sheep.setColor(dye.getDyeColor());
 
-            StoredMob storedMob = componentHolder.get(AnimalPenDataComponentRegistry.MOB_COMPONENT.get());
             CompoundTag animalTag = AnimalPenVariantHelper.saveMob(mob);
             componentHolder.set(AnimalPenDataComponentRegistry.MOB_COMPONENT.get(),
                 StoredMob.of(storedMob.entityType(), animalTag));
