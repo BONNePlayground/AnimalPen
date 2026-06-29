@@ -137,22 +137,17 @@ public class AnimalPenVariantHelper
             return Optional.of(storage);
         }
 
-        if (itemStack.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()))
+        StoredMobVariantKey storedKey =
+            itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+        if (storedKey == null)
         {
-            StoredMobVariantKey storedKey =
-                itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
-
-            if (storedKey == null)
-            {
-                itemStack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
-                return Optional.empty();
-            }
-
-            return Optional.of(IndividualPenStorage.getOrCreate(serverLevel,
-                storedKey.key()));
+            itemStack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        return Optional.of(IndividualPenStorage.getOrCreate(serverLevel,
+            storedKey.key()));
     }
 
 
@@ -177,12 +172,6 @@ public class AnimalPenVariantHelper
         }
 
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel))
-        {
-            return false;
-        }
-
-        if (!mainItem.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()) ||
-            !redundantItem.has(AnimalPenDataComponentRegistry.MOB_COMPONENT.get()))
         {
             return false;
         }
