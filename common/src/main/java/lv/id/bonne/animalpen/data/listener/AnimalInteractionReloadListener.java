@@ -43,7 +43,7 @@ public class AnimalInteractionReloadListener extends SimpleJsonResourceReloadLis
         });
 
         AnimalPen.LOGGER.info(
-            "Loaded " + AnimalPenInteractionRegistry.getAll().size() + " animal interaction entries.");
+            "Loaded " + AnimalPenInteractionRegistry.getAmount() + " animal interaction entries.");
     }
 
 
