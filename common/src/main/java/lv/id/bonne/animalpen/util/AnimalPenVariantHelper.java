@@ -10,7 +10,6 @@ package lv.id.bonne.animalpen.util;
 import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import lv.id.bonne.animalpen.AnimalPen;
@@ -20,11 +19,8 @@ import lv.id.bonne.animalpen.registries.AnimalPenDataComponentRegistry;
 import lv.id.bonne.animalpen.data.saveddata.IndividualPenStorage;
 import lv.id.bonne.animalpen.registries.AnimalPenTags;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -69,6 +65,11 @@ public class AnimalPenVariantHelper
 
         StoredMobVariantKey variantKey =
             itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+        if (variantKey == null)
+        {
+            variantKey = StoredMobVariantKey.of();
+        }
 
         // Load variants directly from the item's individual save file
         IndividualPenStorage storage = IndividualPenStorage.getOrCreate(serverLevel, variantKey.key());
@@ -121,6 +122,12 @@ public class AnimalPenVariantHelper
             // Migration
             StoredMobVariants storedVariants =
                 itemStack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
+
+            if (storedVariants == null)
+            {
+                return Optional.empty();
+            }
+
             StoredMobVariantKey variantKey = StoredMobVariantKey.of(storedVariants.variants().size());
             itemStack.set(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(), variantKey);
 
@@ -134,6 +141,12 @@ public class AnimalPenVariantHelper
         {
             StoredMobVariantKey storedKey =
                 itemStack.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+
+            if (storedKey == null)
+            {
+                itemStack.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
+                return Optional.empty();
+            }
 
             return Optional.of(IndividualPenStorage.getOrCreate(serverLevel,
                 storedKey.key()));
@@ -177,7 +190,10 @@ public class AnimalPenVariantHelper
         StoredMobVariantKey mainKey = mainItem.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
         StoredMobVariantKey redundantKey = redundantItem.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
 
-        if (mainKey.amount() + redundantKey.amount() > AnimalPen.config().getMaxStoredVariants())
+        int mainAmount = mainKey == null ? 0 : mainKey.amount();
+        int redundantAmount = redundantKey == null ? 0 : redundantKey.amount();
+
+        if (mainAmount + redundantAmount > AnimalPen.config().getMaxStoredVariants())
         {
             if (player != null)
             {
