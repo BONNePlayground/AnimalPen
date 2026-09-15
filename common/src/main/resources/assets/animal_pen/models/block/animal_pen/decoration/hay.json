@@ -1,8 +1,8 @@
 {
-	"format_version": "1.18.2",
+	"format_version": "1.9.0",
 	"credit": "Made by Neentarts",
-	"render_type": "minecraft:cutout",
-	"texture_size": [32, 32],
+	"render_type": "minecraft:translucent",
+	"texture_size": [16, 16],
 	"textures": {
 		"feeding_trough": "animal_pen:block/decoration/feeding_trough",
 		"haybale": "animal_pen:block/decoration/haybale"
@@ -11,7 +11,7 @@
 		{
 			"from": [4.249, 4.999, 1.649],
 			"to": [11.751, 7.251, 5.651],
-			"rotation": {"angle": 10, "axis": "x", "origin": [9.5, 5, 1.9]},
+			"rotation": {"angle": 0, "axis": "x", "origin": [9.5, 5, 1.9]},
 			"faces": {
 				"north": {"uv": [7, 0, 14, 2], "texture": "#feeding_trough"},
 				"east": {"uv": [7, 4, 11, 6], "texture": "#feeding_trough"},
@@ -100,16 +100,16 @@
 			}
 		},
 		{
-			"from": [3.999, 3.999, 9.999],
-			"to": [7.001, 7.001, 15.001],
-			"rotation": {"x": 0, "y": 90, "z": 0, "origin": [6.5, 5.5, 11.5]},
+			"from": [4.999, 3.999, 10.999],
+			"to": [10.001, 7.001, 14.001],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7.5, 5.5, 12.5]},
 			"faces": {
-				"north": {"uv": [0, 11, 4, 7], "texture": "#haybale"},
-				"east": {"uv": [8, 8, 15, 4], "texture": "#haybale"},
-				"south": {"uv": [4, 4, 8, 0], "texture": "#haybale"},
-				"west": {"uv": [8, 4, 15, 0], "texture": "#haybale"},
-				"up": {"uv": [8, 11, 4, 4], "texture": "#haybale"},
-				"down": {"uv": [4, 0, 0, 7], "texture": "#haybale"}
+				"north": {"uv": [8, 4, 15, 0], "texture": "#haybale"},
+				"east": {"uv": [0, 11, 4, 7], "texture": "#haybale"},
+				"south": {"uv": [8, 4, 15, 0], "texture": "#haybale"},
+				"west": {"uv": [4, 4, 8, 0], "texture": "#haybale"},
+				"up": {"uv": [15, 8, 8, 4], "texture": "#haybale"},
+				"down": {"uv": [15, 4, 8, 8], "texture": "#haybale"}
 			}
 		}
 	],

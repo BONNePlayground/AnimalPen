@@ -1,13 +1,13 @@
 {
 	"format_version": "1.18.2",
 	"credit": "Made by Breadcrumb5550",
+	"ambientocclusion": false,
 	"textures": {
 		"top": "animal_pen:block/animal_pen_base_top",
 		"bottom": "animal_pen:block/base_bottom",
 		"side": "animal_pen:block/base_side",
 		"particle": "#plank"
 	},
-	"render_type": "minecraft:cutout",
 	"elements": [
 		{
 			"from": [0, 0, 0],
