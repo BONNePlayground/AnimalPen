@@ -283,5 +283,8 @@
   "option.animal_pen.block_dispenser_interactions": "Prevent Dispenser Interactions",
   "option.animal_pen.block_dispenser_interactions.tooltip[0]": "Allows toggling whether dispensers are",
   "option.animal_pen.block_dispenser_interactions.tooltip[1]": "prevented from interacting with animals",
-  "option.animal_pen.block_dispenser_interactions.tooltip[2]": "in pens, aviaries, and aquariums."
+  "option.animal_pen.block_dispenser_interactions.tooltip[2]": "in pens, aviaries, and aquariums.",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
+  "gui.animal_pen.variant_selection_screen.decoration_open_tooltip": "Click to view decorations",
+  "gui.animal_pen.variant_selection_screen.decoration_close_tooltip": "Click to hide decorations"
 }
