@@ -62,6 +62,11 @@ public final class AnimalPen
 
         NetworkManager.registerReceiver(
             NetworkManager.Side.C2S,
+            ChangeDecorationData.ID,
+            ChangeDecorationData::handle);
+
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.C2S,
             UpdateConfigurationData.ID,
             UpdateConfigurationData::handle);
 

@@ -16,14 +16,14 @@ import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
-import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.widget.DecorationButton;
 import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
+import lv.id.bonne.animalpen.network.packets.ChangeDecorationData;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
-import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -33,7 +33,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -47,8 +46,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -188,6 +185,35 @@ public class VariantScreenSelection extends Screen
             18,
             new TextComponent(""),
             this::handleDecorationButton));
+
+        this.decorationButtons.clear();
+
+        if (!this.isDecorationOpened)
+        {
+            return;
+        }
+
+        // Create decoration navigation buttons below the rendered model
+        int panelX = this.leftPos + this.imageWidth + 12 + 8 + 5;
+        int panelY = this.topPos + this.imageHeight - 50;
+
+        List<BlockState> decorations = this.blockEntityInterface.getDecorations();
+
+        for (int index = 0; index < decorations.size(); index++)
+        {
+            final int decorationIndex = index;
+
+            this.decorationButtons.add(this.addWidget(new DecorationButton(panelX + 30 * index,
+                panelY,
+                25,
+                25,
+                decorations.get(decorationIndex),
+                b ->
+                {
+                    NetworkManager.sendToServer(ChangeDecorationData.ID,
+                        ChangeDecorationData.encode(this.position, decorationIndex));
+                })));
+        }
     }
 
 
@@ -596,10 +622,9 @@ public class VariantScreenSelection extends Screen
 
             int maxWidth = this.decorationWidth - 2 * 8;
             int maxHeight = this.imageHeight - 3 * 8 - 20;
-            BlockState blockState = this.blockEntityInterface.getBlockState();
+            BlockState blockState = this.blockEntityInterface.getDecorationBlockState();
 
             if (!blockState.isAir()) {
-                // 1. Calculate center and scale factor to fit within panel bounds
                 int centerX = panelX + maxWidth / 2;
                 int centerY = panelY + maxHeight / 2;
                 float scale = Math.min(maxWidth, maxHeight) * 0.45F;
@@ -609,44 +634,38 @@ public class VariantScreenSelection extends Screen
 
                 poseStack.pushPose();
 
-                // 2. Position model at center of panel
                 poseStack.translate(centerX, centerY, 100.0F);
                 poseStack.scale(scale, -scale, scale);
 
-                // Note: For MC 1.19.3+, use com.mojang.math.Axis. For 1.18-1.19.2, use Vector3f
                 poseStack.mulPose(Vector3f.YP.rotationDegrees(this.blockRotationY));
-
-                // 3. Apply rotation around block center (0.5, 0.5, 0.5)
                 poseStack.translate(-0.5F, -0.5F, -0.5F);
 
-                // 4. Update light angle dynamically based on block rotation to avoid dark faces
                 Quaternion lightRotation = Vector3f.XP.rotationDegrees(30.0F);
                 lightRotation.mul(Vector3f.YP.rotationDegrees(this.blockRotationY));
                 Matrix4f lightMatrix = new Matrix4f(lightRotation);
                 Lighting.setupLevel(lightMatrix);
 
-                // 5. Render BlockState
                 BlockRenderDispatcher blockRenderer = this.minecraft.getBlockRenderer();
                 MultiBufferSource.BufferSource bufferSource = this.minecraft.renderBuffers().bufferSource();
-
 
                 blockRenderer.renderSingleBlock(
                     blockState,
                     poseStack,
                     bufferSource,
-                    LightTexture.FULL_BRIGHT, // Full light (LightTexture.FULL_BRIGHT)
+                    LightTexture.FULL_BRIGHT,
                     OverlayTexture.NO_OVERLAY
                 );
 
-                // 6. Flush batch before resetting lighting
-                bufferSource.endBatch();
 
+                bufferSource.endBatch();
                 poseStack.popPose();
 
                 Lighting.setupForFlatItems();
                 RenderSystem.enableCull();
                 RenderSystem.disableDepthTest();
             }
+
+            this.decorationButtons.forEach(b -> b.render(poseStack, mouseX, mouseY, partialTicks));
         }
     }
 
@@ -775,6 +794,11 @@ public class VariantScreenSelection extends Screen
         if (this.configureButton.isMouseOver(mouseX, mouseY))
         {
             this.renderTooltip(poseStack, CONFIGURE, mouseX, mouseY);
+        }
+
+        if (!this.isDecorationOpened)
+        {
+            return;
         }
     }
 
@@ -1293,6 +1317,11 @@ public class VariantScreenSelection extends Screen
     private boolean isDecorationOpened;
 
     /**
+     * List of decoration buttons
+     */
+    private final List<Button> decorationButtons = new ArrayList<>();
+
+    /**
      * The selected button index.
      */
     private int selectedButton = -1;
@@ -1424,9 +1453,6 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component DECORATION_CLOSE =
         new TranslatableComponent("gui.animal_pen.variant_selection_screen.decoration_close_tooltip");
-
-    private static final Component APPLY_BUTTON =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.apply_decoration");
 
     /**
      * The configure button tooltip
