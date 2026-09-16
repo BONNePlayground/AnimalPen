@@ -6,7 +6,8 @@
   "textures": {
     "rock": "animal_pen:block/decoration/cave_rock",
     "gravel": "animal_pen:block/decoration/cave_gravel",
-    "kelp": "animal_pen:block/decoration/cave_kelp"
+    "kelp_a": "animal_pen:block/decoration/cave_kelp_a",
+    "kelp_b": "animal_pen:block/decoration/cave_kelp_b"
   },
   "elements": [
     {
@@ -14,25 +15,25 @@
       "to": [14.001, 20.001, 14.001],
       "rotation": {"angle": 0, "axis": "y", "origin": [0, 6, 14]},
       "faces": {
-        "north": {"uv": [0, 0, 6, 8], "texture": "#kelp"},
-        "east": {"uv": [0, 0, 0, 8], "texture": "#kelp"},
-        "south": {"uv": [6, 0, 12, 8], "texture": "#kelp"},
-        "west": {"uv": [0, 0, 0, 8], "texture": "#kelp"},
-        "up": {"uv": [6, 0, 0, 0], "texture": "#kelp"},
-        "down": {"uv": [6, 0, 0, 0], "texture": "#kelp"}
+        "north": {"uv": [0, 8, 6, 16], "texture": "#kelp_a"},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#kelp_a"},
+        "south": {"uv": [6, 8, 12, 16], "texture": "#kelp_a"},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#kelp_a"},
+        "up": {"uv": [6, 0, 0, 0], "texture": "#kelp_a"},
+        "down": {"uv": [6, 0, 0, 0], "texture": "#kelp_a"}
       }
     },
     {
-      "from": [1.999, 1.999, 3.999],
-      "to": [14.001, 18.001, 4.001],
-      "rotation": {"angle": 0, "axis": "y", "origin": [0, 4, 4]},
+      "from": [1.999, 3.999, 3.999],
+      "to": [14.001, 20.001, 4.001],
+      "rotation": {"angle": 0, "axis": "y", "origin": [0, 6, 4]},
       "faces": {
-        "north": {"uv": [0, 8, 6, 16], "texture": "#kelp"},
-        "east": {"uv": [0, 0, 0, 8], "texture": "#kelp"},
-        "south": {"uv": [6, 8, 12, 16], "texture": "#kelp"},
-        "west": {"uv": [0, 0, 0, 8], "texture": "#kelp"},
-        "up": {"uv": [6, 0, 0, 0], "texture": "#kelp"},
-        "down": {"uv": [6, 0, 0, 0], "texture": "#kelp"}
+        "north": {"uv": [0, 0, 6, 8], "texture": "#kelp_b"},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#kelp_b"},
+        "south": {"uv": [6, 0, 12, 8], "texture": "#kelp_b"},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#kelp_b"},
+        "up": {"uv": [6, 0, 0, 0], "texture": "#kelp_b"},
+        "down": {"uv": [6, 0, 0, 0], "texture": "#kelp_b"}
       }
     },
     {
