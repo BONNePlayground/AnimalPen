@@ -1,0 +1,65 @@
+{
+  "format_version": "1.18.2",
+  "credit": "Made by Neentarts",
+  "render_type": "minecraft:cutout",
+  "texture_size": [32, 32],
+  "textures": {
+    "coralA": "animal_pen:block/decoration/coral_a",
+    "coralB": "animal_pen:block/decoration/coral_b",
+    "floor": "animal_pen:block/decoration/sandbank_coral"
+  },
+  "elements": [
+    {
+      "from": [1.999, 3.999, 4.999],
+      "to": [14.001, 20.001, 5.001],
+      "rotation": {"angle": 0, "axis": "y", "origin": [0, 5, 5]},
+      "faces": {
+        "north": {"uv": [0, 0, 6, 8], "texture": "#coralB"},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#coralB"},
+        "south": {"uv": [6, 0, 12, 8], "texture": "#coralB"},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#coralB"},
+        "up": {"uv": [6, 0, 0, 0], "texture": "#coralB"},
+        "down": {"uv": [6, 0, 0, 0], "texture": "#coralB"}
+      }
+    },
+    {
+      "from": [1.999, 3.999, 10.999],
+      "to": [14.001, 20.001, 11.001],
+      "rotation": {"angle": 0, "axis": "y", "origin": [0, 6, 11]},
+      "faces": {
+        "north": {"uv": [0, 0, 6, 8], "texture": "#coralA"},
+        "east": {"uv": [0, 0, 0, 8], "texture": "#coralA"},
+        "south": {"uv": [6, 0, 12, 8], "texture": "#coralA"},
+        "west": {"uv": [0, 0, 0, 8], "texture": "#coralA"},
+        "up": {"uv": [6, 0, 0, 0], "texture": "#coralA"},
+        "down": {"uv": [6, 0, 0, 0], "texture": "#coralA"}
+      }
+    },
+    {
+      "from": [3, 4, 3],
+      "to": [12, 5, 12],
+      "rotation": {"angle": 0, "axis": "y", "origin": [11, 3, 7]},
+      "faces": {
+        "north": {"uv": [7.5, 2, 12, 2.5], "texture": "#floor"},
+        "east": {"uv": [7.5, 2.5, 12, 3], "texture": "#floor"},
+        "south": {"uv": [7.5, 3, 12, 3.5], "texture": "#floor"},
+        "west": {"uv": [7.5, 3.5, 12, 4], "texture": "#floor"},
+        "up": {"uv": [4.5, 4.5, 0, 0], "texture": "#floor"},
+        "down": {"uv": [4.5, 4.5, 0, 9], "texture": "#floor"}
+      }
+    },
+    {
+      "from": [7, 4, 7],
+      "to": [13, 6, 13],
+      "rotation": {"angle": 0, "axis": "y", "origin": [11, 4, 7]},
+      "faces": {
+        "north": {"uv": [4.5, 6, 7.5, 7], "texture": "#floor"},
+        "east": {"uv": [4.5, 7, 7.5, 8], "texture": "#floor"},
+        "south": {"uv": [7.5, 0, 10.5, 1], "texture": "#floor"},
+        "west": {"uv": [7.5, 1, 10.5, 2], "texture": "#floor"},
+        "up": {"uv": [7.5, 3, 4.5, 0], "texture": "#floor"},
+        "down": {"uv": [7.5, 3, 4.5, 6], "texture": "#floor"}
+      }
+    }
+  ]
+}
