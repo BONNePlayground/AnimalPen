@@ -23,6 +23,7 @@ architectury {
 fabricApi {
     configureDataGeneration {
         client = true
+        outputDirectory = file("../common/src/main/generated")
     }
 }
 
@@ -43,14 +44,6 @@ loom {
         server {
             server()
             runDir("run/server/$minecraft_version")
-        }
-    }
-}
-
-sourceSets {
-    main {
-        resources {
-            exclude '**/.cache/**'
         }
     }
 }
