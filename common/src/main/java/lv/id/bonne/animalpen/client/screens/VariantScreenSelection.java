@@ -181,7 +181,7 @@ public class VariantScreenSelection extends Screen
             this.topPos + (this.imageHeight - 18) / 2,
             11,
             18,
-            new TextComponent(""),
+            Component.literal(""),
             this::handleDecorationButton));
 
         this.decorationButtons.clear();
@@ -1444,13 +1444,13 @@ public class VariantScreenSelection extends Screen
      * The DECORATION of button tooltip
      */
     private static final Component DECORATION_OPEN =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.decoration_open_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_open_tooltip");
 
     /**
      * The DECORATION of button tooltip
      */
     private static final Component DECORATION_CLOSE =
-        new TranslatableComponent("gui.animal_pen.variant_selection_screen.decoration_close_tooltip");
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_close_tooltip");
 
     /**
      * The configure button tooltip

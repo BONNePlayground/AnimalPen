@@ -1,6 +1,6 @@
 {
   "parent": "animal_pen:block/animal_pen/base",
   "textures": {
-    "plank": "minecraft:block/acacia_planks"
+    "plank": "minecraft:block/mangrove_planks"
   }
 }
