@@ -7,14 +7,14 @@
   ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
+    "DispenserMixin",
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
-    "SheepMixin",
     "MixinHoneycombItem",
     "MixinLightingBolt",
     "MushroomStewEffectRemove",
-    "DispenserMixin",
+    "SheepMixin",
     "accessors.EntityAccessor",
     "accessors.MushroomCowAccessor",
     "invokers.MobInvoker"

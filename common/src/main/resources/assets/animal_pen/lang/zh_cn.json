@@ -314,4 +314,8 @@
   "advancements.animal_pen.entity.minecraft.armadillo.description": "Catch an Armadillo",
   "advancements.animal_pen.entity.minecraft.armadillo_brush.title": "Scratch an Armadillo",
   "advancements.animal_pen.entity.minecraft.armadillo_brush.description": "Brush an Armadillo to collect scutes"
+  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
+  "gui.animal_pen.variant_selection_screen.decoration_open_tooltip": "Click to view decorations",
+  "gui.animal_pen.variant_selection_screen.decoration_close_tooltip": "Click to hide decorations"
 }

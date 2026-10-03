@@ -44,15 +44,19 @@ public class AnimalPenClient
             context -> new AquariumRenderer());
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
             context -> new AviaryRenderer());
+
+        AnimalPenBlockRegistry.ANIMAL_PENS.values().forEach(pen ->
+            RenderTypeRegistry.register(RenderType.cutoutMipped(), pen.get()));
+
         RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AQUARIUM.get());
-        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.AVIARY.get());
-        RenderTypeRegistry.register(RenderType.translucent(), AnimalPenBlockRegistry.GOLD_AVIARY.get());
+        RenderTypeRegistry.register(RenderType.cutoutMipped(), AnimalPenBlockRegistry.AVIARY.get());
+        RenderTypeRegistry.register(RenderType.cutoutMipped(), AnimalPenBlockRegistry.GOLD_AVIARY.get());
 
         AnimalPenBlockRegistry.COPPER_AVIARIES.values().forEach(
-            aviary -> RenderTypeRegistry.register(RenderType.translucent(),
+            aviary -> RenderTypeRegistry.register(RenderType.cutoutMipped(),
                 aviary.get()));
         AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().forEach(
-            copperAviary -> RenderTypeRegistry.register(RenderType.translucent(),
+            copperAviary -> RenderTypeRegistry.register(RenderType.cutoutMipped(),
                 copperAviary.get()));
 
         ItemPropertiesRegistry.registerGeneric(AnimalPen.resourceOf("filled_cage"),
