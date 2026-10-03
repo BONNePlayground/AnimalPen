@@ -296,5 +296,8 @@
   "advancements.animal_pen.entity.minecraft.tadpole_water_bucket.title": "Tadpole in a Bucket",
   "advancements.animal_pen.entity.minecraft.tadpole_water_bucket.description": "Use a water bucket on an Aquarium to pick it up",
   "advancements.animal_pen.entity.minecraft.allay.title": "Useful Helper",
-  "advancements.animal_pen.entity.minecraft.allay.description": "Catch an Allay"
+  "advancements.animal_pen.entity.minecraft.allay.description": "Catch an Allay",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
+  "gui.animal_pen.variant_selection_screen.decoration_open_tooltip": "Click to view decorations",
+  "gui.animal_pen.variant_selection_screen.decoration_close_tooltip": "Click to hide decorations"
 }
