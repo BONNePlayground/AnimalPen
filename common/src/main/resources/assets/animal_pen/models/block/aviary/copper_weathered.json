@@ -1,0 +1,6 @@
+{
+  "parent": "animal_pen:block/aviary/base",
+  "textures": {
+    "chain": "animal_pen:block/weathered_copper_chain"
+  }
+}

@@ -41,15 +41,19 @@ public class AnimalPenClient
             context -> new AquariumRenderer());
         BlockEntityRendererRegistry.register(AnimalPenTileEntityRegistry.AVIARY_TILE_ENTITY.get(),
             context -> new AviaryRenderer());
+
+        AnimalPenBlockRegistry.ANIMAL_PENS.values().forEach(pen ->
+            RenderTypeRegistry.register(ChunkSectionLayer.CUTOUT_MIPPED, pen.get()));
+
         RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AQUARIUM.get());
-        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.AVIARY.get());
-        RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT, AnimalPenBlockRegistry.GOLD_AVIARY.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.CUTOUT, AnimalPenBlockRegistry.AVIARY.get());
+        RenderTypeRegistry.register(ChunkSectionLayer.CUTOUT, AnimalPenBlockRegistry.GOLD_AVIARY.get());
 
         AnimalPenBlockRegistry.COPPER_AVIARIES.values().forEach(
-            aviary -> RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT,
+            aviary -> RenderTypeRegistry.register(ChunkSectionLayer.CUTOUT,
                 aviary.get()));
         AnimalPenBlockRegistry.WAXED_COPPER_AVIARIES.values().forEach(
-            copperAviary -> RenderTypeRegistry.register(ChunkSectionLayer.TRANSLUCENT,
+            copperAviary -> RenderTypeRegistry.register(ChunkSectionLayer.CUTOUT,
                 copperAviary.get()));
 
         ColorHandlerRegistry.registerBlockColors(new WaterTankColor(), AnimalPenBlockRegistry.AQUARIUM);
