@@ -1,0 +1,189 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Neentarts",
+	"render_type": "minecraft:cutout",
+	"texture_size": [32, 32],
+	"textures": {
+		"nest": "animal_pen:block/decoration/nest",
+		"bird_feeder": "animal_pen:block/decoration/bird_feeder",
+		"grass": "animal_pen:block/decoration/grass"
+	},
+	"elements": [
+		{
+			"from": [8, 4.25, 1],
+			"to": [16, 4.25, 9],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [12, 5.25, 5]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"east": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"south": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"west": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"up": {"uv": [6.5, 14, 0, 7], "texture": "#nest"},
+				"down": {"uv": [6.5, 0, 0, 7], "texture": "#nest"}
+			}
+		},
+		{
+			"from": [8, 4.25, 1],
+			"to": [16, 4.25, 9],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [12, 5.25, 5]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"east": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"south": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"west": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"up": {"uv": [6.5, 14, 0, 7], "rotation": 90, "texture": "#nest"},
+				"down": {"uv": [6.5, 0, 0, 7], "rotation": 270, "texture": "#nest"}
+			}
+		},
+		{
+			"from": [8, 4.25, 1],
+			"to": [16, 4.25, 9],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [12, 5.25, 5]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"east": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"south": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"west": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"up": {"uv": [6.5, 14, 0, 7], "rotation": 180, "texture": "#nest"},
+				"down": {"uv": [6.5, 0, 0, 7], "rotation": 180, "texture": "#nest"}
+			}
+		},
+		{
+			"from": [8, 4.25, 1],
+			"to": [16, 4.25, 9],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [12, 5.25, 5]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"east": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"south": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"west": {"uv": [0, 0, 2, 0], "texture": "#nest"},
+				"up": {"uv": [6.5, 14, 0, 7], "rotation": 270, "texture": "#nest"},
+				"down": {"uv": [6.5, 0, 0, 7], "rotation": 90, "texture": "#nest"}
+			}
+		},
+		{
+			"from": [1.5, 11.5, 11],
+			"to": [5.5, 12.5, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3.5, 13.5, 11]},
+			"faces": {
+				"north": {"uv": [4, 6, 8, 7], "texture": "#bird_feeder"},
+				"east": {"uv": [7, 0, 11, 1], "texture": "#bird_feeder"},
+				"south": {"uv": [7, 1, 11, 2], "texture": "#bird_feeder"},
+				"west": {"uv": [7, 2, 11, 3], "texture": "#bird_feeder"},
+				"up": {"uv": [4, 4, 0, 0], "texture": "#bird_feeder"},
+				"down": {"uv": [4, 4, 0, 8], "texture": "#bird_feeder"}
+			}
+		},
+		{
+			"from": [2, 10.5, 11.5],
+			"to": [5, 11.5, 14.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 12.5, 11.5]},
+			"faces": {
+				"north": {"uv": [7, 3, 10, 4], "texture": "#bird_feeder"},
+				"east": {"uv": [4, 7, 7, 8], "texture": "#bird_feeder"},
+				"south": {"uv": [7, 4, 10, 5], "texture": "#bird_feeder"},
+				"west": {"uv": [7, 5, 10, 6], "texture": "#bird_feeder"},
+				"up": {"uv": [7, 3, 4, 0], "texture": "#bird_feeder"},
+				"down": {"uv": [7, 3, 4, 6], "texture": "#bird_feeder"}
+			}
+		},
+		{
+			"from": [2.48918, 12.30018, 12.73463],
+			"to": [2.48918, 17.55018, 13.23463],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [2.48918, 14.92518, 12.98463]},
+			"faces": {
+				"north": {"uv": [0, 0, 0, 5], "texture": "#bird_feeder"},
+				"east": {"uv": [1, 8, 1.5, 13], "texture": "#bird_feeder"},
+				"south": {"uv": [0, 0, 0, 5], "texture": "#bird_feeder"},
+				"west": {"uv": [2, 8, 2.5, 13], "texture": "#bird_feeder"},
+				"up": {"uv": [0, 0.5, 0, 0], "texture": "#bird_feeder"},
+				"down": {"uv": [0, 0, 0, 0.5], "texture": "#bird_feeder"}
+			}
+		},
+		{
+			"from": [4.51082, 12.30018, 12.73463],
+			"to": [4.51082, 17.55018, 13.23463],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [4.51082, 14.92518, 12.98463]},
+			"faces": {
+				"north": {"uv": [0, 0, 0, 5], "texture": "#bird_feeder"},
+				"east": {"uv": [7, 7, 7.5, 12], "texture": "#bird_feeder"},
+				"south": {"uv": [0, 0, 0, 5], "texture": "#bird_feeder"},
+				"west": {"uv": [0, 8, 0.5, 13], "texture": "#bird_feeder"},
+				"up": {"uv": [0, 0.5, 0, 0], "texture": "#bird_feeder"},
+				"down": {"uv": [0, 0, 0, 0.5], "texture": "#bird_feeder"}
+			}
+		},
+		{
+			"from": [1, 4, 7],
+			"to": [6, 9, 7],
+			"rotation": {"angle": -45, "axis": "y", "origin": [3.5, 6.5, 7]},
+			"faces": {
+				"north": {"uv": [0, 0, 5, 5], "texture": "#grass"},
+				"east": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"south": {"uv": [0, 5, 5, 10], "texture": "#grass"},
+				"west": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"up": {"uv": [5, 0, 0, 0], "texture": "#grass"},
+				"down": {"uv": [5, 0, 0, 0], "texture": "#grass"}
+			}
+		},
+		{
+			"from": [1, 4, 7],
+			"to": [6, 9, 7],
+			"rotation": {"angle": 45, "axis": "y", "origin": [3.5, 6.5, 7]},
+			"faces": {
+				"north": {"uv": [0, 0, 5, 5], "texture": "#grass"},
+				"east": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"south": {"uv": [0, 5, 5, 10], "texture": "#grass"},
+				"west": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"up": {"uv": [5, 0, 0, 0], "texture": "#grass"},
+				"down": {"uv": [5, 0, 0, 0], "texture": "#grass"}
+			}
+		},
+		{
+			"from": [8, 3, 13],
+			"to": [13, 8, 13],
+			"rotation": {"angle": -45, "axis": "y", "origin": [10.5, 5.5, 13]},
+			"faces": {
+				"north": {"uv": [0, 0, 5, 5], "texture": "#grass"},
+				"east": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"south": {"uv": [0, 5, 5, 10], "texture": "#grass"},
+				"west": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"up": {"uv": [5, 0, 0, 0], "texture": "#grass"},
+				"down": {"uv": [5, 0, 0, 0], "texture": "#grass"}
+			}
+		},
+		{
+			"from": [10.5, 3, 10.5],
+			"to": [10.5, 8, 15.5],
+			"rotation": {"angle": -45, "axis": "y", "origin": [10.5, 5.5, 13]},
+			"faces": {
+				"north": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"east": {"uv": [0, 0, 5, 5], "texture": "#grass"},
+				"south": {"uv": [0, 0, 0, 5], "texture": "#grass"},
+				"west": {"uv": [0, 5, 5, 10], "texture": "#grass"},
+				"up": {"uv": [5, 0, 0, 0], "rotation": 90, "texture": "#grass"},
+				"down": {"uv": [5, 0, 0, 0], "rotation": 270, "texture": "#grass"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "nest",
+			"origin": [-8, 1, 0],
+			"scope": 0,
+			"color": 0,
+			"children": [0, 1, 2, 3]
+		},
+		{
+			"name": "birdfeeder",
+			"origin": [-8, 11, 0],
+			"scope": 0,
+			"color": 0,
+			"children": [4, 5, 6, 7]
+		},
+		8,
+		9,
+		10,
+		11
+	]
+}

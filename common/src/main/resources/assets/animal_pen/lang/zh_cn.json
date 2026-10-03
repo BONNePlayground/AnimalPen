@@ -316,5 +316,8 @@
   "tag.block.animal_pen.aviaries": "Aviaries",
   "tag.item.animal_pen.aviaries": "Aviaries",
   "tag.item.animal_pen.can_aviary": "Items can attack aviaries",
-  "item.animal_pen.animal_pen_pale_oak": "Animal Pen"
+  "item.animal_pen.animal_pen_pale_oak": "Animal Pen",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
+  "gui.animal_pen.variant_selection_screen.decoration_open_tooltip": "Click to view decorations",
+  "gui.animal_pen.variant_selection_screen.decoration_close_tooltip": "Click to hide decorations"
 }
