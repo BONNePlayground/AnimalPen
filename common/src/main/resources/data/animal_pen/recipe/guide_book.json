@@ -13,14 +13,28 @@
       "modid": "patchouli"
     }
   ],
-  "type": "patchouli:shapeless_book_recipe",
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:book"
     },
-    {
-      "item": "animal_pen:animal_cage"
-    }
+    [
+      {
+        "item": "animal_pen:animal_cage"
+      },
+      {
+        "item": "animal_pen:bird_catcher"
+      },
+      {
+        "item": "animal_pen:water_animal_container"
+      }
+    ]
   ],
-  "book": "animal_pen:guide_book"
+  "result": {
+    "id": "patchouli:guide_book",
+    "components": {
+      "patchouli:book": "animal_pen:guide_book"
+    }
+  }
 }

@@ -6,17 +6,6 @@ plugins {
 
 loom {
     runs {
-        dataGen {
-            serverData()
-            programArg("--mod")
-            programArg("animal_pen")
-            programArg("--server")
-            programArg("--output")
-            programArg(file('src/main/generated/').absolutePath)
-            programArg("--existing")
-            programArg(file('src/main/resources/').absolutePath)
-        }
-
         client {
             client()
             programArg("--username=Dev")
@@ -32,15 +21,6 @@ loom {
         server {
             server()
             runDir("run/server/$minecraft_version")
-        }
-    }
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/generated'
-            exclude '**/.cache/**'
         }
     }
 }

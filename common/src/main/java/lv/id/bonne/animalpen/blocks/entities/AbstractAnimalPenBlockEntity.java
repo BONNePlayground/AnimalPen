@@ -38,6 +38,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -57,6 +58,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
@@ -1443,6 +1445,59 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
 
             return returnValue;
         }).orElse(0);
+    }
+
+// ---------------------------------------------------------------------
+// Section: Decoration related methods
+// ---------------------------------------------------------------------
+
+
+    /**
+     * This method returns list of decoration block states.
+     * @return The list of decoration block states.
+     */
+    public abstract List<BlockState> getDecorations();
+
+
+    /**
+     * This method updates block state by setting decoration of given index.
+     * @param index The index of block-state
+     */
+    public void setAndUpdateBlockState(int index)
+    {
+        if (this.level == null || this.level.isClientSide())
+        {
+            return;
+        }
+
+        BlockState oldState = this.getBlockState();
+        BlockState newState = this.getBlockStateWithDecorationIndex(index);
+
+        this.level.setBlock(this.getBlockPos(), newState, Block.UPDATE_CLIENTS);
+        this.setChanged();
+
+        this.level.sendBlockUpdated(this.getBlockPos(),
+            oldState,
+            newState,
+            Block.UPDATE_CLIENTS);
+    }
+
+
+    /**
+     * This method returns block state where decoration is set to given index.
+     * @param index The index of decoration.
+     * @return The block state with new decoration
+     */
+    protected abstract BlockState getBlockStateWithDecorationIndex(int index);
+
+
+    /**
+     * This method returns current block state in north direction.
+     * @return Current block state in north direction.
+     */
+    public BlockState getDecorationBlockState()
+    {
+        return this.getBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH);
     }
 
 
