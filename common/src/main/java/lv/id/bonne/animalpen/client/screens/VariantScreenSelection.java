@@ -1,8 +1,12 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,15 +17,21 @@ import java.util.List;
 import dev.architectury.networking.NetworkManager;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.widget.DecorationButton;
 import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
+import lv.id.bonne.animalpen.network.packets.ChangeDecorationData;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,6 +45,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 
 /**
@@ -51,6 +62,7 @@ public class VariantScreenSelection extends Screen
         this.imageHeight = 136;
 
         this.cooldownWidth = 149;
+        this.decorationWidth = 149;
     }
 
 
@@ -63,6 +75,10 @@ public class VariantScreenSelection extends Screen
         if (this.isCooldownOpened)
         {
             this.leftPos = (this.width - this.imageWidth + this.cooldownWidth) / 2;
+        }
+        else if (this.isDecorationOpened)
+        {
+            this.leftPos = (this.width - this.imageWidth - this.decorationWidth) / 2;
         }
         else
         {
@@ -159,6 +175,43 @@ public class VariantScreenSelection extends Screen
             18,
             Component.empty(),
             this::handleCooldownButton));
+
+        // Create cooldown menu renderer
+        this.decorationButton = this.addWidget(new Button(this.leftPos + this.imageWidth + 1,
+            this.topPos + (this.imageHeight - 18) / 2,
+            11,
+            18,
+            Component.literal(""),
+            this::handleDecorationButton));
+
+        this.decorationButtons.clear();
+
+        if (!this.isDecorationOpened)
+        {
+            return;
+        }
+
+        // Create decoration navigation buttons below the rendered model
+        int panelX = this.leftPos + this.imageWidth + 12 + 8 + 5;
+        int panelY = this.topPos + this.imageHeight - 50;
+
+        List<BlockState> decorations = this.blockEntityInterface.getDecorations();
+
+        for (int index = 0; index < decorations.size(); index++)
+        {
+            final int decorationIndex = index;
+
+            this.decorationButtons.add(this.addWidget(new DecorationButton(panelX + 30 * index,
+                panelY,
+                25,
+                25,
+                decorations.get(decorationIndex),
+                b ->
+                {
+                    NetworkManager.sendToServer(ChangeDecorationData.ID,
+                        ChangeDecorationData.encode(this.position, decorationIndex));
+                })));
+        }
     }
 
 
@@ -273,6 +326,7 @@ public class VariantScreenSelection extends Screen
         this.renderTextBar(poseStack, mouseX, mouseY, partialTicks);
         this.renderEntity(poseStack, mouseX, mouseY, partialTicks);
         this.renderCooldown(poseStack, mouseX, mouseY, partialTicks);
+        this.renderDecoration(poseStack, mouseX, mouseY, partialTicks);
 
         this.renderTooltips(poseStack, mouseX, mouseY, partialTicks);
     }
@@ -539,6 +593,81 @@ public class VariantScreenSelection extends Screen
     }
 
 
+    private void renderDecoration(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
+    {
+        RenderSystem.setShaderTexture(0, COOLDOWN_TEXTURE);
+
+        this.blit(poseStack,
+            this.leftPos + this.imageWidth + 1,
+            this.topPos + (this.imageHeight - 18) / 2,
+            149 + (this.isDecorationOpened ? 11 : 0),
+            (this.decorationButton.isMouseOver(mouseX, mouseY) ? 18 : 1),
+            11,
+            18);
+
+        if (this.isDecorationOpened)
+        {
+            this.blit(poseStack,
+                this.leftPos + this.imageWidth + 12,
+                this.topPos,
+                0,
+                1,
+                this.decorationWidth,
+                this.imageHeight + 1);
+
+            int panelX = this.leftPos + this.imageWidth + 12 + 8;
+            int panelY = this.topPos + 8;
+
+            int maxWidth = this.decorationWidth - 2 * 8;
+            int maxHeight = this.imageHeight - 3 * 8 - 20;
+            BlockState blockState = this.blockEntityInterface.getDecorationBlockState();
+
+            if (!blockState.isAir()) {
+                int centerX = panelX + maxWidth / 2;
+                int centerY = panelY + maxHeight / 2;
+                float scale = Math.min(maxWidth, maxHeight) * 0.45F;
+
+                RenderSystem.enableDepthTest();
+                RenderSystem.disableCull();
+
+                poseStack.pushPose();
+
+                poseStack.translate(centerX, centerY, 100.0F);
+                poseStack.scale(scale, -scale, scale);
+
+                poseStack.mulPose(Vector3f.YP.rotationDegrees(this.blockRotationY));
+                poseStack.translate(-0.5F, -0.5F, -0.5F);
+
+                Quaternion lightRotation = Vector3f.XP.rotationDegrees(30.0F);
+                lightRotation.mul(Vector3f.YP.rotationDegrees(this.blockRotationY));
+                Matrix4f lightMatrix = new Matrix4f(lightRotation);
+                Lighting.setupLevel(lightMatrix);
+
+                BlockRenderDispatcher blockRenderer = this.minecraft.getBlockRenderer();
+                MultiBufferSource.BufferSource bufferSource = this.minecraft.renderBuffers().bufferSource();
+
+                blockRenderer.renderSingleBlock(
+                    blockState,
+                    poseStack,
+                    bufferSource,
+                    LightTexture.FULL_BRIGHT,
+                    OverlayTexture.NO_OVERLAY
+                );
+
+
+                bufferSource.endBatch();
+                poseStack.popPose();
+
+                Lighting.setupForFlatItems();
+                RenderSystem.enableCull();
+                RenderSystem.disableDepthTest();
+            }
+
+            this.decorationButtons.forEach(b -> b.render(poseStack, mouseX, mouseY, partialTicks));
+        }
+    }
+
+
     /**
      * This method renders text component and inserts icons in their correct spots.
      *
@@ -655,9 +784,19 @@ public class VariantScreenSelection extends Screen
             this.renderTooltip(poseStack, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
         }
 
+        if (this.decorationButton.isMouseOver(mouseX, mouseY))
+        {
+            this.renderTooltip(poseStack, this.isDecorationOpened ? DECORATION_CLOSE : DECORATION_OPEN, mouseX, mouseY);
+        }
+
         if (this.configureButton.isMouseOver(mouseX, mouseY))
         {
             this.renderTooltip(poseStack, CONFIGURE, mouseX, mouseY);
+        }
+
+        if (!this.isDecorationOpened)
+        {
+            return;
         }
     }
 
@@ -786,6 +925,15 @@ public class VariantScreenSelection extends Screen
     private void handleCooldownButton(Button button)
     {
         this.isCooldownOpened = !this.isCooldownOpened;
+        this.isDecorationOpened = false;
+        this.init();
+    }
+
+
+    private void handleDecorationButton(Button button)
+    {
+        this.isDecorationOpened = !this.isDecorationOpened;
+        this.isCooldownOpened = false;
         this.init();
     }
 
@@ -910,6 +1058,25 @@ public class VariantScreenSelection extends Screen
 
             this.currentXOnEntity = (int) mouseX;
             return true;
+        }
+        else if (this.isDecorationOpened)
+        {
+            int panelX = this.leftPos + this.imageWidth + 12 + 8;
+            int panelY = this.topPos + 8;
+            int maxWidth = this.decorationWidth - 2 * 8;
+            int maxHeight = this.imageHeight - 3 * 8 - 20;
+
+            if (mouseX >= panelX && mouseX <= panelX + maxWidth &&
+                mouseY >= panelY && mouseY <= panelY + maxHeight) {
+
+                // Rotate around horizontal axis only
+                this.blockRotationY += (float) dragX * 1.5F;
+                return true;
+            }
+            else
+            {
+                return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            }
         }
         else
         {
@@ -1049,6 +1216,11 @@ public class VariantScreenSelection extends Screen
     private final int cooldownWidth;
 
     /**
+     * The decoration image width.
+     */
+    private final int decorationWidth;
+
+    /**
      * The texture image height.
      */
     private final int imageHeight;
@@ -1109,6 +1281,16 @@ public class VariantScreenSelection extends Screen
     private boolean isCooldownOpened;
 
     /**
+     * This boolean indicates if player opened decoration view.
+     */
+    private boolean isDecorationOpened;
+
+    /**
+     * List of decoration buttons
+     */
+    private final List<Button> decorationButtons = new ArrayList<>();
+
+    /**
      * The selected button index.
      */
     private int selectedButton = -1;
@@ -1129,9 +1311,14 @@ public class VariantScreenSelection extends Screen
     private Button configureButton;
 
     /**
-     * Button that indicates that player wants to cooldown menu.
+     * Button that indicates that player wants to open cooldown menu.
      */
     private Button cooldownButton;
+
+    /**
+     * Button that indicates that player wants to open decoration menu.
+     */
+    private Button decorationButton;
 
     /**
      * The entity that is rendered in menu.
@@ -1152,6 +1339,11 @@ public class VariantScreenSelection extends Screen
      * The rotation of entity
      */
     private float entityRotation = -45f;
+
+    /**
+     * The rotation of block entity
+     */
+    private float blockRotationY = 225.0F;
 
     /**
      * This variable stores X location of mouse when it was clicked on entity panel.
@@ -1218,6 +1410,18 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component COOLDOWN_CLOSE =
         Component.translatable("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
+
+    /**
+     * The DECORATION of button tooltip
+     */
+    private static final Component DECORATION_OPEN =
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_open_tooltip");
+
+    /**
+     * The DECORATION of button tooltip
+     */
+    private static final Component DECORATION_CLOSE =
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_close_tooltip");
 
     /**
      * The configure button tooltip

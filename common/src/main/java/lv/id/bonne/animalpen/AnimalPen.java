@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Map;
 
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
@@ -16,12 +18,16 @@ import lv.id.bonne.animalpen.config.Configuration;
 import lv.id.bonne.animalpen.config.ConfigurationManager;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionReloadListener;
 import lv.id.bonne.animalpen.interaction.model.AnimalInteraction;
+import lv.id.bonne.animalpen.items.AbstractAnimalStorageItem;
 import lv.id.bonne.animalpen.network.packets.*;
 import lv.id.bonne.animalpen.registries.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.item.ItemStack;
 
 
 public final class AnimalPen
@@ -52,6 +58,11 @@ public final class AnimalPen
             NetworkManager.Side.C2S,
             RemoveDisplayAnimalData.ID,
             RemoveDisplayAnimalData::handle);
+
+        NetworkManager.registerReceiver(
+            NetworkManager.Side.C2S,
+            ChangeDecorationData.ID,
+            ChangeDecorationData::handle);
 
         NetworkManager.registerReceiver(
             NetworkManager.Side.C2S,
@@ -103,6 +114,35 @@ public final class AnimalPen
             }
 
             CHANNEL.sendToPlayer(player, new AnimalInteractionSyncEndPacket());
+        });
+
+        InteractionEvent.INTERACT_ENTITY.register((player, entity, hand) ->
+        {
+            ItemStack originalItem = player.getItemInHand(hand);
+
+            if (originalItem.getItem() instanceof AbstractAnimalStorageItem && entity instanceof EnderDragonPart part)
+            {
+                ItemStack copyItem = originalItem.copy();
+
+                if (player.getAbilities().instabuild)
+                {
+                    originalItem = copyItem;
+                }
+
+                InteractionResult interact = originalItem.interactLivingEntity(player, part.parentMob, hand);
+
+                if (interact.consumesAction())
+                {
+                    if (originalItem.isEmpty() && !player.getAbilities().instabuild)
+                    {
+                        player.setItemInHand(hand, ItemStack.EMPTY);
+                    }
+
+                    return EventResult.interruptTrue();
+                }
+            }
+
+            return EventResult.pass();
         });
     }
 
