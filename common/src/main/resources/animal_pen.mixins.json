@@ -18,11 +18,10 @@
     "MixinLightingBolt",
     "SheepMixin",
     "accessors.EntityAccessor",
+    "accessors.GuiGraphicsAccessor",
     "accessors.MushroomCowAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "client": [
-  ]
+  }
 }

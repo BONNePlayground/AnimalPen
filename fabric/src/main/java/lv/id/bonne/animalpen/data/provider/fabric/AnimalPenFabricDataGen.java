@@ -25,5 +25,7 @@ public class AnimalPenFabricDataGen implements DataGeneratorEntrypoint
 
         pack.addProvider(FabricBlockLootProvider::new);
         pack.addProvider(FabricModAdvancementProvider::new);
+
+        pack.addProvider(FabricModModelProvider::new);
     }
 }
