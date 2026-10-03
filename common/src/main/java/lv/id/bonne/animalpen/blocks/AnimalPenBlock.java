@@ -12,6 +12,7 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -30,7 +32,9 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
     public AnimalPenBlock(Properties properties)
     {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.getStateDefinition().any().
+            setValue(FACING, Direction.NORTH).
+            setValue(DECORATION, Decoration.NONE));
     }
 
 
@@ -75,7 +79,7 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        builder.add(FACING);
+        builder.add(FACING).add(DECORATION);
     }
 
 
@@ -89,7 +93,8 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context)
     {
         return Objects.requireNonNull(super.getStateForPlacement(context)).
-            setValue(FACING, context.getHorizontalDirection().getOpposite());
+            setValue(FACING, context.getHorizontalDirection().getOpposite()).
+            setValue(DECORATION, Decoration.NONE);
     }
 
 
@@ -113,6 +118,28 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
     }
 
 
+    public enum Decoration implements StringRepresentable
+    {
+        NONE("none"),
+        FARM("farmland"),
+        HAYBALE("haybale");
+
+        Decoration(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+        private final String name;
+    }
+
+
     private final VoxelShape SHAPE = Shapes.or(
         Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
         Block.box(0.0, 4.0, 0.0, 3.0, 8.0, 3.0),
@@ -124,6 +151,7 @@ public class AnimalPenBlock extends AbstractAnimalContainerBlock<AnimalPenTileEn
         Block.box(0.0, 5.0, 3.0, 2.0, 7.0, 13.0),
         Block.box(14.0, 5.0, 3.0, 16.0, 7.0, 13.0));
 
+    public static final EnumProperty<Decoration> DECORATION = EnumProperty.create("decoration", Decoration.class);
 
     public static final MapCodec<AnimalPenBlock> CODEC = simpleCodec(AnimalPenBlock::new);
 }
