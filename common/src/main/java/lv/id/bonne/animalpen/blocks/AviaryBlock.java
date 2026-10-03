@@ -13,6 +13,7 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -40,7 +42,9 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     public AviaryBlock(Properties properties)
     {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.getStateDefinition().any().
+            setValue(FACING, Direction.NORTH).
+            setValue(DECORATION, Decoration.NONE));
     }
 
 
@@ -151,7 +155,7 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        builder.add(FACING);
+        builder.add(FACING).add(DECORATION);
     }
 
 
@@ -165,7 +169,8 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context)
     {
         return Objects.requireNonNull(super.getStateForPlacement(context)).
-            setValue(FACING, context.getHorizontalDirection().getOpposite());
+            setValue(FACING, context.getHorizontalDirection().getOpposite()).
+            setValue(DECORATION, Decoration.NONE);
     }
 
 
@@ -189,8 +194,31 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     }
 
 
+    public enum Decoration implements StringRepresentable
+    {
+        NONE("none"),
+        HIVE("hive"),
+        NEST("nest");
+
+        Decoration(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+        private final String name;
+    }
+
+
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 17.0, 16.0);
 
+    public static final EnumProperty<Decoration> DECORATION = EnumProperty.create("decoration", Decoration.class);
 
     public static final MapCodec<AviaryBlock> CODEC = simpleCodec(AviaryBlock::new);
 }

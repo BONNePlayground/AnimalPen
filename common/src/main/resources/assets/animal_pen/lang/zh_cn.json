@@ -307,5 +307,8 @@
   "advancements.animal_pen.entity.minecraft.sniffer_bucket.description": "Use bucket on a Sniffer to collect eggs",
   "advancements.animal_pen.entity.minecraft.sniffer_bowl.title": "Ancient Plants",
   "advancements.animal_pen.entity.minecraft.sniffer_bowl.description": "Use bowl on a Sniffer to collect ancient seeds",
-  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen"
+  "gui.animal_pen.variant_selection_screen.configure_tooltip": "Click to configure animal pen",
+  "display.animal_pen.reached_max": "%1$s §dMax mob count reached",
+  "gui.animal_pen.variant_selection_screen.decoration_open_tooltip": "Click to view decorations",
+  "gui.animal_pen.variant_selection_screen.decoration_close_tooltip": "Click to hide decorations"
 }
