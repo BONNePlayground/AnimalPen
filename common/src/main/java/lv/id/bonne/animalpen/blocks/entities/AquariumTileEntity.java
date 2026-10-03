@@ -7,13 +7,20 @@
 package lv.id.bonne.animalpen.blocks.entities;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lv.id.bonne.animalpen.AnimalPen;
+import lv.id.bonne.animalpen.blocks.AnimalPenBlock;
 import lv.id.bonne.animalpen.blocks.AquariumBlock;
 import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 
@@ -75,5 +82,37 @@ public class AquariumTileEntity extends AbstractAnimalPenBlockEntity
     public BlockPos dropPosition()
     {
         return this.getBlockPos().above(2);
+    }
+
+
+    @Override
+    public List<BlockState> getDecorations()
+    {
+        BlockState defaultBlockState = this.getBlockState().getBlock().defaultBlockState();
+
+        return AquariumBlock.DECORATION.getAllValues().
+            map(value -> defaultBlockState.setValue(AquariumBlock.DECORATION, value.value())).
+            collect(Collectors.toList());
+    }
+
+
+    @Override
+    protected BlockState getBlockStateWithDecorationIndex(int index)
+    {
+        AquariumBlock.Decoration[] values = AquariumBlock.Decoration.values();
+
+        if (index < 0 || index >= values.length)
+        {
+            return this.getBlockState();
+        }
+
+        return this.getBlockState().setValue(AquariumBlock.DECORATION, values[index]);
+    }
+
+
+    @Override
+    public BlockState getDecorationBlockState()
+    {
+        return super.getDecorationBlockState().setValue(AquariumBlock.FILLED, Boolean.FALSE);
     }
 }
