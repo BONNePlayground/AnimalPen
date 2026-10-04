@@ -24,6 +24,9 @@
     ],
     "jei_mod_plugin": [
       "lv.id.bonne.animalpen.integration.jei.JEIPlugin"
+    ],
+    "fabric-datagen": [
+      "lv.id.bonne.animalpen.data.provider.fabric.AnimalPenFabricDataGen"
     ]
   },
   "accessWidener": "${mod_id}.classtweaker",

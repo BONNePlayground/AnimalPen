@@ -6,6 +6,8 @@ import java.util.List;
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.client.AnimalPenClient;
 import lv.id.bonne.animalpen.client.WaterTankColor;
+import lv.id.bonne.animalpen.client.screens.renderer.pip.DecorationGUIRenderer;
+import lv.id.bonne.animalpen.client.screens.renderer.state.DecorationGUIRenderState;
 import lv.id.bonne.animalpen.config.screen.AnimalPenConfigScreen;
 import lv.id.bonne.animalpen.events.CommonClientEvents;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
@@ -16,6 +18,8 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
@@ -54,5 +58,12 @@ public class AnimalPenNeoForgeClient
             List.of(new WaterTankColor()),
             AnimalPenBlockRegistry.AQUARIUM.get()
         );
+    }
+
+
+    @SubscribeEvent
+    public static void onRegisterPip(RegisterPictureInPictureRenderersEvent event)
+    {
+        event.register(DecorationGUIRenderState.class, DecorationGUIRenderer::new);
     }
 }

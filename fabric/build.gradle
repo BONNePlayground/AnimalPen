@@ -21,6 +21,13 @@ dependencies {
     runtimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${rootProject.jei_version}")
 }
 
+fabricApi {
+    configureDataGeneration {
+        client = true
+        outputDirectory = file("../common/src/main/generated")
+    }
+}
+
 loom {
     def aw = file("src/main/resources/${mod_id}.classTweaker")
     if (aw.exists()) {
@@ -67,11 +74,6 @@ sourceSets.configureEach {
             }
         }
     }
-}
-
-sourceSets.main.resources {
-    srcDir rootProject.file('common/src/main/generated/')
-    exclude '.cache/**'
 }
 
 modrinth {

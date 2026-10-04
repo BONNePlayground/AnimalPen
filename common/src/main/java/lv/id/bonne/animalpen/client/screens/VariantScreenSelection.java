@@ -11,8 +11,12 @@ import java.util.List;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.blocks.entities.AbstractAnimalPenBlockEntity;
+import lv.id.bonne.animalpen.client.screens.renderer.state.DecorationGUIRenderState;
+import lv.id.bonne.animalpen.client.screens.widget.DecorationButton;
 import lv.id.bonne.animalpen.client.screens.widget.EntityButton;
 import lv.id.bonne.animalpen.mixin.accessors.EntityAccessor;
+import lv.id.bonne.animalpen.mixin.accessors.GuiGraphicsAccessor;
+import lv.id.bonne.animalpen.network.packets.ChangeDecorationData;
 import lv.id.bonne.animalpen.network.packets.RemoveDisplayAnimalData;
 import lv.id.bonne.animalpen.network.packets.RequestVariantData;
 import lv.id.bonne.animalpen.network.packets.UpdateDisplayAnimalData;
@@ -27,6 +31,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -43,6 +48,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.block.state.BlockState;
 
 
 /**
@@ -59,6 +65,7 @@ public class VariantScreenSelection extends Screen
         this.imageHeight = 136;
 
         this.cooldownWidth = 149;
+        this.decorationWidth = 149;
     }
 
 
@@ -71,6 +78,10 @@ public class VariantScreenSelection extends Screen
         if (this.isCooldownOpened)
         {
             this.leftPos = (this.width - this.imageWidth + this.cooldownWidth) / 2;
+        }
+        else if (this.isDecorationOpened)
+        {
+            this.leftPos = (this.width - this.imageWidth - this.decorationWidth) / 2;
         }
         else
         {
@@ -177,6 +188,41 @@ public class VariantScreenSelection extends Screen
             pos(this.leftPos - 12, this.topPos + (this.imageHeight - 18) / 2).
             size(11, 18).
             build());
+
+        // Create cooldown menu renderer
+        this.decorationButton = this.addWidget(Button.builder(Component.literal(""),
+            this::handleDecorationButton).
+            pos(this.leftPos + this.imageWidth + 1, this.topPos + (this.imageHeight - 18) / 2).
+            size(11, 18).build());
+
+        this.decorationButtons.clear();
+
+        if (!this.isDecorationOpened)
+        {
+            return;
+        }
+
+        // Create decoration navigation buttons below the rendered model
+        int panelX = this.leftPos + this.imageWidth + 12 + 8 + 5;
+        int panelY = this.topPos + this.imageHeight - 50;
+
+        List<BlockState> decorations = this.blockEntityInterface.getDecorations();
+
+        for (int index = 0; index < decorations.size(); index++)
+        {
+            final int decorationIndex = index;
+
+            this.decorationButtons.add(this.addWidget(new DecorationButton(panelX + 30 * index,
+                panelY,
+                25,
+                25,
+                decorations.get(decorationIndex),
+                b ->
+                {
+                    Services.NETWORK.sendToServer(new ChangeDecorationData(this.position,
+                        decorationIndex));
+                })));
+        }
     }
 
 
@@ -290,7 +336,7 @@ public class VariantScreenSelection extends Screen
         this.renderEntity(graphics, mouseX, mouseY, partialTicks);
         this.renderCooldown(graphics, mouseX, mouseY, partialTicks);
         this.renderVariantButtons(graphics, mouseX, mouseY, partialTicks);
-
+        this.renderDecoration(graphics, mouseX, mouseY, partialTicks);
 
         // Render title of the menu.
         graphics.text(this.font,
@@ -589,6 +635,66 @@ public class VariantScreenSelection extends Screen
     }
 
 
+    private void renderDecoration(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks)
+    {
+        graphics.blit(RenderPipelines.GUI_TEXTURED,
+            COOLDOWN_TEXTURE,
+            this.leftPos + this.imageWidth + 1,
+            this.topPos + (this.imageHeight - 18) / 2,
+            149 + (this.isDecorationOpened ? 11 : 0),
+            (this.decorationButton.isMouseOver(mouseX, mouseY) ? 18 : 1),
+            11,
+            18,
+            256,
+            256);
+
+        if (this.isDecorationOpened)
+        {
+            graphics.blit(RenderPipelines.GUI_TEXTURED,
+                COOLDOWN_TEXTURE,
+                this.leftPos + this.imageWidth + 12,
+                this.topPos,
+                0,
+                1,
+                this.decorationWidth,
+                this.imageHeight + 1,
+                256,
+                256);
+
+            int panelX = this.leftPos + this.imageWidth + 12 + 8;
+            int panelY = this.topPos + 8;
+
+            int maxWidth = this.decorationWidth - 2 * 8;
+            int maxHeight = this.imageHeight - 3 * 8 - 20;
+            BlockState blockState = this.blockEntityInterface.getDecorationBlockState();
+
+            if (!blockState.isAir())
+            {
+                float scale = Math.min(maxWidth, maxHeight) * 0.45F;
+
+                GuiGraphicsAccessor graphicsAccessor = (GuiGraphicsAccessor) graphics;
+
+                graphicsAccessor.getGuiRenderState().addPicturesInPictureState(
+                    new DecorationGUIRenderState(
+                        blockState,
+                        panelX,
+                        panelY,
+                        maxWidth,
+                        maxHeight,
+                        scale,
+                        0.0F,
+                        this.blockRotationY,
+                        180.0F,
+                        null
+                    )
+                );
+            }
+
+            this.decorationButtons.forEach(b -> b.extractRenderState(graphics, mouseX, mouseY, partialTicks));
+        }
+    }
+
+
     /**
      * This method renders text component and inserts icons in their correct spots.
      *
@@ -711,9 +817,19 @@ public class VariantScreenSelection extends Screen
             graphics.setTooltipForNextFrame(this.font, this.isCooldownOpened ? COOLDOWN_CLOSE : COOLDOWN_OPEN, mouseX, mouseY);
         }
 
+        if (this.decorationButton.isMouseOver(mouseX, mouseY))
+        {
+            graphics.setTooltipForNextFrame(this.font, this.isDecorationOpened ? DECORATION_CLOSE : DECORATION_OPEN, mouseX, mouseY);
+        }
+
         if (this.configureButton.isMouseOver(mouseX, mouseY))
         {
             graphics.setTooltipForNextFrame(this.font, CONFIGURE, mouseX, mouseY);
+        }
+
+        if (!this.isDecorationOpened)
+        {
+            return;
         }
     }
 
@@ -861,6 +977,15 @@ public class VariantScreenSelection extends Screen
     private void handleCooldownButton(Button button)
     {
         this.isCooldownOpened = !this.isCooldownOpened;
+        this.isDecorationOpened = false;
+        this.init();
+    }
+
+
+    private void handleDecorationButton(Button button)
+    {
+        this.isDecorationOpened = !this.isDecorationOpened;
+        this.isCooldownOpened = false;
         this.init();
     }
 
@@ -988,6 +1113,25 @@ public class VariantScreenSelection extends Screen
 
             this.currentXOnEntity = (int) mouseButtonEvent.x();
             return true;
+        }
+        else if (this.isDecorationOpened)
+        {
+            int panelX = this.leftPos + this.imageWidth + 12 + 8;
+            int panelY = this.topPos + 8;
+            int maxWidth = this.decorationWidth - 2 * 8;
+            int maxHeight = this.imageHeight - 3 * 8 - 20;
+
+            if (mouseButtonEvent.x() >= panelX && mouseButtonEvent.x() <= panelX + maxWidth &&
+                mouseButtonEvent.y() >= panelY && mouseButtonEvent.y() <= panelY + maxHeight)
+            {
+                // Rotate around horizontal axis only
+                this.blockRotationY += (float) -dragX * 1.5F;
+                return true;
+            }
+            else
+            {
+                return super.mouseDragged(mouseButtonEvent, dragX, dragY);
+            }
         }
         else
         {
@@ -1127,6 +1271,11 @@ public class VariantScreenSelection extends Screen
     private final int cooldownWidth;
 
     /**
+     * The decoration image width.
+     */
+    private final int decorationWidth;
+
+    /**
      * The texture image height.
      */
     private final int imageHeight;
@@ -1187,6 +1336,16 @@ public class VariantScreenSelection extends Screen
     private boolean isCooldownOpened;
 
     /**
+     * This boolean indicates if player opened decoration view.
+     */
+    private boolean isDecorationOpened;
+
+    /**
+     * List of decoration buttons
+     */
+    private final List<Button> decorationButtons = new ArrayList<>();
+
+    /**
      * The selected button index.
      */
     private int selectedButton = -1;
@@ -1207,9 +1366,14 @@ public class VariantScreenSelection extends Screen
     private Button configureButton;
 
     /**
-     * Button that indicates that player wants to cooldown menu.
+     * Button that indicates that player wants to open cooldown menu.
      */
     private Button cooldownButton;
+
+    /**
+     * Button that indicates that player wants to open decoration menu.
+     */
+    private Button decorationButton;
 
     /**
      * The entity that is rendered in menu.
@@ -1225,6 +1389,11 @@ public class VariantScreenSelection extends Screen
      * The rotation of entity
      */
     private float entityRotation = -135f;
+
+    /**
+     * The rotation of block entity
+     */
+    private float blockRotationY = 45.0F;
 
     /**
      * This variable stores X location of mouse when it was clicked on entity panel.
@@ -1291,6 +1460,18 @@ public class VariantScreenSelection extends Screen
      */
     private static final Component COOLDOWN_CLOSE =
         Component.translatable("gui.animal_pen.variant_selection_screen.cooldown_close_tooltip");
+
+    /**
+     * The DECORATION of button tooltip
+     */
+    private static final Component DECORATION_OPEN =
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_open_tooltip");
+
+    /**
+     * The DECORATION of button tooltip
+     */
+    private static final Component DECORATION_CLOSE =
+        Component.translatable("gui.animal_pen.variant_selection_screen.decoration_close_tooltip");
 
     /**
      * The configure button tooltip

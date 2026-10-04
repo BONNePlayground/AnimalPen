@@ -35,6 +35,11 @@ public final class NetworkPackets
             RequestVariantData.STREAM_CODEC,
             PacketSpec.NetworkDirection.PLAY_TO_SERVER,
             RequestVariantData::handle));
+        handler.register(new PacketSpec<>(
+            ChangeDecorationData.ID,
+            ChangeDecorationData.STREAM_CODEC,
+            PacketSpec.NetworkDirection.PLAY_TO_SERVER,
+            ChangeDecorationData::handle));
 
         handler.register(new PacketSpec<>(AnimalInteractionSyncStartPacket.ID,
             AnimalInteractionSyncStartPacket.STREAM_CODEC,

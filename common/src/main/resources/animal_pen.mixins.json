@@ -11,6 +11,7 @@
     "FixAllayPickup",
     "FixChestedHorseInteraction",
     "FixHorseInteraction",
+    "FixZombieHorseInteraction",
     "MigrateEquipmentSlot",
     "MigrateItemStack",
     "MixinHoneycombItem",
@@ -18,6 +19,7 @@
     "MixinLightingBolt",
     "SheepMixin",
     "accessors.EntityAccessor",
+    "accessors.GuiGraphicsAccessor",
     "accessors.MushroomCowAccessor"
   ],
   "injectors": {
