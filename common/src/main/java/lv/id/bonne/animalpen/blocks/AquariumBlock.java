@@ -12,15 +12,22 @@ import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -33,7 +40,8 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().
             setValue(FACING, Direction.NORTH).
-            setValue(FILLED, false));
+            setValue(FILLED, false).
+            setValue(DECORATION, Decoration.NONE));
     }
 
 
@@ -104,7 +112,7 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        builder.add(FACING).add(FILLED);
+        builder.add(FACING).add(FILLED).add(DECORATION);
     }
 
 
@@ -119,7 +127,8 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     {
         return Objects.requireNonNull(super.getStateForPlacement(context)).
             setValue(FACING, context.getHorizontalDirection().getOpposite()).
-            setValue(FILLED, false);
+            setValue(FILLED, false).
+            setValue(DECORATION, Decoration.NONE);
     }
 
 
@@ -143,9 +152,37 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     }
 
 
+
+
+
+    public enum Decoration implements StringRepresentable
+    {
+        NONE("none"),
+        CAVE("cave"),
+        SHIPWRECK("shipwreck"),
+        CORAL("coral");
+
+        Decoration(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        @NotNull
+        public String getSerializedName()
+        {
+            return this.name;
+        }
+
+        private final String name;
+    }
+
+
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 23.0, 16.0);
 
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
+
+    public static final EnumProperty<Decoration> DECORATION = EnumProperty.create("decoration", Decoration.class);
 
     public static final MapCodec<AquariumBlock> CODEC = simpleCodec(AquariumBlock::new);
 }

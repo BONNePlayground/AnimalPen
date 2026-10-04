@@ -13,11 +13,13 @@
     "FixHorseInteraction",
     "MigrateEquipmentSlot",
     "MigrateItemStack",
+    "MinecraftAccessor",
     "MixinHoneycombItem",
     "MixinLevelChunk",
     "MixinLightingBolt",
     "SheepMixin",
     "accessors.EntityAccessor",
+    "accessors.GuiGraphicsAccessor",
     "accessors.MushroomCowAccessor"
   ],
   "injectors": {

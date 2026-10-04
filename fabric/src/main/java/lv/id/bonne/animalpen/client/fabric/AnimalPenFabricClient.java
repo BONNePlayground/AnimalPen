@@ -7,8 +7,10 @@ import lv.id.bonne.animalpen.client.AnimalPenClient;
 import lv.id.bonne.animalpen.client.WaterTankColor;
 import lv.id.bonne.animalpen.events.CommonClientEvents;
 import lv.id.bonne.animalpen.registries.AnimalPenBlockRegistry;
+import lv.id.bonne.animalpen.client.screens.renderer.pip.DecorationGUIRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 
 
@@ -23,5 +25,7 @@ public final class AnimalPenFabricClient implements ClientModInitializer
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) ->
             CommonClientEvents.onRightClickBlock(player, world, hit.getBlockPos()));
+
+        PictureInPictureRendererRegistry.register(ctx -> new DecorationGUIRenderer(ctx.bufferSource()));
     }
 }

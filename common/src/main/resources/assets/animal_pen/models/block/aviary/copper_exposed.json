@@ -1,0 +1,6 @@
+{
+  "parent": "animal_pen:block/aviary/base",
+  "textures": {
+    "chain": "minecraft:block/exposed_copper_chain"
+  }
+}

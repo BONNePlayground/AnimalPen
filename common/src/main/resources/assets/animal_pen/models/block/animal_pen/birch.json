@@ -1,0 +1,6 @@
+{
+  "parent": "animal_pen:block/animal_pen/base",
+  "textures": {
+    "plank": "minecraft:block/birch_planks"
+  }
+}
