@@ -5,3 +5,4 @@
 - Fixes animal capture item variant merging issue. 
 - Adds decorations for blocks players can select via menu.
 - Adds ability to catch ender dragon (not by default)
+- Fixes Zombie Horse not being pickable

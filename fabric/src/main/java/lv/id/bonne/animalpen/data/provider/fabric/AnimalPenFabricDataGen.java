@@ -1,9 +1,15 @@
 package lv.id.bonne.animalpen.data.provider.fabric;
 
 
+import java.util.List;
+import java.util.Set;
+
 import lv.id.bonne.animalpen.data.provider.AnimalInteractionProvider;
+import lv.id.bonne.animalpen.data.provider.AnimalPenLootProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 
 public class AnimalPenFabricDataGen implements DataGeneratorEntrypoint
@@ -27,5 +33,19 @@ public class AnimalPenFabricDataGen implements DataGeneratorEntrypoint
         pack.addProvider(FabricModAdvancementProvider::new);
 
         pack.addProvider(FabricModModelProvider::new);
+
+        pack.addProvider((output, registries) ->
+            new LootTableProvider(
+                output,
+                Set.of(),
+                List.of(
+                    new LootTableProvider.SubProviderEntry(
+                        AnimalPenLootProvider::new,
+                        LootContextParamSets.GIFT
+                    )
+                ),
+                registries
+            )
+        );
     }
 }
