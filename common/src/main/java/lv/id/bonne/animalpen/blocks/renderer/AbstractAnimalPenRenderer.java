@@ -136,9 +136,9 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
         // Apply rotation based on facing direction
         switch (facing)
         {
-            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.rotate(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.rotate(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.rotate(Axis.YP.rotationDegrees(270));
         }
 
         // Optional: offset from the face of the block
@@ -177,7 +177,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
             poseStack.scale(scale, scale, scale);
         }
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        poseStack.rotate(Axis.YP.rotationDegrees(180));
 
         submitNodeCollector.order(1);
         this.entityRenderer.submit(renderState.displayEntity,
@@ -264,7 +264,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
 
         if (toPlayer.dot(facingVec) < 0)
         {
-            poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.rotate(Axis.YP.rotationDegrees(180));
         }
 
         double totalHeight = this.getTextStartHeight() + this.getTextLineSpacing() * (textList.size() - 1);
@@ -399,7 +399,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 poseStack.pushPose();
                 // image is 20x smaller and flipped than text
                 poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
 
                 // I know ths is incorrect, but I cannot be bothered to create list at the extraction
                 // to render it now...
@@ -435,7 +435,7 @@ public abstract class AbstractAnimalPenRenderer<T extends AbstractAnimalPenBlock
                 poseStack.pushPose();
                 // image is 20x smaller and flipped than text
                 poseStack.scale(-20f, -20f, 20f);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
 
                 // I know ths is incorrect, but I cannot be bothered to create list at the extraction
                 // to render it now...

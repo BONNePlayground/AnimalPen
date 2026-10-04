@@ -1,0 +1,8 @@
+{
+  "values": {
+    "animal_pen:copper_aviary": { "waxed": "animal_pen:waxed_copper_aviary" },
+    "animal_pen:exposed_copper_aviary":  { "waxed": "animal_pen:waxed_exposed_copper_aviary" },
+    "animal_pen:weathered_copper_aviary":{ "waxed": "animal_pen:waxed_weathered_copper_aviary" },
+    "animal_pen:oxidized_copper_aviary":{ "waxed": "animal_pen:waxed_oxidized_copper_aviary" }
+  }
+}

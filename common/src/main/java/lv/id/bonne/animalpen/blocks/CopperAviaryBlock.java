@@ -1,8 +1,6 @@
 package lv.id.bonne.animalpen.blocks;
 
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.BlockPos;
@@ -20,14 +18,6 @@ public class CopperAviaryBlock extends AviaryBlock implements WeatheringCopperAv
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
         this.weatherState = weatherState;
-    }
-
-
-    @Override
-    @NotNull
-    protected MapCodec<CopperAviaryBlock> codec()
-    {
-        return CODEC;
     }
 
 
@@ -59,11 +49,4 @@ public class CopperAviaryBlock extends AviaryBlock implements WeatheringCopperAv
 
 
     private final WeatheringCopper.WeatherState weatherState;
-
-
-    public static final MapCodec<CopperAviaryBlock> CODEC = RecordCodecBuilder.mapCodec(
-        (instance) ->
-            instance.group(WeatherState.CODEC.fieldOf("weathering_state").
-                forGetter(CopperAviaryBlock::getAge), propertiesCodec()).
-                apply(instance, CopperAviaryBlock::new));
 }

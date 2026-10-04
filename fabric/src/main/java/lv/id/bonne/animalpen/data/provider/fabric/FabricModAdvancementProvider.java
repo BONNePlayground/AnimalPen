@@ -38,6 +38,6 @@ public class FabricModAdvancementProvider extends FabricAdvancementProvider impl
         Advancement.Builder builder,
         Identifier resourceLocation)
     {
-        return builder.save(consumer, resourceLocation.toString());
+        return builder.save(consumer, resourceLocation);
     }
 }

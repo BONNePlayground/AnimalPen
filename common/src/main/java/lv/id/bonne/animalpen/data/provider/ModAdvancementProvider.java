@@ -43,7 +43,7 @@ public interface ModAdvancementProvider
     {
         AdvancementHolder root = this.generatePlatformAdvancement(consumer,
             Advancement.Builder.advancement().
-                display(
+                rootDisplay(
                     AnimalPenBlockRegistry.ANIMAL_PENS.values().iterator().next().get().asItem(),
                     Component.translatable("advancements.animal_pen.root.title"),
                     Component.translatable("advancements.animal_pen.root.description"),
@@ -70,7 +70,6 @@ public interface ModAdvancementProvider
                     AnimalPensItemRegistry.ANIMAL_CAGE.get(),
                     Component.translatable("advancements.animal_pen.first_catch.title"),
                     Component.translatable("advancements.animal_pen.first_catch.description"),
-                    null,
                     AdvancementType.TASK,
                     true,  // show toast
                     true,  // announce to chat
@@ -122,7 +121,6 @@ public interface ModAdvancementProvider
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
-                        null,
                         AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
@@ -144,7 +142,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -167,7 +164,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bowl.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -186,7 +182,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_flower.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_flower.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -209,7 +204,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -228,7 +222,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_dye.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_dye.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -254,7 +247,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_froglight.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -277,7 +269,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bowl.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bowl.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -300,7 +291,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_brush.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_brush.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -321,7 +311,6 @@ public interface ModAdvancementProvider
                     AnimalPensItemRegistry.ANIMAL_CONTAINER.get(),
                     Component.translatable("advancements.animal_pen.aquatic_keeper.title"),
                     Component.translatable("advancements.animal_pen.aquatic_keeper.description"),
-                    null,
                     AdvancementType.TASK,
                     true,
                     false,
@@ -359,7 +348,6 @@ public interface ModAdvancementProvider
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
-                        null,
                         AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
@@ -381,7 +369,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bucket.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bucket.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -405,7 +392,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_water_bucket.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -428,7 +414,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_froglight.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_froglight.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -449,7 +434,6 @@ public interface ModAdvancementProvider
                     AnimalPensItemRegistry.BIRD_CATCHER.get(),
                     Component.translatable("advancements.animal_pen.bird_watcher.title"),
                     Component.translatable("advancements.animal_pen.bird_watcher.description"),
-                    null,
                     AdvancementType.TASK,
                     true, true, false
                 ).
@@ -478,7 +462,6 @@ public interface ModAdvancementProvider
                         Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + ".title"),
                         Component.translatable(
                             "advancements.animal_pen." + animal.getDescriptionId() + ".description"),
-                        null,
                         AdvancementType.TASK,
                         true,  // show toast
                         false,  // announce to chat
@@ -500,7 +483,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_shear.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_shear.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -520,7 +502,6 @@ public interface ModAdvancementProvider
                             Component.translatable("advancements.animal_pen." + animal.getDescriptionId() + "_bottle.title"),
                             Component.translatable(
                                 "advancements.animal_pen." + animal.getDescriptionId() + "_bottle.description"),
-                            null,
                             AdvancementType.TASK,
                             true,  // show toast
                             false,  // announce to chat
@@ -541,7 +522,6 @@ public interface ModAdvancementProvider
                     Items.LEAD,
                     Component.translatable("advancements.animal_pen.release.title"),
                     Component.translatable("advancements.animal_pen.release.description"),
-                    null,
                     AdvancementType.TASK,
                     true, true, false
                 ).
@@ -558,7 +538,6 @@ public interface ModAdvancementProvider
                     Items.MAP,
                     Component.translatable("advancements.animal_pen.variant_change.title"),
                     Component.translatable("advancements.animal_pen.variant_change.description"),
-                    null,
                     AdvancementType.TASK,
                     true, true, false
                 ).

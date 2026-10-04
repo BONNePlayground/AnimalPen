@@ -49,9 +49,9 @@ public class DecorationGUIRenderer extends PictureInPictureRenderer<DecorationGU
 
         pose.translate(0.0F, -1.0F, 0.0F);
 
-        pose.mulPose(Axis.XP.rotationDegrees(renderState.rotationX()));
-        pose.mulPose(Axis.YP.rotationDegrees(renderState.rotationY()));
-        pose.mulPose(Axis.ZP.rotationDegrees(renderState.rotationZ()));
+        pose.rotate(Axis.XP.rotationDegrees(renderState.rotationX()));
+        pose.rotate(Axis.YP.rotationDegrees(renderState.rotationY()));
+        pose.rotate(Axis.ZP.rotationDegrees(renderState.rotationZ()));
 
         pose.translate(-0.5F, -0.5F, -0.5F);
 

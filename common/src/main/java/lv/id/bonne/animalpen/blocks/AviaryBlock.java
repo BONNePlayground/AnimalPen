@@ -1,7 +1,6 @@
 package lv.id.bonne.animalpen.blocks;
 
 
-import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -11,13 +10,12 @@ import lv.id.bonne.animalpen.registries.AnimalPenTileEntityRegistry;
 import lv.id.bonne.animalpen.registries.AnimalPensItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,7 +23,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -43,13 +40,6 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
         this.registerDefaultState(this.getStateDefinition().any().
             setValue(FACING, Direction.NORTH).
             setValue(DECORATION, Decoration.NONE));
-    }
-
-
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec()
-    {
-        return CODEC;
     }
 
 
@@ -88,7 +78,7 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
         ItemStack itemInHand = player.getItemInHand(interactionHand);
 
         // Allow copper mechanics
-        if (itemInHand.getItem() instanceof AxeItem || itemInHand.is(Items.HONEYCOMB))
+        if (itemInHand.is(ItemTags.AXES) || itemInHand.is(Items.HONEYCOMB))
         {
             return InteractionResult.PASS;
         }
@@ -174,6 +164,4 @@ public class AviaryBlock extends AbstractAnimalContainerBlock<AviaryTileEntity>
     private final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 17.0, 16.0);
 
     public static final EnumProperty<Decoration> DECORATION = EnumProperty.create("decoration", Decoration.class);
-
-    public static final MapCodec<AviaryBlock> CODEC = simpleCodec(AviaryBlock::new);
 }

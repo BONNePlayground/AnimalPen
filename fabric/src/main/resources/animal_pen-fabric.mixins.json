@@ -6,9 +6,6 @@
   "client": [
     "InfinitePlayerAttack"
   ],
-  "mixins": [
-    "MixinAxeItem"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

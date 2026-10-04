@@ -1,11 +1,11 @@
 package lv.id.bonne.animalpen.client.screens;
 
 
+import com.mojang.blaze3d.platform.InputConstants;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +30,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -1143,12 +1141,12 @@ public class VariantScreenSelection extends Screen
     @Override
     public boolean keyPressed(KeyEvent keyEvent)
     {
-        if ((keyEvent.key() == GLFW.GLFW_KEY_UP || keyEvent.key() == GLFW.GLFW_KEY_DOWN) &&
+        if ((keyEvent.key() == InputConstants.KEY_UP || keyEvent.key() == InputConstants.KEY_DOWN) &&
             this.buttons.size() > 1)
         {
             int button;
 
-            if (keyEvent.key() == GLFW.GLFW_KEY_DOWN)
+            if (keyEvent.key() == InputConstants.KEY_DOWN)
             {
                 button = Math.min(this.selectedButton + 1, this.buttons.size() - 1);
             }
@@ -1165,7 +1163,7 @@ public class VariantScreenSelection extends Screen
 
             return true;
         }
-        else if (keyEvent.key() == GLFW.GLFW_KEY_ENTER)
+        else if (keyEvent.key() == InputConstants.KEY_RETURN)
         {
             if (this.selectedButton >= 0 &&
                 this.selectedButton < this.buttons.size() &&
@@ -1175,7 +1173,7 @@ public class VariantScreenSelection extends Screen
                 return true;
             }
         }
-        else if (keyEvent.key() == GLFW.GLFW_KEY_DELETE)
+        else if (keyEvent.key() == InputConstants.KEY_DELETE)
         {
             if (this.selectedButton >= 0 && this.selectedButton < this.buttons.size())
             {

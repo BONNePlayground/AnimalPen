@@ -7,11 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 
 public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVariantChangeTrigger.TriggerInstance>
@@ -29,14 +31,15 @@ public class AnimalVariantChangeTrigger extends SimpleCriterionTrigger<AnimalVar
     }
 
 
-    public record TriggerInstance(Optional<ContextAwarePredicate> player) implements SimpleCriterionTrigger.SimpleInstance
+    public record TriggerInstance(Optional<Holder<LootItemCondition>> player) implements SimpleCriterionTrigger.SimpleInstance
     {
+        private static final Codec<Holder<LootItemCondition>> CONDITION_CODEC =
+            RegistryCodecs.holder(Registries.PREDICATE, LootItemCondition.DIRECT_CODEC);
+
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
             instance ->
-                instance.group(
-                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player)
-                ).
-                apply(instance, TriggerInstance::new));
+                instance.group(CONDITION_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player)).
+                    apply(instance, TriggerInstance::new));
 
 
         public static Criterion<TriggerInstance> changeVariant()

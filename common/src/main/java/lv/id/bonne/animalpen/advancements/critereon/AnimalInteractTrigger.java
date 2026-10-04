@@ -8,13 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 import lv.id.bonne.animalpen.registries.AnimalPenCriteriaTriggersRegistry;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +23,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 
 
 public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteractTrigger.TriggerInstance>
@@ -40,23 +43,26 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
     }
 
 
-    public record TriggerInstance(Optional<ContextAwarePredicate> player,
-                                  Optional<ContextAwarePredicate> entity,
+    public record TriggerInstance(Optional<Holder<LootItemCondition>> player,
+                                  Optional<Holder<LootItemCondition>> entity,
                                   Optional<ItemPredicate> item) implements SimpleCriterionTrigger.SimpleInstance
     {
+        private static final Codec<Holder<LootItemCondition>> CONDITION_CODEC =
+            RegistryCodecs.holder(Registries.PREDICATE, LootItemCondition.DIRECT_CODEC);
+
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(
             instance ->
                 instance.group(
-                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
-                    EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("entity").forGetter(TriggerInstance::entity),
-                    ItemPredicate.CODEC.optionalFieldOf("item").forGetter(TriggerInstance::item)
-                ).
-                apply(instance, TriggerInstance::new));
+                        CONDITION_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+                        CONDITION_CODEC.optionalFieldOf("entity").forGetter(TriggerInstance::entity),
+                        ItemPredicate.CODEC.optionalFieldOf("item").forGetter(TriggerInstance::item)
+                    ).
+                    apply(instance, TriggerInstance::new));
 
 
         public boolean matches(LootContext entityContext, ItemStack catchingItem)
         {
-            if (this.entity.isPresent() && !this.entity.get().matches(entityContext))
+            if (this.entity.isPresent() && !this.entity.get().value().test(entityContext))
             {
                 return false;
             }
@@ -65,11 +71,17 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         }
 
 
+        private static Holder<LootItemCondition> wrap(EntityPredicate.Builder builder)
+        {
+            return Holder.direct(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, builder).build());
+        }
+
+
         public static Criterion<TriggerInstance> interactAnimal(HolderLookup.Provider provider, EntityType<?> entity)
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
+                Optional.of(wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity))),
                 Optional.empty()
             ));
         }
@@ -79,7 +91,7 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
+                Optional.of(wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity))),
                 Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), item).build())
             ));
         }
@@ -89,7 +101,7 @@ public class AnimalInteractTrigger extends SimpleCriterionTrigger<AnimalInteract
         {
             return AnimalPenCriteriaTriggersRegistry.ANIMAL_INTERACT_TRIGGER.get().createCriterion(new TriggerInstance(
                 Optional.empty(),
-                Optional.of(EntityPredicate.wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity).build())),
+                Optional.of(wrap(EntityPredicate.Builder.entity().of(provider.lookupOrThrow(Registries.ENTITY_TYPE), entity))),
                 Optional.of(ItemPredicate.Builder.item().of(provider.lookupOrThrow(Registries.ITEM), itemTag).build())
             ));
         }

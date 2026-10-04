@@ -1,7 +1,6 @@
 package lv.id.bonne.animalpen.blocks;
 
 
-import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
@@ -13,13 +12,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -42,13 +36,6 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
             setValue(FACING, Direction.NORTH).
             setValue(FILLED, false).
             setValue(DECORATION, Decoration.NONE));
-    }
-
-
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec()
-    {
-        return CODEC;
     }
 
 
@@ -183,6 +170,4 @@ public class AquariumBlock extends AbstractAnimalContainerBlock<AquariumTileEnti
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
 
     public static final EnumProperty<Decoration> DECORATION = EnumProperty.create("decoration", Decoration.class);
-
-    public static final MapCodec<AquariumBlock> CODEC = simpleCodec(AquariumBlock::new);
 }

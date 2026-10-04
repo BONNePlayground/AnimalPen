@@ -1,0 +1,7 @@
+{
+  "values": {
+    "animal_pen:copper_aviary":          { "next_oxidation_stage": "animal_pen:exposed_copper_aviary" },
+    "animal_pen:exposed_copper_aviary":  { "next_oxidation_stage": "animal_pen:weathered_copper_aviary" },
+    "animal_pen:weathered_copper_aviary":{ "next_oxidation_stage": "animal_pen:oxidized_copper_aviary" }
+  }
+}
