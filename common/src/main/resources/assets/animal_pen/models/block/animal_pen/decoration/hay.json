@@ -5,7 +5,8 @@
 	"texture_size": [16, 16],
 	"textures": {
 		"feeding_trough": "animal_pen:block/decoration/feeding_trough",
-		"haybale": "animal_pen:block/decoration/haybale"
+		"haybale": "animal_pen:block/decoration/haybale",
+		"particle": "minecraft:block/hay_block_side"
 	},
 	"elements": [
 		{

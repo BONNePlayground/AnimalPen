@@ -4,7 +4,8 @@
   "render_type": "minecraft:translucent",
   "texture_size": [32, 32],
   "textures": {
-    "water": "animal_pen:block/decoration/water_still"
+    "water": "animal_pen:block/decoration/water_still",
+    "particle": "minecraft:block/water_still"
   },
   "elements": [
     {
