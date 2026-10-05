@@ -99,11 +99,13 @@ modrinth {
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 tasks.register('curseforge', TaskPublishCurseForge) {
+    dependsOn(tasks.named("jar"))
+
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
-    def mainFile = upload(1206722, remapJar)
+    def mainFile = upload(1206722, tasks.named("jar").get().archiveFile.get().asFile)
 
-    mainFile.displayName = "${rootProject.archives_name}-fabric-${rootProject.minecraft_version}-${rootProject.mod_version}"
+    mainFile.displayName = "${rootProject.archives_name}-fabric-${rootProject.minecraft_version}-${rootProject.version}"
     mainFile.changelog = rootProject.file("CHANGELOG_LATEST.md").text
     mainFile.changelogType = 'text'
     mainFile.releaseType = 'release'
