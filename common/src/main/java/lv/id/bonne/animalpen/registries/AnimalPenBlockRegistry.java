@@ -236,5 +236,6 @@ public class AnimalPenBlockRegistry
         registerPen(WoodType.BAMBOO, MapColor.COLOR_YELLOW);
         registerPen(WoodType.CHERRY, MapColor.TERRACOTTA_GRAY);
         registerPen(WoodType.PALE_OAK, MapColor.STONE);
+        registerPen(WoodType.POPLAR, MapColor.COLOR_LIGHT_GRAY);
     }
 }
