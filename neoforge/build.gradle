@@ -1,7 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow'
     id "com.modrinth.minotaur" version "2.+"
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'net.darkhax.curseforgegradle' version '1.1.26'
 }
 
 loom {
@@ -106,28 +106,26 @@ modrinth {
     tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 }
 
-curseforge {
-    project {
-        apiKey = System.getenv("CURSEFORGE_TOKEN")
-        id = "1206722"
-        changelog = rootProject.file("CHANGELOG_LATEST.md").text
-        changelogType = "text"
-        releaseType = "release"
-        addGameVersion "1.21.9"
-        addGameVersion "1.21.10"
-        addGameVersion "NeoForge"
-        addGameVersion "Java 21"
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
-        relations {
-            requiredDependency "architectury-api"
-            optionalDependency "patchouli"
-            optionalDependency "cloth-config"
-        }
-        mainArtifact(remapJar) {
-            displayName = "${rootProject.archives_name}-neoforge-${rootProject.minecraft_version}-${rootProject.mod_version}"
-        }
-        options {
-            javaVersionAutoDetect = false
-        }
-    }
+tasks.register('curseforge', TaskPublishCurseForge) {
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def mainFile = upload(1206722, remapJar)
+
+    mainFile.displayName =
+            "${rootProject.archives_name}-neoforge-${rootProject.minecraft_version}-${rootProject.mod_version}"
+
+    mainFile.changelog = rootProject.file("CHANGELOG_LATEST.md").text
+    mainFile.changelogType = "text"
+    mainFile.releaseType = "release"
+
+    mainFile.addGameVersion("1.21.9", "1.21.10")
+    mainFile.addModLoader("NeoForge")
+    mainFile.addJavaVersion("Java 21")
+    mainFile.addEnvironment("Client", "Server")
+
+    mainFile.addRequirement("architectury-api")
+    mainFile.addOptional("patchouli")
+    mainFile.addOptional("cloth-config")
 }
