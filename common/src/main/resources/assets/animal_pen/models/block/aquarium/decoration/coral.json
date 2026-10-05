@@ -6,7 +6,8 @@
   "textures": {
     "coralA": "animal_pen:block/decoration/coral_a",
     "coralB": "animal_pen:block/decoration/coral_b",
-    "floor": "animal_pen:block/decoration/sandbank_coral"
+    "floor": "animal_pen:block/decoration/sandbank_coral",
+    "particle": "minecraft:block/brain_coral_block"
   },
   "elements": [
     {
