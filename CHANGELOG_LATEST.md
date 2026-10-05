@@ -1,4 +1,4 @@
-# Animal Pens 2.5
+# Animal Pens 2.5.0
 
 #### Changes:
 - Fixes rare race condition error on player joining server while resources are still loading
