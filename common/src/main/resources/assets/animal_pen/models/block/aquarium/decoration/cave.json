@@ -7,7 +7,8 @@
     "rock": "animal_pen:block/decoration/cave_rock",
     "gravel": "animal_pen:block/decoration/cave_gravel",
     "kelp_a": "animal_pen:block/decoration/cave_kelp_a",
-    "kelp_b": "animal_pen:block/decoration/cave_kelp_b"
+    "kelp_b": "animal_pen:block/decoration/cave_kelp_b",
+    "particle": "minecraft:block/gravel"
   },
   "elements": [
     {
