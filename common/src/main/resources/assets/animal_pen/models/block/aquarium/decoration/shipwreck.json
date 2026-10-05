@@ -6,7 +6,8 @@
   "textures": {
     "seedbank": "animal_pen:block/decoration/sandbank_shipwreck",
     "shipA": "animal_pen:block/decoration/ship_side_a",
-    "shipB": "animal_pen:block/decoration/ship_side_b"
+    "shipB": "animal_pen:block/decoration/ship_side_b",
+    "particle": "minecraft:block/oak_planks"
   },
   "elements": [
     {
