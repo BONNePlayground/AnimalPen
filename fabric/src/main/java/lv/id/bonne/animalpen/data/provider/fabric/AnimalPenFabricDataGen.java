@@ -34,18 +34,6 @@ public class AnimalPenFabricDataGen implements DataGeneratorEntrypoint
 
         pack.addProvider(FabricModModelProvider::new);
 
-        pack.addProvider((output, registries) ->
-            new LootTableProvider(
-                output,
-                Set.of(),
-                List.of(
-                    new LootTableProvider.SubProviderEntry(
-                        AnimalPenLootProvider::new,
-                        LootContextParamSets.GIFT
-                    )
-                ),
-                registries
-            )
-        );
+        pack.addProvider(FabricModLootProvider::new);
     }
 }

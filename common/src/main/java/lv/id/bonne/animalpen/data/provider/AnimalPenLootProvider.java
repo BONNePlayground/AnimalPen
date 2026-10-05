@@ -9,6 +9,7 @@ package lv.id.bonne.animalpen.data.provider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import lv.id.bonne.animalpen.registries.AnimalPenLootTables;
 import lv.id.bonne.animalpen.util.AnimalPenItemHelper;
@@ -16,13 +17,14 @@ import net.minecraft.advancements.predicates.NbtPredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.entity.EntityTypePredicate;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.cow.MushroomCow;
@@ -41,16 +43,16 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyC
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 
-public record AnimalPenLootProvider(LootTableSubProvider.Context output) implements LootTableSubProvider
+public class AnimalPenLootProvider
 {
-    @Override
-    public void run()
+    public static void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output,
+        HolderLookup.Provider registries)
     {
-        this.output.accept(AnimalPenLootTables.MUSHROOM_STEW,
+        output.accept(AnimalPenLootTables.MUSHROOM_STEW,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(LootItem.lootTableItem(Items.MUSHROOM_STEW))));
 
-        HolderGetter<EntityType<?>> entityLookup = this.output.lookup(Registries.ENTITY_TYPE);
+        HolderGetter<EntityType<?>> entityLookup = registries.lookupOrThrow(Registries.ENTITY_TYPE);
         LootPool.Builder poolBuilder = LootPool.lootPool();
         poolBuilder.setRolls(ContextIntProviders.exactly(1));
 
@@ -75,30 +77,30 @@ public record AnimalPenLootProvider(LootTableSubProvider.Context output) impleme
                     apply(SetComponentsFunction.setComponent(DataComponents.SUSPICIOUS_STEW_EFFECTS, effect)));
             });
 
-        this.output.accept(AnimalPenLootTables.SUSPICIOUS_STEW, LootTable.lootTable().withPool(poolBuilder));
+        output.accept(AnimalPenLootTables.SUSPICIOUS_STEW, LootTable.lootTable().withPool(poolBuilder));
 
-        this.output.accept(AnimalPenLootTables.ARMADILLO_SCUTE,
+        output.accept(AnimalPenLootTables.ARMADILLO_SCUTE,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(LootItem.lootTableItem(Items.ARMADILLO_SCUTE))));
 
-        this.output.accept(AnimalPenLootTables.MILK_BUCKET,
+        output.accept(AnimalPenLootTables.MILK_BUCKET,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(LootItem.lootTableItem(Items.MILK_BUCKET))));
-        this.output.accept(AnimalPenLootTables.SNIFFER_EGG,
+        output.accept(AnimalPenLootTables.SNIFFER_EGG,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(LootItem.lootTableItem(Items.SNIFFER_EGG))));
-        this.output.accept(AnimalPenLootTables.TURTLE_EGG,
+        output.accept(AnimalPenLootTables.TURTLE_EGG,
             LootTable.lootTable().withPool(LootPool.lootPool().
                 // UniformGenerator now lives in ...providers.number.ints
                     setRolls(ContextIntProviders.between(1, 4)).
                 add(LootItem.lootTableItem(Items.TURTLE_EGG))));
 
-        this.output.accept(AnimalPenLootTables.HONEY_BOTTLE,
+        output.accept(AnimalPenLootTables.HONEY_BOTTLE,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(LootItem.lootTableItem(Items.HONEY_BOTTLE))));
 
-        HolderGetter<FrogVariant> frogVariants = this.output.lookup(Registries.FROG_VARIANT);
-        this.output.accept(AnimalPenLootTables.FROGLIGHT,
+        HolderGetter<FrogVariant> frogVariants = registries.lookupOrThrow(Registries.FROG_VARIANT);
+        output.accept(AnimalPenLootTables.FROGLIGHT,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).
                 add(AlternativesEntry.alternatives(
                     LootItem.lootTableItem(Items.OCHRE_FROGLIGHT).
@@ -123,7 +125,7 @@ public record AnimalPenLootProvider(LootTableSubProvider.Context output) impleme
             )
         );
 
-        this.output.accept(AnimalPenLootTables.HONEYCOMB,
+        output.accept(AnimalPenLootTables.HONEYCOMB,
             LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(3)).
                 add(LootItem.lootTableItem(Items.HONEYCOMB))));
 
@@ -141,7 +143,7 @@ public record AnimalPenLootProvider(LootTableSubProvider.Context output) impleme
                             value)))));
         }
 
-        this.output.accept(AnimalPenLootTables.WOOL,
+        output.accept(AnimalPenLootTables.WOOL,
             LootTable.lootTable().withPool(
                 LootPool.lootPool().
                     setRolls(ContextIntProviders.between(1, 3)).
