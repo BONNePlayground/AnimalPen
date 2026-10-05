@@ -6,7 +6,8 @@
 	"textures": {
 		"carrot": "animal_pen:block/decoration/carrot",
 		"potato": "animal_pen:block/decoration/potato",
-		"farmland": "animal_pen:block/decoration/farmland"
+		"farmland": "animal_pen:block/decoration/farmland",
+		"particle": "minecraft:block/dirt"
 	},
 	"elements": [
 		{
@@ -14,12 +15,7 @@
 			"to": [13, 4.5, 6],
 			"rotation": {"angle": 0, "axis": "y", "origin": [11, 4, 4]},
 			"faces": {
-				"north": {"uv": [0, 2.66667, 3.28205, 3.28205], "texture": "#farmland"},
-				"east": {"uv": [3.28205, 3.28205, 6.5641, 3.69231], "texture": "#farmland"},
-				"south": {"uv": [0, 0, 3.28205, 0.61538], "texture": "#farmland"},
-				"west": {"uv": [0, 3.28205, 3.28205, 3.69231], "texture": "#farmland"},
-				"up": {"uv": [3.28205, 3.28205, 0, 0], "texture": "#farmland"},
-				"down": {"uv": [6.5641, 0, 3.28205, 3.28205], "texture": "#farmland"}
+				"up": {"uv": [2, 2, 0, 0], "texture": "#farmland"}
 			}
 		},
 		{
@@ -27,12 +23,7 @@
 			"to": [10, 4.25, 6],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 4, 4]},
 			"faces": {
-				"north": {"uv": [0, 2.87179, 3.28205, 3.28205], "texture": "#farmland"},
-				"east": {"uv": [0, 3.28205, 3.28205, 3.69231], "texture": "#farmland"},
-				"south": {"uv": [0, 0, 3.28205, 0.41026], "texture": "#farmland"},
-				"west": {"uv": [3.28205, 3.28205, 6.5641, 3.69231], "texture": "#farmland"},
-				"up": {"uv": [3.28205, 3.28205, 0, 0], "texture": "#farmland"},
-				"down": {"uv": [6.5641, 0, 3.28205, 3.28205], "texture": "#farmland"}
+				"up": {"uv": [2, 2, 0, 0], "texture": "#farmland"}
 			}
 		},
 		{
@@ -40,12 +31,7 @@
 			"to": [13, 4.125, 9],
 			"rotation": {"angle": 0, "axis": "y", "origin": [11, 4, 7]},
 			"faces": {
-				"north": {"uv": [0, 3.07692, 3.28205, 3.28205], "texture": "#farmland"},
-				"east": {"uv": [3.28205, 3.48718, 6.5641, 3.28205], "texture": "#farmland"},
-				"south": {"uv": [0, 0, 3.28205, 0.20513], "texture": "#farmland"},
-				"west": {"uv": [0, 3.28205, 3.28205, 3.48718], "texture": "#farmland"},
-				"up": {"uv": [3.28205, 3.28205, 0, 0], "texture": "#farmland"},
-				"down": {"uv": [6.5641, 0, 3.28205, 3.28205], "texture": "#farmland"}
+				"up": {"uv": [2, 2, 0, 0], "texture": "#farmland"}
 			}
 		},
 		{
@@ -53,12 +39,14 @@
 			"to": [6, 4.125, 12],
 			"rotation": {"angle": 0, "axis": "y", "origin": [4, 4, 10]},
 			"faces": {
-				"north": {"uv": [0, 3.07692, 3.28205, 3.28205], "texture": "#farmland"},
-				"east": {"uv": [3.28205, 3.48718, 6.5641, 3.28205], "texture": "#farmland"},
-				"south": {"uv": [0, 0, 3.28205, 0.20513], "texture": "#farmland"},
-				"west": {"uv": [0, 3.28205, 3.28205, 3.48718], "texture": "#farmland"},
-				"up": {"uv": [3.28205, 3.28205, 0, 0], "texture": "#farmland"},
-				"down": {"uv": [6.5641, 0, 3.28205, 3.28205], "texture": "#farmland"}
+				"up": {"uv": [2, 2, 0, 0], "texture": "#farmland"}
+			}
+		},
+		{
+			"from": [3, 4, 3],
+			"to": [13, 4.1, 13],
+			"faces": {
+				"up": {"uv": [0, 2.5, 6.703125, 9.203125], "texture": "#farmland"}
 			}
 		},
 		{
