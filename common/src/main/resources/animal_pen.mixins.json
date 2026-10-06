@@ -3,8 +3,6 @@
   "package": "lv.id.bonne.animalpen.mixin",
   "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
-  "client": [
-  ],
   "mixins": [
     "AquariumBlockCollisionPrevention",
     "DispenserMixin",
@@ -20,8 +18,10 @@
     "MixinLightingBolt",
     "SheepMixin",
     "accessors.EntityAccessor",
-    "accessors.GuiGraphicsAccessor",
     "accessors.MushroomCowAccessor"
+  ],
+  "client": [
+    "accessors.GuiGraphicsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
