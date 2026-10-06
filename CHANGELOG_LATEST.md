@@ -1,7 +1,4 @@
-# Animal Pens 2.5.0
+# Animal Pens 2.5.1
 
 #### Changes:
-- Fixes rare race condition error on player joining server while resources are still loading
-- Fixes animal capture item variant merging issue. 
-- Adds decorations for blocks players can select via menu.
-- Adds ability to catch ender dragon (not by default)
+- Fixes server side crash
