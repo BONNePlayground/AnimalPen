@@ -89,7 +89,7 @@ remapJar {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "animalpens"
-    versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}"
+    versionNumber = "${rootProject.mod_version}-${rootProject.minecraft_version}+NeoForge"
     versionName = "${rootProject.mod_version}-${rootProject.minecraft_version}-NeoForge"
     versionType = "release"
     uploadFile = remapJar
