@@ -8,7 +8,7 @@ package lv.id.bonne.animalpen.util;
 
 
 import com.google.common.collect.Maps;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -96,7 +96,7 @@ public class AnimalPenItemHelper
     public static Map<String, Long> getCooldowns(DataComponentHolder componentHolder)
     {
         var component = componentHolder.get(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
-        return component != null ? component.cooldowns() : Collections.emptyMap();
+        return component != null ? component.cooldowns() : new HashMap<>();
     }
 
 
