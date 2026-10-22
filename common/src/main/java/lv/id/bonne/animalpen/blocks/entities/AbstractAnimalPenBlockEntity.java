@@ -652,13 +652,17 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             item.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
             item.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
 
-            StoredMobVariantKey variantKey = item.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get());
-            item.set(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(),
-                variantKey.withSize(0));
-
-            if (level instanceof ServerLevel serverLevel)
+            if (item.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get()) &&
+                level instanceof ServerLevel serverLevel)
             {
+                StoredMobVariantKey variantKey = item.getOrDefault(
+                    AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(),
+                    StoredMobVariantKey.of());
+
                 IndividualPenStorage.delete(serverLevel, variantKey.key());
+
+                item.set(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY.get(),
+                    variantKey.withSize(0));
             }
 
             Block.popResource(level, this.getBlockPos().above(), item);
