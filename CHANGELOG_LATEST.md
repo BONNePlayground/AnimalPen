@@ -2,3 +2,4 @@
 
 #### Changes:
 - Remove stored animal variant data when last animal is killed in pen. (backported from newer version)
+- Fixes error report about incorrectly applied cooldown.
