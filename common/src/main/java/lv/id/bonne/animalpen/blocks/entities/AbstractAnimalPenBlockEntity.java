@@ -645,6 +645,16 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
         if (this.getAnimalCount() <= 0)
         {
             ItemStack item = this.getItemStack();
+
+            CompoundTag tag = item.getOrCreateTag();
+
+            if (tag.hasUUID(AnimalPenCompoundTags.TAG_STORAGE_ID) &&
+                level instanceof ServerLevel serverLevel)
+            {
+                IndividualPenStorage.delete(serverLevel,
+                    tag.getUUID(AnimalPenCompoundTags.TAG_STORAGE_ID));
+            }
+
             item.setTag(new CompoundTag());
 
             Block.popResource(level, this.getBlockPos().above(), item);
