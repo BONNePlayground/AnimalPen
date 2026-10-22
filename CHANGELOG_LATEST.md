@@ -1,4 +1,5 @@
-# Animal Pens 2.5.1
+# Animal Pens 2.5.2
 
 #### Changes:
-- Fixes server side crash
+- Remove stored animal variant data when last animal is killed in pen. (backported from newer version)
+- Fixes error report about incorrectly applied cooldown.

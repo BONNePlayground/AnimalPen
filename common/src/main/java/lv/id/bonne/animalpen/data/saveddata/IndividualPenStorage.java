@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import lv.id.bonne.animalpen.items.component.StoredMobVariantKey;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -59,6 +60,16 @@ public class IndividualPenStorage extends SavedData
     {
         return level.getDataStorage().computeIfAbsent(type(penId));
     }
+
+
+    public static void delete(ServerLevel serverLevel, StoredMobVariantKey variantKey)
+    {
+        if (variantKey != null && variantKey.key() != null)
+        {
+            IndividualPenStorage.delete(serverLevel, variantKey.key());
+        }
+    }
+
 
     public static void delete(ServerLevel level, UUID penId)
     {
