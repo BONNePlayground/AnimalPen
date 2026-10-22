@@ -4,14 +4,12 @@ package lv.id.bonne.animalpen.data.saveddata;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import lv.id.bonne.animalpen.AnimalPen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -62,6 +60,9 @@ public class IndividualPenStorage extends SavedData
 
     public static void delete(ServerLevel level, UUID penId)
     {
+        // Should never happen, but just in case
+        if (penId == null) return;
+
         IndividualPenStorage data = getOrCreate(level, penId);
         data.variants.clear();
         data.setDirty();
