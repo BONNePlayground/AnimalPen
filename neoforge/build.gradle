@@ -79,7 +79,7 @@ sourceSets.configureEach {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "animalpens"
-    versionNumber = "${rootProject.version}-${rootProject.minecraft_version}"
+    versionNumber = "${rootProject.version}-${rootProject.minecraft_version}+NeoForge"
     versionName = "${rootProject.version}-${rootProject.minecraft_version}-NeoForge"
     versionType = "release"
     uploadFile = tasks.named("jar").get().archiveFile.get().asFile
