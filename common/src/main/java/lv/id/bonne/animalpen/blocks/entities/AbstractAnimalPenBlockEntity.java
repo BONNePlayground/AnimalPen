@@ -671,6 +671,13 @@ public abstract class AbstractAnimalPenBlockEntity extends BlockEntity
             item.remove(AnimalPenDataComponentRegistry.MOB_DATA_COMPONENT.get());
             item.remove(AnimalPenDataComponentRegistry.MOB_VARIANT_COMPONENT.get());
 
+            if (item.has(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY) &&
+                level instanceof ServerLevel serverLevel)
+            {
+                IndividualPenStorage.delete(serverLevel,
+                    item.get(AnimalPenDataComponentRegistry.MOB_VARIANT_KEY));
+            }
+
             Block.popResource(level, this.getBlockPos().above(), item);
             this.inventory.setItem(0, ItemStack.EMPTY);
             AnimalPen.sendDebug("Dropping empty cage");
